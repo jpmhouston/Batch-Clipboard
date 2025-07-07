@@ -2,14 +2,14 @@ import Intents
 
 @available(macOS 11.0, *)
 class ClearIntentHandler: NSObject, ClearIntentHandling {
-  private var maccy: Maccy!
+  private var model: AppModel!
 
-  init(_ maccy: Maccy) {
-    self.maccy = maccy
+  init(_ model: AppModel) {
+    self.model = model
   }
 
   func handle(intent: ClearIntent, completion: @escaping (ClearIntentResponse) -> Void) {
-    maccy.clearUnpinned()
+    model.clearUnpinned()
     return completion(ClearIntentResponse(code: .success, userActivity: nil))
   }
 }

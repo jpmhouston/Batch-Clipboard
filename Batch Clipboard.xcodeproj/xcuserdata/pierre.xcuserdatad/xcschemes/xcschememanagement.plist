@@ -4,33 +4,32 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Cleepp (App Store).xcscheme_^#shared#^_</key>
+		<key>Batch Clipboard (MAS).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<true/>
 			<key>orderHint</key>
-			<integer>1</integer>
+			<integer>5</integer>
 		</dict>
-		<key>Cleepp.xcscheme_^#shared#^_</key>
+		<key>Batch Clipboard.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<true/>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>4</integer>
 		</dict>
-		<key>MaccyTests.xcscheme_^#shared#^_</key>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>8F0D3C0F2BAB8F5A00DDB603</key>
 		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>12</integer>
+			<key>primary</key>
+			<true/>
 		</dict>
-		<key>MaccyUITests.xcscheme_^#shared#^_</key>
+		<key>8F8C484D2BAD51B000C3A219</key>
 		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>13</integer>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

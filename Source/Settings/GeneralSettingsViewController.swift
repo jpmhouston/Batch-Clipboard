@@ -11,7 +11,7 @@ import ServiceManagement
 class GeneralSettingsViewController: NSViewController, SettingsPane {
   public let paneIdentifier = Settings.PaneIdentifier.general
   public let paneTitle = NSLocalizedString("preferences_general", comment: "")
-  public let toolbarItemIcon = NSImage(named: .gearshape)!
+  public let toolbarItemIcon = NSImage(named: .gear)!
 
   override var nibName: NSNib.Name? { "GeneralSettingsViewController" }
 
@@ -78,7 +78,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     hideSparkleUpdateRows()
     #endif
     
-    #if FOR_APP_STORE
+    #if APP_STORE
     if #unavailable(macOS 14) { // badged menu items first available in macOS 14
       hidePromoteExtrasRow()
     }
@@ -98,14 +98,14 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     populateLaunchAtLogin()
     populateSparkleAutomaticUpdates()
     populateSearchMode()
-    #if FOR_APP_STORE
+    #if APP_STORE
     populatePromoteExtrasOptions()
     #endif
-    showSearchOptionRows(Cleepp.allowHistorySearch)
+    showSearchOptionRows(AppModel.allowHistorySearch)
   }
   
   public func promoteExtrasStateChanged() {
-    #if FOR_APP_STORE
+    #if APP_STORE
     populatePromoteExtrasOptions()
     #endif
   }
@@ -162,13 +162,13 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBAction func searchModeChanged(_ sender: NSPopUpButton) {
     switch sender.selectedTag() {
     case 3:
-      UserDefaults.standard.searchMode = Search.Mode.mixed.rawValue
+      UserDefaults.standard.searchMode = Searcher.Mode.mixed.rawValue
     case 2:
-      UserDefaults.standard.searchMode = Search.Mode.regexp.rawValue
+      UserDefaults.standard.searchMode = Searcher.Mode.regexp.rawValue
     case 1:
-      UserDefaults.standard.searchMode = Search.Mode.fuzzy.rawValue
+      UserDefaults.standard.searchMode = Searcher.Mode.fuzzy.rawValue
     default:
-      UserDefaults.standard.searchMode = Search.Mode.exact.rawValue
+      UserDefaults.standard.searchMode = Searcher.Mode.exact.rawValue
     }
   }
 
@@ -180,7 +180,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   }
 
   private func populateSearchMode() {
-    switch Search.Mode(rawValue: UserDefaults.standard.searchMode) {
+    switch Searcher.Mode(rawValue: UserDefaults.standard.searchMode) {
     case .mixed:
       searchModeButton.selectItem(withTag: 3)
     case .regexp:
@@ -192,28 +192,28 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     }
   }
 
-  #if FOR_APP_STORE
+  #if APP_STORE
   private func populatePromoteExtrasOptions() {
     promoteExtrasCheckbox.state = UserDefaults.standard.promoteExtras ? .on : .off
     promoteExtrasExpiresCheckbox.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
-    promoteExtrasCheckbox.isEnabled = !Cleepp.hasBoughtExtras
-    promoteExtrasExpiresCheckbox.isEnabled = !Cleepp.hasBoughtExtras && UserDefaults.standard.promoteExtras
+    promoteExtrasCheckbox.isEnabled = !AppModel.hasBoughtExtras
+    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
   }
   
   private func updatePromoteExtrasExpirationOption() {
-    promoteExtrasExpiresCheckbox.isEnabled = !Cleepp.hasBoughtExtras && UserDefaults.standard.promoteExtras
+    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
   }
   
   private func updatePromoteExtrasExpirationTimer() {
-    guard let cleepp = (NSApp.delegate as? AppDelegate)?.maccy else {
+    guard let model = (NSApp.delegate as? AppDelegate)?.model else {
       return
     }
-    cleepp.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
+    model.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
   }
   #endif
   
   @IBAction func promoteExtrasChanged(_ sender: NSButton) {
-    #if FOR_APP_STORE
+    #if APP_STORE
     UserDefaults.standard.promoteExtras = (sender.state == .on)
     // turning promotion itself off & on doesn't reset the expiration date
     // but keeps the same expiration as long as its still in the future
@@ -223,7 +223,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   }
   
   @IBAction func promoteExtrasExpiresChanged(_ sender: NSButton) {
-    #if FOR_APP_STORE
+    #if APP_STORE
     UserDefaults.standard.promoteExtrasExpires = (sender.state == .on)
     // turning expiration checkbox off and on does reset the expiration date
     UserDefaults.standard.promoteExtrasExpiration = nil

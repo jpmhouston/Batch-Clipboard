@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8F8C484D2BAD51B000C3A219"
+               BlueprintIdentifier = "8F0D3C0F2BAB8F5A00DDB603"
                BuildableName = "Batch Clipboard.app"
-               BlueprintName = "Batch Clipboard (MAS)"
+               BlueprintName = "Batch Clipboard"
                ReferencedContainer = "container:Batch Clipboard.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,19 +29,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
-      <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8FF3994A2C0C2A3E000C9FAE"
-               BuildableName = "CleeppMASUITests.xctest"
-               BlueprintName = "CleeppMASUITests"
-               ReferencedContainer = "container:Maccy.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-      </Testables>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -53,6 +40,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "8F0D3C0F2BAB8F5A00DDB603"
+            BuildableName = "Batch Clipboard.app"
+            BlueprintName = "Batch Clipboard"
+            ReferencedContainer = "container:Batch Clipboard.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -60,15 +57,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8F8C484D2BAD51B000C3A219"
+            BlueprintIdentifier = "8F0D3C0F2BAB8F5A00DDB603"
             BuildableName = "Batch Clipboard.app"
-            BlueprintName = "Batch Clipboard (MAS)"
+            BlueprintName = "Batch Clipboard"
             ReferencedContainer = "container:Batch Clipboard.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

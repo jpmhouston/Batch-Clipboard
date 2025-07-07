@@ -10,14 +10,14 @@ import Intents
 
 @available(macOS 11.0, *)
 class StartIntentHandler: NSObject, StartIntentHandling {
-  private var cleepp: Cleepp!
+  private var model: AppModel!
   
-  init(_ cleepp: Cleepp) {
-    self.cleepp = cleepp
+  init(_ model: AppModel) {
+    self.model = model
   }
 
   func handle(intent: StartIntent, completion: @escaping (StartIntentResponse) -> Void) {
-    guard cleepp.startQueueMode(interactive: false) else {
+    guard model.startQueueMode(interactive: false) else {
       completion(StartIntentResponse(code: .failure, userActivity: nil))
       return
     }

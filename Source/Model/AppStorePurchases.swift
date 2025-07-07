@@ -1,5 +1,5 @@
 //
-//  Purchase.swift
+//  AppStorePurchases.swift
 //  Cleepp
 //
 //  Created by Pierre Houston on 2024-03-10.
@@ -12,7 +12,7 @@ import Flare
 import TPInAppReceipt
 import os.log
 
-class Purchases: NSObject {
+class AppStorePurchases: NSObject {
   // observer scheme described in https://www.swiftbysundell.com/articles/observers-in-swift-part-2/
   class ObservationToken {
     private let cancellationClosure: () -> Void

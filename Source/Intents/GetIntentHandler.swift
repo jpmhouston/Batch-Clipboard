@@ -4,10 +4,10 @@ import Intents
 @available(macOS 11.0, *)
 class GetIntentHandler: NSObject, GetIntentHandling {
   private let positionOffset = 0
-  private var maccy: Maccy!
+  private var model: AppModel!
 
-  init(_ maccy: Maccy) {
-    self.maccy = maccy
+  init(_ model: AppModel) {
+    self.model = model
   }
 
   func handle(intent: GetIntent, completion: @escaping (GetIntentResponse) -> Void) {
@@ -17,7 +17,7 @@ class GetIntentHandler: NSObject, GetIntentHandling {
 
     let index = number - positionOffset
 
-    guard let item = maccy.item(at: index), let title = item.title else {
+    guard let item = model.item(at: index), let title = item.title else {
       return completion(GetIntentResponse(code: .failure, userActivity: nil))
     }
 

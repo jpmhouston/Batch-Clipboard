@@ -1,5 +1,5 @@
 //
-//  Cleepp+Actions.swift
+//  AppModel+Actions.swift
 //  Cleepp
 //
 //  Created by Pierre Houston on 2024-03-20.
@@ -16,7 +16,7 @@ import os.log
 func nop() { }
 func dontWarnUnused(_ x: Any) { }
 
-extension Cleepp {
+extension AppModel {
   
   private var copyTimeoutSeconds: Double { 1.0 }
   private var standardPasteDelaySeconds: Double { 0.33333 }
@@ -41,7 +41,7 @@ extension Cleepp {
       return true // clipboard short-circuits the frontmost app TODO: eventually use a mock clipboard obj
     }
     #endif
-    return interactive ? Accessibility.check() : Accessibility.allowed
+    return interactive ? Permissions.check() : Permissions.allowed
   }
   
   private func restoreClipboardMonitoring() {
@@ -80,7 +80,7 @@ extension Cleepp {
     restoreClipboardMonitoring()
     
     queue.on()
-    updateStatusMenuIcon()
+    menuIcon.update(forQueueSize: 0)
     updateMenuTitle()
     
     return true
@@ -98,17 +98,11 @@ extension Cleepp {
     }
     
     queue.off()
-    updateStatusMenuIcon()
+    updateMenuIcon()
     updateMenuTitle()
     menu.updateHeadOfQueue(index: nil)
     
     return true
-  }
-  
-  func resetQueue() {
-    queue.off()
-    updateStatusMenuIcon()
-    updateMenuTitle()
   }
   
   @IBAction
@@ -167,7 +161,7 @@ extension Cleepp {
     return true
   }
   
-  func clipboardChanged(_ item: HistoryItem) {
+  func clipboardChanged(_ item: ClipItem) {
     // cancel timeout if its timer is active and clear the busy flag controlled by the timer
     let withinTimeout = copyTimeoutTimer != nil
     if withinTimeout {
@@ -188,7 +182,7 @@ extension Cleepp {
       menu.add(item) // or different queue-aware add function
       menu.updateHeadOfQueue(index: queue.headIndex) // or don't pass in index, inject queue into menu when its created?
       
-      updateStatusMenuIcon(.increment)
+      updateMenuIcon(.increment)
       updateMenuTitle()
     } else {
       history.add(item)
@@ -243,12 +237,12 @@ extension Cleepp {
       } catch { }
       
       menu.updateHeadOfQueue(index: self.queue.headIndex)
-      updateStatusMenuIcon(.decrement)
+      updateMenuIcon(.decrement)
       updateMenuTitle()
       
       Self.busy = false
       
-      #if FOR_APP_STORE
+      #if APP_STORE
       if !queue.isOn {
         AppStoreReview.ask(after: 20)
       }
@@ -274,7 +268,7 @@ extension Cleepp {
       return
     }
     
-    guard Cleepp.allowPasteMultiple else {
+    guard AppModel.allowPasteMultiple else {
       showBonusFeaturePromotionAlert()
       return
     }
@@ -312,7 +306,7 @@ extension Cleepp {
       return
     }
     
-    guard Cleepp.allowPasteMultiple else {
+    guard AppModel.allowPasteMultiple else {
       showBonusFeaturePromotionAlert()
       return
     }
@@ -345,8 +339,8 @@ extension Cleepp {
       
       Self.busy = true
       
-      // menu icon will show this for the duration
-      setStatusMenuIcon(to: .cleepMenuIconListMinus)
+      // menu icon will show "-" for the duration
+      updateMenuIcon(.persistentDecrement)
       
       queuedPasteMultipleIterator(count) { [weak self] in
         guard let self = self else { return }
@@ -354,13 +348,13 @@ extension Cleepp {
         self.queue.finishBulkRemove()
         
         // final update to these and including icon not updated since the syaty
-        self.updateStatusMenuIcon()
+        self.updateMenuIcon()
         self.updateMenuTitle()
         self.menu.updateHeadOfQueue(index: self.queue.headIndex)
         
         Self.busy = false
         
-        #if FOR_APP_STORE
+        #if APP_STORE
         if !queue.isOn && interactive {
           AppStoreReview.ask(after: 20)
         }
@@ -426,14 +420,14 @@ extension Cleepp {
     }
     
     menu.updateHeadOfQueue(index: queue.headIndex)
-    updateStatusMenuIcon(.decrement)
+    updateMenuIcon(.decrement)
     updateMenuTitle()
   }
   
   @IBAction
   func replayFromHistory(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    guard let item = (sender as? HistoryMenuItem)?.item,
+    guard let item = (sender as? ClipMenuItem)?.clipItem,
           let index = history.all.firstIndex(of: item) else {
       return
     }
@@ -442,7 +436,7 @@ extension Cleepp {
   
   @discardableResult
   func replayFromHistory(atIndex index: Int, interactive: Bool = false) -> Bool {
-    guard Cleepp.allowReplayFromHistory else {
+    guard AppModel.allowReplayFromHistory else {
       return false
     }
     guard !Self.busy else {
@@ -460,7 +454,7 @@ extension Cleepp {
       return false
     }
     
-    updateStatusMenuIcon()
+    updateMenuIcon()
     updateMenuTitle()
     menu.updateHeadOfQueue(index: index)
     
@@ -473,7 +467,7 @@ extension Cleepp {
       return
     }
     
-    guard let item = (sender as? HistoryMenuItem)?.item else {
+    guard let item = (sender as? ClipMenuItem)?.clipItem else {
       return
     }
     
@@ -482,7 +476,7 @@ extension Cleepp {
   
   @IBAction
   func deleteHistoryItem(_ sender: AnyObject) {
-    guard let item = (sender as? HistoryMenuItem)?.item, let index = history.all.firstIndex(of: item) else {
+    guard let item = (sender as? ClipMenuItem)?.clipItem, let index = history.all.firstIndex(of: item) else {
       return
     }
     
@@ -518,21 +512,6 @@ extension Cleepp {
     fixQueueAfterDeletingItem(atIndex: deletedIndex)
   }
   
-  func fixQueueAfterDeletingItem(atIndex index: Int) {
-    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        os_log(.default, "failed to fix queue after deleting item, %@", error.localizedDescription)
-        queue.off()
-      }
-      
-      updateStatusMenuIcon(.decrement)
-      updateMenuTitle()
-      // menu updates the head of queue item itself when deleting
-    }
-  }
-  
   @IBAction
   func clear(_ sender: AnyObject) {
     guard !Self.busy else {
@@ -548,7 +527,7 @@ extension Cleepp {
       return
     }
     
-    guard Cleepp.allowUndoCopy else {
+    guard AppModel.allowUndoCopy else {
       showBonusFeaturePromotionAlert()
       return
     }
@@ -611,23 +590,64 @@ extension Cleepp {
   
   // MARK: -
   
+  func fixQueueAfterDeletingItem(atIndex index: Int) {
+    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
+      do {
+        try queue.remove(atIndex: index)
+      } catch {
+        os_log(.default, "failed to fix queue after deleting item, %@", error.localizedDescription)
+        queue.off()
+      }
+      
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
+      // menu updates the head of queue item itself when deleting
+    }
+  }
+  
+  internal func updateMenuIcon(_ direction: MenuBarIcon.QueueChangeDirection = .none) {
+    menuIcon.update(forQueueSize: (queue.isOn ? queue.size : nil), direction) 
+  }
+  
+  internal func updateMenuTitle() {
+    menuIcon.badge = queue.isOn ? String(queue.size) : ""
+  }
+  
   private func showBonusFeaturePromotionAlert() {
-    let alert = NSAlert()
-    alert.alertStyle = .informational
-    alert.messageText = NSLocalizedString("promoteextras_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("promoteextras_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_show_settings", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_cancel", comment: ""))
-    
-    switch alert.runModal() {
-    case NSApplication.ModalResponse.alertFirstButtonReturn:
-      showSettings(selectingPane: .purchase)
-    default:
-      break
+    Self.returnFocusToPreviousApp = false
+    DispatchQueue.main.async {
+      switch self.bonusFeaturePromotionAlert.runModal() {
+      case NSApplication.ModalResponse.alertFirstButtonReturn:
+        self.showSettings(selectingPane: .purchase)
+      default:
+        break
+      }
+      Self.returnFocusToPreviousApp = true
+    }
+  }
+  
+  internal func withNumberToPasteAlert(_ closure: @escaping (Int) -> Void) {
+    let alert = numberQueuedAlert
+    guard let field = alert.accessoryView as? RangedIntegerTextField else {
+      return
+    }
+    Self.returnFocusToPreviousApp = false
+    DispatchQueue.main.async {
+      switch alert.runModal() {
+      case NSApplication.ModalResponse.alertFirstButtonReturn:
+        alert.window.orderOut(nil) // i think withClearAlert above should call this too
+        let number = Int(field.stringValue) ?? self.queue.size
+        closure(number)
+      default:
+        break
+      }
+      Self.returnFocusToPreviousApp = true
     }
   }
   
   // MARK: -
+  
+  // `copyTimeoutTimer: DispatchSourceTimer?` must be declared as a property
   
   private func runOnCopyTimeoutTimer(afterTimeout timeout: Double, _ action: @escaping () -> Void) {
     if copyTimeoutTimer != nil {

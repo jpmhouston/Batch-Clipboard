@@ -1,5 +1,5 @@
 //
-//  Cleepp+Links.swift
+//  AppModel+Links.swift
 //  Cleepp
 //
 //  Created by Pierre Houston on 2024-03-25.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Cleepp {
+extension AppModel {
   
   static var githubURL = "https://github.com/jpmhouston/Cleepp"
   static var homepageURL = "https://batchclipboard.bananameter.lol"
@@ -19,9 +19,9 @@ extension Cleepp {
   static var privacyPolicyURL = "https://github.com/jpmhouston/Cleepp/wiki/Privacy-Policy"
   static var maccyURL = "https://maccy.app"
   static var supportEmailAddress = "batchclip.support@bananameter.lol"
-  static var supportEmailURL = "mailto:" + Cleepp.supportEmailAddress
+  static var supportEmailURL = "mailto:" + AppModel.supportEmailAddress
   static var localizeVolunteerEmailAddress = "batchclip.l10nhelp@bananameter.lol"
-  static var localizeVolunteerEmailURL = "mailto:" + Cleepp.localizeVolunteerEmailAddress
+  static var localizeVolunteerEmailURL = "mailto:" + AppModel.localizeVolunteerEmailAddress
   static var showIntroInAppURL = "batchclipapp:intro"
   static var showIntroPermissionPageInAppURL = "batchclipapp:intro/permissions"
   static var showLicensesInAppURL = "batchclipapp:licenses"

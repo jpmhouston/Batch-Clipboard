@@ -4,9 +4,9 @@ extension NSAttributedString.Key {
   static let headIndicator: Self = .init("cleeppqueuehead")
 }
 
-class HistoryMenuItem: NSMenuItem {
+class ClipMenuItem: NSMenuItem {
   var isPinned = false
-  var item: HistoryItem?
+  var clipItem: ClipItem?
   var value = ""
   #if CLEEPP
   var isHeadOfQueue = false {
@@ -78,8 +78,8 @@ class HistoryMenuItem: NSMenuItem {
     super.init(title: title, action: action, keyEquivalent: keyEquivalent)
   }
   
-  func configured(withItem item: HistoryItem, distinguishForDebugging: Bool = false) -> Self {
-    self.item = item
+  func configured(withItem item: ClipItem, distinguishForDebugging: Bool = false) -> Self {
+    self.clipItem = item
     
     if isImage(item) {
       loadImage(item)
@@ -161,33 +161,33 @@ class HistoryMenuItem: NSMenuItem {
   }
 
   func pin(_ pin: String) {
-    item?.pin = pin
+    clipItem?.pin = pin
     self.isPinned = true
     self.keyEquivalent = pin
     self.state = .on
   }
 
   func unpin() {
-    item?.pin = nil
+    clipItem?.pin = nil
     self.isPinned = false
     self.keyEquivalent = ""
     self.state = .off
   }
 
   func resizeImage() {
-    guard let item, !isImage(item) else {
+    guard let clipItem, !isImage(clipItem) else {
       return
     }
 
-    loadImage(item)
+    loadImage(clipItem)
   }
 
   func regenerateTitle() {
-    guard let item, !isImage(item), !isPinned else {
+    guard let clipItem, !isImage(clipItem), !isPinned else {
       return
     }
 
-    item.title = item.generateTitle(item.getContents())
+    clipItem.title = clipItem.generateTitle(clipItem.getContents())
   }
 
   func highlight(_ ranges: [ClosedRange<Int>]) {
@@ -225,27 +225,27 @@ class HistoryMenuItem: NSMenuItem {
     #endif
   }
 
-  private func isImage(_ item: HistoryItem) -> Bool {
+  private func isImage(_ item: ClipItem) -> Bool {
     return item.image != nil
   }
 
-  private func isFile(_ item: HistoryItem) -> Bool {
+  private func isFile(_ item: ClipItem) -> Bool {
     return !item.fileURLs.isEmpty
   }
 
-  private func isRTF(_ item: HistoryItem) -> Bool {
+  private func isRTF(_ item: ClipItem) -> Bool {
     return item.rtf != nil
   }
 
-  private func isHTML(_ item: HistoryItem) -> Bool {
+  private func isHTML(_ item: ClipItem) -> Bool {
     return item.html != nil
   }
 
-  private func isText(_ item: HistoryItem) -> Bool {
+  private func isText(_ item: ClipItem) -> Bool {
     return item.text != nil
   }
 
-  private func loadImage(_ item: HistoryItem) {
+  private func loadImage(_ item: ClipItem) {
     guard let image = item.image else {
       return
     }
@@ -265,7 +265,7 @@ class HistoryMenuItem: NSMenuItem {
     self.title = imageTitle
   }
 
-  private func loadFile(_ item: HistoryItem) {
+  private func loadFile(_ item: ClipItem) {
     guard !item.fileURLs.isEmpty else {
       return
     }
@@ -277,7 +277,7 @@ class HistoryMenuItem: NSMenuItem {
     self.image = ColorImage.from(title)
   }
 
-  private func loadRTF(_ item: HistoryItem) {
+  private func loadRTF(_ item: ClipItem) {
     guard let string = item.rtf?.string else {
       return
     }
@@ -287,7 +287,7 @@ class HistoryMenuItem: NSMenuItem {
     self.image = ColorImage.from(title)
   }
 
-  private func loadHTML(_ item: HistoryItem) {
+  private func loadHTML(_ item: ClipItem) {
     guard let string = item.html?.string else {
       return
     }
@@ -297,7 +297,7 @@ class HistoryMenuItem: NSMenuItem {
     self.image = ColorImage.from(title)
   }
 
-  private func loadText(_ item: HistoryItem) {
+  private func loadText(_ item: ClipItem) {
     guard let string = item.text else {
       return
     }

@@ -1,5 +1,5 @@
 //
-//  Menu
+//  AppMenu
 //  Cleepp
 //
 //  Created by Pierre Houston on 2024-03-20.
@@ -13,11 +13,9 @@
 import AppKit
 import os.log
 
-typealias Menu = CleeppMenu
-
 // Custom menu supporting "search-as-you-type" based on https://github.com/mikekazakov/MGKMenuWithFilter.
 // swiftlint:disable type_body_length
-class CleeppMenu: NSMenu, NSMenuDelegate {
+class AppMenu: NSMenu, NSMenuDelegate {
   static let menuWidth = 300
   static let popoverGap = 5.0
   static let minNumMenuItems = 5 // things get weird if the effective menu size is 0
@@ -28,34 +26,34 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   private var queue: ClipboardQueue!
   private let previewController = PreviewPopoverController()
   
-  class IndexedItem: NSObject {
+  class ClipRecord: NSObject {
     var value: String
     var title: String { item?.title ?? "" }
-    var item: HistoryItem?
-    var menuItems: [HistoryMenuItem]
+    var item: ClipItem?
+    var menuItems: [ClipMenuItem]
     var popoverAnchor: NSMenuItem? { menuItems.last } // only when usePopoverAnchors, caller must know this :/
     
-    init(value: String, item: HistoryItem?, menuItems: [HistoryMenuItem]) {
+    init(value: String, item: ClipItem?, menuItems: [ClipMenuItem]) {
       self.value = value
       self.item = item
       self.menuItems = menuItems
     }
   }
   
-  private var indexedItems: [IndexedItem] = []
-  private var headOfQueueIndexedItem: IndexedItem?
+  private var clips: [ClipRecord] = []
+  private var headOfQueueClip: ClipRecord?
   private var queueItemsSeparator: NSMenuItem?
   private var disableDeleteTimer: DispatchSourceTimer?
   
-  internal var historyMenuItems: [HistoryMenuItem] {
-    items.compactMap({ $0 as? HistoryMenuItem }).excluding([topAnchorItem])
+  internal var historyMenuItems: [ClipMenuItem] {
+    items.compactMap({ $0 as? ClipMenuItem }).excluding([topAnchorItem])
   }
   
   private var historyMenuItemsGroupCount: Int { usePopoverAnchors ? 3 : 2 } // 1 main, 1 alternate, 1 popover anchor
   private var maxMenuItems: Int {
     let numMenuItemsSetting = max(Self.minNumMenuItems, UserDefaults.standard.maxMenuItems)
     let numItemsStoredSetting = max(Self.minNumMenuItems, UserDefaults.standard.size)
-    return if !Cleepp.allowDictinctStorageSize {
+    return if !AppModel.allowDictinctStorageSize {
       numMenuItemsSetting
     } else if showsExpandedMenu && showsFullExpansion {
       max(numMenuItemsSetting, numItemsStoredSetting)
@@ -84,15 +82,15 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   private var showsFullExpansion = false
   private var isFiltered = false
   
-  private var historyHeaderView: MenuHeaderView? { historyHeaderItem?.view as? MenuHeaderView ?? historyHeaderViewCache }
-  private var historyHeaderViewCache: MenuHeaderView?
-  private let search = Search()
-  private var lastHighlightedItem: HistoryMenuItem?
-  private var topAnchorItem: HistoryMenuItem?
+  private var historyHeaderView: FilterFieldView? { historyHeaderItem?.view as? FilterFieldView ?? historyHeaderViewCache }
+  private var historyHeaderViewCache: FilterFieldView?
+  private let search = Searcher()
+  private var lastHighlightedItem: ClipMenuItem?
+  private var topAnchorItem: ClipMenuItem?
   private var previewPopover: NSPopover?
-  private var protoCopyItem: HistoryMenuItem?
-  private var protoReplayItem: HistoryMenuItem?
-  private var protoAnchorItem: HistoryMenuItem?
+  private var protoCopyItem: ClipMenuItem?
+  private var protoReplayItem: ClipMenuItem?
+  private var protoAnchorItem: ClipMenuItem?
   private var menuWindow: NSWindow? { NSApp.menuWindow }
   private var deleteAction: Selector?
   
@@ -120,7 +118,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     // somewhat unconventional, perhaps in part because most of this code belongs in a controller class?
     // we already have a MenuController however its used for some other things
     // although since there's no such thing as a NSMenuController would have to do custom loading from nib anyway :shrug:
-    guard let nib = NSNib(nibNamed: "Menu", bundle: nil) else {
+    guard let nib = NSNib(nibNamed: "AppMenu", bundle: nil) else {
       fatalError("Menu resources missing")
     }
     var nibObjects: NSArray? = NSArray()
@@ -141,15 +139,15 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     self.minimumWidth = CGFloat(Self.menuWidth)
     
     // save aside the prototype history menu items and remove them from the menu
-    if let prototypeCopyItem = prototypeCopyItem as? HistoryMenuItem {
+    if let prototypeCopyItem = prototypeCopyItem as? ClipMenuItem {
       protoCopyItem = prototypeCopyItem
       removeItem(prototypeCopyItem)
     }
-    if let prototypeReplayItem = prototypeReplayItem as? HistoryMenuItem {
+    if let prototypeReplayItem = prototypeReplayItem as? ClipMenuItem {
       protoReplayItem = prototypeReplayItem
       removeItem(prototypeReplayItem)
     }
-    if let prototypeAnchorItem = prototypeAnchorItem as? HistoryMenuItem {
+    if let prototypeAnchorItem = prototypeAnchorItem as? ClipMenuItem {
       protoAnchorItem = prototypeAnchorItem
       removeItem(prototypeAnchorItem)
     }
@@ -201,11 +199,11 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     disableDeleteTimer?.cancel()
     disableDeleteTimer = nil
     
-    if let historyItem = item as? HistoryMenuItem {
-      deleteItem?.isEnabled = !Cleepp.busy
+    if let historyItem = item as? ClipMenuItem {
+      deleteItem?.isEnabled = !AppModel.busy
       lastHighlightedItem = historyItem
       
-      previewController.showPopover(for: historyItem, allItems: indexedItems)
+      previewController.showPopover(for: historyItem, allClips: clips)
       
     } else if item == nil || item == deleteItem {
       // called with nil when cursor is over a disabled item, a separator, or is
@@ -228,7 +226,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   // MARK: -
   
   func buildItems() {
-    clearAll() // wipes indexedItems as well as history menu items
+    clearAll() // wipes `clips` as well as history menu items
     
     if usePopoverAnchors {
       insertTopAnchorItem()
@@ -241,12 +239,12 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       guard let menuItem = menuItems.first else {
         continue
       }
-      let indexedItem = IndexedItem(
+      let clip = ClipRecord(
         value: menuItem.value,
         item: item,
         menuItems: menuItems
       )
-      indexedItems.append(indexedItem)
+      clips.append(clip)
       menuItems.forEach(appendMenuItem)
     }
     
@@ -262,10 +260,10 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       removeQueueItemsSeparator() // expected to already be removed! but ensure now that it really is
     }
     
-    if showsExpandedMenu && !isFiltered && !Cleepp.busy && !queue.isEmpty &&
-        indexedItems.count > queue.size
+    if showsExpandedMenu && !isFiltered && !AppModel.busy && !queue.isEmpty &&
+        clips.count > queue.size
     {
-      let followingItem = indexedItems[queue.size]
+      let followingItem = clips[queue.size]
       guard let followingMenuItem = followingItem.menuItems.first, let index = safeIndex(of: followingMenuItem) else {
         return
       }
@@ -287,7 +285,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func updateDisabledMenuItems() {
-    let notBusy = !Cleepp.busy
+    let notBusy = !AppModel.busy
     queueStartItem?.isEnabled = notBusy && !queue.isOn // although expect to be hidden if invalid
     queueReplayItem?.isEnabled = notBusy && queue.isOn && !queue.isReplaying
     queueStopItem?.isEnabled = notBusy && queue.isOn
@@ -307,7 +305,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     deleteItem?.action = searchHeaderVisible ? nil : deleteAction
   }
   
-  func add(_ item: HistoryItem) {
+  func add(_ item: ClipItem) {
     let sortedItems = history.all
     guard let insertionIndex = sortedItems.firstIndex(where: { $0 == item }) else {
       return
@@ -320,12 +318,12 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     guard let menuItem = menuItems.first else {
       return
     }
-    let indexedItem = IndexedItem(
+    let clip = ClipRecord(
       value: menuItem.value,
       item: item,
       menuItems: menuItems
     )
-    indexedItems.insert(indexedItem, at: insertionIndex)
+    clips.insert(clip, at: insertionIndex)
     
     let firstHistoryMenuItemIndex = index(of: zerothHistoryHeaderItem) + 1
     let menuItemInsertionIndex = firstHistoryMenuItemIndex + self.historyMenuItemsGroupCount * insertionIndex
@@ -343,9 +341,9 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   func clearAll() {
-    clear(indexedItems)
+    clear(clips)
     clearAllHistoryMenuItems()
-    headOfQueueIndexedItem = nil
+    headOfQueueClip = nil
   }
   
   func clearUnpinned() {
@@ -353,21 +351,21 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   func updateHeadOfQueue(index: Int?) {
-    headOfQueueIndexedItem?.menuItems.forEach { $0.isHeadOfQueue = false }
-    if let index = index, index >= 0, index < indexedItems.count {
-      setHeadOfQueueItem(indexedItems[index])
+    headOfQueueClip?.menuItems.forEach { $0.isHeadOfQueue = false }
+    if let index = index, index >= 0, index < clips.count {
+      setHeadOfQueueClipItem(clips[index])
     } else {
-      setHeadOfQueueItem(nil)
+      setHeadOfQueueClipItem(nil)
     }
   }
   
-  func setHeadOfQueueItem(_ item: IndexedItem?) {
-    headOfQueueIndexedItem = item
-    item?.menuItems.forEach { $0.isHeadOfQueue = true }
+  func setHeadOfQueueClipItem(_ clip: ClipRecord?) {
+    headOfQueueClip = clip
+    clip?.menuItems.forEach { $0.isHeadOfQueue = true }
   }
   
   func updateFilter(filter: String) {
-    var results = search.search(string: filter, within: indexedItems)
+    var results = search.search(string: filter, within: clips)
     
     // Strip the results that are longer than visible items.
     if maxMenuItems > 0 && maxMenuItems < results.count {
@@ -393,7 +391,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       }
     }
     
-    isFiltered = results.count < indexedItems.count
+    isFiltered = results.count < clips.count
     
     removeQueueItemsSeparator()
     
@@ -409,21 +407,21 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   func select(position: Int) -> String? {
-    guard indexedItems.count > position,
-          let item = indexedItems[position].menuItems.first else {
+    guard clips.count > position,
+          let item = clips[position].menuItems.first else {
       return nil
     }
     
     performActionForItem(at: index(of: item))
-    return indexedItems[position].value
+    return clips[position].value
   }
   
-  func historyItem(at position: Int) -> HistoryItem? {
-    guard indexedItems.indices.contains(position) else {
+  func historyItem(at position: Int) -> ClipItem? {
+    guard clips.indices.contains(position) else {
       return nil
     }
     
-    return indexedItems[position].item
+    return clips[position].item
   }
   
   func selectPrevious() {
@@ -438,10 +436,10 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func highlightedMenuItem() -> HistoryMenuItem? {
+  func highlightedMenuItem() -> ClipMenuItem? {
     nop() // TODO: remove once no longer need a breakpoint here
     
-    guard let menuItem = highlightedItem, let historyMenuItem = menuItem as? HistoryMenuItem else {
+    guard let menuItem = highlightedItem, let historyMenuItem = menuItem as? ClipMenuItem else {
       return nil
     }
     
@@ -457,27 +455,27 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   
   @discardableResult
   func delete(position: Int) -> String? {
-    guard position >= 0 && position < indexedItems.count else {
+    guard position >= 0 && position < clips.count else {
       return nil
     }
     
-    let indexedItem = indexedItems[position]
-    let value = indexedItem.value
-    let wasHighlighted = indexedItem.item == lastHighlightedItem?.item
+    let clip = clips[position]
+    let value = clip.value
+    let wasHighlighted = clip.item == lastHighlightedItem?.clipItem
     
     // remove menu items, history item, this class's indexing item
-    indexedItem.menuItems.forEach(safeRemoveItem)
-    history.remove(indexedItem.item)
-    indexedItems.remove(at: position)
+    clip.menuItems.forEach(safeRemoveItem)
+    history.remove(clip.item)
+    clips.remove(at: position)
     
     // clean up head of queue item
-    if indexedItem == headOfQueueIndexedItem {
-      setHeadOfQueueItem(position > 0 ? indexedItems[position - 1] : nil)
+    if clip == headOfQueueClip {
+      setHeadOfQueueClipItem(position > 0 ? clips[position - 1] : nil)
       
       // after deleting the selected last-queued item, highlight the previous item (new last one in queue)
       // instead of letting the system highlight the next one
       if wasHighlighted && position > 0 {
-        let prevItem = indexedItems[position - 1].menuItems[0]
+        let prevItem = clips[position - 1].menuItems[0]
         highlight(prevItem)
         lastHighlightedItem = prevItem
       }
@@ -488,7 +486,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   
   func deleteHighlightedItem() -> Int? {
     guard let item = lastHighlightedItem,
-          let position = indexedItems.firstIndex(where: { $0.menuItems.contains(item) }) else {
+          let position = clips.firstIndex(where: { $0.menuItems.contains(item) }) else {
       return nil
     }
     delete(position: position)
@@ -510,7 +508,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   func performQueueModeToggle() {
-    guard !Cleepp.busy else { return }
+    guard !AppModel.busy else { return }
     
     if queue.isOn {
       guard let queueStopItem = queueStopItem else { return }
@@ -522,7 +520,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   func enableExpandedMenu(_ enable: Bool, full: Bool = false) {
-    guard Cleepp.allowExpandedHistory && !historyMenuItems.isEmpty else {
+    guard AppModel.allowExpandedHistory && !historyMenuItems.isEmpty else {
       return
     }
     showsExpandedMenu = enable // gets set back to false in menuDidClose
@@ -537,7 +535,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     guard let protoAnchorItem = protoAnchorItem, let historyHeaderItem = historyHeaderItem else {
       return
     }
-    let anchorItem = protoAnchorItem.copy() as! HistoryMenuItem
+    let anchorItem = protoAnchorItem.copy() as! ClipMenuItem
     
     let index = index(of: historyHeaderItem) + 1
     insertItem(anchorItem, at: index)
@@ -606,17 +604,17 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  private func clear(_ itemsToClear: [IndexedItem]) {
-    for indexedItem in itemsToClear {
-      indexedItem.menuItems.forEach(safeRemoveItem)
+  private func clear(_ clipsToClear: [ClipRecord]) {
+    for clip in clipsToClear {
+      clip.menuItems.forEach(safeRemoveItem)
       
-      if let removeIndex = indexedItems.firstIndex(of: indexedItem) {
-        indexedItems.remove(at: removeIndex)
+      if let removeIndex = clips.firstIndex(of: clip) {
+        clips.remove(at: removeIndex)
       }
     }
     
-    if let item = headOfQueueIndexedItem, itemsToClear.contains(item) {
-      headOfQueueIndexedItem = nil
+    if let item = headOfQueueClip, clipsToClear.contains(item) {
+      headOfQueueClip = nil
     }
   }
   
@@ -626,7 +624,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func rebuildItemsAsNeeded() {
-    let availableHistoryCount = indexedItems.count
+    let availableHistoryCount = clips.count
     let presentItemsCount = historyMenuItems.count / historyMenuItemsGroupCount
     
     let maxItems = queue.isOn ? max(maxMenuItems, queue.size) : maxMenuItems
@@ -641,13 +639,13 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   
   private func removeItemsOverLimit(_ limit: Int) {
     var count = historyMenuItems.count / historyMenuItemsGroupCount
-    for indexedItem in indexedItems.reversed() {
+    for clip in clips.reversed() {
       if count <= limit {
         return
       }
       
       // if menu doesn't contains this item, skip it
-      let menuItems = indexedItem.menuItems.filter({ historyMenuItems.contains($0) })
+      let menuItems = clip.menuItems.filter({ historyMenuItems.contains($0) })
       if menuItems.isEmpty {
         continue
       }
@@ -659,34 +657,34 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   
   private func appendItemsUntilLimit(_ limit: Int) {
     var count = historyMenuItems.count / historyMenuItemsGroupCount
-    for indexedItem in indexedItems {
+    for clip in clips {
       if count >= limit {
         return
       }
       
       // if menu contains this item already, skip it
-      let menuItems = indexedItem.menuItems.filter({ !historyMenuItems.contains($0) })
+      let menuItems = clip.menuItems.filter({ !historyMenuItems.contains($0) })
       if menuItems.isEmpty {
         continue
       }
       
       menuItems.forEach(appendMenuItem)
-      if indexedItem == headOfQueueIndexedItem {
+      if clip == headOfQueueClip {
         menuItems.forEach { $0.isHeadOfQueue = true }
       }
       count += 1
     }
   }
   
-  private func buildMenuItemAlternates(_ item: HistoryItem) -> [HistoryMenuItem] {
+  private func buildMenuItemAlternates(_ item: ClipItem) -> [ClipMenuItem] {
     // (including the preview item) making the HistoryMenuItem subclasses unnecessary,
     guard let protoCopyItem = protoCopyItem, let protoReplayItem = protoReplayItem else {
       return []
     }
     
     var menuItems = [
-      (protoCopyItem.copy() as! HistoryMenuItem).configured(withItem: item),
-      (protoReplayItem.copy() as! HistoryMenuItem).configured(withItem: item) // distinguishForDebugging:true
+      (protoCopyItem.copy() as! ClipMenuItem).configured(withItem: item),
+      (protoReplayItem.copy() as! ClipMenuItem).configured(withItem: item) // distinguishForDebugging:true
     ]
     menuItems.sort(by: { !$0.isAlternate && $1.isAlternate })
     
@@ -694,7 +692,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       guard let protoAnchorItem = protoAnchorItem else {
         return []
       }
-      menuItems.append(protoAnchorItem.copy() as! HistoryMenuItem)
+      menuItems.append(protoAnchorItem.copy() as! ClipMenuItem)
     }
     
     assert(menuItems.count == historyMenuItemsGroupCount)
@@ -704,16 +702,16 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
   
   private func clearRemovedItems() {
     let currentHistoryItems = history.all
-    for indexedItem in indexedItems {
-      if let historyItem = indexedItem.item, !currentHistoryItems.contains(historyItem) {
-        indexedItem.menuItems.forEach(safeRemoveItem)
+    for clip in clips {
+      if let historyItem = clip.item, !currentHistoryItems.contains(historyItem) {
+        clip.menuItems.forEach(safeRemoveItem)
         
-        if let removeIndex = indexedItems.firstIndex(of: indexedItem) {
-          indexedItems.remove(at: removeIndex)
+        if let removeIndex = clips.firstIndex(of: clip) {
+          clips.remove(at: removeIndex)
         }
         
-        if let item = headOfQueueIndexedItem, item == indexedItem {
-          headOfQueueIndexedItem = nil
+        if let item = headOfQueueClip, item == clip {
+          headOfQueueClip = nil
         }
       }
     }
@@ -737,13 +735,13 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       return
     }
     let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
-    let promoteExtras = Cleepp.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
+    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
     if promoteExtras && promoteExtrasBadge == nil, #available(macOS 14, *) {
       promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
     }
     
-    let gotHistoryItems = !queue.isEmpty || (showsExpandedMenu && indexedItems.count > 0)
-    let showSearchHeader = showsExpandedMenu && Cleepp.allowHistorySearch && !UserDefaults.standard.hideSearch
+    let gotHistoryItems = !queue.isEmpty || (showsExpandedMenu && clips.count > 0)
+    let showSearchHeader = showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch
     
     // Switch visibility of start vs replay menu item
     queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
@@ -753,16 +751,16 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     queueAdvanceItem?.isVisible = !queue.isEmpty
 
     // Bonus features to hide when not purchased
-    queuedPasteAllItem?.isVisible = Cleepp.allowPasteMultiple || promoteExtras
-    queuedPasteMultipleItem?.isVisibleAlternate = Cleepp.allowPasteMultiple || promoteExtras
-    if !Cleepp.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+    queuedPasteAllItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
+    queuedPasteMultipleItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
+    if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       queuedPasteAllItem?.badge = bedge
       queuedPasteMultipleItem?.badge = bedge
       // important: if we add key equivalents to these items, must save those here
       // and clear the shortcut when adding badge, like the undo item below
     }
-    undoCopyItem?.isVisible = Cleepp.allowUndoCopy || promoteExtras
-    if !Cleepp.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+    undoCopyItem?.isVisible = AppModel.allowUndoCopy || promoteExtras
+    if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       undoCopyItem?.badge = bedge
       cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
       undoCopyItem?.keyEquivalent = ""
@@ -780,7 +778,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
     // hiding items with views not working well in macOS <= 14! remove view when hiding
     if removeViewToHideMenuItem {
       if !showSearchHeader && historyHeaderItem.view != nil {
-        historyHeaderViewCache = historyHeaderItem.view as? MenuHeaderView
+        historyHeaderViewCache = historyHeaderItem.view as? FilterFieldView
         historyHeaderItem.view = nil
       } else if showSearchHeader && historyHeaderItem.view == nil {
         historyHeaderItem.view = historyHeaderViewCache
@@ -891,19 +889,19 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
       )
     } else {
       // assumes the last of a group of history items is the anchor
-      guard let topAnchorView = topAnchorItem?.view, let item = item as? HistoryMenuItem,
-            let itemIndex = indexedItems.firstIndex(where: { $0.menuItems.contains(item) }) else {
+      guard let topAnchorView = topAnchorItem?.view, let item = item as? ClipMenuItem,
+            let itemIndex = clips.firstIndex(where: { $0.menuItems.contains(item) }) else {
         return nil
       }
-      let indexedItem = indexedItems[itemIndex]
-      guard let previewView = indexedItem.menuItems.last?.view else {
+      let clip = clips[itemIndex]
+      guard let previewView = clip.menuItems.last?.view else {
         return nil
       }
       
       var precedingView = topAnchorView
       for index in (0..<itemIndex).reversed() {
         // Check if anchor for this item is visible (it may be hidden by the search filter)
-        if let view = indexedItems[index].menuItems.last?.view, view.window != nil {
+        if let view = clips[index].menuItems.last?.view, view.window != nil {
           precedingView = view
           break
         }
@@ -946,7 +944,7 @@ class CleeppMenu: NSMenu, NSMenuDelegate {
 
 // MARK: -
 
-extension CleeppMenu {
+extension AppMenu {
   func addDebugItems() {
     #if DEBUG
     if AppDelegate.allowTestWindow {

@@ -29,9 +29,9 @@ class PurchaseDetailWindowController: NSWindowController, NSWindowDelegate, NSTa
   private var disabledBuyButtonTitle: String = ""
   private var templateBuyButtonTitle: String = ""
   
-  var products: [Purchases.ProductDetail] = []
-  var purchases: Set<Purchases.Item> = []
-  var chosenProduct: Purchases.ProductDetail?
+  var products: [AppStorePurchases.ProductDetail] = []
+  var purchases: Set<AppStorePurchases.Item> = []
+  var chosenProduct: AppStorePurchases.ProductDetail?
   
   class func createFromNib() -> Self {
     self.init(windowNibName: "PurchaseDetailWindow")
@@ -42,7 +42,7 @@ class PurchaseDetailWindowController: NSWindowController, NSWindowDelegate, NSTa
   
   override func windowDidLoad() {
     #if DEBUG
-    if let product = products.first, product is Purchases.DummyProductDetail {
+    if let product = products.first, product is AppStorePurchases.DummyProductDetail {
       templateBuyButtonTitle = "Test, won't charge $" // do not localize
     } else {
       templateBuyButtonTitle = buyButton.title
@@ -55,7 +55,7 @@ class PurchaseDetailWindowController: NSWindowController, NSWindowDelegate, NSTa
     
     let styled = NSMutableAttributedString(attributedString: userAgreementLinkLabel.attributedStringValue)
     let font = userAgreementLinkLabel.font ?? NSFont.labelFont(ofSize: NSFont.smallSystemFontSize)
-    styled.applySimpleStyles(basedOnFont: font, withLink: Cleepp.appStoreUserAgreementURL)
+    styled.applySimpleStyles(basedOnFont: font, withLink: AppModel.appStoreUserAgreementURL)
     userAgreementLinkLabel.attributedStringValue = styled
     
     //styled = NSMutableAttributedString(attributedString: privacyPolicyLinkLabel.attributedStringValue)

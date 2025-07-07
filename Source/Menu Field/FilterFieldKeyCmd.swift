@@ -2,7 +2,7 @@ import AppKit
 import KeyboardShortcuts
 import Sauce
 
-enum KeyChord: CaseIterable {
+enum FilterFieldKeyCmd: CaseIterable {
   // Fetch paste from Edit / Paste menu item.
   // Fallback to ⌘V if unavailable.
   static var pasteKey: Key {
@@ -112,12 +112,12 @@ enum KeyChord: CaseIterable {
       self = .openPreferences
 #endif
 #if CLEEPP
-    case (KeyChord.cutKey, KeyChord.cutKeyModifiers):
+    case (FilterFieldKeyCmd.cutKey, FilterFieldKeyCmd.cutKeyModifiers):
       self = .cut
-    case (KeyChord.copyKey, KeyChord.copyKeyModifiers):
+    case (FilterFieldKeyCmd.copyKey, FilterFieldKeyCmd.copyKeyModifiers):
       self = .copy
 #endif
-    case (KeyChord.pasteKey, KeyChord.pasteKeyModifiers):
+    case (FilterFieldKeyCmd.pasteKey, FilterFieldKeyCmd.pasteKeyModifiers):
       self = .paste
     case (.return, _), (.keypadEnter, _):
       self = .selectCurrentItem

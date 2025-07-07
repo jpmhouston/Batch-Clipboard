@@ -17,9 +17,9 @@ class Preview: NSViewController {
 
   private let maxTextSize = 1_500
 
-  private var item: HistoryItem?
+  private var item: ClipItem?
 
-  convenience init(item: HistoryItem?) {
+  convenience init(item: ClipItem?) {
     self.init()
     self.item = item
   }
@@ -66,7 +66,7 @@ class Preview: NSViewController {
     firstCopyTimeValueLabel.stringValue = formatDate(item.firstCopiedAt)
 
     #if CLEEPP
-    startLabel.isHidden = !Cleepp.allowReplayFromHistory
+    startLabel.isHidden = !AppModel.allowReplayFromHistory
     #else
     lastCopyTimeValueLabel.stringValue = formatDate(item.lastCopiedAt)
     numberOfCopiesValueLabel.stringValue = String(item.numberOfCopies)
@@ -94,7 +94,7 @@ class Preview: NSViewController {
     return formatter.string(from: date)
   }
 
-  private func loadApplication(_ item: HistoryItem) {
+  private func loadApplication(_ item: ClipItem) {
     if item.universalClipboard {
       applicationValueLabel.stringValue = "iCloud"
       return

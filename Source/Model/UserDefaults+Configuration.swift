@@ -1,3 +1,14 @@
+//
+//  UserDefaults+Configuration.swift
+//  Cleepp
+//
+//  Created by Pierre Houston on 2024-03-21.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on GlobalHotKey from Maccy which is
+//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 
 extension UserDefaults {

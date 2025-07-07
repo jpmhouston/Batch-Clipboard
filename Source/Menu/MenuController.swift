@@ -2,7 +2,7 @@ import AppKit
 import KeyboardShortcuts
 
 class MenuController {
-  private let menu: Menu
+  private let menu: AppMenu
   private let statusItem: NSStatusItem
   private var menuLoader: MenuLoader!
 
@@ -10,7 +10,7 @@ class MenuController {
     NSApp.windows.filter({ $0.isVisible && $0.className != NSApp.statusBarWindow?.className })
   }
 
-  init(_ menu: Menu, _ statusItem: NSStatusItem) {
+  init(_ menu: AppMenu, _ statusItem: NSStatusItem) {
     self.menu = menu
     self.statusItem = statusItem
     self.menuLoader = MenuLoader(performStatusItemClick)
@@ -51,7 +51,7 @@ class MenuController {
     }
     #endif // DEBUG
     
-    if !Cleepp.busy {
+    if !AppModel.busy {
       if modifierFlags.contains(.control) && modifierFlags.contains(.option) {
         UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
         
@@ -169,9 +169,9 @@ class MenuController {
         #if !CLEEPP
         KeyboardShortcuts.enable(.popup)
         #endif
-        if Maccy.returnFocusToPreviousApp && self.extraVisibleWindows.count == 0 {
+        if AppModel.returnFocusToPreviousApp && self.extraVisibleWindows.count == 0 {
           NSApp.hide(self)
-          Maccy.returnFocusToPreviousApp = true
+          AppModel.returnFocusToPreviousApp = true
         }
       }
     }

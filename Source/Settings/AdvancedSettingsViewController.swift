@@ -4,7 +4,7 @@ import Settings
 class AdvancedSettingsViewController: NSViewController, SettingsPane {
   public let paneIdentifier = Settings.PaneIdentifier.advanced
   public let paneTitle = NSLocalizedString("preferences_advanced", comment: "")
-  public let toolbarItemIcon = NSImage(named: .gearshape2)!
+  public let toolbarItemIcon = NSImage(named: .doubleGear)!
 
   override var nibName: NSNib.Name? { "AdvancedSettingsViewController" }
 

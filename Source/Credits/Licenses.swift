@@ -8,6 +8,10 @@
 
 import AppKit
 
+extension NSWindow.FrameAutosaveName {
+  static let licensesWindow: NSWindow.FrameAutosaveName = "lol.bananameter.batchclip.licenses.FrameAutosaveName"
+}
+
 public class LicensesWindowController: NSWindowController {
   
   @IBOutlet var textView: NSTextView?
@@ -54,12 +58,12 @@ public class LicensesWindowController: NSWindowController {
     }
     
     window.center()
-    window.setFrameUsingName(.cleeppIntro)
-    window.setFrameAutosaveName(.cleeppIntro)
+    window.setFrameUsingName(.licensesWindow)
+    window.setFrameAutosaveName(.licensesWindow)
   }
   
   private func importText() -> Bool {
-    #if FOR_APP_STORE
+    #if APP_STORE
     let filename = "License credits-MAS"
     #else
     let filename = "License credits"

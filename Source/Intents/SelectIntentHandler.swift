@@ -11,15 +11,15 @@ import Intents
 @available(macOS 11.0, *)
 class SelectIntentHandler: NSObject, SelectIntentHandling {
   private let positionOffset = 0
-  private var cleepp: Cleepp!
+  private var model: AppModel!
   
-  init(_ cleepp: Cleepp) {
-    self.cleepp = cleepp
+  init(_ model: AppModel) {
+    self.model = model
   }
   
   func handle(intent: SelectIntent, completion: @escaping (SelectIntentResponse) -> Void) {
     guard let number = intent.number as? Int,
-          cleepp.replayFromHistory(atIndex: number - positionOffset) else {
+          model.replayFromHistory(atIndex: number - positionOffset) else {
       completion(SelectIntentResponse(code: .failure, userActivity: nil))
       return
     }

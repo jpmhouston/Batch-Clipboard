@@ -1,3 +1,14 @@
+//
+//  AppModel.swift
+//  Cleepp
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on GlobalHotKey from Maccy which is
+//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Cocoa
 import KeyboardShortcuts
 import Settings
@@ -5,24 +16,33 @@ import Settings
 import Sparkle
 #endif
 
-#if CLEEPP
-typealias Cleepp = Maccy
-#endif
-
 // swiftlint:disable type_body_length
-class Maccy: NSObject {
+class AppModel: NSObject {
+  // Note:
+  // I'm using `internal` to say: i wanted this to be `private` but code using this is in extension in other file
+  // where no access modifier given, that means public to the whole module, ie. the default access also `internal`.
+  // Given normal useage of `internal` it might make more sense to do this exactly the other way around,
+  // however I want the "used in extension to this class" declarations to have a modifier to look similar to lines
+  // with `private` and the "public to this module" declarations lines to look different.
+  
   static var returnFocusToPreviousApp = true
 
-  @objc let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-  var selectedItem: HistoryItem? { (menu.highlightedItem as? HistoryMenuItem)?.item }
-
-  private let statusItemTitleMaxLength = 20
-
+  internal let menuIcon = MenuBarIcon()
   internal let about = About()
   internal let clipboard = Clipboard.shared
   internal let history = History()
-  internal var menu: Menu!
+  internal var menu: AppMenu!
   private var menuController: MenuController!
+
+#if CLEEPP
+  private var startHotKey: StartKeyboardShortcutHandler!
+  private var copyHotKey: CopyKeyboardShortcutHandler!
+  private var pasteHotKey: PasteKeyboardShortcutHandler!
+#else
+  private var hotKey: GlobalHotKey!
+  var selectedItem: ClipItem? { (menu.highlightedItem as? ClipMenuItem)?.clipItem }
+  private let statusItemTitleMaxLength = 20
+#endif
 
 #if CLEEPP
   static var busy = false
@@ -35,20 +55,19 @@ class Maccy: NSObject {
   static var allowUndoCopy = false
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
-  #if FOR_APP_STORE
+  
+  static var firstLaunch = false
+  
+  #if APP_STORE
+  static var hasBoughtExtras = false
   static let allowPurchases = true
   #else
   static let allowPurchases = false
   #endif
   
-  static var firstLaunch = false
-  #if FOR_APP_STORE
-  static var hasBoughtExtras = false
-  var promotionExpirationTimer: Timer?
-  #endif
-  
-  #if FOR_APP_STORE
-  private let purchases = Purchases()
+  #if APP_STORE
+  private let purchases = AppStorePurchases()
+  private var promotionExpirationTimer: Timer?
   #endif
   #if ALLOW_SPARKLE_UPDATES
   private let updaterController = SPUStandardUpdaterController(updaterDelegate: nil, userDriverDelegate: nil)
@@ -57,12 +76,19 @@ class Maccy: NSObject {
   internal var licensesWindowController = LicensesWindowController()
   
   internal var queue: ClipboardQueue! // can this be injected wherever its needed, or must is be static & public?
-  
-  // TODO: create these in the +Actions extension using associated objects?
-  internal var iconBlinkTimer: DispatchSourceTimer?
   internal var copyTimeoutTimer: DispatchSourceTimer?
   
-  private var numberQueuedAlert: NSAlert {
+  internal var bonusFeaturePromotionAlert: NSAlert {
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = NSLocalizedString("promoteextras_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("promoteextras_alert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_show_settings", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_cancel", comment: ""))
+    return alert
+  }
+  
+  internal var numberQueuedAlert: NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("number_alert_message", comment: "")
     alert.informativeText = NSLocalizedString("number_alert_comment", comment: "")
@@ -92,7 +118,7 @@ class Maccy: NSObject {
 
 #if CLEEPP
   // omits the pins panel, app store build gets the purchase panel
-  #if FOR_APP_STORE
+  #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
   internal lazy var settingsWindowController = SettingsWindowController(
     panes: [
@@ -164,7 +190,7 @@ class Maccy: NSObject {
       UserDefaults.Keys.ignoredPasteboardTypes: UserDefaults.Values.ignoredPasteboardTypes,
     ])
     #endif
-
+    
     super.init()
     initializeObservers()
 
@@ -174,15 +200,20 @@ class Maccy: NSObject {
     initializeStateFlags()
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
-    menu = CleeppMenu.load(withHistory: history, queue: queue, owner: self)
+    menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     
+    startHotKey = StartKeyboardShortcutHandler(startQueueMode)
+    copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
+    pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
     #else
     disableUnusedGlobalHotkeys()
 
     menu = Menu(history: history, clipboard: Clipboard.shared)
+    
+    hotKey = GlobalHotKey(popUp)
     #endif
 
-    menuController = MenuController(menu, statusItem)
+    menuController = MenuController(menu, menuIcon.statusItem)
     start()
   }
 
@@ -204,12 +235,30 @@ class Maccy: NSObject {
     statusItemVisibilityObserver?.invalidate()
     statusItemChangeObserver?.invalidate()
     
-    cancelIconBlinkTimer()
-    #if FOR_APP_STORE
+    menuIcon.cancelBlinkTimer()
+    #if APP_STORE
     purchases.finish()
     #endif
   }
 
+  func terminate() {
+    if UserDefaults.standard.clearOnQuit {
+      clearUnpinned(suppressClearAlert: true)
+    }
+  }
+
+  func wasReopened() {
+    #if CLEEPP
+    // if the user has chosen to hide the menu bar icon when not in batch mode then
+    // open the Settings window whenever the application icon is double clicked again
+    if !UserDefaults.standard.showInStatusBar {
+      showSettings(selectingPane: .general)
+    }
+    #else
+    popUp()
+    #endif
+  }
+  
   func popUp() {
     menuController.popUp()
   }
@@ -228,7 +277,7 @@ class Maccy: NSObject {
     #endif
   }
 
-  func item(at position: Int) -> HistoryItem? {
+  func item(at position: Int) -> ClipItem? {
     return menu.historyItem(at: position)
   }
   
@@ -246,17 +295,15 @@ class Maccy: NSObject {
   }
 
   private func start() {
-    statusItem.behavior = .removalAllowed
+    menuIcon.enableRemoval(true)
     #if CLEEPP
-    statusItem.isVisible = true
+    menuIcon.isVisible = true
     #else
-    statusItem.isVisible = UserDefaults.standard.showInStatusBar
+    menuIcon.isVisible = UserDefaults.standard.showInStatusBar
     #endif
 
-    #if CLEEPP
-    setupStatusMenuIcon()
-    #else
-    updateStatusMenuIcon(UserDefaults.standard.menuIcon)
+    #if !CLEEPP
+    menuIcon.setImage(named: UserDefaults.standard.menuIcon)
     #endif
 
     #if CLEEPP
@@ -287,7 +334,7 @@ class Maccy: NSObject {
     #if CLEEPP
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
-    } else if !Accessibility.allowed {
+    } else if !Permissions.allowed {
       showIntroAtPermissionPage(self)
     }
     #endif
@@ -305,16 +352,16 @@ class Maccy: NSObject {
     #if BONUS_FEATUES_ON
     setFeatureFlags(givenPurchase: true)
     #endif
-    #if FOR_APP_STORE && BONUS_FEATUES_ON
+    #if APP_STORE && BONUS_FEATUES_ON
     Self.hasBoughtExtras = true
     #endif
-    #if FOR_APP_STORE
+    #if APP_STORE
     purchases.start(withObserver: self) { [weak self] _, update in
       self?.purchasesUpdated(update)
     }
     #endif
     
-    #if FOR_APP_STORE && !BONUS_FEATUES_ON
+    #if APP_STORE && !BONUS_FEATUES_ON
     if Self.firstLaunch {
       // defaults defined here in code are to promote extras temporarily
       userDefaults.promoteExtras = true
@@ -341,7 +388,7 @@ class Maccy: NSObject {
     #endif
   }
   
-  #if FOR_APP_STORE
+  #if APP_STORE
   func setPromoteExtrasExpirationTimer(on: Bool) {
     if on {
       // first try re-using an existing expiration date, only picking a
@@ -402,7 +449,7 @@ class Maccy: NSObject {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   }
   
-  private func purchasesUpdated(_ update: Purchases.ObservationUpdate) {
+  private func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
     #if !BONUS_FEATUES_ON
     setFeatureFlags(givenPurchase: purchases.hasBoughtExtras)
     Self.hasBoughtExtras = purchases.hasBoughtExtras
@@ -414,7 +461,7 @@ class Maccy: NSObject {
     }
     #endif
   }
-  #endif // FOR_APP_STORE
+  #endif // APP_STORE
   
   private func setFeatureFlags(givenPurchase hasPurchased: Bool) {
     Self.allowFullyExpandedHistory = hasPurchased
@@ -496,10 +543,10 @@ class Maccy: NSObject {
       self.menu.clearAll()
       self.clipboard.clear()
       #if CLEEPP
-      self.resetQueue()
-      #else
-      self.updateMenuTitle()
+      self.queue.off()
+      self.updateMenuIcon()
       #endif
+      self.updateMenuTitle()
     }
   }
 
@@ -507,7 +554,7 @@ class Maccy: NSObject {
     if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
       closure()
     } else {
-      Maccy.returnFocusToPreviousApp = false
+      AppModel.returnFocusToPreviousApp = false
       let alert = clearAlert
       DispatchQueue.main.async {
         if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
@@ -516,28 +563,10 @@ class Maccy: NSObject {
           }
           closure()
         }
-        Maccy.returnFocusToPreviousApp = true
+        AppModel.returnFocusToPreviousApp = true
       }
     }
   }
-
-#if CLEEPP
-  internal func withNumberToPasteAlert(_ closure: @escaping (Int) -> Void) {
-    let alert = numberQueuedAlert
-    guard let field = alert.accessoryView as? RangedIntegerTextField else {
-      return
-    }
-    Self.returnFocusToPreviousApp = false
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        alert.window.orderOut(nil) // i think withClearAlert above should call this too
-        let number = Int(field.stringValue) ?? self.queue.size
-        closure(number)
-      }
-      Self.returnFocusToPreviousApp = true
-    }
-  }
-#endif
 
   private func rebuild() {
     menu.clearAll()
@@ -555,16 +584,23 @@ class Maccy: NSObject {
     #endif
   }
 
-  internal func updateMenuTitle(_ item: HistoryItem? = nil) {
-    #if CLEEPP
-    if queue.isOn {
-      statusItem.button?.title = String(queue.size) + "  "
-    } else {
-      statusItem.button?.title = ""
+#if !CLEEPP
+  private func updateMenuIcon(_ newIcon: String) {
+    switch newIcon {
+//    case "scissors":
+//      menuIcon.image = NSImage(named: .scissors)
+//    case "paperclip":
+//      menuIcon.image = NSImage(named: .paperclip)
+//    case "clipboard":
+//      menuIcon.image = NSImage(named: .clipboard)
+    default:
+      menuIcon.image = NSImage(named: .maccyStatusBar)
     }
-    #else
+  }
+  
+  internal func updateMenuTitle(_ item: ClipItem? = nil) {
     guard UserDefaults.standard.showRecentCopyInMenuBar else {
-      statusItem.button?.title = ""
+      menuIcon.badge = ""
       return
     }
 
@@ -575,36 +611,13 @@ class Maccy: NSObject {
       title = item.title
     }
 
-    statusItem.button?.title = String(title.prefix(statusItemTitleMaxLength))
-    #endif
-  }
-
-#if CLEEPP
-  // reimplemetned this method in a class extension
-#else
-  private func updateStatusMenuIcon(_ newIcon: String) {
-    guard let button = statusItem.button else {
-      return
-    }
-
-    switch newIcon {
-    case "scissors":
-      button.image = NSImage(named: .scissors)
-    case "paperclip":
-      button.image = NSImage(named: .paperclip)
-    case "clipboard":
-      button.image = NSImage(named: .clipboard)
-    default:
-      button.image = NSImage(named: .maccyStatusBar)
-    }
-    button.imagePosition = .imageRight
-    (button.cell as? NSButtonCell)?.highlightsBy = []
+    menuIcon.badge = String(title.prefix(statusItemTitleMaxLength))
   }
 #endif
 
   private func updateStatusItemEnabledness() {
-    statusItem.button?.appearsDisabled = UserDefaults.standard.ignoreEvents ||
-      UserDefaults.standard.enabledPasteboardTypes.isEmpty
+    menuIcon.isEnabled = !(UserDefaults.standard.ignoreEvents ||
+      UserDefaults.standard.enabledPasteboardTypes.isEmpty)
   }
 
   // swiftlint:disable function_body_length
@@ -625,14 +638,7 @@ class Maccy: NSObject {
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
     }
-    #if CLEEPP
-    statusItemVisibilityObserver = statusItem.observe(\.isVisible, options: .new) { _, change in
-      if change.newValue == false {
-        NSApp.terminate(nil)
-      }
-    }
-    // might also want to keep showSpecialSymbolsObserver
-    #else
+    #if !CLEEPP
     hideFooterObserver = UserDefaults.standard.observe(\.hideFooter, options: .new) { _, _ in
       self.updateFooter()
     }
@@ -675,7 +681,7 @@ class Maccy: NSObject {
       }
     }
     statusItemChangeObserver = UserDefaults.standard.observe(\.menuIcon, options: .new) { _, change in
-      self.updateStatusMenuIcon(change.newValue!)
+      self.updateMenuIcon(change.newValue!)
     }
     #endif
   }

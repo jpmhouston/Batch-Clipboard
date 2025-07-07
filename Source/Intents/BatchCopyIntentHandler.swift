@@ -10,14 +10,14 @@ import Intents
 
 @available(macOS 11.0, *)
 class BatchCopyIntentHandler: NSObject, BatchCopyIntentHandling {
-  private var cleepp: Cleepp!
+  private var model: AppModel!
   
-  init(_ cleepp: Cleepp) {
-    self.cleepp = cleepp
+  init(_ model: AppModel) {
+    self.model = model
   }
   
   func handle(intent: BatchCopyIntent, completion: @escaping (BatchCopyIntentResponse) -> Void) {
-    guard cleepp.queuedCopy(interactive: false) else {
+    guard model.queuedCopy(interactive: false) else {
       completion(BatchCopyIntentResponse(code: .failure, userActivity: nil))
       return
     }

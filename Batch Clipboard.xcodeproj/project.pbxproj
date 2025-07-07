@@ -83,28 +83,15 @@
 				/Localized/Settings/IgnoreSettingsViewController.xib,
 				/Localized/Settings/StorageSettingsViewController.xib,
 				App/About.swift,
-				App/Accessibility.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/Application.xib,
 				App/Assets.xcassets,
-				"App/NSImage+CleeppNames.swift",
-				"App/NSImage+Names.swift",
-				App/RunLoopLocalEventMonitor.swift,
-				Clipboard/Clipboard.swift,
-				Clipboard/ClipboardQueue.swift,
-				"Clipboard/NSPasteboard.PasteboardType+Types.swift",
 				Controls/HyperlinkTextField.swift,
 				Controls/RangedIntegerTextField.swift,
 				"Credits/License credits.mkdn",
 				Credits/Licenses.swift,
 				Credits/Licenses.xib,
-				History/CoreDataManager.swift,
-				History/History.swift,
-				History/HistoryItem.swift,
-				History/HistoryItemContent.swift,
-				History/Sorter.swift,
-				History/Storage.xcdatamodeld,
 				Intents/BatchCopyIntentHandler.swift,
 				Intents/BatchPasteIntentHandler.swift,
 				Intents/CancelIntentHandler.swift,
@@ -117,25 +104,36 @@
 				Intro/Intro.swift,
 				Intro/Intro.xib,
 				Intro/PagedWindow.swift,
-				"Menu Filter Item/KeyChord.swift",
-				"Menu Filter Item/MenuHeaderView.swift",
-				"Menu Filter Item/Search.swift",
+				"Menu Field/FilterFieldKeyCmd.swift",
+				"Menu Field/FilterFieldView.swift",
+				"Menu Field/Searcher.swift",
 				"Menu Preview/Preview.swift",
 				"Menu Preview/PreviewPopoverController.swift",
-				Menu/HistoryMenuItem.swift,
-				Menu/Menu.swift,
-				Menu/Menu.xib,
+				Menu/AppMenu.swift,
+				Menu/AppMenu.xib,
+				Menu/ClipMenuItem.swift,
+				Menu/KeyDetectorView.swift,
 				Menu/MenuController.swift,
-				Menu/MenuItemKeyDetectorView.swift,
 				Menu/MenuLoader.swift,
 				Menu/PopupLocation.swift,
+				"Model Clipboard/Clipboard.swift",
+				"Model Clipboard/ClipboardQueue.swift",
+				"Model Clipboard/NSPasteboard.PasteboardType+Types.swift",
+				"Model History/ClipContent.swift",
+				"Model History/ClipItem.swift",
+				"Model History/CoreDataManager.swift",
+				"Model History/History.swift",
+				"Model History/Sorter.swift",
+				"Model History/Storage.xcdatamodeld",
+				Model/AppModel.swift,
+				"Model/AppModel+Actions.swift",
+				"Model/AppModel+Links.swift",
 				Model/AppStoreReview.swift,
-				"Model/Cleepp+Actions.swift",
-				"Model/Cleepp+Links.swift",
-				"Model/Cleepp+MenubarIcon.swift",
-				Model/GlobalHotKeys.swift,
-				"Model/KeyboardShortcuts.Name+Shortcuts.swift",
-				Model/Maccy.swift,
+				Model/KeyboardShortcutHandlers.swift,
+				Model/KeyboardShortcuts.swift,
+				Model/MenuBarIcon.swift,
+				"Model/NSImage+Names.swift",
+				Model/Permissions.swift,
 				"Model/UserDefaults+Configuration.swift",
 				Settings/AdvancedSettingsViewController.swift,
 				Settings/AppearanceSettingsViewController.swift,
@@ -156,6 +154,7 @@
 				"Utilities/NSRunningApplication+WindowFrame.swift",
 				"Utilities/NSScreen+ForPopup.swift",
 				"Utilities/NSWorkspace+ApplicationName.swift",
+				Utilities/RunLoopLocalEventMonitor.swift,
 				"Utilities/String+Shortened.swift",
 				Utilities/Throttler.swift,
 			);
@@ -172,28 +171,15 @@
 				/Localized/Settings/IgnoreSettingsViewController.xib,
 				/Localized/Settings/StorageSettingsViewController.xib,
 				App/About.swift,
-				App/Accessibility.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/Application.xib,
 				App/Assets.xcassets,
-				"App/NSImage+CleeppNames.swift",
-				"App/NSImage+Names.swift",
-				App/RunLoopLocalEventMonitor.swift,
-				Clipboard/Clipboard.swift,
-				Clipboard/ClipboardQueue.swift,
-				"Clipboard/NSPasteboard.PasteboardType+Types.swift",
 				Controls/HyperlinkTextField.swift,
 				Controls/RangedIntegerTextField.swift,
 				"Credits/License credits-MAS.mkdn",
 				Credits/Licenses.swift,
 				Credits/Licenses.xib,
-				History/CoreDataManager.swift,
-				History/History.swift,
-				History/HistoryItem.swift,
-				History/HistoryItemContent.swift,
-				History/Sorter.swift,
-				History/Storage.xcdatamodeld,
 				Intents/BatchCopyIntentHandler.swift,
 				Intents/BatchPasteIntentHandler.swift,
 				Intents/CancelIntentHandler.swift,
@@ -206,26 +192,37 @@
 				Intro/Intro.swift,
 				Intro/Intro.xib,
 				Intro/PagedWindow.swift,
-				"Menu Filter Item/KeyChord.swift",
-				"Menu Filter Item/MenuHeaderView.swift",
-				"Menu Filter Item/Search.swift",
+				"Menu Field/FilterFieldKeyCmd.swift",
+				"Menu Field/FilterFieldView.swift",
+				"Menu Field/Searcher.swift",
 				"Menu Preview/Preview.swift",
 				"Menu Preview/PreviewPopoverController.swift",
-				Menu/HistoryMenuItem.swift,
-				Menu/Menu.swift,
-				Menu/Menu.xib,
+				Menu/AppMenu.swift,
+				Menu/AppMenu.xib,
+				Menu/ClipMenuItem.swift,
+				Menu/KeyDetectorView.swift,
 				Menu/MenuController.swift,
-				Menu/MenuItemKeyDetectorView.swift,
 				Menu/MenuLoader.swift,
 				Menu/PopupLocation.swift,
+				"Model Clipboard/Clipboard.swift",
+				"Model Clipboard/ClipboardQueue.swift",
+				"Model Clipboard/NSPasteboard.PasteboardType+Types.swift",
+				"Model History/ClipContent.swift",
+				"Model History/ClipItem.swift",
+				"Model History/CoreDataManager.swift",
+				"Model History/History.swift",
+				"Model History/Sorter.swift",
+				"Model History/Storage.xcdatamodeld",
+				Model/AppModel.swift,
+				"Model/AppModel+Actions.swift",
+				"Model/AppModel+Links.swift",
+				Model/AppStorePurchases.swift,
 				Model/AppStoreReview.swift,
-				"Model/Cleepp+Actions.swift",
-				"Model/Cleepp+Links.swift",
-				"Model/Cleepp+MenubarIcon.swift",
-				Model/GlobalHotKeys.swift,
-				"Model/KeyboardShortcuts.Name+Shortcuts.swift",
-				Model/Maccy.swift,
-				Model/Purchases.swift,
+				Model/KeyboardShortcutHandlers.swift,
+				Model/KeyboardShortcuts.swift,
+				Model/MenuBarIcon.swift,
+				"Model/NSImage+Names.swift",
+				Model/Permissions.swift,
 				"Model/UserDefaults+Configuration.swift",
 				Settings/AdvancedSettingsViewController.swift,
 				Settings/AppearanceSettingsViewController.swift,
@@ -250,6 +247,7 @@
 				"Utilities/NSRunningApplication+WindowFrame.swift",
 				"Utilities/NSScreen+ForPopup.swift",
 				"Utilities/NSWorkspace+ApplicationName.swift",
+				Utilities/RunLoopLocalEventMonitor.swift,
 				"Utilities/String+Shortened.swift",
 				Utilities/Throttler.swift,
 			);
@@ -555,7 +553,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3b1;
+				MARKETING_VERSION = 2.0a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -590,7 +588,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3b1;
+				MARKETING_VERSION = 2.0a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -624,11 +622,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3b1;
+				MARKETING_VERSION = 2.0a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP FOR_APP_STORE BONUS_FEATUES_ON DEBUG";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP APP_STORE BONUS_FEATUES_ON DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -659,11 +657,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3b1;
+				MARKETING_VERSION = 2.0a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP FOR_APP_STORE";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP APP_STORE";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

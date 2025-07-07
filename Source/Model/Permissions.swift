@@ -1,7 +1,18 @@
+//
+//  Permissions.swift
+//  Cleepp
+//
+//  Created by Pierre Houston on 2025-07-10.
+//  Portions Copyright © 2025 Bananameter Labs. All rights reserved.
+//
+//  Based on GlobalHotKey from Maccy which is
+//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 import os.log
 
-struct Accessibility {
+struct Permissions {
   private static var alert: NSAlert {
     let alert = NSAlert()
     alert.alertStyle = .warning
@@ -34,8 +45,8 @@ struct Accessibility {
       return true
     }
 
-    Maccy.returnFocusToPreviousApp = false
-    // Show accessibility window async to allow menu to close.
+    AppModel.returnFocusToPreviousApp = false
+    // Show alert window async to allow menu to close.
     DispatchQueue.main.async {
       switch alert.runModal() {
       case NSApplication.ModalResponse.alertSecondButtonReturn:
@@ -45,7 +56,7 @@ struct Accessibility {
       default:
         break
       }
-      Maccy.returnFocusToPreviousApp = true
+      AppModel.returnFocusToPreviousApp = true
     }
 
     return false
@@ -62,12 +73,12 @@ struct Accessibility {
   }
   
   static func openIntro() {
-    guard let url = URL(string: Cleepp.showIntroPermissionPageInAppURL) else {
-      os_log(.default, "failed to create in-app URL to show Intro permission page %@", Cleepp.showIntroPermissionPageInAppURL)
+    guard let url = URL(string: AppModel.showIntroPermissionPageInAppURL) else {
+      os_log(.default, "failed to create in-app URL to show Intro permission page %@", AppModel.showIntroPermissionPageInAppURL)
       return
     }
     if !NSWorkspace.shared.open(url) {
-      os_log(.default, "failed to open in-app URL to show Intro permission page %@", Cleepp.showIntroPermissionPageInAppURL)
+      os_log(.default, "failed to open in-app URL to show Intro permission page %@", AppModel.showIntroPermissionPageInAppURL)
     }
   }
 }
