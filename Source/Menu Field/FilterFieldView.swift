@@ -2,7 +2,7 @@ import Carbon
 import Cocoa
 import Sauce
 
-class MenuHeaderView: NSView, NSSearchFieldDelegate {
+class FilterFieldView: NSView, NSSearchFieldDelegate {
   @IBOutlet weak var queryField: NSSearchField!
   @IBOutlet weak var titleField: NSTextField!
   
@@ -24,9 +24,9 @@ class MenuHeaderView: NSView, NSSearchFieldDelegate {
     }
   }
   
-  private lazy var customMenu: Menu? = self.enclosingMenuItem?.menu as? Menu
+  private lazy var customMenu: AppMenu? = self.enclosingMenuItem?.menu as? AppMenu
   private lazy var headerHeight = UserDefaults.standard.hideSearch ? 1 : 28
-  private lazy var headerSize = NSSize(width: Menu.menuWidth, height: headerHeight)
+  private lazy var headerSize = NSSize(width: AppMenu.menuWidth, height: headerHeight)
   
   override func awakeFromNib() {
 #if !CLEEPP
@@ -139,7 +139,7 @@ class MenuHeaderView: NSView, NSSearchFieldDelegate {
   // swiftlint:disable cyclomatic_complexity
   // swiftlint:disable function_body_length
   private func processKeyDownEvent(key: Key, modifierFlags: NSEvent.ModifierFlags, chars: String?) -> Bool {
-    switch KeyChord(key, modifierFlags) {
+    switch FilterFieldKeyCmd(key, modifierFlags) {
     case .clearSearch:
       #if CLEEPP
       if queryField.stringValue.isEmpty {

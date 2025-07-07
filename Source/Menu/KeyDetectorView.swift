@@ -25,7 +25,7 @@ extension Key {
   }
 }
 
-class MenuItemKeyDetectorView : NSView {
+class KeyDetectorView : NSView {
   
   @IBOutlet var menuItem: NSMenuItem?
   

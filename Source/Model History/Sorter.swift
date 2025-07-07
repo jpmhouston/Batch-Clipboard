@@ -8,15 +8,15 @@ class Sorter {
     self.by = by
   }
 
-  public func sort(_ items: [HistoryItem]) -> [HistoryItem] {
+  public func sort(_ items: [ClipItem]) -> [ClipItem] {
     return items.sorted(by: bySortingAlgorithm(_:_:)).sorted(by: byPinned(_:_:))
   }
 
-  public func first(_ items: [HistoryItem]) -> HistoryItem? {
+  public func first(_ items: [ClipItem]) -> ClipItem? {
     return items.min(by: bySortingAlgorithm(_:_:))
   }
 
-  private func bySortingAlgorithm(_ lhs: HistoryItem, _ rhs: HistoryItem) -> Bool {
+  private func bySortingAlgorithm(_ lhs: ClipItem, _ rhs: ClipItem) -> Bool {
     switch by {
     case "firstCopiedAt":
       return lhs.firstCopiedAt > rhs.firstCopiedAt
@@ -27,7 +27,7 @@ class Sorter {
     }
   }
 
-  private func byPinned(_ lhs: HistoryItem, _ rhs: HistoryItem) -> Bool {
+  private func byPinned(_ lhs: ClipItem, _ rhs: ClipItem) -> Bool {
     if UserDefaults.standard.pinTo == "bottom" {
       return (lhs.pin == nil) && (rhs.pin != nil)
     } else {

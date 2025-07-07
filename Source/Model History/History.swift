@@ -8,13 +8,13 @@ class History {
   private var sortBy: String { UserDefaults.standard.sortBy }
   #endif
 
-  var all: [HistoryItem] {
+  var all: [ClipItem] {
     #if CLEEPP
     let sorter = Sorter(by: sortBy)
-    var items = sorter.sort(HistoryItem.all)
+    var items = sorter.sort(ClipItem.all)
     
     // trim results and the database based on size setting, but also if queueing then include all those
-    let maxItems = max(UserDefaults.standard.size, UserDefaults.standard.maxMenuItems, CleeppMenu.minNumMenuItems, maxItemsOverride)
+    let maxItems = max(UserDefaults.standard.size, UserDefaults.standard.maxMenuItems, AppMenu.minNumMenuItems, maxItemsOverride)
     while items.count > maxItems {
       remove(items.removeLast())
     }
@@ -32,16 +32,16 @@ class History {
     #endif
   }
 
-  var first: HistoryItem? {
+  var first: ClipItem? {
     let sorter = Sorter(by: sortBy)
-    return sorter.first(HistoryItem.all)
+    return sorter.first(ClipItem.all)
   }
 
   var count: Int {
-    HistoryItem.count
+    ClipItem.count
   }
 
-  private var sessionLog: [Int: HistoryItem] = [:]
+  private var sessionLog: [Int: ClipItem] = [:]
 
   init() {
     UserDefaults.standard.register(defaults: [UserDefaults.Keys.size: UserDefaults.Values.size])
@@ -50,7 +50,7 @@ class History {
     }
   }
 
-  func add(_ item: HistoryItem) {
+  func add(_ item: ClipItem) {
     if let existingHistoryItem = findSimilarItem(item) {
       if isModified(item) == nil {
         item.contents = existingHistoryItem.contents
@@ -73,11 +73,11 @@ class History {
     CoreDataManager.shared.saveContext()
   }
 
-  func update(_ item: HistoryItem?) {
+  func update(_ item: ClipItem?) {
     CoreDataManager.shared.saveContext()
   }
 
-  func remove(_ item: HistoryItem?) {
+  func remove(_ item: ClipItem?) {
     guard let item else { return }
 
     item.getContents().forEach(CoreDataManager.shared.viewContext.delete(_:))
@@ -92,7 +92,7 @@ class History {
     all.forEach(remove(_:))
   }
 
-  private func findSimilarItem(_ item: HistoryItem) -> HistoryItem? {
+  private func findSimilarItem(_ item: ClipItem) -> ClipItem? {
     let duplicates = all.filter({ $0 == item || $0.supersedes(item) })
     if duplicates.count > 1 {
       return duplicates.first(where: { $0.objectID != item.objectID })
@@ -101,7 +101,7 @@ class History {
     }
   }
 
-  private func isModified(_ item: HistoryItem) -> HistoryItem? {
+  private func isModified(_ item: ClipItem) -> ClipItem? {
     if let modified = item.modified, sessionLog.keys.contains(modified) {
       return sessionLog[modified]
     }

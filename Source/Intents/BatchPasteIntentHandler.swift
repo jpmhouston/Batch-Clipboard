@@ -10,14 +10,14 @@ import Intents
 
 @available(macOS 11.0, *)
 class BatchPasteIntentHandler: NSObject, BatchPasteIntentHandling {
-  private var cleepp: Cleepp!
+  private var model: AppModel!
   
-  init(_ cleepp: Cleepp) {
-    self.cleepp = cleepp
+  init(_ model: AppModel) {
+    self.model = model
   }
   
   func handle(intent: BatchPasteIntent, completion: @escaping (BatchPasteIntentResponse) -> Void) {
-    guard cleepp.queuedPaste(interactive: false) else {
+    guard model.queuedPaste(interactive: false) else {
       completion(BatchPasteIntentResponse(code: .failure, userActivity: nil))
       return
     }

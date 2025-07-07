@@ -11,7 +11,7 @@ import SDWebImage
 import os.log
 
 extension NSWindow.FrameAutosaveName {
-  static let cleeppIntro: NSWindow.FrameAutosaveName = "lol.bananameter.batchclip.intro.FrameAutosaveName"
+  static let introWindow: NSWindow.FrameAutosaveName = "lol.bananameter.batchclip.intro.FrameAutosaveName"
 }
 
 public class IntroWindowController: PagedWindowController {
@@ -21,7 +21,7 @@ public class IntroWindowController: PagedWindowController {
     self.init(windowNibName: "Intro")
   }
   
-  func openIntro(atPage page: IntroViewController.Pages? = nil, with object: Cleepp) {
+  func openIntro(atPage page: IntroViewController.Pages? = nil, with object: AppModel) {
     // if already loaded then also check if already onscreen, if so being to the front and that's all
     // (continuing anyway works, except for the restoreWindowPosition() call, until the window is
     // closed there's no cached window position and its reset to the center of the screen below)
@@ -35,7 +35,7 @@ public class IntroWindowController: PagedWindowController {
       return
     }
     
-    viewController.cleepp = object
+    viewController.model = object
     viewController.startPage = page
     
     // these might be redundant, ok to do either way
@@ -66,8 +66,8 @@ public class IntroWindowController: PagedWindowController {
     }
     
     window.center()
-    window.setFrameUsingName(.cleeppIntro)
-    window.setFrameAutosaveName(.cleeppIntro)
+    window.setFrameUsingName(.introWindow)
+    window.setFrameAutosaveName(.introWindow)
   }
   
 }
@@ -122,7 +122,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   private var logoTimer: DispatchSourceTimer?
   private var demoTimer: DispatchSourceTimer?
   private var demoCanceled = false
-  var cleepp: Cleepp!
+  var model: AppModel!
   var startPage: Pages?
   
   enum Pages: Int {
@@ -151,7 +151,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     
     // if leaving with accessibility now authorized then don't auto-open again
     // thought about requiring that the user visit every page, but decided against it
-    if Accessibility.allowed {
+    if Permissions.allowed {
       UserDefaults.standard.completedIntro = true
     }
   }
@@ -170,12 +170,12 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
       } else {
         resetAnimatedLogo()
       }
-      if Accessibility.allowed {
+      if Permissions.allowed {
         setupNeededLabel?.isHidden = true
       }
       
     case .checkAuth:
-      let isAuthorized = Accessibility.allowed
+      let isAuthorized = Permissions.allowed
       hasAuthorizationEmoji?.isHidden = !isAuthorized
       needsAuthorizationEmoji?.isHidden = isAuthorized
       hasAuthorizationLabel?.isHidden = !isAuthorized
@@ -193,7 +193,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
       runDemo()
       
     case .links:
-      #if FOR_APP_STORE
+      #if APP_STORE
       inAppPurchageTitle?.isHidden = false
       inAppPurchageLabel?.isHidden = false
       appStorePromoTitle?.isHidden = true
@@ -352,7 +352,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     copySupportEmailButton?.isHidden = !showCopy
     //sendL10nEmailButton?.isHidden = showCopy  // for now i've removed the translation buttons
     //copyL10nEmailButton?.isHidden = !showCopy  // until i form some l10n plans
-    #if !FOR_APP_STORE
+    #if !APP_STORE
     openDonationLinkButton?.isHidden = showCopy
     copyDonationLinkButton?.isHidden = !showCopy
     #endif
@@ -464,15 +464,15 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   }
 
   @IBAction func openGeneralSettings(_ sender: AnyObject) {
-    cleepp.showSettings(selectingPane: .general)
+    model.showSettings(selectingPane: .general)
   }
   
   @IBAction func openInAppPurchaceSettings(_ sender: AnyObject) {
-    cleepp.showSettings(selectingPane: .purchase)
+    model.showSettings(selectingPane: .purchase)
   }
   
   @IBAction func checkAccessibilityAuthorization(_ sender: AnyObject) {
-    let isAuthorized = Accessibility.allowed
+    let isAuthorized = Permissions.allowed
     authorizationVerifiedEmoji?.isHidden = !isAuthorized
     authorizationDeniedEmoji?.isHidden = isAuthorized
   }
@@ -480,7 +480,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBAction func openSettingsAppSecurityPanel(_ sender: AnyObject) {
     let openSecurityPanelSpinnerTime = 1.25
     
-    self.openURL(string: Accessibility.openSettingsPaneURL)
+    self.openURL(string: Permissions.openSettingsPaneURL)
     
     // make window controller skip ahead to the next page after a delay
     guard let windowController = (self.view.window?.windowController as? IntroWindowController) else {
@@ -501,63 +501,63 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   }
   
   @IBAction func openCleeppInMacAppStore(_ sender: AnyObject) {
-    openURL(string: Cleepp.macAppStoreURL)
+    openURL(string: AppModel.macAppStoreURL)
   }
   
   @IBAction func openDocumentationWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.homepageURL)
+    openURL(string: AppModel.homepageURL)
   }
   
   @IBAction func copyDocumentationWebpage(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.homepageURL, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.homepageURL, excludeFromHistory: false)
   }
   
   @IBAction func openGitHubWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.githubURL)
+    openURL(string: AppModel.githubURL)
   }
   
   @IBAction func copyGitHubWebpage(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.githubURL, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.githubURL, excludeFromHistory: false)
   }
   
   @IBAction func openDonationWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.donationURL)
+    openURL(string: AppModel.donationURL)
   }
   
   @IBAction func copyDonationWebpage(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.donationURL, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.donationURL, excludeFromHistory: false)
   }
   
   @IBAction func openPrivacyPolicyWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.privacyPolicyURL)
+    openURL(string: AppModel.privacyPolicyURL)
   }
   
   @IBAction func openAppStoreEULAWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.appStoreUserAgreementURL)
+    openURL(string: AppModel.appStoreUserAgreementURL)
   }
   
   @IBAction func openMaccyWebpage(_ sender: AnyObject) {
-    openURL(string: Cleepp.maccyURL)
+    openURL(string: AppModel.maccyURL)
   }
   
   @IBAction func copyMaccyWebpage(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.maccyURL, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.maccyURL, excludeFromHistory: false)
   }
   
   @IBAction func sendSupportEmail(_ sender: AnyObject) {
-    openURL(string: Cleepp.supportEmailURL)
+    openURL(string: AppModel.supportEmailURL)
   }
   
   @IBAction func copySupportEmail(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.supportEmailAddress, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.supportEmailAddress, excludeFromHistory: false)
   }
   
   @IBAction func sendLocalizeVolunteerEmail(_ sender: AnyObject) {
-    openURL(string: Cleepp.localizeVolunteerEmailURL)
+    openURL(string: AppModel.localizeVolunteerEmailURL)
   }
   
   @IBAction func copyLocalizeVolunteerEmail(_ sender: AnyObject) {
-    Clipboard.shared.copy(Cleepp.localizeVolunteerEmailAddress, excludeFromHistory: false)
+    Clipboard.shared.copy(AppModel.localizeVolunteerEmailAddress, excludeFromHistory: false)
   }
   
   // MARK: -

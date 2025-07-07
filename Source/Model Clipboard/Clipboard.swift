@@ -4,7 +4,7 @@ import Sauce
 class Clipboard: CustomDebugStringConvertible {
   static let shared = Clipboard()
 
-  typealias OnNewCopyHook = (HistoryItem) -> Void
+  typealias OnNewCopyHook = (ClipItem) -> Void
 
   private var onNewCopyHooks: [OnNewCopyHook] = []
   var changeCount: Int
@@ -74,7 +74,7 @@ class Clipboard: CustomDebugStringConvertible {
     }
   }
 
-  func copy(_ item: HistoryItem?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
+  func copy(_ item: ClipItem?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
     guard let item else { return }
 
     pasteboard.clearContents()
@@ -131,7 +131,7 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
     #endif
-    postKeypress(KeyChord.copyKeyModifiers, KeyChord.copyKey, then: action)
+    postKeypress(FilterFieldKeyCmd.copyKeyModifiers, FilterFieldKeyCmd.copyKey, then: action)
   }
   
   func invokeApplicationPaste(then action: (() -> Void)? = nil) {
@@ -142,7 +142,7 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
     #endif
-    postKeypress(KeyChord.pasteKeyModifiers, KeyChord.pasteKey, then: action)
+    postKeypress(FilterFieldKeyCmd.pasteKeyModifiers, FilterFieldKeyCmd.pasteKey, then: action)
   }
   #else
   func paste() {
@@ -230,7 +230,7 @@ class Clipboard: CustomDebugStringConvertible {
     // so it's better to merge all data into a single record.
     // - https://github.com/p0deje/Maccy/issues/78
     // - https://github.com/p0deje/Maccy/issues/472
-    var contents: [HistoryItemContent] = []
+    var contents: [ClipContent] = []
     pasteboard.pasteboardItems?.forEach({ item in
       var types = Set(item.types)
       if types.contains(.string) && isEmptyString(item) && !richText(item) {
@@ -259,7 +259,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
 
       types.forEach { type in
-        contents.append(HistoryItemContent(type: type.rawValue, value: item.data(forType: type)))
+        contents.append(ClipContent(type: type.rawValue, value: item.data(forType: type)))
       }
     })
 
@@ -267,7 +267,7 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
 
-    let historyItem = HistoryItem(contents: contents, application: sourceApp?.bundleIdentifier)
+    let historyItem = ClipItem(contents: contents, application: sourceApp?.bundleIdentifier)
     onNewCopyHooks.forEach({ $0(historyItem) })
   }
 
@@ -354,7 +354,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
       contents += types.compactMap { if let d = item.data(forType: $0) { ($0, d) } else { nil } }
     })
-    return HistoryItem.debugDescription(for: contents, ofLength: length)
+    return ClipItem.debugDescription(for: contents, ofLength: length)
   }
   
 }

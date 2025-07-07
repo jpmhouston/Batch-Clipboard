@@ -10,14 +10,14 @@ import Intents
 
 @available(macOS 11.0, *)
 class CancelIntentHandler: NSObject, CancelIntentHandling {
-  private var cleepp: Cleepp!
+  private var model: AppModel!
   
-  init(_ cleepp: Cleepp) {
-    self.cleepp = cleepp
+  init(_ model: AppModel) {
+    self.model = model
   }
   
   func handle(intent: CancelIntent, completion: @escaping (CancelIntentResponse) -> Void) {
-    guard cleepp.cancelQueueMode() else {
+    guard model.cancelQueueMode() else {
       completion(CancelIntentResponse(code: .failure, userActivity: nil))
       return
     }

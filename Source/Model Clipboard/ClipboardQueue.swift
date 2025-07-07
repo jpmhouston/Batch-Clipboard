@@ -82,7 +82,7 @@ class ClipboardQueue {
   
   // MARK: -
   
-  func add(_ item: HistoryItem) throws {
+  func add(_ item: ClipItem) throws {
     if !isOn {
       on(allowStayingOnAfterDecrementToZero: false)
     }

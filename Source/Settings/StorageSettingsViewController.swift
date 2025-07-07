@@ -4,9 +4,9 @@ import Settings
 class StorageSettingsViewController: NSViewController, SettingsPane {
   let paneIdentifier = Settings.PaneIdentifier.storage
   let paneTitle = NSLocalizedString("preferences_storage", comment: "")
-  let toolbarItemIcon = NSImage(named: .externaldrive)!
+  let toolbarItemIcon = NSImage(named: .externalDrive)!
 
-  let sizeMin = CleeppMenu.minNumMenuItems
+  let sizeMin = AppMenu.minNumMenuItems
   let sizeMax = 999
 
   override var nibName: NSNib.Name? { "StorageSettingsViewController" }
@@ -31,7 +31,7 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     super.viewWillAppear()
     populateSize()
     populateStoredTypes()
-    enableSizeOptions(Cleepp.allowDictinctStorageSize) // hide for simplicity when moot
+    enableSizeOptions(AppModel.allowDictinctStorageSize) // hide for simplicity when moot
   }
 
   @IBAction func sizeFieldChanged(_ sender: NSTextField) {

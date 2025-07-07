@@ -1,5 +1,5 @@
 //
-//  GlobalHotKeys.swift
+//  KeyboardShortcutHandlers.swift
 //  Cleepp
 //
 //  Created by Pierre Houston on 2024-03-21.
@@ -13,7 +13,7 @@ import AppKit
 import KeyboardShortcuts
 import Sauce
 
-class GlobalStartHotKey {
+class StartKeyboardShortcutHandler {
   typealias Handler = () -> Void
 
   static public var key: Key? {
@@ -32,7 +32,7 @@ class GlobalStartHotKey {
   }
 }
 
-class GlobalCopyHotKey {
+class CopyKeyboardShortcutHandler {
   typealias Handler = () -> Void
 
   static public var key: Key? {
@@ -51,7 +51,7 @@ class GlobalCopyHotKey {
   }
 }
 
-class GlobalPasteHotKey {
+class PasteKeyboardShortcutHandler {
   typealias Handler = () -> Void
 
   static public var key: Key? {

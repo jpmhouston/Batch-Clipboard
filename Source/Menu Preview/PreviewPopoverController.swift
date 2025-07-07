@@ -17,16 +17,16 @@ class PreviewPopoverController {
     cancelPopover()
   }
 
-  func showPopover(for item: HistoryMenuItem, allItems: [Menu.IndexedItem]) {
+  func showPopover(for menuItem: ClipMenuItem, allClips: [AppMenu.ClipRecord]) {
     previewThrottle.throttle { [self] in
       let popover = NSPopover()
       popover.animates = false
       popover.behavior = .semitransient
-      popover.contentViewController = Preview(item: item.item)
+      popover.contentViewController = Preview(item: menuItem.clipItem)
 
       guard let window = NSApp.menuWindow,
             let windowContentView = window.contentView,
-            let boundsOfVisibleMenuItem = boundsOfMenuItem(item, windowContentView, allItems) else {
+            let boundsOfVisibleMenuItem = boundsOfMenuItem(menuItem, windowContentView, allClips) else {
         return
       }
 
@@ -55,13 +55,13 @@ class PreviewPopoverController {
   }
 
   private func boundsOfMenuItem(
-    _ item: NSMenuItem,
+    _ menuItem: NSMenuItem,
     _ windowContentView: NSView,
-    _ allItems: [Menu.IndexedItem]
+    _ allClips: [AppMenu.ClipRecord]
   ) -> NSRect? {
     if #available(macOS 14, *) {
       let windowRectInScreenCoordinates = windowContentView.accessibilityFrame()
-      let menuItemRectInScreenCoordinates = item.accessibilityFrame()
+      let menuItemRectInScreenCoordinates = menuItem.accessibilityFrame()
       return NSRect(
         origin: NSPoint(
           x: menuItemRectInScreenCoordinates.origin.x - windowRectInScreenCoordinates.origin.x,
@@ -69,11 +69,11 @@ class PreviewPopoverController {
         size: menuItemRectInScreenCoordinates.size
       )
     } else {
-      guard let item = item as? HistoryMenuItem,
-            let itemIndex = allItems.firstIndex(where: { $0.menuItems.contains(item) }) else {
+      guard let menuItem = menuItem as? ClipMenuItem,
+            let itemIndex = allClips.firstIndex(where: { $0.menuItems.contains(menuItem) }) else {
         return nil
       }
-      let indexedItem = allItems[itemIndex]
+      let indexedItem = allClips[itemIndex]
       guard let previewView = indexedItem.popoverAnchor!.view else {
         return nil
       }
@@ -82,13 +82,13 @@ class PreviewPopoverController {
         for index in (0..<itemIndex).reversed() {
           // PreviewMenuItem always has a view
           // Check if preview item is visible (it may be hidden by the search filter)
-          if let view = allItems[index].popoverAnchor?.view,
+          if let view = allClips[index].popoverAnchor?.view,
              view.window != nil {
             return view
           }
         }
         // If the item is the first visible one, the preceding view is the header.
-        guard let header = item.menu?.items.first?.view else {
+        guard let header = menuItem.menu?.items.first?.view else {
           // Should never happen as we always have a MenuHeader installed.
           return nil
         }
@@ -111,7 +111,7 @@ class PreviewPopoverController {
       let heightOfVisibleMenuItem = abs(topPoint.y - bottomPoint.y)
       return NSRect(
         origin: bottomPoint,
-        size: NSSize(width: item.menu?.size.width ?? 0, height: heightOfVisibleMenuItem)
+        size: NSSize(width: menuItem.menu?.size.width ?? 0, height: heightOfVisibleMenuItem)
       )
     }
   }

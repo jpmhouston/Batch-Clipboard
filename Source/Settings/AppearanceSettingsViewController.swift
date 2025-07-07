@@ -4,7 +4,7 @@ import Settings
 class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFieldDelegate {
   let paneIdentifier = Settings.PaneIdentifier.appearance
   let paneTitle = NSLocalizedString("preferences_appearance", comment: "")
-  let toolbarItemIcon = NSImage(named: .paintpalette)!
+  let toolbarItemIcon = NSImage(named: .paintPalette)!
   
   override var nibName: NSNib.Name? { "AppearanceSettingsViewController" }
   
@@ -26,7 +26,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   private let imageHeightMax = 200
   private var imageHeightFormatter: NumberFormatter!
   
-  private let numberOfItemsMin = CleeppMenu.minNumMenuItems
+  private let numberOfItemsMin = AppMenu.minNumMenuItems
   private let numberOfItemsMax = 99
   private var numberOfItemsFormatter: NumberFormatter!
   
@@ -54,7 +54,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     populateTitleLength()
     populatePreviewDelay()
     populateShowSpecialSymbols()
-    showSearchOption(Cleepp.allowHistorySearch)
+    showSearchOption(AppModel.allowHistorySearch)
   }
   
   @IBAction func imageHeightFieldChanged(_ sender: NSTextField) {
@@ -70,7 +70,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   @IBAction func numberOfItemsFieldChanged(_ sender: NSTextField) {
     UserDefaults.standard.maxMenuItems = sender.integerValue
     numberOfItemsStepper.integerValue = sender.integerValue
-    showNumberOfItemsDescription(forSimpleMode: !Cleepp.allowDictinctStorageSize, forZeroEntered: sender.integerValue == 0)
+    showNumberOfItemsDescription(forSimpleMode: !AppModel.allowDictinctStorageSize, forZeroEntered: sender.integerValue == 0)
   }
   
   @IBAction func numberOfItemsStepperChanged(_ sender: NSStepper) {
@@ -128,7 +128,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   }
   
   func updateMinNumberOfItems() {
-    if Cleepp.allowDictinctStorageSize {
+    if AppModel.allowDictinctStorageSize {
       numberOfItemsFormatter.minimum = 0 as NSNumber // not numberOfItemsMin, that's enforced in delegate func
     } else {
       numberOfItemsFormatter.minimum = numberOfItemsMin as NSNumber
@@ -139,7 +139,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     guard let textField = control as? NSTextField, textField === numberOfItemsField else {
       return true
     }
-    if Cleepp.allowDictinctStorageSize {
+    if AppModel.allowDictinctStorageSize {
       let value = Int(fieldEditor.string) ?? 0
       if value > 0 && value < numberOfItemsMin {
         fieldEditor.string = String(numberOfItemsMin)
@@ -162,12 +162,12 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   private func populateNumberOfItems() {
     var value = UserDefaults.standard.maxMenuItems
     // when allowing separate storage setting, also allow 0, otherwise numberOfItemsMin..numberOfItemsMax
-    if !Cleepp.allowDictinctStorageSize || value != 0 {
+    if !AppModel.allowDictinctStorageSize || value != 0 {
       value = max(value, numberOfItemsMin)
     }
     numberOfItemsField.integerValue = value
     numberOfItemsStepper.integerValue = value
-    showNumberOfItemsDescription(forSimpleMode: !Cleepp.allowDictinctStorageSize, forZeroEntered: value == 0)
+    showNumberOfItemsDescription(forSimpleMode: !AppModel.allowDictinctStorageSize, forZeroEntered: value == 0)
   }
   
   private func setTitleLengthRange() {

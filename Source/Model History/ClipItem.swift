@@ -2,6 +2,8 @@ import Cocoa
 import CoreData
 import Sauce
 
+typealias ClipItem = HistoryItem
+
 @objc(HistoryItem)
 class HistoryItem: NSManagedObject {
   #if !CLEEPP
@@ -22,11 +24,11 @@ class HistoryItem: NSManagedObject {
   }
   #endif
 
-  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(HistoryItem.firstCopiedAt), ascending: false)
+  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(ClipItem.firstCopiedAt), ascending: false)
 
-  static var all: [HistoryItem] {
-    let fetchRequest = NSFetchRequest<HistoryItem>(entityName: "HistoryItem")
-    fetchRequest.sortDescriptors = [HistoryItem.sortByFirstCopiedAt]
+  static var all: [ClipItem] {
+    let fetchRequest = NSFetchRequest<ClipItem>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [ClipItem.sortByFirstCopiedAt]
     do {
       return try CoreDataManager.shared.viewContext.fetch(fetchRequest)
     } catch {
@@ -35,7 +37,7 @@ class HistoryItem: NSManagedObject {
   }
 
   static var count: Int {
-    let fetchRequest = NSFetchRequest<HistoryItem>(entityName: "HistoryItem")
+    let fetchRequest = NSFetchRequest<ClipItem>(entityName: "HistoryItem")
     do {
       return try CoreDataManager.shared.viewContext.count(for: fetchRequest)
     } catch {
@@ -43,11 +45,11 @@ class HistoryItem: NSManagedObject {
     }
   }
 
-  static var pinned: [HistoryItem] {
+  static var pinned: [ClipItem] {
     all.filter({ $0.pin != nil })
   }
 
-  static var unpinned: [HistoryItem] {
+  static var unpinned: [ClipItem] {
     all.filter({ $0.pin == nil })
   }
 
@@ -141,12 +143,12 @@ class HistoryItem: NSManagedObject {
 
   // swiftlint:disable nsobject_prefer_isequal
   // Class 'HistoryItem' for entity 'HistoryItem' has an illegal override of NSManagedObject -isEqual
-  static func == (lhs: HistoryItem, rhs: HistoryItem) -> Bool {
+  static func == (lhs: ClipItem, rhs: ClipItem) -> Bool {
     return lhs.getContents().count == rhs.getContents().count && lhs.supersedes(rhs)
   }
   // swiftlint:enable nsobject_prefer_isequal
 
-  convenience init(contents: [HistoryItemContent], application: String? = nil) {
+  convenience init(contents: [ClipContent], application: String? = nil) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItem",
                                             in: CoreDataManager.shared.viewContext)!
     self.init(entity: entity, insertInto: CoreDataManager.shared.viewContext)
@@ -168,13 +170,13 @@ class HistoryItem: NSManagedObject {
   }
 
   @objc(addContentsObject:)
-  @NSManaged public func addToContents(_ value: HistoryItemContent)
+  @NSManaged public func addToContents(_ value: ClipContent)
 
-  func getContents() -> [HistoryItemContent] {
-    return (contents?.allObjects as? [HistoryItemContent]) ?? []
+  func getContents() -> [ClipContent] {
+    return (contents?.allObjects as? [ClipContent]) ?? []
   }
 
-  func supersedes(_ item: HistoryItem) -> Bool {
+  func supersedes(_ item: ClipItem) -> Bool {
     return item.getContents()
       .filter { content in
         ![
@@ -187,7 +189,7 @@ class HistoryItem: NSManagedObject {
       }
   }
 
-  func generateTitle(_ contents: [HistoryItemContent]) -> String {
+  func generateTitle(_ contents: [ClipContent]) -> String {
     var title = ""
 
     guard image == nil else {
@@ -224,7 +226,7 @@ class HistoryItem: NSManagedObject {
   }
 
   private func validatePin(_ pin: String) throws {
-    for item in HistoryItem.all {
+    for item in ClipItem.all {
       if let existingPin = item.pin, !pin.isEmpty, existingPin == pin, item != self {
         throw NSError(
           domain: "keyUsed",

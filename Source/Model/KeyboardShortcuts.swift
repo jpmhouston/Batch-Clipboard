@@ -1,3 +1,14 @@
+//
+//  KeyboardShortcuts.swift
+//  Cleepp
+//
+//  Created by Pierre Houston on 2025-07-10.
+//  Portions Copyright © 2025 Bananameter Labs. All rights reserved.
+//
+//  Based on GlobalHotKey from Maccy which is
+//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import KeyboardShortcuts
 
 extension KeyboardShortcuts.Name {

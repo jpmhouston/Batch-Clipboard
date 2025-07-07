@@ -22,10 +22,10 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
     case idle, fetchingProducts, showingProducts, purchasing, restoring
   }
   
-  private let purchaseManager: Purchases
+  private let purchaseManager: AppStorePurchases
   private var productWindowController: PurchaseDetailWindowController?
   
-  private var cancelToken: Purchases.ObservationToken?
+  private var cancelToken: AppStorePurchases.ObservationToken?
   private var timeoutTimer: DispatchSourceTimer?
   private var state: State = .idle
   private var showBonusFeaturesPurchased: Bool { purchaseManager.hasBoughtExtras }
@@ -48,7 +48,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   
   // MARK: -
   
-  init(purchases: Purchases) {
+  init(purchases: AppStorePurchases) {
     purchaseManager = purchases
     super.init(nibName: nil, bundle: nil)
   }
@@ -94,7 +94,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   
   // MARK: -
   
-  func purchasesUpdated(_ update: Purchases.ObservationUpdate) {
+  func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
     self.progressIndicator.stopAnimation(self)
     
     // TODO: localize all these
@@ -175,7 +175,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
     startWaitingForCompletion(withTimeout: 10, message: "Retrieval of product details delayed") // TODO: localize
   }
   
-  private func showConfirmationSheet(withProducts products: [Purchases.ProductDetail]) {
+  private func showConfirmationSheet(withProducts products: [AppStorePurchases.ProductDetail]) {
     guard !products.isEmpty else {
       displayError("Purchases unavailable at the moment, please again another time") // TODO: localize
       updatePurchaseButtons()
@@ -219,7 +219,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
     settingsWindow.endSheet(productWindow)
   }
   
-  func performPurchase(_ product: any Purchases.ProductDetail) {
+  func performPurchase(_ product: any AppStorePurchases.ProductDetail) {
     do {
       try purchaseManager.startPurchase(product)
     } catch {
@@ -323,7 +323,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
     for label in labelsToStyle {
       let styled = NSMutableAttributedString(attributedString: label.attributedStringValue)
       let font = label.font ?? NSFont.labelFont(ofSize: NSFont.labelFontSize)
-      styled.applySimpleStyles(basedOnFont: font, withLink: Cleepp.homepageBonusDocsURL)
+      styled.applySimpleStyles(basedOnFont: font, withLink: AppModel.homepageBonusDocsURL)
       label.attributedStringValue = styled
     }
   }

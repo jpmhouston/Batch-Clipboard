@@ -15,16 +15,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   @IBOutlet weak var copyMenuItem: NSMenuItem!
   @IBOutlet weak var pasteMenuItem: NSMenuItem!
 
-#if CLEEPP
+  #if CLEEPP
   @IBOutlet weak var cutMenuItem: NSMenuItem!
-  
-  private var startHotKey: GlobalStartHotKey!
-  private var copyHotKey: GlobalCopyHotKey!
-  private var pasteHotKey: GlobalPasteHotKey!
-  #else
-  private var hotKey: GlobalHotKey!
   #endif
-  var maccy: Maccy!
+  var model: AppModel!
 
   func applicationWillFinishLaunching(_ notification: Notification) {
     #if !CLEEPP
@@ -45,28 +39,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     migrateUserDefaults()
     clearOrphanRecords()
 
-    maccy = Maccy()
-    #if CLEEPP
-    startHotKey = GlobalStartHotKey(maccy.startQueueMode)
-    copyHotKey = GlobalCopyHotKey(maccy.queuedCopy)
-    pasteHotKey = GlobalPasteHotKey(maccy.queuedPaste)
-    #else
-    hotKey = GlobalHotKey(maccy.popUp)
-    #endif
+    model = AppModel()
   }
 
   func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-    #if CLEEPP
-    // if the user has chosen to hide the menu bar icon when not in batch mode then
-    // open the Settings window whenever the application icon is double clicked again
-    if !UserDefaults.standard.showInStatusBar {
-      maccy.showSettings(selectingPane: .general)
-    }
+    model.wasReopened()
     return false // best to return false instead of true to tell NSApp to do nothing
-    #else
-    maccy.popUp()
-    return true
-    #endif
   }
 
   #if CLEEPP
@@ -75,51 +53,51 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     guard let url = urls.first else {
       return
     }
-    if url.absoluteString == Cleepp.showIntroInAppURL {
-      maccy.showIntro(self)
+    if url.absoluteString == AppModel.showIntroInAppURL {
+      model.showIntro(self)
     }
-    if url.absoluteString == Cleepp.showIntroPermissionPageInAppURL {
-      maccy.showIntroAtPermissionPage(self)
+    if url.absoluteString == AppModel.showIntroPermissionPageInAppURL {
+      model.showIntroAtPermissionPage(self)
     }
-    if url.absoluteString == Cleepp.showLicensesInAppURL {
-      maccy.showLicenses()
+    if url.absoluteString == AppModel.showLicensesInAppURL {
+      model.showLicenses()
     }
   }
   #endif
   
   func applicationWillTerminate(_ notification: Notification) {
-    if UserDefaults.standard.clearOnQuit {
-      maccy.clearUnpinned(suppressClearAlert: true)
-    }
+    model.terminate()
     CoreDataManager.shared.saveContext()
   }
 
   @available(macOS 11.0, *)
   func application(_ application: NSApplication, handlerFor intent: INIntent) -> Any? {
     if intent is SelectIntent {
-      return SelectIntentHandler(maccy)
+      return SelectIntentHandler(model)
     } else if intent is ClearIntent {
-      return ClearIntentHandler(maccy)
+      return ClearIntentHandler(model)
     } else if intent is GetIntent {
-      return GetIntentHandler(maccy)
+      return GetIntentHandler(model)
     } else if intent is DeleteIntent {
-      return DeleteIntentHandler(maccy)
+      return DeleteIntentHandler(model)
     }
     #if CLEEPP
     if intent is StartIntent  {
-      return StartIntentHandler(maccy)
+      return StartIntentHandler(model)
     } else if intent is CancelIntent {
-      return CancelIntentHandler(maccy)
+      return CancelIntentHandler(model)
     } else if intent is BatchCopyIntent {
-      return BatchCopyIntentHandler(maccy)
+      return BatchCopyIntentHandler(model)
     } else if intent is BatchPasteIntent {
-      return BatchPasteIntentHandler(maccy)
+      return BatchPasteIntentHandler(model)
     }
     #endif
 
     return nil
   }
 
+  // TODO: move model class wrangling to functions in Model History / Model Clipboard folders
+  
   // swiftlint:disable cyclomatic_complexity
   // swiftlint:disable function_body_length
   private func migrateUserDefaults() {
@@ -242,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   private func clearOrphanRecords() {
-    let fetchRequest = NSFetchRequest<HistoryItemContent>(entityName: "HistoryItemContent")
+    let fetchRequest = NSFetchRequest<ClipContent>(entityName: "HistoryItemContent")
     fetchRequest.predicate = NSPredicate(format: "item == nil")
     do {
       try CoreDataManager.shared.viewContext

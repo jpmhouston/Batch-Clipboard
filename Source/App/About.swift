@@ -14,18 +14,18 @@ class About {
   private var links: NSAttributedString {
     let string = NSMutableAttributedString(string: "Website │ GitHub │ Support",
                                            attributes: [.foregroundColor: NSColor.labelColor])
-    string.addAttribute(.link, value: Cleepp.homepageURL, range: NSRange(location: 0, length: 7))
-    string.addAttribute(.link, value: Cleepp.githubURL, range: NSRange(location: 10, length: 6))
-    string.addAttribute(.link, value: Cleepp.supportEmailURL, range: NSRange(location: 19, length: 7))
-    #if FOR_APP_STORE
+    string.addAttribute(.link, value: AppModel.homepageURL, range: NSRange(location: 0, length: 7))
+    string.addAttribute(.link, value: AppModel.githubURL, range: NSRange(location: 10, length: 6))
+    string.addAttribute(.link, value: AppModel.supportEmailURL, range: NSRange(location: 19, length: 7))
+    #if APP_STORE
     string.append(NSAttributedString(string: "\n", attributes: [:]))
     let spacingStyle = NSMutableParagraphStyle()
     spacingStyle.maximumLineHeight = 3
     string.append(NSAttributedString(string: "\n", attributes: [.paragraphStyle: spacingStyle]))
     string.append(NSAttributedString(string: "Privacy Policy | App Store EULA",
                                      attributes: [.foregroundColor: NSColor.labelColor]))
-    string.addAttribute(.link, value: Cleepp.privacyPolicyURL, range: NSRange(location: 28, length: 14))
-    string.addAttribute(.link, value: Cleepp.appStoreUserAgreementURL, range: NSRange(location: 45, length: 14))
+    string.addAttribute(.link, value: AppModel.privacyPolicyURL, range: NSRange(location: 28, length: 14))
+    string.addAttribute(.link, value: AppModel.appStoreUserAgreementURL, range: NSRange(location: 45, length: 14))
     #endif
     return string
   }
@@ -33,14 +33,14 @@ class About {
   private var introLink: NSAttributedString {
     let string = NSMutableAttributedString(string: "For details reopen the intro window.",
                                            attributes: [.foregroundColor: NSColor.labelColor])
-    string.addAttribute(.link, value: Cleepp.showIntroInAppURL, range: NSRange(location: 12, length: 23))
+    string.addAttribute(.link, value: AppModel.showIntroInAppURL, range: NSRange(location: 12, length: 23))
     return string
   }
   
   private var creditsLink: NSMutableAttributedString {
     let string = NSMutableAttributedString(string: "Credits and licenses: Show Licenses",
                                            attributes: [.foregroundColor: NSColor.labelColor])
-    string.addAttribute(.link, value: Cleepp.showLicensesInAppURL, range: NSRange(location: 22, length: 13))
+    string.addAttribute(.link, value: AppModel.showLicensesInAppURL, range: NSRange(location: 22, length: 13))
     return string
   }
   
@@ -71,7 +71,7 @@ class About {
   
   private var version: String {
     let infoPlistVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-    #if FOR_APP_STORE
+    #if APP_STORE
     return infoPlistVersion + " for Mac App Store"
     #else
     return infoPlistVersion + " non-App Store build"

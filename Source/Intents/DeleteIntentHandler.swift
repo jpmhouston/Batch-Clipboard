@@ -3,15 +3,15 @@ import Intents
 @available(macOS 11.0, *)
 class DeleteIntentHandler: NSObject, DeleteIntentHandling {
   private let positionOffset = 0
-  private var maccy: Maccy!
+  private var model: AppModel!
 
-  init(_ maccy: Maccy) {
-    self.maccy = maccy
+  init(_ model: AppModel) {
+    self.model = model
   }
 
   func handle(intent: DeleteIntent, completion: @escaping (DeleteIntentResponse) -> Void) {
     guard let number = intent.number as? Int,
-          let value = maccy.delete(position: number - positionOffset) else {
+          let value = model.delete(position: number - positionOffset) else {
       return completion(DeleteIntentResponse(code: .failure, userActivity: nil))
     }
 
