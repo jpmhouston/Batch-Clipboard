@@ -77,7 +77,7 @@ exactly what we do to release to GitHub and the Mac App Store (although we use g
 workflow scripts to also sign, notarize, upload, etc).
 
 The project file is still named Maccy.xcodeproj (as inherited from our fork parent),
-open that in Xcode and choose the build scheme "Cleepp" (the app's code name),
+open that in Xcode and choose the build scheme "Batch Clipboard",
 and then Project Menu > Run (ie. build and run). This will build and launch an unsigned
 build of the app. Find "Batch Clipboard.app" among the build products (in Products group
 within Xcode's sidebar) and copy to your Applications is you like, but there may be
@@ -92,10 +92,10 @@ using your own builds. You could also change the build setting in Xocde to disab
 Do this by:
 
 - opening the project itself from the Project Navigator ("Maccy")
-- open the tab "Build Settings"
+- select the "Batch Clipboard" target in the sidebar, select tab "Build Settings"
 - find "Swift Compiler - Custom Flags"
 - on the Debug line click, wait, click again (like editing names in the Finder) to
-  edit and remove `ALLOW_SPARKLE_UPDATES` (optionally remove it from the Release line as well)
+  edit and remove `SPARKLE_UPDATES` (optionally remove it from the Release line as well)
 
 _Also note: the scheme "Batch Clipboard (MAS)" builds essentially the same app but with
 mentions of bonus features and in-app purchases in the Intro window, and an added
@@ -113,8 +113,8 @@ cd into the source directory and:
 ### About the Source Code, Organization etc
 
 The project started as a fork of the open source clipboard manager [Maccy](https://maccy.app),
-originally in the repo [Cleepp](https://github.com/jpmhouston/Cleepp) (the working name
-during the app's development).
+originally in the repo [https://github.com/jpmhouston/Cleepp](https://github.com/jpmhouston/Cleepp)
+(this was the app's working name at the start of its development).
 
 With that repo I was trying to keep in sync with Maccy so I could merge over bug fixes,
 and so kept the same file structure, project file, and build targets.
@@ -127,12 +127,12 @@ discarding much of the user interface, this turned out to not be feasible. For t
 being the app contains only English UI. I will restart the app's localization sometime
 in the future,
 
-Also, being a fork, I was unable to provide it as a homebrew cask except within a custom
-tap.
-
 Upstream Maccy however changed significantly since early 2024, and so keeping that fork
 in sync became a lost cause. This new repo is a refactor of that original fork repo,
 renaming and simplifying many components.
+
+Also, now that the repo isn't a fork, I'm able to provide the app as a homebrew cask
+without a custom tap.
 
 
 ### Thank you & Acknowledgements

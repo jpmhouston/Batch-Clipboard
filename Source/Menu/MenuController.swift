@@ -1,3 +1,14 @@
+//
+//  MenuController.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on MenuController.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 import KeyboardShortcuts
 
@@ -5,45 +16,26 @@ class MenuController {
   private let menu: AppMenu
   private let statusItem: NSStatusItem
   private var menuLoader: MenuLoader!
-
+  
   private var extraVisibleWindows: [NSWindow] {
     NSApp.windows.filter({ $0.isVisible && $0.className != NSApp.statusBarWindow?.className })
   }
-
+  
   init(_ menu: AppMenu, _ statusItem: NSStatusItem) {
     self.menu = menu
     self.statusItem = statusItem
     self.menuLoader = MenuLoader(performStatusItemClick)
     self.statusItem.menu = menuLoader
   }
-
+  
   func popUp() {
-    #if CLEEPP
-    let location = PopupLocation.inMenuBar // always
-    #else
-    let location = PopupLocation.forUserDefaults
-    #endif
-
     withFocus {
-      switch location {
-      case .inMenuBar:
-        self.simulateStatusItemClick()
-      default:
-        self.linkingMenuToStatusItem {
-          // Since simulateStatusItemClick below takes responsibility to opening the menu in that case,
-          // this class should take responsibility of opening in this case too, eliminating menu.popUpMenu(at:ofType:)
-          // Cleepp never gets here anyway, but I preferred to rewrite for Maccy target sake rather than
-          // adding another ifdef here or adding an dummy popUpMenu in Cleepp's menu class
-          self.menu.prepareForPopup(location: location)
-          self.menu.popUp(positioning: nil, at: location.location(for: self.menu.size) ?? .zero, in: nil)
-        }
-      }
+      self.simulateStatusItemClick()
     }
   }
-
+  
   @objc
   private func performStatusItemClick(_ modifierFlags: NSEvent.ModifierFlags, _ isRightClick: Bool) {
-    #if CLEEPP
     #if DEBUG
     if AppDelegate.shouldFakeAppInteraction && modifierFlags.contains(.capsLock) {
       AppDelegate.putPasteHistoryOnClipboard()
@@ -75,34 +67,22 @@ class MenuController {
       menu.enableExpandedMenu(true, full: modifierFlags.contains(.shift))
     }
     
-    #else
-    if modifierFlags.contains(.option) {
-      UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
-
-      if modifierFlags.contains(.shift) {
-        UserDefaults.standard.ignoreOnlyNextEvent = UserDefaults.standard.ignoreEvents
-      }
-
-      return
-    }
-    #endif
-    
     withFocus {
       self.simulateStatusItemClick()
     }
   }
-
+  
   private func simulateStatusItemClick() {
     if let buttonCell = statusItem.button?.cell as? NSButtonCell {
       withMenuButtonHighlighted(buttonCell) {
         self.linkingMenuToStatusItem {
-          self.menu.prepareForPopup(location: .inMenuBar)
+          self.menu.prepareForPopup()
           self.statusItem.button?.performClick(self)
         }
       }
     }
   }
-
+  
   private func withMenuButtonHighlighted(_ buttonCell: NSButtonCell, _ closure: @escaping () -> Void) {
     if #available(macOS 11, *) {
       closure()
@@ -112,13 +92,13 @@ class MenuController {
       buttonCell.highlightsBy = []
     }
   }
-
+  
   private func linkingMenuToStatusItem(_ closure: @escaping () -> Void) {
     statusItem.menu = menu
     closure()
     statusItem.menu = menuLoader
   }
-
+  
   // Executes closure with application focus (pun intended).
   //
   // Beware of hacks. This code is so fragile that you should
@@ -153,22 +133,12 @@ class MenuController {
   // and fallback to default NSMenu behavior by enabling
   // UserDefaults.standard.avoidTakingFocus.
   private func withFocus(_ closure: @escaping () -> Void) {
-    #if !CLEEPP
-    KeyboardShortcuts.disable(.popup)
-    #endif
-
     if UserDefaults.standard.avoidTakingFocus {
       closure()
-      #if !CLEEPP
-      KeyboardShortcuts.enable(.popup)
-      #endif
     } else {
       NSApp.activate(ignoringOtherApps: true)
       Timer.scheduledTimer(withTimeInterval: 0.04, repeats: false) { _ in
         closure()
-        #if !CLEEPP
-        KeyboardShortcuts.enable(.popup)
-        #endif
         if AppModel.returnFocusToPreviousApp && self.extraVisibleWindows.count == 0 {
           NSApp.hide(self)
           AppModel.returnFocusToPreviousApp = true
@@ -176,4 +146,5 @@ class MenuController {
       }
     }
   }
+  
 }

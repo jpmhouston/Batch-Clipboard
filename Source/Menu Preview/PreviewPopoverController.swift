@@ -1,3 +1,14 @@
+//
+//  PreviewPopoverController.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on PreviewPopoverController.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 
 class PreviewPopoverController {

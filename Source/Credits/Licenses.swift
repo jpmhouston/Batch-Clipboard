@@ -1,6 +1,6 @@
 //
 //  Licenses.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-04-14.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

@@ -1,50 +1,25 @@
 //
 //  AppModel.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-07-10.
 //  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
 //
-//  Based on GlobalHotKey from Maccy which is
-//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Based on Maccy.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 import Cocoa
 import KeyboardShortcuts
 import Settings
-#if CLEEPP && ALLOW_SPARKLE_UPDATES
+#if SPARKLE_UPDATES
 import Sparkle
 #endif
 
 // swiftlint:disable type_body_length
 class AppModel: NSObject {
-  // Note:
-  // I'm using `internal` to say: i wanted this to be `private` but code using this is in extension in other file
-  // where no access modifier given, that means public to the whole module, ie. the default access also `internal`.
-  // Given normal useage of `internal` it might make more sense to do this exactly the other way around,
-  // however I want the "used in extension to this class" declarations to have a modifier to look similar to lines
-  // with `private` and the "public to this module" declarations lines to look different.
   
   static var returnFocusToPreviousApp = true
-
-  internal let menuIcon = MenuBarIcon()
-  internal let about = About()
-  internal let clipboard = Clipboard.shared
-  internal let history = History()
-  internal var menu: AppMenu!
-  private var menuController: MenuController!
-
-#if CLEEPP
-  private var startHotKey: StartKeyboardShortcutHandler!
-  private var copyHotKey: CopyKeyboardShortcutHandler!
-  private var pasteHotKey: PasteKeyboardShortcutHandler!
-#else
-  private var hotKey: GlobalHotKey!
-  var selectedItem: ClipItem? { (menu.highlightedItem as? ClipMenuItem)?.clipItem }
-  private let statusItemTitleMaxLength = 20
-#endif
-
-#if CLEEPP
   static var busy = false
   
   static var allowExpandedHistory = true
@@ -65,11 +40,29 @@ class AppModel: NSObject {
   static let allowPurchases = false
   #endif
   
+  // Note:
+  // I'm using `internal` to say: i wanted this to be `private` but code using this is in extension in other file
+  // where no access modifier given, that means public to the whole module, ie. the default access also `internal`.
+  // Given normal useage of `internal` it might make more sense to do this exactly the other way around,
+  // however I want the "used in extension to this class" declarations to have a modifier to look similar to lines
+  // with `private` and the "public to this module" declarations lines to look different.
+  
+  internal let menuIcon = MenuBarIcon()
+  internal let about = About()
+  internal let clipboard = Clipboard.shared
+  internal let history = History()
+  internal var menu: AppMenu!
+  private var menuController: MenuController!
+
+  private var startHotKey: StartKeyboardShortcutHandler!
+  private var copyHotKey: CopyKeyboardShortcutHandler!
+  private var pasteHotKey: PasteKeyboardShortcutHandler!
+  
   #if APP_STORE
   private let purchases = AppStorePurchases()
   private var promotionExpirationTimer: Timer?
   #endif
-  #if ALLOW_SPARKLE_UPDATES
+  #if SPARKLE_UPDATES
   private let updaterController = SPUStandardUpdaterController(updaterDelegate: nil, userDriverDelegate: nil)
   #endif
   internal var introWindowController = IntroWindowController()
@@ -104,7 +97,6 @@ class AppModel: NSObject {
     alert.window.initialFirstResponder = field
     return alert
   }
-#endif
 
   private var clearAlert: NSAlert {
     let alert = NSAlert()
@@ -116,7 +108,6 @@ class AppModel: NSObject {
     return alert
   }
 
-#if CLEEPP
   // omits the pins panel, app store build gets the purchase panel
   #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
@@ -141,37 +132,18 @@ class AppModel: NSObject {
     ]
   )
   #endif
-#else
-  internal lazy var settingsWindowController = SettingsWindowController(
-    panes: [
-      GeneralSettingsViewController(),
-      StorageSettingsViewController(),
-      AppearanceSettingsViewController(),
-      PinsSettingsViewController(),
-      IgnoreSettingsViewController(),
-      AdvancedSettingsViewController()
-    ]
-  )
-#endif
-
+  
+  // TODO: remove unused observer vars
   private var clipboardCheckIntervalObserver: NSKeyValueObservation?
   private var enabledPasteboardTypesObserver: NSKeyValueObservation?
   private var ignoreEventsObserver: NSKeyValueObservation?
   private var imageHeightObserver: NSKeyValueObservation?
-  private var hideFooterObserver: NSKeyValueObservation?
   private var hideSearchObserver: NSKeyValueObservation?
-  private var hideTitleObserver: NSKeyValueObservation?
   private var maxMenuItemLengthObserver: NSKeyValueObservation?
-  private var pasteByDefaultObserver: NSKeyValueObservation?
-  private var pinToObserver: NSKeyValueObservation?
-  private var removeFormattingByDefaultObserver: NSKeyValueObservation?
-  private var sortByObserver: NSKeyValueObservation?
   private var showSpecialSymbolsObserver: NSKeyValueObservation?
-  private var showRecentCopyInMenuBarObserver: NSKeyValueObservation?
   private var statusItemConfigurationObserver: NSKeyValueObservation?
   private var statusItemVisibilityObserver: NSKeyValueObservation?
-  private var statusItemChangeObserver: NSKeyValueObservation?
-
+  
   override init() {
     UserDefaults.standard.register(defaults: [
       UserDefaults.Keys.clipboardCheckInterval: UserDefaults.Values.clipboardCheckInterval,
@@ -182,58 +154,63 @@ class AppModel: NSObject {
       UserDefaults.Keys.showInStatusBar: UserDefaults.Values.showInStatusBar,
       UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols
     ])
-    #if CLEEPP
-    // cleepp doesn't populate these in its app delegates's migration method,
+    
+    // unlike maccy, app doesn't populate these in its app delegates's migration method,
     // maybe should go in Clipboard.init instead though
     UserDefaults.standard.register(defaults: [
       UserDefaults.Keys.enabledPasteboardTypes: UserDefaults.Values.enabledPasteboardTypes,
       UserDefaults.Keys.ignoredPasteboardTypes: UserDefaults.Values.ignoredPasteboardTypes,
     ])
-    #endif
     
     super.init()
     initializeObservers()
-
-    settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
-
-    #if CLEEPP
+    
     initializeStateFlags()
     
-    queue = ClipboardQueue(clipboard: clipboard, history: history)
-    menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
+    settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
     
     startHotKey = StartKeyboardShortcutHandler(startQueueMode)
     copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
     pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
-    #else
-    disableUnusedGlobalHotkeys()
-
-    menu = Menu(history: history, clipboard: Clipboard.shared)
     
-    hotKey = GlobalHotKey(popUp)
-    #endif
-
+    queue = ClipboardQueue(clipboard: clipboard, history: history)
+    
+    clipboard.onNewCopy(clipboardChanged)
+    clipboard.start()
+    
+    menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
+    
     menuController = MenuController(menu, menuIcon.statusItem)
-    start()
+    
+    menuIcon.enableRemoval(true)
+    menuIcon.isVisible = true
+    updateMenuIconEnabledness()
+    
+    menu.buildHistoryItems()
+    
+    // prepareForPopup() can take a while the first time so do it early
+    // instead of the first time the menu is clicked on, and in case the
+    // intro needs to be shown, delay this call a bit to let that open
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      self.menu.prepareForPopup()
+    }
+    
+    if !UserDefaults.standard.completedIntro {
+      showIntro(self)
+    } else if !Permissions.allowed {
+      showIntroAtPermissionPage(self)
+    }
   }
 
   deinit {
     clipboardCheckIntervalObserver?.invalidate()
     enabledPasteboardTypesObserver?.invalidate()
     ignoreEventsObserver?.invalidate()
-    hideFooterObserver?.invalidate()
     hideSearchObserver?.invalidate()
-    hideTitleObserver?.invalidate()
     maxMenuItemLengthObserver?.invalidate()
-    pasteByDefaultObserver?.invalidate()
-    pinToObserver?.invalidate()
-    removeFormattingByDefaultObserver?.invalidate()
-    sortByObserver?.invalidate()
-    showRecentCopyInMenuBarObserver?.invalidate()
     showSpecialSymbolsObserver?.invalidate()
     statusItemConfigurationObserver?.invalidate()
     statusItemVisibilityObserver?.invalidate()
-    statusItemChangeObserver?.invalidate()
     
     menuIcon.cancelBlinkTimer()
     #if APP_STORE
@@ -243,104 +220,40 @@ class AppModel: NSObject {
 
   func terminate() {
     if UserDefaults.standard.clearOnQuit {
-      clearUnpinned(suppressClearAlert: true)
+      clearHistory(suppressClearAlert: true)
     }
   }
 
   func wasReopened() {
-    #if CLEEPP
     // if the user has chosen to hide the menu bar icon when not in batch mode then
     // open the Settings window whenever the application icon is double clicked again
     if !UserDefaults.standard.showInStatusBar {
       showSettings(selectingPane: .general)
     }
-    #else
-    popUp()
-    #endif
   }
   
   func popUp() {
     menuController.popUp()
   }
-
+  
   func select(position: Int) -> String? {
     return menu.select(position: position)
   }
-
+  
   func delete(position: Int) -> String? {
-    #if CLEEPP
     let result = menu.delete(position: position)
     fixQueueAfterDeletingItem(atIndex: position)
     return result
-    #else
-    return menu.delete(position: position)
-    #endif
   }
-
+  
   func item(at position: Int) -> ClipItem? {
     return menu.historyItem(at: position)
   }
   
-  func clearUnpinned(suppressClearAlert: Bool = false) {
-    #if CLEEPP
-    clearAll(suppressClearAlert: suppressClearAlert)
-    #else
-    withClearAlert(suppressClearAlert: suppressClearAlert) {
-      self.history.clearUnpinned()
-      self.menu.clearUnpinned()
-      self.clipboard.clear()
-      self.updateMenuTitle()
-    }
-    #endif
+  func clearHistory() {
+    clearHistory(suppressClearAlert: false)
   }
-
-  private func start() {
-    menuIcon.enableRemoval(true)
-    #if CLEEPP
-    menuIcon.isVisible = true
-    #else
-    menuIcon.isVisible = UserDefaults.standard.showInStatusBar
-    #endif
-
-    #if !CLEEPP
-    menuIcon.setImage(named: UserDefaults.standard.menuIcon)
-    #endif
-
-    #if CLEEPP
-    clipboard.onNewCopy(clipboardChanged)
-    #else
-    clipboard.onNewCopy(history.add)
-    clipboard.onNewCopy(menu.add)
-    clipboard.onNewCopy(updateMenuTitle)
-    #endif
-    clipboard.start()
-
-    #if CLEEPP
-    menu.buildItems()
-    // prepareForPopup() can take a while the first time so do it early
-    // instead of the first time the menu is clicked on, and in case the
-    // intro needs to be shown, delay this call a bit to let that open
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-      self.menu.prepareForPopup(location: .inMenuBar)
-    }
-    #else
-    populateHeader()
-    populateItems()
-    populateFooter()
-    #endif
-
-    updateStatusItemEnabledness()
-    
-    #if CLEEPP
-    if !UserDefaults.standard.completedIntro {
-      showIntro(self)
-    } else if !Permissions.allowed {
-      showIntroAtPermissionPage(self)
-    }
-    #endif
-  }
-
-#if CLEEPP
+  
   private func initializeStateFlags() {
     let userDefaults = UserDefaults.standard
     Self.firstLaunch = userDefaults.dictionaryRepresentation().isEmpty
@@ -472,84 +385,21 @@ class AppModel: NSObject {
   }
   
   // Non-history items in the cleepp menu are defined in a nib file instead of programmatically
-  // (the best code is no code), action methods for those items now live in this class, defined
-  // in a class extension. Also history menu item subclasses no longer exist, actions for those
-  // are also defined in the extension, and other "business logic" for the queueing feature.
+  // (the best code is no code), action methods for those items now live in this class,
+  // defined in a class extension. Also history menu item subclasses no longer exist, actions for
+  // those are also defined in the extension, and other "business logic" for the queueing feature.
   
-#else
-  private func populateHeader() {
-    let headerItem = NSMenuItem()
-    headerItem.title = "Maccy"
-    headerItem.view = MenuHeader().view
-
-    menu.insertItem(headerItem, at: 0)
-  }
-
-  private func updateHeader() {
-    menu.removeItem(at: 0)
-    populateHeader()
-  }
-
-  private func populateItems() {
-    menu.buildItems()
-    menu.updateUnpinnedItemsVisibility()
-    updateMenuTitle()
-  }
-
-  private func populateFooter() {
-    MenuFooter.allCases.map({ $0.menuItem }).forEach({ item in
-      item.action = #selector(menuItemAction)
-      item.target = self
-      menu.addItem(item)
-    })
-  }
-
-  private func updateFooter() {
-    MenuFooter.allCases.forEach({ _ in
-      menu.removeItem(at: menu.numberOfItems - 1)
-    })
-    populateFooter()
-  }
-
-  @objc
-  private func menuItemAction(_ sender: NSMenuItem) {
-    if let tag = MenuFooter(rawValue: sender.tag) {
-      switch tag {
-      case .about:
-        Maccy.returnFocusToPreviousApp = false
-        about.openAbout(sender)
-        Maccy.returnFocusToPreviousApp = true
-      case .clear:
-        clearUnpinned()
-      case .clearAll:
-        clearAll()
-      case .quit:
-        NSApp.terminate(sender)
-      case .preferences:
-        Maccy.returnFocusToPreviousApp = false
-        settingsWindowController.show()
-        settingsWindowController.window?.orderFrontRegardless()
-        Maccy.returnFocusToPreviousApp = true
-      default:
-        break
-      }
-    }
-  }
-#endif
-
-  private func clearAll(suppressClearAlert: Bool = false) {
+  private func clearHistory(suppressClearAlert: Bool) {
     withClearAlert(suppressClearAlert: suppressClearAlert) {
       self.history.clear()
-      self.menu.clearAll()
+      self.menu.clearHistoryItems()
       self.clipboard.clear()
-      #if CLEEPP
       self.queue.off()
       self.updateMenuIcon()
-      #endif
       self.updateMenuTitle()
     }
   }
-
+  
   private func withClearAlert(suppressClearAlert: Bool, _ closure: @escaping () -> Void) {
     if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
       closure()
@@ -567,69 +417,29 @@ class AppModel: NSObject {
       }
     }
   }
-
+  
   private func rebuild() {
-    menu.clearAll()
-
-    #if CLEEPP
-    menu.buildItems()
+    menu.clearHistoryItems()
+    menu.buildHistoryItems()
     if queue.isOn {
       menu.updateHeadOfQueue(index: queue.headIndex)
     }
-    #else
-    menu.removeAllItems()
-    populateHeader()
-    populateItems()
-    populateFooter()
-    #endif
-  }
-
-#if !CLEEPP
-  private func updateMenuIcon(_ newIcon: String) {
-    switch newIcon {
-//    case "scissors":
-//      menuIcon.image = NSImage(named: .scissors)
-//    case "paperclip":
-//      menuIcon.image = NSImage(named: .paperclip)
-//    case "clipboard":
-//      menuIcon.image = NSImage(named: .clipboard)
-    default:
-      menuIcon.image = NSImage(named: .maccyStatusBar)
-    }
   }
   
-  internal func updateMenuTitle(_ item: ClipItem? = nil) {
-    guard UserDefaults.standard.showRecentCopyInMenuBar else {
-      menuIcon.badge = ""
-      return
-    }
-
-    var title = ""
-    if let item = item {
-      title = HistoryMenuItem(item: item, clipboard: clipboard).title
-    } else if let item = menu.firstUnpinnedHistoryMenuItem {
-      title = item.title
-    }
-
-    menuIcon.badge = String(title.prefix(statusItemTitleMaxLength))
-  }
-#endif
-
-  private func updateStatusItemEnabledness() {
+  private func updateMenuIconEnabledness() {
     menuIcon.isEnabled = !(UserDefaults.standard.ignoreEvents ||
       UserDefaults.standard.enabledPasteboardTypes.isEmpty)
   }
-
-  // swiftlint:disable function_body_length
+  
   private func initializeObservers() {
     clipboardCheckIntervalObserver = UserDefaults.standard.observe(\.clipboardCheckInterval, options: .new) { _, _ in
       self.clipboard.restart()
     }
     enabledPasteboardTypesObserver = UserDefaults.standard.observe(\.enabledPasteboardTypes, options: .new) { _, _ in
-      self.updateStatusItemEnabledness()
+      self.updateMenuIconEnabledness()
     }
     ignoreEventsObserver = UserDefaults.standard.observe(\.ignoreEvents, options: .new) { _, _ in
-      self.updateStatusItemEnabledness()
+      self.updateMenuIconEnabledness()
     }
     imageHeightObserver = UserDefaults.standard.observe(\.imageMaxHeight, options: .new) { _, _ in
       self.menu.resizeImageMenuItems()
@@ -638,36 +448,13 @@ class AppModel: NSObject {
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
     }
-    #if !CLEEPP
-    hideFooterObserver = UserDefaults.standard.observe(\.hideFooter, options: .new) { _, _ in
-      self.updateFooter()
-    }
+    #if FALSE
     hideSearchObserver = UserDefaults.standard.observe(\.hideSearch, options: .new) { _, _ in
       self.updateHeader()
-    }
-    hideTitleObserver = UserDefaults.standard.observe(\.hideTitle, options: .new) { _, _ in
-      self.updateHeader()
-    }
-    pasteByDefaultObserver = UserDefaults.standard.observe(\.pasteByDefault, options: .new) { _, _ in
-      self.rebuild()
-    }
-    pinToObserver = UserDefaults.standard.observe(\.pinTo, options: .new) { _, _ in
-      self.rebuild()
-    }
-    removeFormattingByDefaultObserver = UserDefaults.standard.observe(\.removeFormattingByDefault,
-                                                                      options: .new) { _, _ in
-      self.rebuild()
-    }
-    sortByObserver = UserDefaults.standard.observe(\.sortBy, options: .new) { _, _ in
-      self.rebuild()
     }
     showSpecialSymbolsObserver = UserDefaults.standard.observe(\.showSpecialSymbols, options: .new) { _, _ in
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
-    }
-    showRecentCopyInMenuBarObserver = UserDefaults.standard.observe(\.showRecentCopyInMenuBar,
-                                                                    options: .new) { _, _ in
-      self.updateMenuTitle()
     }
     statusItemConfigurationObserver = UserDefaults.standard.observe(\.showInStatusBar,
                                                                     options: .new) { _, change in
@@ -680,29 +467,8 @@ class AppModel: NSObject {
         UserDefaults.standard.showInStatusBar = change.newValue!
       }
     }
-    statusItemChangeObserver = UserDefaults.standard.observe(\.menuIcon, options: .new) { _, change in
-      self.updateMenuIcon(change.newValue!)
-    }
     #endif
   }
-  // swiftlint:enable function_body_length
   
-  #if !CLEEPP
-  private func disableUnusedGlobalHotkeys() {
-    let names: [KeyboardShortcuts.Name] = [.delete, .pin]
-    KeyboardShortcuts.disable(names)
-    //names.forEach(KeyboardShortcuts.disable) // if KyboardShortcuts >1.11.0 change to: KeyboardShortcuts.disable(names)
-    
-    NotificationCenter.default.addObserver(
-      forName: Notification.Name("KeyboardShortcuts_shortcutByNameDidChange"),
-      object: nil,
-      queue: nil
-    ) { notification in
-      if let name = notification.userInfo?["name"] as? KeyboardShortcuts.Name, names.contains(name) {
-        KeyboardShortcuts.disable(name)
-      }
-    }
-  }
-  #endif
 }
 // swiftlint:enable type_body_length

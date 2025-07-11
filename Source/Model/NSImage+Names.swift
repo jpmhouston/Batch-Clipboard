@@ -1,12 +1,12 @@
 //
 //  NSImage+Names.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-21.
 //  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
 //
-//  Based on GlobalHotKey from Maccy which is
-//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Based on NSImage+Names.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 import Cocoa
@@ -18,9 +18,6 @@ extension NSImage.Name {
   static let menuIconNonempty = NSImage.Name("menuList")
   static let menuIconNonemptyPlus = NSImage.Name("menuListPlus")
   static let menuIconNonemptyMinus = NSImage.Name("menuListMinus")
-  #if !CLEEPP
-  static let maccyStatusBar = NSImage.Name("StatusBarMenuImage")
-  #endif
   
   static let externalDrive = loadName("externaldrive")
   static let gear = loadName("gearshape")

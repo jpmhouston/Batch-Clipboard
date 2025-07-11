@@ -1,17 +1,28 @@
+//
+//  ClipMenuItem.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on HistoryMenuItem.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Cocoa
 
-extension NSAttributedString.Key {
-  static let headIndicator: Self = .init("cleeppqueuehead")
-}
+//extension NSAttributedString.Key {
+//  static let headIndicator: Self = .init("batchclipqueuehead")
+//}
 
 class ClipMenuItem: NSMenuItem {
-  var isPinned = false
   var clipItem: ClipItem?
   var value = ""
-  #if CLEEPP
+  
   var isHeadOfQueue = false {
     didSet { updateHeadOfQueueIndication() }
   }
+  
   private let indicatorBadge = NSLocalizedString("first_replay_item_badge", comment: "") + " \u{2BAD}"
   private var useBadges: Bool {
     // return false and comment the rest out to exercise not using badges when on macOS >=14
@@ -21,15 +32,12 @@ class ClipMenuItem: NSMenuItem {
       !AppDelegate.performingUITest // use badges unless running a UI test
     }
   }
-  #endif
-
-  internal var clipboard: Clipboard!
-
+  
   private let imageMaxWidth: CGFloat = 340.0
 
   // Assign "empty" title to the image (but it can't be empty string).
-  // This is required for onStateImage to render correctly when item is pinned.
-  // Otherwise, it's not rendered with the error:
+  // This may still be required for onStateImage to render correctly at times
+  // (in Maccy it was when item was pinned). Otherwise, it's not rendered with the error:
   //
   // GetEventParameter(inEvent, kEventParamMenuTextBaseline, typeCGFloat, NULL, sizeof baseline, NULL, &baseline)
   // returned error -9870 on line 2078 in -[NSCarbonMenuImpl _carbonDrawStateImageForMenuItem:withEvent:]
@@ -63,17 +71,15 @@ class ClipMenuItem: NSMenuItem {
 
     return NSFont(descriptor: italicFontDescriptor, size: 0) ?? systemFont
   }()
-
-  private var editPinObserver: NSKeyValueObservation?
-  private var editTitleObserver: NSKeyValueObservation?
-
+  
+  internal var clipboard: Clipboard!
+  
   required init(coder: NSCoder) {
     super.init(coder: coder)
   }
-
-#if CLEEPP
-  // define this to avoid this mysterious runtime failure:
-  // Fatal error: Use of unimplemented initializer 'init(title:action:keyEquivalent:)' for class 'Cleepp.HistoryMenuItem'
+  
+  // define this to avoid a mysterious runtime failure:
+  // Fatal error: Use of unimplemented initializer 'init(title:action:keyEquivalent:)' for class 'Batch_Clipboard.ClipMenuItem'
   override init(title: String, action: Selector?, keyEquivalent: String) {
     super.init(title: title, action: action, keyEquivalent: keyEquivalent)
   }
@@ -100,47 +106,6 @@ class ClipMenuItem: NSMenuItem {
     return self
   }
   
-#else
-  init(item: HistoryItem, clipboard: Clipboard) {
-    super.init(title: "", action: #selector(onSelect(_:)), keyEquivalent: "")
-
-    self.clipboard = clipboard
-    self.item = item
-    self.onStateImage = NSImage(named: "PinImage")
-    self.target = self
-
-    if isImage(item) {
-      loadImage(item)
-    } else if isFile(item) {
-      loadFile(item)
-    } else if isText(item) {
-      loadText(item)
-    } else if isRTF(item) {
-      loadRTF(item)
-    } else if isHTML(item) {
-      loadHTML(item)
-    }
-
-    if let itemPin = item.pin {
-      pin(itemPin)
-    }
-
-    alternate()
-
-    editPinObserver = item.observe(\.pin, options: .new, changeHandler: { item, _ in
-      self.keyEquivalent = item.pin ?? ""
-    })
-    editTitleObserver = item.observe(\.title, options: .new, changeHandler: { item, _ in
-      self.title = item.title ?? ""
-    })
-  }
-#endif
-
-  deinit {
-    editPinObserver?.invalidate()
-    editTitleObserver?.invalidate()
-  }
-
   @objc
   func onSelect(_ sender: NSMenuItem) {
     select()
@@ -159,48 +124,34 @@ class ClipMenuItem: NSMenuItem {
       isHidden = true
     }
   }
-
-  func pin(_ pin: String) {
-    clipItem?.pin = pin
-    self.isPinned = true
-    self.keyEquivalent = pin
-    self.state = .on
-  }
-
-  func unpin() {
-    clipItem?.pin = nil
-    self.isPinned = false
-    self.keyEquivalent = ""
-    self.state = .off
-  }
-
+  
   func resizeImage() {
     guard let clipItem, !isImage(clipItem) else {
       return
     }
-
+    
     loadImage(clipItem)
   }
-
+  
   func regenerateTitle() {
-    guard let clipItem, !isImage(clipItem), !isPinned else {
+    guard let clipItem, !isImage(clipItem) else {
       return
     }
-
+    
     clipItem.title = clipItem.generateTitle(clipItem.getContents())
   }
-
+  
   func highlight(_ ranges: [ClosedRange<Int>]) {
     guard !ranges.isEmpty, title != imageTitle else {
       self.attributedTitle = nil
       return
     }
-
+    
     let attributedTitle = NSMutableAttributedString(string: title)
     for range in ranges {
       let rangeLength = range.upperBound - range.lowerBound + 1
       let highlightRange = NSRange(location: range.lowerBound, length: rangeLength)
-
+      
       if Range(highlightRange, in: title) != nil {
         switch UserDefaults.standard.highlightMatches {
         case "italic":
@@ -215,99 +166,96 @@ class ClipMenuItem: NSMenuItem {
         }
       }
     }
-
+    
     self.attributedTitle = attributedTitle
-
-    #if CLEEPP
+    
     if isHeadOfQueue && !useBadges {
       styleToIndicateHeadOfQueue()
     }
-    #endif
   }
-
+  
   private func isImage(_ item: ClipItem) -> Bool {
     return item.image != nil
   }
-
+  
   private func isFile(_ item: ClipItem) -> Bool {
     return !item.fileURLs.isEmpty
   }
-
+  
   private func isRTF(_ item: ClipItem) -> Bool {
     return item.rtf != nil
   }
-
+  
   private func isHTML(_ item: ClipItem) -> Bool {
     return item.html != nil
   }
-
+  
   private func isText(_ item: ClipItem) -> Bool {
     return item.text != nil
   }
-
+  
   private func loadImage(_ item: ClipItem) {
     guard let image = item.image else {
       return
     }
-
+    
     if image.size.width > imageMaxWidth {
       image.size.height /= image.size.width / imageMaxWidth
       image.size.width = imageMaxWidth
     }
-
+    
     let imageMaxHeight = CGFloat(UserDefaults.standard.imageMaxHeight)
     if image.size.height > imageMaxHeight {
       image.size.width /= image.size.height / imageMaxHeight
       image.size.height = imageMaxHeight
     }
-
+    
     self.image = image
     self.title = imageTitle
   }
-
+  
   private func loadFile(_ item: ClipItem) {
     guard !item.fileURLs.isEmpty else {
       return
     }
-
+    
     self.value = item.fileURLs
       .compactMap { $0.absoluteString.removingPercentEncoding }
       .joined(separator: "\n")
     self.title = item.title ?? ""
     self.image = ColorImage.from(title)
   }
-
+  
   private func loadRTF(_ item: ClipItem) {
     guard let string = item.rtf?.string else {
       return
     }
-
-    self.value = string
-    self.title = item.title ?? ""
-    self.image = ColorImage.from(title)
-  }
-
-  private func loadHTML(_ item: ClipItem) {
-    guard let string = item.html?.string else {
-      return
-    }
-
-    self.value = string
-    self.title = item.title ?? ""
-    self.image = ColorImage.from(title)
-  }
-
-  private func loadText(_ item: ClipItem) {
-    guard let string = item.text else {
-      return
-    }
-
+    
     self.value = string
     self.title = item.title ?? ""
     self.image = ColorImage.from(title)
   }
   
-#if CLEEPP
+  private func loadHTML(_ item: ClipItem) {
+    guard let string = item.html?.string else {
+      return
+    }
+    
+    self.value = string
+    self.title = item.title ?? ""
+    self.image = ColorImage.from(title)
+  }
+  
+  private func loadText(_ item: ClipItem) {
+    guard let string = item.text else {
+      return
+    }
+    
+    self.value = string
+    self.title = item.title ?? ""
+    self.image = ColorImage.from(title)
+  }
+  
   private func updateHeadOfQueueIndication() {
     if useBadges {
       badgeToIndicateHeadOfQueue()
@@ -354,6 +302,5 @@ class ClipMenuItem: NSMenuItem {
 //      attributedTitle = prefixedTitle
 //    }
   }
-#endif
   
 }

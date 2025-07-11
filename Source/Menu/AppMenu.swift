@@ -1,12 +1,12 @@
 //
 //  AppMenu
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-20.
 //  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
 //
-//  Based on Menu from Maccy
-//  Copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Based on Menu.swift from Maccy
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 // swiftlint:disable file_length
@@ -159,7 +159,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     historyHeaderItem?.title = ""
   }
   
-  func prepareForPopup(location: PopupLocation) {
+  func prepareForPopup() {
     rebuildItemsAsNeeded()
     updateShortcuts()
     updateItemVisibility()
@@ -225,8 +225,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   // MARK: -
   
-  func buildItems() {
-    clearAll() // wipes `clips` as well as history menu items
+  func buildHistoryItems() {
+    clearHistoryItems() // wipes `clips` as well as history menu items
     
     if usePopoverAnchors {
       insertTopAnchorItem()
@@ -340,14 +340,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func clearAll() {
+  func clearHistoryItems() {
     clear(clips)
     clearAllHistoryMenuItems()
     headOfQueueClip = nil
-  }
-  
-  func clearUnpinned() {
-    clearAll()
   }
   
   func updateHeadOfQueue(index: Int?) {

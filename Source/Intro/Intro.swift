@@ -1,6 +1,6 @@
 //
 //  Intro.swift
-//  ClipStack
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-01.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.
@@ -500,7 +500,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     }
   }
   
-  @IBAction func openCleeppInMacAppStore(_ sender: AnyObject) {
+  @IBAction func openAppInMacAppStore(_ sender: AnyObject) {
     openURL(string: AppModel.macAppStoreURL)
   }
   

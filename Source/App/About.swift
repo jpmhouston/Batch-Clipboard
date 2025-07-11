@@ -1,3 +1,14 @@
+//
+//  About.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-03-21.
+//  Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on About.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Cocoa
 
 // TODO: replace with a custom window

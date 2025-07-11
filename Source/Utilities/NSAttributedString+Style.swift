@@ -1,6 +1,6 @@
 //
 //  NSAttributedString+Style.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-11.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

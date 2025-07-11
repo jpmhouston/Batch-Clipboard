@@ -1,3 +1,14 @@
+//
+//  RunLoopLocalEventMonitor.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on RunLoopLocalEventMonitor.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 
 // Credits to https://github.com/sindresorhus/KeyboardShortcuts/commit/8b1a9ce78c2f35c8a55dcc95897573abd2cc4f6e.

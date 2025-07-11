@@ -1,6 +1,6 @@
 //
 //  AppModel+Actions.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-20.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.
@@ -518,7 +518,7 @@ extension AppModel {
       return
     }
     
-    clearUnpinned() // for us this is the same as clearAll
+    clearHistory()
   }
   
   @IBAction

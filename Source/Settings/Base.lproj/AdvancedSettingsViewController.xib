@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -49,7 +50,7 @@
                             </button>
                         </gridCell>
                         <gridCell row="l2s-iI-2ix" column="8aH-p4-Hiw" id="XZW-aJ-d98">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
                                 <rect key="frame" x="-2" y="198" width="402" height="42"/>
                                 <textFieldCell key="cell" selectable="YES" id="Ejh-zi-AFs">
                                     <font key="font" metaFont="controlContent" size="11"/>
@@ -61,7 +62,7 @@ You are likely to use it programmatically and disable application while copying 
                             </textField>
                         </gridCell>
                         <gridCell row="M6T-bh-slS" column="8aH-p4-Hiw" id="dQu-KC-grG">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
                                 <rect key="frame" x="-2" y="157" width="402" height="33"/>
                                 <textFieldCell key="cell" selectable="YES" id="LFh-6b-GFi">
                                     <font key="font" size="10" name="Menlo-Regular"/>
@@ -74,7 +75,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                             </textField>
                         </gridCell>
                         <gridCell row="klT-Xg-5Xa" column="8aH-p4-Hiw" id="9Bn-10-d0I">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
                                 <rect key="frame" x="-2" y="121" width="402" height="28"/>
                                 <textFieldCell key="cell" selectable="YES" id="lwS-2p-WwS">
                                     <font key="font" metaFont="controlContent" size="11"/>
@@ -86,7 +87,7 @@ To ignore only the next copy, click with ^⌥⇧.</string>
                             </textField>
                         </gridCell>
                         <gridCell row="Ffc-bg-XxF" column="8aH-p4-Hiw" id="bLA-hg-jtA">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
                                 <rect key="frame" x="-2" y="91" width="402" height="22"/>
                                 <textFieldCell key="cell" selectable="YES" id="yeX-On-Ble">
                                     <font key="font" size="10" name="Menlo-Regular"/>
