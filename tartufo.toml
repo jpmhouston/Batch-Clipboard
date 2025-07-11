@@ -9,7 +9,7 @@ exclude-path-patterns = [
  {path-pattern = '.*\.xcdatamodel/contents$'},
  {path-pattern = '\.git'},
  {path-pattern = 'README\.md', reason='some old version of the readme had some binary blobs, not mine'},
- {path-pattern = 'Sparkle', reason='framework and maybe examples include what look like secretsi, not mine'},
+ {path-pattern = 'Sparkle', reason='framework and maybe examples include what look like secrets, not mine'},
  {path-pattern = 'Pods', reason='old versions used cocoapods instead of SPM and in it some uuid kind of things'},
  {path-pattern = 'Podfile\.lock'},
 ]
@@ -19,4 +19,3 @@ exclude-signatures = [
  {signature = 'b/Maccy/Extensions/NSRunningApplication+WindowFrame', reason='false positive in some swift commit diff'},
  {signature = '597c1b2c40adcf3c319f7feeade62ed4', reason='gist file hash in source reference comment'},
 ]
-

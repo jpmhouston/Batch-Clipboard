@@ -1,7 +1,7 @@
-<img src="Designs/Cleepp/Cleepp GitHub logo.png" alt="Logo"/>
+<img src="https://batchclipboard.bananameter.lol/img/banner.png" alt="Logo"/>
 
-[![Build Status](https://github.com/jpmhouston/Cleepp/actions/workflows/build.yml/badge.svg)](https://github.com/jpmhouston/Cleepp/actions/workflows/build.yml)
-[![Downloads](https://img.shields.io/github/downloads/jpmhouston/Cleepp/total.svg)](https://github.com/jpmhouston/Cleepp/releases/latest)
+<!-- [![Build Status](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml/badge.svg)](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml) -->
+[![Downloads](https://img.shields.io/github/downloads/jpmhouston/Batch-Clipboard/total.svg)](https://github.com/jpmhouston/Batch-Clipboard/releases/latest)
 [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/bananameterlabs)
 
 Batch Clipboard is a menu bar utility for macOS that adds the ability to copy multiple items
@@ -9,8 +9,8 @@ and then paste them in order elsewhere.
 
 ### About
 
-Batch Clipboard is a fork of clipboard manager [Maccy](https://maccy.app) and it's aim isn't
-to have all the capabilities of a full-featured clipboard history manager, but to provide
+Batch Clipboard is a clipboard utility that isn't intending to have all
+the capabilities of a full-featured clipboard history manager, but to provide
 just this single multi-clipboard feature:
 
 <kbd>CONTROL (^)</kbd> + <kbd>COMMAND (⌘)</kbd> + <kbd>C</kbd> to copy as many items as
@@ -19,9 +19,6 @@ you like from a source document, then\
 same order into your target document.
 
 [Full documentation is here](https://batchclipboard.bananameter.lol).
-
-The project was code-named "Cleepp" and that's reflected in the name of this repo and
-throughout the source code.
 
 Batch Clipboard is built to run optimally on both Intel and Apple Silicon, and is intended
 to work on systems running OS versions as old as 2019's macOS Catalina 10.15, however it
@@ -34,8 +31,8 @@ _Testing has not been comprehensive on those older systems, please report any is
 #### Download from GitHub
 
 There will always be a free download on this repo's
-[releases page](https://github.com/jpmhouston/Cleepp/releases/latest) with the complete and
-unrestricted functionality mentioned above.
+[releases page](https://github.com/jpmhouston/Batch-Clipboard/releases/latest) with the
+complete and unrestricted functionality mentioned above.
 
 Download either the .zip or .dmg file. For the zip file, double-click to uncompress, drag
 "Batch Cipboard.app" that results to /Applications (or wherever you decide to store your
@@ -52,11 +49,11 @@ The app is also available for no cost on the Mac App Store
 the free GitHub version. The Mac App Store version, however, has an in-app purchase allowing
 users to support future development and unlocks few bonus features. Read more about those
 bonus features [in the documenentaion]
-(https://github.com/jpmhouston/Cleepp/wiki/Bonus-Features-for-the-Mac-App-Store-Version).
+(https://batchclipboard.bananameter.lol/Base-App-Differences/).
 
 Future betas of the App Store version may be available from its TestFlight
-[page](ttps://testflight.apple.com/join/epg3cusH), but we don't guarentee there will always be
-a beta available that hasn't expired.
+[page](ttps://testflight.apple.com/join/epg3cusH), but we don't guarentee there will always
+be a beta available that hasn't expired.
 
 #### Install with Homebrew
 
@@ -98,47 +95,45 @@ Do this by:
 - open the tab "Build Settings"
 - find "Swift Compiler - Custom Flags"
 - on the Debug line click, wait, click again (like editing names in the Finder) to
-  edit and remove `ALLOW_SPARKLE_UPDATES`, ie. changing `CLEEPP ALLOW_SPARKLE_UPDATES DEBUG`
-  to `CLEEPP DEBUG` (optionally remove it from the Release line as well)
+  edit and remove `ALLOW_SPARKLE_UPDATES` (optionally remove it from the Release line as well)
 
-_Also note: the scheme "Cleepp (App Store)" builds essentially the same app but with mentions
-of bonus features and in-app purchases in the Intro window, and an added Settings panel for
-making those in-app purchases but which won't work in a ad-hoc local build._
+_Also note: the scheme "Batch Clipboard (MAS)" builds essentially the same app but with
+mentions of bonus features and in-app purchases in the Intro window, and an added
+Settings panel for making those in-app purchases but which won't work in an ad-hoc
+local build._
 
-Alternately build from the command line instead of the Xcode app. In a terminal window, cd into the source directory and:
+Alternately build from the command line instead of the Xcode app. In a terminal window,
+cd into the source directory and:
 
-    xcodebuild clean build analyze -scheme Cleepp -configuration Release -derivedDataPath .
+    xcodebuild clean build analyze -scheme "Batch Clipboard" -configuration Release -derivedDataPath .
     ls "./Build/Products/Release/Batch Clipboard.app" # copy this to /Applications
     # to copy the app in the Finder reveal it using: open "./Build/Products/Release/"
     # feel free to use a derivedDataPath other than ".", then find the "Build" directory there
 
-### Organization
+### About the Source Code, Organization etc
 
-For a time I was trying to keep in sync with Maccy so I could merge over bug fixes,
+The project started as a fork of the open source clipboard manager [Maccy](https://maccy.app),
+originally in the repo [Cleepp](https://github.com/jpmhouston/Cleepp) (the working name
+during the app's development).
+
+With that repo I was trying to keep in sync with Maccy so I could merge over bug fixes,
 and so kept the same file structure, project file, and build targets.
-I just added on top of (or more correctly in parallel to) those existing files and targets.
-I was hoping to keep the original source buildable so that I could continue to run Maccy's
-unit tests, however I don't know if that's worked, at this point I haven't been running them.
+I was also hoping to keep the original source buildable so that I could continue to run
+Maccy's unit tests. It had a confusing second hierachy of files, in some cases overriding
+the original, and others leveraging and extending them.
 
-Source files for the business logic (History group, Clipboard.swift, CoreDataManager.swift)
-used by Batch Clipboard targets and others with minor changes remain in the Maccy directory.
-Those minor change are isolated with `#if CLEEPP`.
+I was also considering maintaining Maccy's localizations, however after replacing or
+discarding much of the user interface, this turned out to not be feasible. For the time
+being the app contains only English UI. I will restart the app's localization sometime
+in the future,
 
-For major additions and customizations to Maccy, I have a peer of the Maccy source folder,
-Cleepp, with a parallel hierarchy. For example Menu.swift is completely replaced by a source
-file with the same name in the Cleepp hiearchy, however Maccy/Menu/MenuController.swift and
-some other parts of Maccy/Menu are used almost as-is.
+Also, being a fork, I was unable to provide it as a homebrew cask except within a custom
+tap.
 
-Another way I've overriden Maccy that might be confusing is in the Maccy singleton object,
-containing central logic and some global state. This file is used by Cleepp with some
-ifdef'ed alterations, but also I've made extensions to it in the Cleepp source hiearchy.
-The somewhat confusing thing I've done is added a typealias for the Maccy class named Cleepp.
-So where you see extensions and references to the Cleepp object, and files named
-Cleepp+blah.swift, this is the same Maccy singleton. 
+Upstream Maccy however changed significantly since early 2024, and so keeping that fork
+in sync became a lost cause. This new repo is a refactor of that original fork repo,
+renaming and simplifying many components.
 
-Upstream Maccy has now changed significantly since early 2024, and so keeping in sync is now
-a bit of a lost cause. Future iterations of this app is likely to change this organization
-completely and make it a more straightforward project and source file hierarchy. 
 
 ### Thank you & Acknowledgements
 
