@@ -1,6 +1,6 @@
 //
 //  StartIntentHandler.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-06-14.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

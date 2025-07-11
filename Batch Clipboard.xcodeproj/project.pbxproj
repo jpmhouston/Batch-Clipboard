@@ -115,10 +115,9 @@
 				Menu/KeyDetectorView.swift,
 				Menu/MenuController.swift,
 				Menu/MenuLoader.swift,
-				Menu/PopupLocation.swift,
 				"Model Clipboard/Clipboard.swift",
 				"Model Clipboard/ClipboardQueue.swift",
-				"Model Clipboard/NSPasteboard.PasteboardType+Types.swift",
+				"Model Clipboard/PasteboardTypes.swift",
 				"Model History/ClipContent.swift",
 				"Model History/ClipItem.swift",
 				"Model History/CoreDataManager.swift",
@@ -142,10 +141,10 @@
 				Settings/IgnorePasteboardTypesViewController.swift,
 				Settings/IgnoreRegexViewController.swift,
 				Settings/IgnoreSettingsViewController.swift,
-				"Settings/Settings.PaneIdentifier+Panes.swift",
+				Settings/SettingsPaneIdentifiers.swift,
 				Settings/StorageSettingsViewController.swift,
 				Utilities/ColorImage.swift,
-				"Utilities/DispatchSource+scheduledTimer.swift",
+				"Utilities/DispatchSource+ScheduledTimer.swift",
 				"Utilities/Equatable+Included.swift",
 				Utilities/KeyboardLayout.swift,
 				"Utilities/NSApplication+Windows.swift",
@@ -203,10 +202,9 @@
 				Menu/KeyDetectorView.swift,
 				Menu/MenuController.swift,
 				Menu/MenuLoader.swift,
-				Menu/PopupLocation.swift,
 				"Model Clipboard/Clipboard.swift",
 				"Model Clipboard/ClipboardQueue.swift",
-				"Model Clipboard/NSPasteboard.PasteboardType+Types.swift",
+				"Model Clipboard/PasteboardTypes.swift",
 				"Model History/ClipContent.swift",
 				"Model History/ClipItem.swift",
 				"Model History/CoreDataManager.swift",
@@ -235,10 +233,10 @@
 				Settings/PurchaseDetailWindowController.swift,
 				Settings/PurchaseSettingsViewController.swift,
 				Settings/PurchaseSettingsViewController.xib,
-				"Settings/Settings.PaneIdentifier+Panes.swift",
+				Settings/SettingsPaneIdentifiers.swift,
 				Settings/StorageSettingsViewController.swift,
 				Utilities/ColorImage.swift,
-				"Utilities/DispatchSource+scheduledTimer.swift",
+				"Utilities/DispatchSource+ScheduledTimer.swift",
 				"Utilities/Equatable+Included.swift",
 				Utilities/KeyboardLayout.swift,
 				"Utilities/NSApplication+Windows.swift",
@@ -532,7 +530,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = CleeppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Source/App/Debug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -557,7 +555,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP ALLOW_SPARKLE_UPDATES DEBUG";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SPARKLE_UPDATES DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -567,7 +565,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = CleeppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Source/App/Cleepp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -592,7 +590,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP ALLOW_SPARKLE_UPDATES";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SPARKLE_UPDATES;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -601,7 +599,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = CleeppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Source/App/Debug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -626,7 +624,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP APP_STORE BONUS_FEATUES_ON DEBUG";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE DEBUG BONUS_FEATUES_ON";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -636,7 +634,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = CleeppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Source/App/Cleepp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -661,7 +659,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "CLEEPP APP_STORE";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE  CLEEPP";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

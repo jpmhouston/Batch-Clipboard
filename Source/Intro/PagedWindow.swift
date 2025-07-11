@@ -1,6 +1,6 @@
 //
 //  PagedWindow.swift
-//  ClipStack
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-07.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

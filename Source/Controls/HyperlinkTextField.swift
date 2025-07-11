@@ -1,6 +1,6 @@
 //
 //  HyperlinkTextField.swift
-//  Cleepp (App Store)
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-28.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

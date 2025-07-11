@@ -1,3 +1,14 @@
+//
+//  FilterFieldKeyCmd.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on KeyChords.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 import KeyboardShortcuts
 import Sauce
@@ -19,7 +30,6 @@ enum FilterFieldKeyCmd: CaseIterable {
     (NSApp.delegate as? AppDelegate)?.copyMenuItem.keyEquivalentModifierMask ?? [.command]
   }
   
-  #if CLEEPP
   static var cutKey: Key {
     (NSApp.delegate as? AppDelegate)?.cutMenuItem.key ?? .x
   }
@@ -27,40 +37,6 @@ enum FilterFieldKeyCmd: CaseIterable {
     (NSApp.delegate as? AppDelegate)?.cutMenuItem.keyEquivalentModifierMask ?? [.command]
   }
   
-  #endif
-  
-  #if !CLEEPP
-  static var deleteKey: Key? {
-    if let shortcut = KeyboardShortcuts.Shortcut(name: .delete) {
-      return Sauce.shared.key(for: shortcut.carbonKeyCode)
-    } else {
-      return nil
-    }
-  }
-  static var deleteModifiers: NSEvent.ModifierFlags? {
-    if let shortcut = KeyboardShortcuts.Shortcut(name: .delete) {
-      return shortcut.modifiers.intersection(.deviceIndependentFlagsMask)
-    } else {
-      return nil
-    }
-  }
-
-  static var pinKey: Key? {
-    if let shortcut = KeyboardShortcuts.Shortcut(name: .pin) {
-      return Sauce.shared.key(for: shortcut.carbonKeyCode)
-    } else {
-      return nil
-    }
-  }
-  static var pinModifiers: NSEvent.ModifierFlags? {
-    if let shortcut = KeyboardShortcuts.Shortcut(name: .pin) {
-      return shortcut.modifiers.intersection(.deviceIndependentFlagsMask)
-    } else {
-      return nil
-    }
-  }
-  #endif
-
   case clearHistory
   case clearHistoryAll
   case clearSearch
@@ -78,21 +54,12 @@ enum FilterFieldKeyCmd: CaseIterable {
   case pinOrUnpin
   case selectCurrentItem
   case unknown
-
+  
   // swiftlint:disable cyclomatic_complexity
   init(_ key: Key, _ modifierFlags: NSEvent.ModifierFlags) {
     switch (key, modifierFlags) {
-#if !CLEEPP
-    case (.delete, MenuFooter.clear.keyEquivalentModifierMask):
-      self = .clearHistory
-    case (.delete, MenuFooter.clearAll.keyEquivalentModifierMask):
-      self = .clearHistoryAll
-    case (.delete, [.command]), (.u, [.control]):
-      self = .clearSearch
-#else
     case (.escape, []), (.u, [.control]):
       self = .clearSearch
-#endif
     case (.delete, []), (.h, [.control]):
       self = .deleteOneCharFromSearch
     case (.w, [.control]):
@@ -101,22 +68,10 @@ enum FilterFieldKeyCmd: CaseIterable {
       self = .moveToNext
     case (.k, [.control]):
       self = .moveToPrevious
-#if !CLEEPP
-    case (KeyChord.deleteKey, KeyChord.deleteModifiers):
-      self = .deleteCurrentItem
-    case (KeyChord.pinKey, KeyChord.pinModifiers):
-      self = .pinOrUnpin
-    case (GlobalHotKey.key, GlobalHotKey.modifierFlags):
-      self = .hide
-    case (.comma, MenuFooter.preferences.keyEquivalentModifierMask):
-      self = .openPreferences
-#endif
-#if CLEEPP
     case (FilterFieldKeyCmd.cutKey, FilterFieldKeyCmd.cutKeyModifiers):
       self = .cut
     case (FilterFieldKeyCmd.copyKey, FilterFieldKeyCmd.copyKeyModifiers):
       self = .copy
-#endif
     case (FilterFieldKeyCmd.pasteKey, FilterFieldKeyCmd.pasteKeyModifiers):
       self = .paste
     case (.return, _), (.keypadEnter, _):
@@ -128,7 +83,7 @@ enum FilterFieldKeyCmd: CaseIterable {
     }
   }
   // swiftlint:enable cyclomatic_complexity
-
+  
   private static let keysToSkip = [
     Key.home,
     Key.pageUp,
@@ -162,9 +117,11 @@ enum FilterFieldKeyCmd: CaseIterable {
     Key.eisu,
     Key.kana
   ]
+  
   private static let modifiersToSkip = NSEvent.ModifierFlags([
     .command,
     .control,
     .option
   ])
+  
 }

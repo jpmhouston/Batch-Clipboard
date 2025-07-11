@@ -1,3 +1,14 @@
+//
+//  Throttler.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on Throttler.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Foundation
 
 // Based on https://www.craftappco.com/blog/2018/5/30/simple-throttling-in-swift.

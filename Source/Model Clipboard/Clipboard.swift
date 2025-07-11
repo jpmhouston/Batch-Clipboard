@@ -1,18 +1,29 @@
+//
+//  Clipboard.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on Clipboard.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import AppKit
 import Sauce
 
 class Clipboard: CustomDebugStringConvertible {
   static let shared = Clipboard()
-
+  
   typealias OnNewCopyHook = (ClipItem) -> Void
-
+  
   private var onNewCopyHooks: [OnNewCopyHook] = []
   var changeCount: Int
-
+  
   private let pasteboard = NSPasteboard.general
-
+  
   private var timer: Timer?
-
+  
   private let dynamicTypePrefix = "dyn."
   private let microsoftAnythingPrefix = "com.microsoft."
   private let microsoftSourcePrefix = "com.microsoft.ole.source."
@@ -30,24 +41,24 @@ class Clipboard: CustomDebugStringConvertible {
     .transient
   ]
   private let modifiedTypes: Set<NSPasteboard.PasteboardType> = [.modified]
-
+  
   private var enabledTypes: Set<NSPasteboard.PasteboardType> { UserDefaults.standard.enabledPasteboardTypes }
   private var disabledTypes: Set<NSPasteboard.PasteboardType> { supportedTypes.subtracting(enabledTypes) }
-
+  
   private var sourceApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
-
+  
   init() {
     changeCount = pasteboard.changeCount
   }
-
+  
   func onNewCopy(_ hook: @escaping OnNewCopyHook) {
     onNewCopyHooks.append(hook)
   }
-
+  
   func clearHooks() {
     onNewCopyHooks = []
   }
-
+  
   func start() {
     timer = Timer.scheduledTimer(
       timeInterval: UserDefaults.standard.clipboardCheckInterval,
@@ -57,12 +68,12 @@ class Clipboard: CustomDebugStringConvertible {
       repeats: true
     )
   }
-
+  
   func restart() {
     timer?.invalidate()
     start()
   }
-
+  
   func copy(_ string: String, excludeFromHistory: Bool = true) {
     pasteboard.clearContents()
     pasteboard.setString(string, forType: .string)
@@ -73,30 +84,30 @@ class Clipboard: CustomDebugStringConvertible {
       checkForChangesInPasteboard()
     }
   }
-
+  
   func copy(_ item: ClipItem?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
     guard let item else { return }
-
+    
     pasteboard.clearContents()
     var contents = item.getContents()
-
+    
     if removeFormatting {
       let stringContents = contents.filter({
         NSPasteboard.PasteboardType($0.type) == .string
       })
-
+      
       // If there is no string representation of data,
       // behave like we didn't have to remove formatting.
       if !stringContents.isEmpty {
         contents = stringContents
       }
     }
-
+    
     for content in contents {
       guard content.type != NSPasteboard.PasteboardType.fileURL.rawValue else { continue }
       pasteboard.setData(content.value, forType: NSPasteboard.PasteboardType(content.type))
     }
-
+    
     // Use writeObjects for file URLs so that multiple files that are copied actually work.
     // Only do this for file URLs because it causes an issue with some other data types (like formatted text)
     // where the item is pasted more than once.
@@ -108,21 +119,16 @@ class Clipboard: CustomDebugStringConvertible {
       return pasteItem
     }
     pasteboard.writeObjects(fileURLItems)
-
+    
     pasteboard.setString("", forType: .fromMaccy)
-
-    #if !CLEEPP
-    Notifier.notify(body: item.title, sound: .knock)
-    #endif
-
+    
     if excludeFromHistory {
       changeCount = pasteboard.changeCount
     } else {
       checkForChangesInPasteboard()
     }
   }
-
-  #if CLEEPP
+  
   func invokeApplicationCopy(then action: (() -> Void)? = nil) {
     #if DEBUG
     if AppDelegate.shouldFakeAppInteraction {
@@ -144,88 +150,80 @@ class Clipboard: CustomDebugStringConvertible {
     #endif
     postKeypress(FilterFieldKeyCmd.pasteKeyModifiers, FilterFieldKeyCmd.pasteKey, then: action)
   }
-  #else
-  func paste() {
-    postKeypress(KeyChord.pasteKeyModifiers, KeyChord.pasteKey)
-  }
-  #endif
   
   // Based on https://github.com/Clipy/Clipy/blob/develop/Clipy/Sources/Services/PasteService.swift.
   func postKeypress(_ modifiers: NSEvent.ModifierFlags, _ key: Key, then action: (() -> Void)? = nil) {
-    // cleepp moves repsonsibility of triggering a check up into the caller
-    #if !CLEEPP
-    Accessibility.check()
-    #endif
-
     DispatchQueue.main.async {
       // Add flag that left/right modifier key has been pressed.
       // See https://github.com/TermiT/Flycut/pull/18 for details.
       let cmdFlag = CGEventFlags(rawValue: UInt64(modifiers.rawValue) | 0x000008)
       var vCode = Sauce.shared.keyCode(for: key)
-
+      
       // Force QWERTY keycode when keyboard layout switches to
       // QWERTY upon pressing ⌘ key (e.g. "Dvorak - QWERTY ⌘").
       // See https://github.com/p0deje/Maccy/issues/482 for details.
       if KeyboardLayout.current.commandSwitchesToQWERTY && cmdFlag.contains(.maskCommand) {
         vCode = key.QWERTYKeyCode
       }
-
+      
       let source = CGEventSource(stateID: .combinedSessionState)
       // Disable local keyboard events while pasting
       source?.setLocalEventsFilterDuringSuppressionState([.permitLocalMouseEvents, .permitSystemDefinedEvents],
                                                          state: .eventSuppressionStateSuppressionInterval)
-
+      
       let keyVDown = CGEvent(keyboardEventSource: source, virtualKey: vCode, keyDown: true)
       let keyVUp = CGEvent(keyboardEventSource: source, virtualKey: vCode, keyDown: false)
       keyVDown?.flags = cmdFlag
       keyVUp?.flags = cmdFlag
       keyVDown?.post(tap: .cgAnnotatedSessionEventTap)
       keyVUp?.post(tap: .cgAnnotatedSessionEventTap)
-
-      // cleepp needs an action method when pasting for advancing the queue afterwards
+      
+      // unlike original maccy, we  need an action method when pasting for advancing the queue afterwards
       // dispatch to the main thread again to add delay for the paste to happen (seems to work)
       DispatchQueue.main.async {
         action?()
       }
     }
   }
-
+  
   func clear() {
     guard UserDefaults.standard.clearSystemClipboard else {
       return
     }
-
+    
     pasteboard.clearContents()
   }
-
+  
+  // MARK: -
+  
   @objc
   func checkForChangesInPasteboard() {
     guard pasteboard.changeCount != changeCount else {
       return
     }
-
+    
     changeCount = pasteboard.changeCount
-
+    
     if UserDefaults.standard.ignoreEvents {
       if UserDefaults.standard.ignoreOnlyNextEvent {
         UserDefaults.standard.ignoreEvents = false
         UserDefaults.standard.ignoreOnlyNextEvent = false
       }
-
+      
       return
     }
-
+    
     // Reading types on NSPasteboard gives all the available
     // types - even the ones that are not present on the NSPasteboardItem.
     // See https://github.com/p0deje/Maccy/issues/241.
     if shouldIgnore(Set(pasteboard.types ?? [])) {
       return
     }
-
+    
     if let sourceAppBundle = sourceApp?.bundleIdentifier, shouldIgnore(sourceAppBundle) {
       return
     }
-
+    
     // Some applications (BBEdit, Edge) add 2 items to pasteboard when copying
     // so it's better to merge all data into a single record.
     // - https://github.com/p0deje/Maccy/issues/78
@@ -236,49 +234,51 @@ class Clipboard: CustomDebugStringConvertible {
       if types.contains(.string) && isEmptyString(item) && !richText(item) {
         return
       }
-
+      
       if shouldIgnore(item) {
         return
       }
-
+      
       types = types
         .subtracting(disabledTypes)
         .filter { !$0.rawValue.starts(with: microsoftSourcePrefix) }
-
+      
       // Maccy removes .dyn types always to fix a MS Word issue or something, but
       // keeping them fixes LibreOffice, so only remove when evidence of any MS app
       if types.contains(where: { $0.rawValue.starts(with: microsoftAnythingPrefix) }) {
         types = types.filter { !$0.rawValue.starts(with: dynamicTypePrefix) }
       }
-
+      
       // Avoid reading Microsoft Word links from bookmarks and cross-references.
       // https://github.com/p0deje/Maccy/issues/613
       // https://github.com/p0deje/Maccy/issues/770
       if types.isSuperset(of: [.microsoftLinkSource, .microsoftObjectLink]) {
         types = types.subtracting([.microsoftLinkSource, .microsoftObjectLink, .pdf])
       }
-
+      
       types.forEach { type in
         contents.append(ClipContent(type: type.rawValue, value: item.data(forType: type)))
       }
     })
-
+    
     guard !contents.isEmpty else {
       return
     }
-
+    
     let historyItem = ClipItem(contents: contents, application: sourceApp?.bundleIdentifier)
     onNewCopyHooks.forEach({ $0(historyItem) })
   }
-
+  
+  // MARK: -
+  
   private func shouldIgnore(_ types: Set<NSPasteboard.PasteboardType>) -> Bool {
     let ignoredTypes = self.ignoredTypes
       .union(UserDefaults.standard.ignoredPasteboardTypes.map({ NSPasteboard.PasteboardType($0) }))
-
+    
     return types.isDisjoint(with: enabledTypes) ||
       !types.isDisjoint(with: ignoredTypes)
   }
-
+  
   private func shouldIgnore(_ sourceAppBundle: String) -> Bool {
     if UserDefaults.standard.ignoreAllAppsExceptListed {
       return !UserDefaults.standard.ignoredApps.contains(sourceAppBundle)
@@ -286,7 +286,7 @@ class Clipboard: CustomDebugStringConvertible {
       return UserDefaults.standard.ignoredApps.contains(sourceAppBundle)
     }
   }
-
+  
   private func shouldIgnore(_ item: NSPasteboardItem) -> Bool {
     for regexp in UserDefaults.standard.ignoreRegexp {
       if let string = item.string(forType: .string) {
@@ -302,35 +302,37 @@ class Clipboard: CustomDebugStringConvertible {
     }
     return false
   }
-
+  
   private func isEmptyString(_ item: NSPasteboardItem) -> Bool {
     guard let string = item.string(forType: .string) else {
       return true
     }
-
+    
     return string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
-
+  
   private func richText(_ item: NSPasteboardItem) -> Bool {
     if let rtf = item.data(forType: .rtf) {
       if let attributedString = NSAttributedString(rtf: rtf, documentAttributes: nil) {
         return !attributedString.string.isEmpty
       }
     }
-
+    
     if let html = item.data(forType: .html) {
       if let attributedString = NSAttributedString(html: html, documentAttributes: nil) {
         return !attributedString.string.isEmpty
       }
     }
-
+    
     return false
   }
-
+  
+  // MARK: -
+  
   var debugDescription: String {
     debugDescription()
   }
-
+  
   func debugDescription(ofLength length: Int? = nil) -> String {
     // a variation on the code in checkForChangesInPasteboard()
     // future changes there should be reflected here also

@@ -1,3 +1,14 @@
+//
+//  FilterFieldView.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on MenuHeaderView.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Carbon
 import Cocoa
 import Sauce
@@ -29,23 +40,6 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
   private lazy var headerSize = NSSize(width: AppMenu.menuWidth, height: headerHeight)
   
   override func awakeFromNib() {
-#if !CLEEPP
-    autoresizingMask = .width
-    setFrameSize(headerSize)
-    
-    queryField.delegate = self
-    queryField.placeholderString = NSLocalizedString("search_placeholder", comment: "")
-    
-    if UserDefaults.standard.hideTitle {
-      titleField.isHidden = true
-      removeConstraint(titleAndSearchSpacing)
-    }
-    
-    if UserDefaults.standard.hideSearch {
-      constraints.forEach(removeConstraint)
-    }
-#endif
-    
     if #unavailable(macOS 11) {
       horizontalLeftPadding.constant = macOSXLeftPadding
       horizontalRightPadding.constant = macOSXRightPadding
@@ -55,12 +49,7 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
   override func viewDidMoveToWindow() {
     super.viewDidMoveToWindow()
     
-    guard let menu = customMenu else { return }
-    
     if window != nil {
-#if !CLEEPP
-      menu.adjustMenuWindowPosition()
-#endif
       eventMonitor.start()
     } else {
       // Ensure header view was not simply scrolled out of the menu.
@@ -121,7 +110,7 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
   public func queryChanged(throttle: Bool = true) {
     fireNotification(throttle: throttle)
   }
-
+  
   private func processInterceptedEvent(_ event: NSEvent) -> Bool {
     if event.type != NSEvent.EventType.keyDown {
       return false
@@ -136,30 +125,14 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
     return processKeyDownEvent(key: key, modifierFlags: modifierFlags, chars: chars)
   }
   
-  // swiftlint:disable cyclomatic_complexity
-  // swiftlint:disable function_body_length
   private func processKeyDownEvent(key: Key, modifierFlags: NSEvent.ModifierFlags, chars: String?) -> Bool {
     switch FilterFieldKeyCmd(key, modifierFlags) {
     case .clearSearch:
-      #if CLEEPP
       if queryField.stringValue.isEmpty {
         return false
       }
-      #endif
       setQuery("")
       return true
-#if !CLEEPP
-    case .deleteCurrentItem:
-      customMenu?.delete()
-      setQuery("")
-      return true
-    case .clearHistory:
-      performMenuItemAction(MenuFooter.clear.rawValue)
-      return true
-    case .clearHistoryAll:
-      performMenuItemAction(MenuFooter.clearAll.rawValue)
-      return true
-#endif
     case .deleteOneCharFromSearch:
       return processDeletion()
     case .deleteLastWordFromSearch:
@@ -171,20 +144,6 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
     case .moveToPrevious:
       customMenu?.selectPrevious()
       return true
-#if !CLEEPP
-    case .pinOrUnpin:
-      if let menu = customMenu, menu.pinOrUnpin() {
-        queryField.stringValue = "" // clear search field just in case
-        return true
-      }
-    case .hide:
-      customMenu?.cancelTracking()
-      return true
-    case .openPreferences:
-      performMenuItemAction(MenuFooter.preferences.rawValue)
-      return true
-#endif
-#if CLEEPP
     case .cut:
       guard let e = queryField.currentEditor(), e.selectedRange.length > 0, let r = Range(e.selectedRange, in: e.string) else {
         return true
@@ -203,14 +162,7 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
       let s = String(e.string[r])
       Clipboard.shared.copy(s, excludeFromHistory: true)
       return true
-#endif
     case .paste:
-      #if !CLEEPP
-      if HistoryItem.pinned.contains(where: { $0.pin == key.rawValue }) {
-        return false
-      }
-      queryField.becomeFirstResponder()
-      #endif
       queryField.currentEditor()?.paste(nil)
       return true
     case .selectCurrentItem:
@@ -219,13 +171,11 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
     case .ignored:
       return false
     default:
-      ()
+      break
     }
     
     return processSingleCharacter(chars)
   }
-  // swiftlint:enable cyclomatic_complexity
-  // swiftlint:enable function_body_length
   
   private func processSingleCharacter(_ chars: String?) -> Bool {
     guard !characterPickerVisible else {
@@ -318,16 +268,5 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
       setQuery("\(newValue) ")
     }
   }
-  
-  #if !CLEEPP
-  private func performMenuItemAction(_ tag: Int) {
-    guard let menuItem = customMenu?.item(withTag: tag) else {
-      return
-    }
-    
-    _ = menuItem.target?.perform(menuItem.action, with: menuItem)
-    customMenu?.cancelTracking()
-  }
-  #endif
   
 }

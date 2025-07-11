@@ -1,7 +1,18 @@
+//
+//  GeneralSettingsViewController.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2024-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on GeneralSettingsViewController.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
 import Cocoa
 import KeyboardShortcuts
 import Settings
-#if ALLOW_SPARKLE_UPDATES
+#if SPARKLE_UPDATES
 import Sparkle
 #endif
 #if canImport(ServiceManagement)
@@ -19,7 +30,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   private let copyHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedCopy)
   private let pasteHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedPaste)
 
-  #if ALLOW_SPARKLE_UPDATES
+  #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
   #endif
   
@@ -44,7 +55,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
   @IBOutlet weak var promoteExtrasItemsRow: NSGridRow!
 
-  #if ALLOW_SPARKLE_UPDATES
+  #if SPARKLE_UPDATES
   init(updater: SPUUpdater) {
     sparkleUpdater = updater
     super.init(nibName: nil, bundle: nil)
@@ -74,7 +85,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     addSubviewWithManualLayout(copyHotkeyContainerView, copyHotkeyRecorder)
     addSubviewWithManualLayout(pasteHotkeyContainerView, pasteHotkeyRecorder)
     
-    #if !ALLOW_SPARKLE_UPDATES
+    #if !SPARKLE_UPDATES
     hideSparkleUpdateRows()
     #endif
     
@@ -111,20 +122,20 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   }
   
   @IBAction func sparkleAutomaticUpdatesChanged(_ sender: NSButton) {
-    #if ALLOW_SPARKLE_UPDATES
+    #if SPARKLE_UPDATES
     sparkleUpdater.automaticallyChecksForUpdates = (sender.state == .on)
     #endif
   }
   
   private func populateSparkleAutomaticUpdates() {
-    #if ALLOW_SPARKLE_UPDATES
+    #if SPARKLE_UPDATES
     let automatic = sparkleUpdater.automaticallyChecksForUpdates
     automaticUpdatesButton.state = automatic ? .on : .off
     #endif
   }
   
   @IBAction func sparkleUpdateCheck(_ sender: NSButton) {
-    #if ALLOW_SPARKLE_UPDATES
+    #if SPARKLE_UPDATES
     sparkleUpdater.checkForUpdates()
     #endif
   }

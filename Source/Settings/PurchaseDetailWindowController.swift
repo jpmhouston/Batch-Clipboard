@@ -1,6 +1,6 @@
 //
 //  PurchaseDetailWindowController.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-10-19.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.
@@ -59,7 +59,7 @@ class PurchaseDetailWindowController: NSWindowController, NSWindowDelegate, NSTa
     userAgreementLinkLabel.attributedStringValue = styled
     
     //styled = NSMutableAttributedString(attributedString: privacyPolicyLinkLabel.attributedStringValue)
-    //styled.applySimpleStyles(basedOnFont: font, withLink: Cleepp.privacyPolicyURL)
+    //styled.applySimpleStyles(basedOnFont: font, withLink: AppModel.privacyPolicyURL)
     //privacyPolicyLinkLabel.attributedStringValue = styled
     
     if purchases.isEmpty, let defaultSelectRow = products.firstIndex(where: { $0.item == .bonus }) {

@@ -1,6 +1,6 @@
 //
-//  MenuEventMonitorView.swift
-//  Cleepp
+//  KeyMonitorView.swift
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2025-05-28.
 //  Copyright © 2025 Bananameter Labs. All rights reserved.

@@ -1,6 +1,6 @@
 //
-//  ContainsInverted.swift
-//  Cleepp
+//  Equatable+Included.swift
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-10.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.

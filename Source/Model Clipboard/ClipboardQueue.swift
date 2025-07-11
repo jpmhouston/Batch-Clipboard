@@ -1,6 +1,6 @@
 //
 //  ClipboardQueue.swift
-//  Cleepp
+//  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-05-20.
 //  Copyright © 2024 Bananameter Labs. All rights reserved.
