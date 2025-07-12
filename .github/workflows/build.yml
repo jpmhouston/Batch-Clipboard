@@ -1,0 +1,56 @@
+# Copyright © 2025 Pierre Houston, Bananameter Labs. All rights reserved 
+name: Build for CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - ".github/**"
+      - ".git/**"
+      - ".gitignore"
+      - "*Tests/**"
+      - "*.md"
+      - "*.toml"
+      - "*.xml"
+  workflow_dispatch:
+
+env:
+  projectfile: "Batch Clipboard.xcodeproj"
+  buildscheme: "Batch Clipboard"
+
+jobs:
+  build:
+    name: Test Build Cleepp Non-AppStore Variant
+    runs-on: macos-15
+    if: ${{ ! contains(github.ref, 'refs/tags') }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Build
+        run: |
+          :
+          xcodebuild -version
+          
+          buildlogfile=xcodebuild-out.txt
+          
+          echo "- Build with xcodebuild from $(xcodebuild -version)"
+          # requires that env.projectfile is the name of the .xcodeproj, and
+          # env.buildscheme is a valid build scheme.
+          # note: not sure why ONLY_ACTIVE_ARCH=NO is required for xcodebuild,
+          # it should already be NO for Release configuration.
+          set -o pipefail && xcodebuild ONLY_ACTIVE_ARCH=NO clean build analyze \
+            -scheme "${{ env.buildscheme }}" -configuration Release \
+            -project "${{ env.projectfile }}" -derivedDataPath . | \
+            tee "$buildlogfile" | xcbeautify --renderer github-actions
+          
+          echo "log=$buildlogfile" >> $GITHUB_OUTPUT
+      
+      - name: Save build log as artifact
+        if: ${{ success() || failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build log
+          path: |
+            ${{ steps.build.outputs.log }}

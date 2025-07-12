@@ -1,0 +1,665 @@
+# Copyright © 2025 Pierre Houston, Bananameter Labs. All rights reserved 
+name: Build Non-App Store Release
+
+on:
+  create:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Version to title release with (like: 1.0rc3), blank for project's version"
+        type: string
+        required: false
+      githubRelease:
+        description: "Make full GitHub Release"
+        type: boolean
+        required: true
+        default: true
+      updateAppcast:
+        description: "Update Sparkle"
+        type: boolean
+        required: true
+        default: true
+      isPrerelease:
+        description: "Prerelease"
+        type: boolean
+        required: true
+        default: false
+
+env:
+  githubReleaseDefault: true
+  updateAppcastDefault: true
+  isPrereleaseDefault: false
+  projectfile: "Batch Clipboard.xcodeproj"
+  buildscheme: "Batch Clipboard"
+  productname: "Batch Clipboard"
+  bundlename: "Batch Clipboard.app"
+  builddir: Build/Products/Release
+  branch: main
+
+jobs:
+  build:
+    name: Build and Release Non-AppStore Variant
+    runs-on: macos-15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # required for 'git show-ref --tags' to work
+          ref: "${{ env.branch }}"
+      
+      # - name: Patch Xcode 15.3
+      #   uses: 2sem/patch-package-resolved@v2
+      #   # this fixes a mysterious build failure
+      #   #   xcodebuild: error: Could not resolve package dependencies:
+      #   #     Package.resolved file is corrupted or malformed; fix or delete the file
+      #   #     to continue: unknown 'PinsStorage' version '3'
+      #   # should probably remove this when upgrading the "runs-on" platform
+      
+      - name: Install tools
+        # pandoc is used by sparkle step and by one of the xcode project's build rules
+        # create-dmg is to define dmg entirely from script below instead of using a tempplate
+        run: |
+          :
+          brew update
+          brew install pandoc create-dmg # needed coreutils at one point but no longer IIRC
+          
+          if ! command -v xcodebuild >/dev/null 2>&1 || ! command -v xcbeautify >/dev/null 2>&1 \
+            || ! command -v plutil >/dev/null 2>&1 || ! command -v security >/dev/null 2>&1 \
+            || ! command -v xcrun >/dev/null 2>&1
+          then
+            echo "::error::Required executables not found: xcodebuild, xcbeautify, plutil, security, xcrun"
+            exit 1
+          fi
+          if ! xcrun --find codesign >/dev/null 2>&1
+          then
+            echo "::error::Required developer executables not found: codesign"
+            exit 1
+          fi
+          if ! command -v pandoc >/dev/null 2>&1 || ! command -v create-dmg >/dev/null 2>&1
+          then
+            echo "::error::Required homebrew executables not found: pandoc, create-dmg"
+            exit 1
+          fi
+      
+      - name: Get Script Inputs
+        id: inputs
+        run: |
+          :
+          echo "- Check some script inputs and use defaults if unset"
+          if [[ -z "${{ inputs.isPrerelease }}" ]] ; then
+            echo "- Use default value for isPrerelease: ${{ env.isPrereleaseDefault }}"
+            isPrerelease=${{ env.isPrereleaseDefault }}
+          else
+            echo "- Use supplied value for isPrerelease: ${{ inputs.isPrerelease }}"
+            isPrerelease=${{ inputs.isPrerelease }}
+          fi
+          
+          if [[ -z "${{ inputs.githubRelease }}" ]] ; then
+            echo "- Use default value for githubRelease: ${{ env.githubReleaseDefault }}"
+            githubRelease=${{ env.githubReleaseDefault }}
+          else
+            echo "- Use supplied value for githubRelease: ${{ inputs.githubRelease }}"
+            githubRelease=${{ inputs.githubRelease }}
+          fi
+          
+          if [[ -z "${{ inputs.updateAppcast }}" ]] ; then
+            echo "- Use default value for updateAppcast: ${{ env.updateAppcastDefault }}"
+            updateAppcast=${{ env.updateAppcastDefault }}
+          else
+            echo "- Use supplied value for updateAppcast: ${{ inputs.updateAppcast }}"
+            updateAppcast=${{ inputs.updateAppcast }}
+          fi
+          
+          echo "githubRelease=$githubRelease" >> $GITHUB_OUTPUT
+          echo "updateAppcast=$updateAppcast" >> $GITHUB_OUTPUT
+          echo "prerelease=$isPrerelease" >> $GITHUB_OUTPUT
+      
+      - name: Validate
+        id: version
+        run: |
+          :
+          echo "- Extract version and bundle id from the project"
+          xcodebuild -scheme "${{ env.buildscheme }}" -configuration Release \
+            -project "${{ env.projectfile }}" -showBuildSettings 2>/dev/null > buildsettings.txt
+          version=$(sed -nr 's/^.*MARKETING_VERSION = (.*)$/\1/p' < buildsettings.txt)
+          if [[ -z $version ]] ; then
+            echo "::error::Unable to determine a version number for the current state of the xcode project"
+            exit 1
+          fi
+          bundleid=$(sed -nr 's/^.*PRODUCT_BUNDLE_IDENTIFIER = (.*)$/\1/p' < buildsettings.txt)
+          if [[ -z $bundleid ]] ; then
+            echo "::error::Unable to extract bundle id from the xcode project"
+            exit 1
+          fi
+          echo "- $version $bundleid"
+          
+          if [[ -z "${{ inputs.releaseVersion }}" || $version == "${{ inputs.releaseVersion }}" ]] ; then
+            echo "- Build version is $version"
+          else
+            echo "- Build version is $version but overriding with ${{ inputs.releaseVersion }} for release & file names"
+            version="${{ inputs.releaseVersion }}"
+          fi
+          releasename="${{ env.productname }} $version"
+          releasenameNoSpaces="$(echo "${{ env.productname }}" |  sed "s/ /./").$version"
+          
+          echo "- Parse trigger"
+          if [[ "${{ github.event_name }}" == workflow_dispatch ]] ; then
+            if [[ "${{ github.ref }}" != "refs/heads/${{ env.branch }}" ]] ; then
+              echo "::error::Manually triggered workflow supports ${{ env.branch }} only, gihub.ref == ${{ github.ref }})"
+              exit 1
+            fi
+            if git show-ref --tags --verify refs/tags/v$version --quiet ; then
+              tag="v$version"
+              if [[ ${{ steps.inputs.outputs.githubRelease }} != 'true' ]] ; then
+                echo "- Will build and save release \"$releasename\" as artifact"
+              else
+                echo "- Will build and draft release \"$releasename\" with matching tag \"$tag\""
+              fi
+            elif [[ ${{ steps.inputs.outputs.githubRelease }} != 'true' ]] ; then
+              echo "- Will build and save release \"$releasename\" as artifact"
+            else
+              echo "- Will build and save release \"$releasename\" as artifact because no tag \"v$version\" was found"
+            fi
+          elif [[ "${{ github.ref }}" == refs/tags/* ]] ; then
+            # TODO: how do we verify the branch of this tag and ensure its ${{ env.branch }} ?
+            ref="${{ github.ref }}"
+            tag="${ref:10}" # magic number 10 being the length of "refs/tags/", stripping that to leave just the tag name
+            echo "- Will build and draft release \"$releasename\" because triggered by pushed tag \"$tag\""
+          else
+            echo "::error::Not triggered manually or by a tag (github.event_name == ${{ github.event_name }}, gihub.ref == ${{ github.ref }})"
+            exit 1
+          fi
+          if [[ -z $tag && ${{ steps.inputs.outputs.githubRelease }} == 'true' ]] ; then
+            echo "::notice::Creating a github release skipped because no tag \"v$version\" was found"
+          fi
+          if [[ ${{ steps.inputs.outputs.updateAppcast }} == 'true' && ( -z $tag || ${{ steps.inputs.outputs.githubRelease }} != 'true' ) ]] ; then
+            echo "::notice::Updating the sparkle appcast is always skipped for untagged or non-github release builds"
+          fi
+          
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "bundleid=$bundleid" >> $GITHUB_OUTPUT
+          echo "releasename=$releasename" >> $GITHUB_OUTPUT
+          echo "archivename=$releasenameNoSpaces" >> $GITHUB_OUTPUT
+          if [[ -n $tag ]] ; then
+            echo "tag=$tag" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Build
+        id: build
+        run: |
+          :
+          buildlogfile=xcodebuild-out.txt
+          
+          echo "- Build with xcodebuild from $(xcodebuild -version)"
+          # requires that env.projectfile is the name of the .xcodeproj, env.buildscheme is
+          # a valid build scheme, and and env.bundlename is name of the produced .app
+          # note: not sure why ONLY_ACTIVE_ARCH=NO is required for xcodebuild, it should
+          # already be NO for Release configuration
+          set -o pipefail && xcodebuild ONLY_ACTIVE_ARCH=NO clean build analyze \
+            -scheme "${{ env.buildscheme }}" -configuration Release \
+            -project "${{ env.projectfile }}" -derivedDataPath . | \
+            tee "$buildlogfile" | xcbeautify --renderer github-actions
+          
+          if [[ ! -d "${{ env.builddir }}/${{ env.bundlename }}" ]] ; then
+            echo "::error::Unable to find the built app bundle"
+            exit 1
+          fi
+          
+          echo "- Extract bundle version from app"
+          plutil -extract CFBundleVersion raw \
+            "Build/Products/Release/${{ env.bundlename }}/Contents/Info.plist"
+          bundleVersion=$(plutil -extract CFBundleVersion raw \
+            "Build/Products/Release/${{ env.bundlename }}/Contents/Info.plist" 2> /dev/null)
+          if [[ -z $bundleVersion && "${{ steps.inputs.outputs.updateAppcast }}" == 'true' ]] ; then
+            echo "::error::Unable to find the app's bundle version"
+            exit 1
+          elif [[ -z $bundleVersion ]] ; then
+            echo "::warning::Unable to find the app's bundle version, workflows updating Sparkle appcast require this, but this one can continue"
+          fi
+          
+          echo "::notice::Built ${{ steps.version.outputs.releasename }} version ${{ steps.version.outputs.version }}, build number $bundleVersion"
+          
+          symfilename="${{ env.bundlename }}.dSYM"
+          if [ ! -d "${{ env.builddir }}/$symfilename" ] ; then
+            echo "::warning::Symbol file not found"
+          fi
+          
+          echo "version=$bundleVersion" >> $GITHUB_OUTPUT
+          echo "appbundle=${{ env.builddir }}/${{ env.bundlename }}" >> $GITHUB_OUTPUT
+          echo "symbolfilename=$symfilename" >> $GITHUB_OUTPUT
+          echo "symbolfile=${{ env.builddir }}/$symfilename" >> $GITHUB_OUTPUT
+          echo "log=$buildlogfile" >> $GITHUB_OUTPUT
+      
+      - name: Save Build Log as Artifact
+        if: ${{ steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build log
+          path: |
+            ${{ steps.build.outputs.log }}
+      
+      - name: Zip Symbol FIle
+        id: symbols
+        # needed because a .dSYM is a directory, and directories fed to actions/upload-artifact
+        # don't seem unzip with the original directory name
+        run: |
+          :
+          echo "- Create symbol file archive"
+          zipfilename="${{steps.version.outputs.releasename}} Symbols.zip"
+          ditto -c -k --keepParent "${{ steps.build.outputs.symbolfile }}" "$zipfilename"
+          
+          echo "filename=$zipfilename" >> $GITHUB_OUTPUT
+      
+      - name: Save Zipped Symbol File as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "Symbol file"
+          path: ${{ steps.symbols.outputs.filename }}
+      
+      - name: Setup Keychain
+        run: |
+          :
+          if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
+            exit 1
+          fi
+          
+          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CERTIFICATE not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CERTIFICATE_PWD not defined"
+            exit 1
+          fi
+          
+          # Turn our base64-encoded certificate back to a regular .p12 file
+          
+          echo "- Base64-decode certificate to make \"certificate.p12\""
+          echo "${{ secrets.PROD_MACOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          
+          # We need to create a new keychain, one that we can keep unlocked,
+          # otherwise using the certificate will prompt with a UI dialog asking for
+          # the certificate password, which won't work in a headless CI environment
+          
+          echo "- Create unlocked keychain \"build.keychain\""
+          security create-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain 
+          security default-keychain -s build.keychain
+          security set-keychain-settings build.keychain # omitted '-t N' option means no timeout
+          security unlock-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+          
+          echo "- Import \"certificate.p12\" into \"build.keychain\""
+          security import certificate.p12 -P "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" \
+            -T "$(xcrun --find codesign)" -t cert -f pkcs12 -k build.keychain
+          
+          security list-keychain -d user -s build.keychain
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+      
+      - name: Codesign App Bundle
+        run: |
+          :
+          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CERTIFICATE_NAME not defined"
+            exit 1
+          fi
+          
+          # Codesign our app bundle, specifying the Hardened runtime option
+          
+          echo "- Sign subcomponents..."
+          # this is thanks to https://stackoverflow.com/a/11284404/592739
+          # within this section change the Internal Field Separator (IFS) to
+          # iterate over newline-separated paths that contain spaces
+          savedIFS=$IFS
+          IFS=$(echo -en "\n\b")
+          
+          subitems=""
+          addsubitems()
+          {
+            if [ -z "$subitems" ] ; then
+              subitems="$1"
+            else
+              subitems="$subitems"$'\n'"$1"
+            fi
+          }
+          
+          frameworksdir="${{ steps.build.outputs.appbundle }}/Contents/Frameworks"
+          if [ -d "$frameworksdir" ] ; then
+            frameworksdirdylibs=$(find "$frameworksdir" -depth -name "*.dylib")
+            if [ -n "$frameworksdirdylibs" ] ; then
+              addsubitems "$frameworksdirdylibs"
+            fi
+            frameworksdirbundles=$(find "$frameworksdir" -depth -type d -name "*.bundle")
+            if [ -n "$frameworksdirbundles" ] ; then
+              addsubitems "$frameworksdirbundles"
+            fi
+            frameworksdirframeworks=$(find "$frameworksdir" -depth -type d -name "*.framework")
+            if [ -n "$frameworksdirframeworks" ] ; then
+              for framework in $frameworksdirframeworks; do
+                frameworksubapp=$(find "$framework" -depth -type d -name "*.app")
+                if [ -n "$frameworksubapp" ] ; then
+                  addsubitems "$frameworksubapp"
+                fi
+                frameworksubapp=$(find "$framework" -depth -type d -name "*.xpc")
+                if [ -n "$frameworksubapp" ] ; then
+                  addsubitems "$frameworksubapp"
+                fi
+                # search for executables with limited depth to avoid ones within an .app
+                frameworkname=$(basename -s ".framework" "$framework")
+                frameworksubexecutable=$(find "$framework" -maxdepth 4 -type f -perm +111 \
+                                        -not -name "$frameworkname")
+                if [ -n "$frameworksubexecutable" ] ; then
+                  addsubitems "$frameworksubexecutable"
+                fi
+              done
+              addsubitems "$frameworksdirframeworks"
+            fi
+          fi
+          # potentially grab more subitems from other places within the .app here
+          # ie. resourcesdir="${{ steps.build.outputs.appbundle }}/Contents/Resources"
+          
+          for subitem in $subitems; do
+            xcrun codesign --force --sign "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" \
+            --options runtime -v "$subitem"
+          done
+          
+          # would instead do this to if any subcomponents themselves included entitlements:
+          # for subitem in $subitems; do
+          #   echo -n "" > subentitlements.xml # codesign doesn't erase prev contents but appends, avoid this problem
+          #   xcrun codesign -d --entitlements subentitlements.xml --xml "$subitem"
+          #   if [ -s subentitlements.xml ] ; then
+          #     xcrun codesign --force --sign "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" \
+          #       --entitlements subentitlements.xml --options runtime -v "$subitem"
+          #   else
+          #     xcrun codesign --force --sign "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" \
+          #       --options runtime -v "$subitem"
+          #   fi
+          # done
+          IFS=$savedIFS
+          
+          echo "- Sign app"
+          xcrun codesign -d --entitlements entitlements.xml --xml "${{ steps.build.outputs.appbundle }}"
+          xcrun codesign --force --sign "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" \
+            --entitlements entitlements.xml --options runtime -v "${{ steps.build.outputs.appbundle }}"
+      
+      - name: Notarize App Bundle
+        run: |
+          :
+          if [[ -z "${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_NOTARIZATION_APPLE_ID not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_NOTARIZATION_TEAM_ID not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.PROD_MACOS_NOTARIZATION_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_NOTARIZATION_PWD not defined"
+            exit 1
+          fi
+          
+          # Store the notarization credentials so that we can prevent a UI password dialog
+          # from blocking the CI
+          
+          echo "- Create keychain profile"
+          xcrun notarytool store-credentials "notarytool-profile" \
+            --apple-id "${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}" \
+            --team-id "${{ secrets.PROD_MACOS_NOTARIZATION_TEAM_ID }}" \
+            --password "${{ secrets.PROD_MACOS_NOTARIZATION_PWD }}"
+          
+          # We can't notarize an app bundle directly, but we need to compress it as an archive.
+          # Therefore, we create a zip file containing our app bundle, so that we can send it to the
+          # notarization service
+          
+          echo "- Create temp notarization archive"
+          ditto -c -k --keepParent "${{ steps.build.outputs.appbundle }}" "notarization.zip"
+          
+          # Here we send the notarization request to the Apple's Notarization service, waiting for the result.
+          # This typically takes a few seconds inside a CI environment, but it might take more depending on the App
+          # characteristics. Visit the Notarization docs for more information and strategies on how to optimize it if
+          # you're curious
+          
+          echo "- Notarize app"
+          xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait \
+            2>&1 | tee notarytool-out.txt
+          if [ ${PIPESTATUS[0]} -ne 0 ] || grep -q Invalid notarytool-out.txt ; then
+            if sed -nr '/^[[:space:]]*id: (.*)$/{s//\1/p;q;}' notarytool-out.txt > notarytool-id.txt ; then
+              echo "- Extract notarytool failure log"
+              xcrun notarytool log "$(<notarytool-id.txt)" --keychain-profile "notarytool-profile"
+            fi
+            exit 1
+          fi
+          
+          # Finally, we need to "attach the staple" to our executable, which will allow our app to be
+          # validated by macOS even when an internet connection is not available.
+          echo "- Attach staple"
+          xcrun stapler staple "${{ steps.build.outputs.appbundle }}"
+      
+      - name: Release Notes
+        id: notes
+        run: |
+          :
+          echo "- Collect release notes"
+          changeLogFilename=CHANGELOG.md
+          tempNotesFilename="${{ steps.version.outputs.releasename }}.temp.md"
+          currentNotesFilename="${{ steps.version.outputs.releasename }}.md"
+          if [[ ! -f $changeLogFilename ]] ; then
+            echo "::warning::Change log file is missing"
+            numlines=0
+          else
+            echo -n "" > "${{ env.builddir }}/$tempNotesFilename"
+            thisversion=''
+            prevversion=''
+            while read line || [[ -n $line ]] ; do
+              if [[ -z $thisversion ]] ; then
+                thisversion=$(echo $line | sed -n -E 's/^#+ version ([0-9.dabrc]+) .*$/\1/p')
+                if [[ -n $thisversion ]] ; then
+                  if [[ $thisversion != "${{ steps.version.outputs.version }}" ]] ; then
+                    echo "::warning::Version $thisversion at the top of the change log doesn't match build version ${{ steps.version.outputs.version }}"
+                    break
+                  fi
+                  echo "- Found section for build version ${{ steps.version.outputs.version }} at the top of the change log"
+                fi
+                continue
+              fi
+              prevversion=$(echo $line | sed -n -E 's/^#+ version ([0-9.dabrc]+) .*$/\1/p')
+              if [[ -n $prevversion ]] ; then
+                break
+              fi
+              echo $line >> "${{ env.builddir }}/$tempNotesFilename"
+            done < "$changeLogFilename"
+            
+            # sed command removes initial and trailing blank lines, don't ask me how it works
+            # from https://unix.stackexchange.com/a/552195
+            cat "${{ env.builddir }}/$tempNotesFilename" | sed -e '/./,$!d' -e :a -e '/^\n*$/{$d;N;ba' -e '}' \
+              > "${{ env.builddir }}/$currentNotesFilename"
+            numlines=$(wc -l "${{ env.builddir }}/$currentNotesFilename" | cut -w -f2)
+          fi
+          
+          if [[ $numlines -gt 0 ]] ; then
+            echo "- Save $numlines lines of release notes to \"$currentNotesFilename\""
+          else
+            echo "- Save placeholder release notes to \"$currentNotesFilename\""
+            echo "Release notes unavailable at this time" > "${{ env.builddir }}/$currentNotesFilename"
+          fi
+          
+          echo "filename=$currentNotesFilename" >> $GITHUB_OUTPUT
+          echo "file=${{ env.builddir }}/$currentNotesFilename" >> $GITHUB_OUTPUT
+      
+      - name: Save Build as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ steps.version.outputs.archivename }} (non-app store)"
+          path: |
+            ${{ steps.build.outputs.appbundle }}
+            ${{ steps.notes.outputs.file }}
+      
+      - name: Build Zip File
+        id: zip
+        run: |
+          :
+          archiveDir="${{ env.builddir }}/Sparkle"
+          archiveFileName="${{ steps.version.outputs.archivename }}.zip"
+          
+          echo "- Compress built app to \"$(basename $archiveDir)/$archiveFileName\""
+          mkdir "$archiveDir"
+          ditto -c -k --sequesterRsrc --keepParent "${{ steps.build.outputs.appbundle }}" \
+            "$archiveDir/$archiveFileName"
+          
+          echo "file=$archiveDir/$archiveFileName" >> $GITHUB_OUTPUT
+          echo "directory=$archiveDir" >> $GITHUB_OUTPUT
+      
+      - name: Generate Zip File Hash
+        id: sha256
+        run: |
+          :
+          hashout=$(shasum -a 256 "${{ steps.zip.outputs.file }}")
+          echo "::notice::SHA256 hash: $hashout"
+          # this not working, is shasum output different on this system?
+          #hash=${shasum -a 256 "${{ steps.zip.outputs.file }}" | cut -d " " -f 1}
+          #echo "::notice::SHA256 hash of \"${{ steps.zip.outputs.name }}\" is $hash"
+          #echo "hash=$hash" >> $GITHUB_OUTPUT # might use in future step that updates the homebrew cask
+      
+      - name: Disk Image
+        id: dmg
+        run: |
+          :
+          if ! command -v create-dmg >/dev/null 2>&1 ; then
+            echo "::warning::Required helper script not found: create-dmg. Skipping dmg creation"
+            # not sure if need to do `echo "file=whatever" >> $GITHUB_OUTPUT`
+            # to make release step work, or if empty/missing steps.dmg.output.file is ok
+            exit 0
+          fi
+          
+          imageDir="${{ env.builddir }}/Image"
+          imageFileName="${{ steps.version.outputs.archivename }}.dmg"
+          readmeFilename="${{ env.productname }} version ${{ steps.version.outputs.version }} read me.rtf"
+          
+          echo "- Copy built app to \"$(basename $imageDir)/${{ env.bundlename }}\""
+          mkdir "$imageDir"
+          ditto "${{ steps.build.outputs.appbundle }}" "$imageDir/${{ env.bundlename }}"
+          
+          echo "- Copy readme file from source repo to \"$(basename $imageDir)/$readmeFilename\""
+          cp "Disk image read me.rtf" "$imageDir/$readmeFilename"
+          
+          echo "- Build disk image \"${{ env.builddir }}/$imageFileName\""
+          create-dmg --hdiutil-quiet \
+            --volname "${{ steps.version.outputs.releasename }}" \
+            --window-size 540 160 --icon-size 64 \
+            --icon "$readmeFilename" 40 60 \
+            --icon "${{ env.bundlename }}" 200 60 \
+            --app-drop-link 360 60 \
+            "${{ env.builddir }}/$imageFileName" "$imageDir"
+          
+          echo "filename=${{ env.bundlename }}" >> $GITHUB_OUTPUT
+          echo "file=${{ env.builddir }}/$imageFileName" >> $GITHUB_OUTPUT
+          
+      - name: Sign and Notarize Disk Image
+        run: |
+          :
+          echo "- Notarize disk image"
+          xcrun notarytool submit "${{ steps.dmg.outputs.file }}" --keychain-profile "notarytool-profile" --wait \
+            2>&1 | tee notarytool-out.txt
+          if [ ${PIPESTATUS[0]} -ne 0 ] || grep -q Invalid notarytool-out.txt ; then
+            if sed -nr '/^[[:space:]]*id: (.*)$/{s//\1/p;q;}' notarytool-out.txt > notarytool-id.txt ; then
+              echo "- Extract notarytool failure log"
+              xcrun notarytool log "$(<notarytool-id.txt)" --keychain-profile "notarytool-profile"
+            fi
+            exit 1
+          fi
+          
+          echo "- Attach staple"
+          xcrun stapler staple "${{ steps.dmg.outputs.file }}"
+      
+      - name: Save Disk Image as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ steps.version.outputs.archivename }} (non-app store) Disk Image"
+          path: ${{ steps.dmg.outputs.file }}
+      
+      - name: Setup Sparkle
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
+        uses: jozefizso/setup-sparkle@v1
+        with:
+          version: 2.6.0
+      
+      - name: Generate Sparkle appcast.xml
+        id: sparkle
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
+        run: |
+          :
+          echo "::add-mask::${{ secrets.SPARKLE_PRIVATE_KEY }}"
+          if [[ -z "${{ secrets.SPARKLE_PRIVATE_KEY }}" ]] ; then
+            echo "::warning::Secret SPARKLE_PRIVATE_KEY not defined. Skipping Sparkle step"
+            exit 0
+          fi
+          if ! command -v pandoc >/dev/null 2>&1 || ! command -v generate_appcast >/dev/null 2>&1 ; then
+            echo "::warning::Required executables not found: pandoc, generate_appcast. Skipping Sparkle step"
+            exit 0
+          fi
+          
+          htmlNotesFilename="$(basename -s .zip "${{ steps.zip.outputs.file }}")".html
+          htmlTemplateFilename=htmlnotestemplate.html
+          releasesURL="https://github.com/${{ github.repository }}/releases"
+          downloadURLPrefix="https://github.com/${{ github.repository }}/releases/download/v${{ steps.version.outputs.version }}/"
+          
+          echo "- Convert release notes to html"
+          echo '$body$' > "$htmlTemplateFilename"
+          if ! pandoc --standalone --template "$htmlTemplateFilename" --metadata title="Release Notes" \
+            "${{ steps.notes.outputs.file }}" \
+            > "${{ steps.zip.outputs.directory }}/$htmlNotesFilename"
+          then
+            echo "::warning::pandoc failed, no new appcast.xml file generated"
+            exit 0
+          fi
+          
+          echo "- Update appcast"
+          cp ./appcast.xml "${{ steps.zip.outputs.directory }}/appcast.xml" # dir needs current xml file
+          if ! echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | generate_appcast --ed-key-file - \
+            --link "$releasesURL" --download-url-prefix "$downloadURLPrefix" \
+            --embed-release-notes -o ./appcast.xml "${{ steps.zip.outputs.directory }}"
+          then
+            echo "::warning::generate_appcast failed, no new appcast.xml file generated"
+            echo
+            echo "ls -alF \"${{ steps.zip.outputs.directory }}\""
+            ls -alF "${{ steps.zip.outputs.directory }}"
+            echo
+            echo "cat \"${{ steps.zip.outputs.directory }}/$htmlNotesFilename\""
+            cat "${{ steps.zip.outputs.directory }}/$htmlNotesFilename"
+            echo
+            exit 0
+          fi
+          
+          echo "appcastGenerated=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit appcast.xml
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Automated Change to appcast.xml
+          file_pattern: "appcast.xml"
+          status_options: "--untracked-files=no"
+      
+      - name: Draft Tagged Release
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.tag }}
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.version.outputs.releasename }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          draft: true
+          prerelease: ${{ steps.inputs.outputs.prerelease }}
+          body_path: ${{ steps.notes.outputs.file }}
+          files: |
+            ${{ steps.zip.outputs.file }}
+            ${{ steps.dmg.outputs.file }}
+          fail_on_unmatched_files: false
+      
+      - name: Fin
+        run: |
+          :
+          if [[ ${{ steps.inputs.outputs.githubRelease }} == 'true' && -n "${{ steps.version.outputs.tag }}" ]] ; then
+            echo "::notice::Release \"${{ steps.version.outputs.releasename }}\" draft created continaing \"${{ steps.dmg.outputs.filename }}\""
+          else
+            echo "::notice::Release \"${{ steps.version.outputs.releasename }}\" built and saved as artifact"
+          fi
