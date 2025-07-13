@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -73,7 +72,7 @@
                             <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
                                 <rect key="frame" x="132" y="416" width="300" height="82"/>
                                 <subviews>
-                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
                                         <rect key="frame" x="-2" y="26" width="304" height="56"/>
                                         <textFieldCell key="cell" id="u7U-Li-5Kf">
                                             <font key="font" metaFont="smallSystem"/>
@@ -152,7 +151,7 @@
                         </gridCell>
                         <gridCell row="9S5-KO-hlC" column="vOJ-9h-G8Y" headOfMergedCell="ngL-2y-bq4" id="ngL-2y-bq4">
                             <customView key="contentView" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jni-KE-nIm">
-                                <rect key="frame" x="332" y="258" width="100" height="0.0"/>
+                                <rect key="frame" x="332" y="350" width="100" height="0.0"/>
                                 <constraints>
                                     <constraint firstAttribute="height" id="H75-ZQ-Yck"/>
                                 </constraints>
@@ -161,7 +160,7 @@
                         <gridCell row="9S5-KO-hlC" column="pQU-Pz-q1v" headOfMergedCell="ngL-2y-bq4" id="RGn-4L-Ntz"/>
                         <gridCell row="mzz-6k-Dz9" column="vOJ-9h-G8Y" headOfMergedCell="hec-ch-tJx" xPlacement="fill" yPlacement="center" id="hec-ch-tJx">
                             <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Mfq-pZ-sSn">
-                                <rect key="frame" x="0.0" y="247" width="432" height="5"/>
+                                <rect key="frame" x="0.0" y="339" width="432" height="5"/>
                             </box>
                         </gridCell>
                         <gridCell row="mzz-6k-Dz9" column="pQU-Pz-q1v" headOfMergedCell="hec-ch-tJx" id="hE2-yX-ng0"/>
@@ -175,7 +174,7 @@
                         </gridCell>
                         <gridCell row="prs-SG-Pfl" column="pQU-Pz-q1v" headOfMergedCell="mkT-Id-xVf" id="ekT-NX-dtt"/>
                         <gridCell row="tKf-uu-raQ" column="vOJ-9h-G8Y" id="gaG-xV-jaJ">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
+                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
                                 <rect key="frame" x="45" y="200" width="76" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="ccs-88-5v0"/>
@@ -198,7 +197,7 @@ Default: none.</string>
                             </customView>
                         </gridCell>
                         <gridCell row="1lh-Qw-cAx" column="vOJ-9h-G8Y" id="2m8-9a-mJO">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
+                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
                                 <rect key="frame" x="43" y="159" width="78" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="10R-0q-RDn"/>
@@ -221,7 +220,7 @@ Default: ^⌘C.</string>
                             </customView>
                         </gridCell>
                         <gridCell row="rSH-D5-fQU" column="vOJ-9h-G8Y" id="MkQ-Ti-RAy">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
+                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
                                 <rect key="frame" x="41" y="118" width="80" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="ARz-S4-0pY"/>
@@ -259,7 +258,7 @@ Default: ^⌘P.</string>
                         </gridCell>
                         <gridCell row="gQG-qR-qof" column="pQU-Pz-q1v" headOfMergedCell="8Tc-ki-XIw" id="a3u-rN-xNI"/>
                         <gridCell row="Ahg-HZ-SOL" column="vOJ-9h-G8Y" id="LiU-w2-SdI">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q7N-u9-cfJ">
+                            <textField key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q7N-u9-cfJ">
                                 <rect key="frame" x="71" y="72" width="50" height="16"/>
                                 <textFieldCell key="cell" alignment="right" title="Search:" id="eLD-CL-D8J">
                                     <font key="font" usesAppearanceFont="YES"/>

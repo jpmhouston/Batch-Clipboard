@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 76;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -75,18 +75,12 @@
 		8F301B2C2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				/Localized/App/Localizable.strings,
-				"/Localized/Menu Preview/Preview.xib",
-				/Localized/Settings/AdvancedSettingsViewController.xib,
-				/Localized/Settings/AppearanceSettingsViewController.xib,
-				/Localized/Settings/GeneralSettingsViewController.xib,
-				/Localized/Settings/IgnoreSettingsViewController.xib,
-				/Localized/Settings/StorageSettingsViewController.xib,
 				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/Application.xib,
 				App/Assets.xcassets,
+				App/Localizable.strings,
 				Controls/HyperlinkTextField.swift,
 				Controls/RangedIntegerTextField.swift,
 				"Credits/License credits.mkdn",
@@ -108,6 +102,7 @@
 				"Menu Field/FilterFieldView.swift",
 				"Menu Field/Searcher.swift",
 				"Menu Preview/Preview.swift",
+				"Menu Preview/Preview.xib",
 				"Menu Preview/PreviewPopoverController.swift",
 				Menu/AppMenu.swift,
 				Menu/AppMenu.xib,
@@ -135,14 +130,19 @@
 				Model/Permissions.swift,
 				"Model/UserDefaults+Configuration.swift",
 				Settings/AdvancedSettingsViewController.swift,
+				Settings/AdvancedSettingsViewController.xib,
 				Settings/AppearanceSettingsViewController.swift,
+				Settings/AppearanceSettingsViewController.xib,
 				Settings/GeneralSettingsViewController.swift,
+				Settings/GeneralSettingsViewController.xib,
 				Settings/IgnoreApplicationsViewController.swift,
 				Settings/IgnorePasteboardTypesViewController.swift,
 				Settings/IgnoreRegexViewController.swift,
 				Settings/IgnoreSettingsViewController.swift,
+				Settings/IgnoreSettingsViewController.xib,
 				Settings/SettingsPaneIdentifiers.swift,
 				Settings/StorageSettingsViewController.swift,
+				Settings/StorageSettingsViewController.xib,
 				Utilities/ColorImage.swift,
 				"Utilities/DispatchSource+ScheduledTimer.swift",
 				"Utilities/Equatable+Included.swift",
@@ -162,18 +162,12 @@
 		8F301B2D2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				/Localized/App/Localizable.strings,
-				"/Localized/Menu Preview/Preview.xib",
-				/Localized/Settings/AdvancedSettingsViewController.xib,
-				/Localized/Settings/AppearanceSettingsViewController.xib,
-				/Localized/Settings/GeneralSettingsViewController.xib,
-				/Localized/Settings/IgnoreSettingsViewController.xib,
-				/Localized/Settings/StorageSettingsViewController.xib,
 				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/Application.xib,
 				App/Assets.xcassets,
+				App/Localizable.strings,
 				Controls/HyperlinkTextField.swift,
 				Controls/RangedIntegerTextField.swift,
 				"Credits/License credits-MAS.mkdn",
@@ -195,6 +189,7 @@
 				"Menu Field/FilterFieldView.swift",
 				"Menu Field/Searcher.swift",
 				"Menu Preview/Preview.swift",
+				"Menu Preview/Preview.xib",
 				"Menu Preview/PreviewPopoverController.swift",
 				Menu/AppMenu.swift,
 				Menu/AppMenu.xib,
@@ -223,18 +218,23 @@
 				Model/Permissions.swift,
 				"Model/UserDefaults+Configuration.swift",
 				Settings/AdvancedSettingsViewController.swift,
+				Settings/AdvancedSettingsViewController.xib,
 				Settings/AppearanceSettingsViewController.swift,
+				Settings/AppearanceSettingsViewController.xib,
 				Settings/GeneralSettingsViewController.swift,
+				Settings/GeneralSettingsViewController.xib,
 				Settings/IgnoreApplicationsViewController.swift,
 				Settings/IgnorePasteboardTypesViewController.swift,
 				Settings/IgnoreRegexViewController.swift,
 				Settings/IgnoreSettingsViewController.swift,
+				Settings/IgnoreSettingsViewController.xib,
 				Settings/PurchaseDetailWindow.xib,
 				Settings/PurchaseDetailWindowController.swift,
 				Settings/PurchaseSettingsViewController.swift,
 				Settings/PurchaseSettingsViewController.xib,
 				Settings/SettingsPaneIdentifiers.swift,
 				Settings/StorageSettingsViewController.swift,
+				Settings/StorageSettingsViewController.xib,
 				Utilities/ColorImage.swift,
 				"Utilities/DispatchSource+ScheduledTimer.swift",
 				"Utilities/Equatable+Included.swift",
@@ -396,6 +396,7 @@
 				ORGANIZATIONNAME = "Bananameter Labs";
 			};
 			buildConfigurationList = DAEE383E1E3DBEB100DD2966 /* Build configuration list for PBXProject "Batch Clipboard" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -433,7 +434,6 @@
 				8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				8F5CBF322C8CFBB70058C06C /* XCRemoteSwiftPackageReference "flare" */,
 			);
-			preferredProjectObjectVersion = 46;
 			productRefGroup = DAEE38441E3DBEB100DD2966 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
