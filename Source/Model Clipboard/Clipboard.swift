@@ -60,6 +60,10 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func start() {
+    // check clipboard immediately
+    checkForChangesInPasteboard()
+    
+    // re-check periodically
     timer = Timer.scheduledTimer(
       timeInterval: UserDefaults.standard.clipboardCheckInterval,
       target: self,
@@ -67,6 +71,11 @@ class Clipboard: CustomDebugStringConvertible {
       userInfo: nil,
       repeats: true
     )
+  }
+  
+  func stop() {
+    timer?.invalidate()
+    timer = nil
   }
   
   func restart() {

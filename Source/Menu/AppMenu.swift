@@ -80,6 +80,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var cacheUndoCopyItemShortcut = ""
   private var showsExpandedMenu = false
   private var showsFullExpansion = false
+  private var showsSearchHeader = false
   private var isFiltered = false
   
   private var historyHeaderView: FilterFieldView? { historyHeaderItem?.view as? FilterFieldView ?? historyHeaderViewCache }
@@ -172,23 +173,31 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     previewController.menuWillOpen()
     
-    if showsExpandedMenu, let field = historyHeaderView?.queryField {
+    if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch && !clips.isEmpty,
+       let field = historyHeaderView?.queryField
+    {
       field.refusesFirstResponder = false
       field.window?.makeFirstResponder(field)
+      showsSearchHeader = true
+    } else {
+      showsSearchHeader = false
     }
   }
   
   func menuDidClose(_ menu: NSMenu) {
     isVisible = false
-    isFiltered = false
     showsExpandedMenu = false
     removeQueueItemsSeparator()
     
     previewController.menuDidClose()
     
-    DispatchQueue.main.async { // not sure why this is in a dispatch to the main thread, some timing thing i'm guessing
-      self.historyHeaderView?.setQuery("", throttle: false)
-      self.historyHeaderView?.queryField.refusesFirstResponder = true
+    isFiltered = false
+    if showsSearchHeader {
+      // not sure why this is in a dispatch to the main thread, some timing thing i'm guessing
+      DispatchQueue.main.async { 
+        self.historyHeaderView?.setQuery("", throttle: false)
+        self.historyHeaderView?.queryField.refusesFirstResponder = true
+      }
     }
   }
   
@@ -506,12 +515,13 @@ class AppMenu: NSMenu, NSMenuDelegate {
   func performQueueModeToggle() {
     guard !AppModel.busy else { return }
     
-    if queue.isOn {
-      guard let queueStopItem = queueStopItem else { return }
-      performActionForItem(at: index(of: queueStopItem))
-    } else {
+    if !queue.isOn {
       guard let queueStartItem = queueStartItem else { return }
       performActionForItem(at: index(of: queueStartItem))
+      
+    } else if queue.isOn && queue.isEmpty {
+      guard let queueStopItem = queueStopItem else { return }
+      performActionForItem(at: index(of: queueStopItem)) // TODO: find out why this usually doesn't work
     }
   }
   
@@ -736,8 +746,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
     }
     
-    let gotHistoryItems = !queue.isEmpty || (showsExpandedMenu && clips.count > 0)
-    let showSearchHeader = showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch
+    let haveHistoryItems = !queue.isEmpty || (showsExpandedMenu && !clips.isEmpty)
     
     // Switch visibility of start vs replay menu item
     queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
@@ -766,23 +775,23 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     
     // Delete item visibility
-    deleteItem?.isVisible = !queue.isEmpty || showsExpandedMenu
-    clearItem?.isVisible = !queue.isEmpty || showsExpandedMenu
+    deleteItem?.isVisible = haveHistoryItems
+    clearItem?.isVisible = haveHistoryItems
     
     // Visiblity of the history header and trailing separator
     // (the expanded menu means the search header and all of the history items)
     // hiding items with views not working well in macOS <= 14! remove view when hiding
     if removeViewToHideMenuItem {
-      if !showSearchHeader && historyHeaderItem.view != nil {
+      if !showsSearchHeader && historyHeaderItem.view != nil {
         historyHeaderViewCache = historyHeaderItem.view as? FilterFieldView
         historyHeaderItem.view = nil
-      } else if showSearchHeader && historyHeaderItem.view == nil {
+      } else if showsSearchHeader && historyHeaderItem.view == nil {
         historyHeaderItem.view = historyHeaderViewCache
         historyHeaderViewCache = nil
       }
     }
-    historyHeaderItem.isVisible = showSearchHeader
-    trailingSeparatorItem.isVisible = showSearchHeader || gotHistoryItems
+    historyHeaderItem.isVisible = showsSearchHeader
+    trailingSeparatorItem.isVisible = showsSearchHeader || haveHistoryItems
     
     // Show or hide the desired history items
     let zerothHistoryHeaderItem = topAnchorItem ?? historyHeaderItem

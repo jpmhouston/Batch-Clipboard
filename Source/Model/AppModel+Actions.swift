@@ -45,9 +45,20 @@ extension AppModel {
   }
   
   private func restoreClipboardMonitoring() {
-    if UserDefaults.standard.ignoreEvents {
+    if !UserDefaults.standard.keepHistory {
+      clipboard.restart()
+    } else if UserDefaults.standard.ignoreEvents {
       UserDefaults.standard.ignoreEvents = false
       UserDefaults.standard.ignoreOnlyNextEvent = false
+    }
+  }
+  
+  private func updateClipboardMonitoring() {
+    if !UserDefaults.standard.keepHistory && !queue.isOn {
+      clipboard.stop()
+      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
+        history.clear()
+      }
     }
   }
   
@@ -98,9 +109,10 @@ extension AppModel {
     }
     
     queue.off()
+    menu.updateHeadOfQueue(index: nil)
+    updateClipboardMonitoring()
     updateMenuIcon()
     updateMenuTitle()
-    menu.updateHeadOfQueue(index: nil)
     
     return true
   }
@@ -237,6 +249,7 @@ extension AppModel {
       } catch { }
       
       menu.updateHeadOfQueue(index: self.queue.headIndex)
+      updateClipboardMonitoring()
       updateMenuIcon(.decrement)
       updateMenuTitle()
       
@@ -348,9 +361,10 @@ extension AppModel {
         self.queue.finishBulkRemove()
         
         // final update to these and including icon not updated since the syaty
+        self.menu.updateHeadOfQueue(index: self.queue.headIndex)
+        updateClipboardMonitoring()
         self.updateMenuIcon()
         self.updateMenuTitle()
-        self.menu.updateHeadOfQueue(index: self.queue.headIndex)
         
         Self.busy = false
         
@@ -390,8 +404,9 @@ extension AppModel {
         return
       }
       
-      updateMenuTitle()
       menu.updateHeadOfQueue(index: queue.headIndex)
+      updateClipboardMonitoring()
+      updateMenuTitle()
       
       self.queuedPasteMultipleIterator(count - 1, then: completion)
     }
@@ -420,6 +435,7 @@ extension AppModel {
     }
     
     menu.updateHeadOfQueue(index: queue.headIndex)
+    updateClipboardMonitoring()
     updateMenuIcon(.decrement)
     updateMenuTitle()
   }
@@ -454,9 +470,10 @@ extension AppModel {
       return false
     }
     
+    menu.updateHeadOfQueue(index: index)
+    updateClipboardMonitoring()
     updateMenuIcon()
     updateMenuTitle()
-    menu.updateHeadOfQueue(index: index)
     
     return true
   }
@@ -555,13 +572,6 @@ extension AppModel {
   func showIntro(_ sender: AnyObject) {
     Self.returnFocusToPreviousApp = false
     introWindowController.openIntro(with: self)
-    Self.returnFocusToPreviousApp = true
-  }
-  
-  @IBAction
-  func showIntroAtPermissionPage(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
-    introWindowController.openIntro(atPage: .checkAuth, with: self)
     Self.returnFocusToPreviousApp = true
   }
   
