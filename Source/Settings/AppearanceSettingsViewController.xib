@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23094" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23094"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="AppearanceSettingsViewController" customModule="Batch_Clipboard" customModuleProvider="target">
             <connections>
+                <outlet property="filterFieldVisibleCheckbox" destination="YIB-bg-Q16" id="iLV-tS-H3h"/>
+                <outlet property="filterFieldVisibleRow" destination="hnq-hF-JcQ" id="F3b-9t-2d0"/>
+                <outlet property="filterModeButton" destination="EFj-K4-uyp" id="9VK-D9-CRc"/>
+                <outlet property="filterModeRow" destination="8h4-gi-UEJ" id="BB3-TE-w6z"/>
                 <outlet property="imageHeightField" destination="fcz-4Q-KUm" id="cyp-tO-tIe"/>
                 <outlet property="imageHeightStepper" destination="P1r-xd-oR8" id="Xjt-Gz-1OP"/>
                 <outlet property="numberOfItemsAltDescription" destination="hB7-M7-a6s" id="wAh-gK-Xe9"/>
                 <outlet property="numberOfItemsDescription" destination="iG7-PO-eNn" id="oeF-ra-Eln"/>
                 <outlet property="numberOfItemsExtendedDescription" destination="lhl-S6-RoL" id="BUI-7L-Zs6"/>
                 <outlet property="numberOfItemsField" destination="bLY-QC-Jck" id="dri-mu-gwm"/>
+                <outlet property="numberOfItemsMootDescription" destination="vSp-FY-3F6" id="THz-FU-9eE"/>
                 <outlet property="numberOfItemsStepper" destination="4JK-Tt-Luc" id="84b-3U-Nuu"/>
                 <outlet property="previewDelayField" destination="bWg-D5-ht1" id="vMb-ug-t34"/>
                 <outlet property="previewDelayStepper" destination="ULE-wI-xRy" id="ln7-x8-0ju"/>
-                <outlet property="showSearchFieldButton" destination="YIB-bg-Q16" id="Qln-5j-37O"/>
                 <outlet property="showSpecialSymbolsButton" destination="tC6-tV-7tl" id="f7a-qO-7Gq"/>
                 <outlet property="titleLengthField" destination="Wto-wB-Ijw" id="7T5-sc-gdI"/>
                 <outlet property="titleLengthStepper" destination="rCn-UZ-2qY" id="WLQ-6Y-rMm"/>
@@ -31,126 +36,30 @@
                 <gridView xPlacement="leading" yPlacement="top" rowAlignment="firstBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="5KL-yT-3Zi">
                     <rect key="frame" x="28" y="20" width="506" height="516"/>
                     <rows>
-                        <gridRow id="SYP-SL-aAk"/>
-                        <gridRow id="ES8-fv-krj"/>
+                        <gridRow id="Q7f-oT-IiD"/>
                         <gridRow id="S9I-rv-Kfl"/>
                         <gridRow id="5AN-Hb-8z8"/>
+                        <gridRow id="kS2-UC-qPZ"/>
+                        <gridRow id="q6D-rb-X9G"/>
                         <gridRow id="NiR-EB-Xrn"/>
+                        <gridRow id="WHt-13-Sv2"/>
                         <gridRow yPlacement="center" topPadding="4" bottomPadding="4" id="OdT-ff-FSd"/>
                         <gridRow id="nuK-ef-5Um"/>
+                        <gridRow id="LET-OH-awY"/>
                         <gridRow id="hnq-hF-JcQ"/>
+                        <gridRow id="8h4-gi-UEJ"/>
                     </rows>
                     <columns>
                         <gridColumn xPlacement="trailing" id="KLa-7P-lgK"/>
                         <gridColumn id="7OC-Fv-eMr"/>
                     </columns>
                     <gridCells>
-                        <gridCell row="SYP-SL-aAk" column="KLa-7P-lgK" id="oQq-xv-omv">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lEK-4J-i8J">
-                                <rect key="frame" x="-2" y="498" width="191" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="Number of history menu items:" id="MKb-cW-gpg">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="SYP-SL-aAk" column="7OC-Fv-eMr" id="kuT-3B-2sI">
-                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a8Y-aG-9on">
-                                <rect key="frame" x="200" y="495" width="288" height="21"/>
-                                <string key="toolTip">Number of visible items.
-Hidden items are still kept in history and can be found using search.
-Set to 0 to make all items visible.
-Default: 20.</string>
-                                <subviews>
-                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bLY-QC-Jck">
-                                        <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="96" id="0cw-7u-Pmb"/>
-                                        </constraints>
-                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="JeV-cW-E9e">
-                                            <font key="font" metaFont="system"/>
-                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                        <connections>
-                                            <action selector="numberOfItemsFieldChanged:" target="-2" id="1B2-S2-YfZ"/>
-                                            <outlet property="nextKeyView" destination="fcz-4Q-KUm" id="olx-v1-rr3"/>
-                                        </connections>
-                                    </textField>
-                                    <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4JK-Tt-Luc">
-                                        <rect key="frame" x="101" y="-4" width="19" height="29"/>
-                                        <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="T1H-vu-Hbw"/>
-                                        <connections>
-                                            <action selector="numberOfItemsStepperChanged:" target="-2" id="okO-Aj-0yD"/>
-                                        </connections>
-                                    </stepper>
-                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="8TQ-NU-idz">
-                                        <rect key="frame" x="125" y="0.0" width="163" height="21"/>
-                                    </customView>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="8TQ-NU-idz" firstAttribute="height" secondItem="4JK-Tt-Luc" secondAttribute="height" id="tby-TM-frm"/>
-                                </constraints>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
-                        </gridCell>
-                        <gridCell row="ES8-fv-krj" column="KLa-7P-lgK" id="iJ9-3i-XqT"/>
-                        <gridCell row="ES8-fv-krj" column="7OC-Fv-eMr" id="seq-WR-E8A">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IkI-KQ-foQ">
-                                <rect key="frame" x="200" y="431" width="306" height="56"/>
-                                <subviews>
-                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="iG7-PO-eNn">
-                                        <rect key="frame" x="-2" y="42" width="488" height="14"/>
-                                        <textFieldCell key="cell" selectable="YES" title="Option-click the menu bar icon to view the expanded menu showing this many history items." id="8lO-Bq-al1">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lhl-S6-RoL">
-                                        <rect key="frame" x="-2" y="0.0" width="310" height="56"/>
-                                        <textFieldCell key="cell" selectable="YES" id="hHO-pl-7IR">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <string key="title">Option-click the menu bar icon to view the expanded menu showing this many history items, Shift-option-click to include all stored history items (size set in Storage panel).</string>
-                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hB7-M7-a6s">
-                                        <rect key="frame" x="-2" y="42" width="606" height="14"/>
-                                        <textFieldCell key="cell" selectable="YES" title="Option-click the menu bar icon to view the expanded menu with all stored history items (size set in Storage panel)." id="PM3-ni-HWu">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                </subviews>
-                                <visibilityPriorities>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                    <integer value="1000"/>
-                                </visibilityPriorities>
-                                <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                    <real value="3.4028234663852886e+38"/>
-                                </customSpacing>
-                            </stackView>
-                        </gridCell>
+                        <gridCell row="Q7f-oT-IiD" column="KLa-7P-lgK" id="Okj-nQ-Qhp"/>
+                        <gridCell row="Q7f-oT-IiD" column="7OC-Fv-eMr" id="Zcv-57-KcE"/>
                         <gridCell row="S9I-rv-Kfl" column="KLa-7P-lgK" id="vKh-KX-7Ph">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3D7-Xe-sZo">
-                                <rect key="frame" x="102" y="405" width="87" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="Image height:" id="gjR-wz-7GQ">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3D7-Xe-sZo">
+                                <rect key="frame" x="24" y="490" width="123" height="16"/>
+                                <textFieldCell key="cell" alignment="right" title="Image items height:" id="gjR-wz-7GQ">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -158,10 +67,9 @@ Default: 20.</string>
                             </textField>
                         </gridCell>
                         <gridCell row="S9I-rv-Kfl" column="7OC-Fv-eMr" id="Ry9-S9-CyT">
-                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tsp-4i-Mym">
-                                <rect key="frame" x="200" y="402" width="288" height="21"/>
-                                <string key="toolTip">Maximum image preview height.
-Default: 40.
+                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tsp-4i-Mym">
+                                <rect key="frame" x="158" y="487" width="288" height="21"/>
+                                <string key="toolTip">Height to use for image clipboard menu items. Default: 40.
 Hint: Set to 16 to look like text items.</string>
                                 <subviews>
                                     <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fcz-4Q-KUm">
@@ -206,9 +114,9 @@ Hint: Set to 16 to look like text items.</string>
                             </stackView>
                         </gridCell>
                         <gridCell row="5AN-Hb-8z8" column="KLa-7P-lgK" id="CGn-tZ-Kyv">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zpA-rz-vpL">
-                                <rect key="frame" x="113" y="376" width="76" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="Title length:" id="TgE-eS-5nT">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zpA-rz-vpL">
+                                <rect key="frame" x="35" y="461" width="112" height="16"/>
+                                <textFieldCell key="cell" alignment="right" title="Text items length:" id="TgE-eS-5nT">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -216,10 +124,8 @@ Hint: Set to 16 to look like text items.</string>
                             </textField>
                         </gridCell>
                         <gridCell row="5AN-Hb-8z8" column="7OC-Fv-eMr" id="wS5-KF-93i">
-                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XGd-Fg-wS9">
-                                <rect key="frame" x="200" y="373" width="288" height="21"/>
-                                <string key="toolTip">Maximum number of characters in the item title.
-Default: 50.</string>
+                            <stackView key="contentView" toolTip="Maximum number of characters ito show in a text clipboard menu item. Default: 50." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XGd-Fg-wS9">
+                                <rect key="frame" x="158" y="458" width="288" height="21"/>
                                 <subviews>
                                     <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Wto-wB-Ijw">
                                         <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
@@ -262,10 +168,36 @@ Default: 50.</string>
                                 </customSpacing>
                             </stackView>
                         </gridCell>
+                        <gridCell row="kS2-UC-qPZ" column="KLa-7P-lgK" id="LcE-Dp-iv3"/>
+                        <gridCell row="kS2-UC-qPZ" column="7OC-Fv-eMr" id="kN4-c8-CuB">
+                            <button key="contentView" toolTip="Show newlines, tabs, leading and trailing spaces via special symbols." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tC6-tV-7tl">
+                                <rect key="frame" x="156" y="433" width="160" height="18"/>
+                                <buttonCell key="cell" type="check" title="Show special symbols" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="t7k-cr-U2Q">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="specialSymbolsVisibilityChanged:" target="-2" id="JrU-Cz-AQT"/>
+                                </connections>
+                            </button>
+                        </gridCell>
+                        <gridCell row="q6D-rb-X9G" column="KLa-7P-lgK" id="mmv-Uu-ROP"/>
+                        <gridCell row="q6D-rb-X9G" column="7OC-Fv-eMr" id="eXr-mN-OvT">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="tbz-WL-Agw">
+                                <rect key="frame" x="156" y="356" width="352" height="70"/>
+                                <textFieldCell key="cell" selectable="YES" id="hEx-UI-54Z">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <string key="title">The batch clipboard menu includes clipboard menu items, ie. menu items representing clips from a batch or from saved history. The above settings affect how clipboard menu items represeting images and text are displayed.
+</string>
+                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
                         <gridCell row="NiR-EB-Xrn" column="KLa-7P-lgK" id="zZ5-X2-rET">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AH3-Nd-NhZ">
-                                <rect key="frame" x="97" y="347" width="92" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="Preview delay:" id="lnS-Rg-4sa">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AH3-Nd-NhZ">
+                                <rect key="frame" x="7" y="330" width="140" height="16"/>
+                                <textFieldCell key="cell" alignment="right" title="Preview pop-up delay:" id="lnS-Rg-4sa">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -273,10 +205,8 @@ Default: 50.</string>
                             </textField>
                         </gridCell>
                         <gridCell row="NiR-EB-Xrn" column="7OC-Fv-eMr" id="Dy9-7o-54w">
-                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7SP-tN-nLD">
-                                <rect key="frame" x="200" y="344" width="288" height="21"/>
-                                <string key="toolTip">Delay in milliseconds until a preview popup is shown.
-Default: 1500.</string>
+                            <stackView key="contentView" toolTip="Delay until a preview popup is shown. Default: 1.5." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7SP-tN-nLD">
+                                <rect key="frame" x="158" y="327" width="348" height="21"/>
                                 <subviews>
                                     <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bWg-D5-ht1">
                                         <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
@@ -300,12 +230,95 @@ Default: 1500.</string>
                                             <action selector="previewDelayStepperChanged:" target="-2" id="A9C-Ho-RHO"/>
                                         </connections>
                                     </stepper>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="S4O-OZ-2qp">
+                                        <rect key="frame" x="123" y="3" width="56" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="seconds" id="ivw-N8-Z2Z">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="ewZ-o7-A3r">
+                                        <rect key="frame" x="185" y="0.0" width="163" height="21"/>
+                                    </customView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="S4O-OZ-2qp" firstAttribute="firstBaseline" secondItem="bWg-D5-ht1" secondAttribute="firstBaseline" id="8M4-NO-NjP"/>
+                                    <constraint firstItem="ewZ-o7-A3r" firstAttribute="height" secondItem="ULE-wI-xRy" secondAttribute="height" id="XM0-0Q-s2s"/>
+                                </constraints>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </gridCell>
+                        <gridCell row="WHt-13-Sv2" column="KLa-7P-lgK" id="YdG-xE-TUv"/>
+                        <gridCell row="WHt-13-Sv2" column="7OC-Fv-eMr" id="5MC-mC-f8j">
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="100" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="qke-QM-Fwg">
+                                <rect key="frame" x="156" y="187" width="352" height="132"/>
+                                <textFieldCell key="cell" selectable="YES" title="Hovering over a clipboard menu item will show a larger preview of it in a pop-up window." id="SRk-xb-FQ2">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="OdT-ff-FSd" column="KLa-7P-lgK" headOfMergedCell="OeY-HC-jSl" xPlacement="fill" id="OeY-HC-jSl">
+                            <box key="contentView" verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="U8i-B5-SQV">
+                                <rect key="frame" x="0.0" y="172" width="506" height="5"/>
+                            </box>
+                        </gridCell>
+                        <gridCell row="OdT-ff-FSd" column="7OC-Fv-eMr" headOfMergedCell="OeY-HC-jSl" id="fe5-7h-IxP"/>
+                        <gridCell row="nuK-ef-5Um" column="KLa-7P-lgK" id="DS6-t0-CtZ">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lEK-4J-i8J">
+                                <rect key="frame" x="-2" y="128" width="149" height="32"/>
+                                <textFieldCell key="cell" alignment="right" title="Number of history menu items:" id="MKb-cW-gpg">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="nuK-ef-5Um" column="7OC-Fv-eMr" id="Kye-ZS-ed3">
+                            <stackView key="contentView" toolTip="Number of history items to include in the menu. Leave blank to make all items visible. Default: 20." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="a8Y-aG-9on">
+                                <rect key="frame" x="158" y="141" width="288" height="21"/>
+                                <subviews>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bLY-QC-Jck">
+                                        <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="96" id="0cw-7u-Pmb"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="JeV-cW-E9e">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <connections>
+                                            <action selector="numberOfItemsFieldChanged:" target="-2" id="1B2-S2-YfZ"/>
+                                            <outlet property="nextKeyView" destination="fcz-4Q-KUm" id="olx-v1-rr3"/>
+                                        </connections>
+                                    </textField>
+                                    <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4JK-Tt-Luc">
+                                        <rect key="frame" x="101" y="-4" width="19" height="29"/>
+                                        <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="T1H-vu-Hbw"/>
+                                        <connections>
+                                            <action selector="numberOfItemsStepperChanged:" target="-2" id="okO-Aj-0yD"/>
+                                        </connections>
+                                    </stepper>
+                                    <customView verticalHuggingPriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="8TQ-NU-idz">
                                         <rect key="frame" x="125" y="0.0" width="163" height="21"/>
                                     </customView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="ewZ-o7-A3r" firstAttribute="height" secondItem="ULE-wI-xRy" secondAttribute="height" id="XM0-0Q-s2s"/>
+                                    <constraint firstItem="8TQ-NU-idz" firstAttribute="height" secondItem="4JK-Tt-Luc" secondAttribute="height" id="tby-TM-frm"/>
                                 </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
@@ -319,37 +332,135 @@ Default: 1500.</string>
                                 </customSpacing>
                             </stackView>
                         </gridCell>
-                        <gridCell row="OdT-ff-FSd" column="KLa-7P-lgK" headOfMergedCell="OeY-HC-jSl" xPlacement="fill" id="OeY-HC-jSl">
-                            <box key="contentView" verticalHuggingPriority="750" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="U8i-B5-SQV">
-                                <rect key="frame" x="0.0" y="329" width="506" height="5"/>
-                            </box>
-                        </gridCell>
-                        <gridCell row="OdT-ff-FSd" column="7OC-Fv-eMr" headOfMergedCell="OeY-HC-jSl" id="fe5-7h-IxP"/>
-                        <gridCell row="nuK-ef-5Um" column="KLa-7P-lgK" id="DS6-t0-CtZ"/>
-                        <gridCell row="nuK-ef-5Um" column="7OC-Fv-eMr" id="Kye-ZS-ed3">
-                            <button key="contentView" toolTip="Show newlines, tabs, leading and trailing spaces via special symbols." verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tC6-tV-7tl">
-                                <rect key="frame" x="198" y="302" width="160" height="18"/>
-                                <buttonCell key="cell" type="check" title="Show special symbols" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="t7k-cr-U2Q">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="showSpecialSymbolsChanged:" target="-2" id="JrU-Cz-AQT"/>
-                                </connections>
-                            </button>
+                        <gridCell row="LET-OH-awY" column="KLa-7P-lgK" id="PmB-v6-kr9"/>
+                        <gridCell row="LET-OH-awY" column="7OC-Fv-eMr" id="boO-MZ-Ryn">
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IkI-KQ-foQ">
+                                <rect key="frame" x="158" y="56" width="348" height="64"/>
+                                <subviews>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vSp-FY-3F6">
+                                        <rect key="frame" x="-2" y="8" width="352" height="56"/>
+                                        <textFieldCell key="cell" selectable="YES" id="RF2-EP-2P4">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Unused when Global Clipboard History is off (in the General settings panel). If that is turned on, you can set here the number of items of recent clipboard history to be shown in the expanded menu.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="iG7-PO-eNn">
+                                        <rect key="frame" x="-2" y="50" width="847" height="14"/>
+                                        <textFieldCell key="cell" selectable="YES" id="8lO-Bq-al1">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Option-click the menu bar icon to view the expanded menu showing this many items of recent clipboard history. Select one to reccall it so you can paste it again.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="lhl-S6-RoL">
+                                        <rect key="frame" x="-2" y="22" width="847" height="42"/>
+                                        <textFieldCell key="cell" selectable="YES" id="hHO-pl-7IR">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Option-click the menu bar icon to view the expanded menu showing this many items of recent clipboard history. Select one to reccall it so you can paste it again.
+
+Shift-option-click to include all the stored history items in the menu (size set in the Storage settings panel).</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="hB7-M7-a6s">
+                                        <rect key="frame" x="-2" y="50" width="671" height="14"/>
+                                        <textFieldCell key="cell" selectable="YES" id="PM3-ni-HWu">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Option-click the menu bar icon to view the expanded menu with all stored history items (size set in the Storage settings panel).</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="1hN-vs-lpO">
+                                        <rect key="frame" x="0.0" y="0.0" width="163" height="0.0"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" id="HaQ-HN-2bO"/>
+                                        </constraints>
+                                    </customView>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </gridCell>
                         <gridCell row="hnq-hF-JcQ" column="KLa-7P-lgK" id="5lh-Cz-wCy"/>
                         <gridCell row="hnq-hF-JcQ" column="7OC-Fv-eMr" id="dkg-xh-BJU">
-                            <button key="contentView" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YIB-bg-Q16">
-                                <rect key="frame" x="198" y="278" width="134" height="18"/>
-                                <buttonCell key="cell" type="check" title="Show search field" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="mWx-zi-OAv">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mj7-rr-9jd">
+                                <rect key="frame" x="158" y="28" width="163" height="20"/>
+                                <subviews>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YIB-bg-Q16">
+                                        <rect key="frame" x="-2" y="3" width="157" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Show filter items field" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="mWx-zi-OAv">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="filterFieldVisiblityChanged:" target="-2" id="nFT-7H-k45"/>
+                                        </connections>
+                                    </button>
+                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="gUE-bj-ePu">
+                                        <rect key="frame" x="0.0" y="0.0" width="163" height="0.0"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" id="eul-fy-0Ll"/>
+                                        </constraints>
+                                    </customView>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </gridCell>
+                        <gridCell row="8h4-gi-UEJ" column="KLa-7P-lgK" id="AxK-Zw-YnD">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sdy-uf-7wU">
+                                <rect key="frame" x="45" y="3" width="102" height="16"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Filter matchingi:" id="cHa-rz-lJX">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="8h4-gi-UEJ" column="7OC-Fv-eMr" id="exe-9W-aIS">
+                            <popUpButton key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EFj-K4-uyp">
+                                <rect key="frame" x="155" y="-4" width="155" height="25"/>
+                                <popUpButtonCell key="cell" type="push" title="Exact" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="UP8-SA-JhI" id="Sd0-jw-JUf">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="NYW-tw-ohk">
+                                        <items>
+                                            <menuItem title="Exact" state="on" id="UP8-SA-JhI"/>
+                                            <menuItem title="Fuzzy" id="QTG-mG-bKr"/>
+                                            <menuItem title="Regular Expression" id="9Ki-At-YjJ"/>
+                                            <menuItem title="Automatic" id="yPA-Ao-9YH">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                            </menuItem>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
                                 <connections>
-                                    <action selector="showSearchFieldChanged:" target="-2" id="C4U-Nl-zY1"/>
+                                    <action selector="filterModeChanged:" target="-2" id="wwx-2f-JGA"/>
                                 </connections>
-                            </button>
+                            </popUpButton>
                         </gridCell>
                     </gridCells>
                 </gridView>

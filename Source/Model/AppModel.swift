@@ -9,9 +9,10 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 import KeyboardShortcuts
 import Settings
+import os.log
 #if SPARKLE_UPDATES
 import Sparkle
 #endif
@@ -97,7 +98,7 @@ class AppModel: NSObject {
     alert.window.initialFirstResponder = field
     return alert
   }
-
+  
   private var clearAlert: NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("clear_alert_message", comment: "")
@@ -107,16 +108,26 @@ class AppModel: NSObject {
     alert.showsSuppressionButton = true
     return alert
   }
-
-  // omits the pins panel, app store build gets the purchase panel
+  
+  private var clearWhenDisablingHistoryAlert: NSAlert {
+    let alert = NSAlert()
+    alert.messageText = NSLocalizedString("forget_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("forget_alert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("forget_alert_confirm", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("forget_alert_deny", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("forget_alert_cancel", comment: ""))
+    alert.showsSuppressionButton = true
+    return alert
+  }
+  
   #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
   internal lazy var settingsWindowController = SettingsWindowController(
     panes: [
       generalSettingsPaneViewController,
       AppearanceSettingsViewController(),
-      PurchaseSettingsViewController(purchases: purchases),
       StorageSettingsViewController(),
+      PurchaseSettingsViewController(purchases: purchases),
       IgnoreSettingsViewController(),
       AdvancedSettingsViewController()
     ]
@@ -133,7 +144,6 @@ class AppModel: NSObject {
   )
   #endif
   
-  // TODO: remove unused observer vars
   private var clipboardCheckIntervalObserver: NSKeyValueObservation?
   private var enabledPasteboardTypesObserver: NSKeyValueObservation?
   private var ignoreEventsObserver: NSKeyValueObservation?
@@ -143,28 +153,26 @@ class AppModel: NSObject {
   private var showSpecialSymbolsObserver: NSKeyValueObservation?
   private var statusItemConfigurationObserver: NSKeyValueObservation?
   private var statusItemVisibilityObserver: NSKeyValueObservation?
+  private var keepHistoryObserver: NSKeyValueObservation?
   
   override init() {
     UserDefaults.standard.register(defaults: [
+      // unlike maccy, app doesn't populate these in its app delegates's migration method,
+      // maybe should go in Clipboard.init instead though
+      UserDefaults.Keys.enabledPasteboardTypes: UserDefaults.Values.enabledPasteboardTypes,
+      UserDefaults.Keys.ignoredPasteboardTypes: UserDefaults.Values.ignoredPasteboardTypes,
+      
       UserDefaults.Keys.clipboardCheckInterval: UserDefaults.Values.clipboardCheckInterval,
       UserDefaults.Keys.imageMaxHeight: UserDefaults.Values.imageMaxHeight,
       UserDefaults.Keys.maxMenuItems: UserDefaults.Values.maxMenuItems,
       UserDefaults.Keys.maxMenuItemLength: UserDefaults.Values.maxMenuItemLength,
       UserDefaults.Keys.previewDelay: UserDefaults.Values.previewDelay,
       UserDefaults.Keys.showInStatusBar: UserDefaults.Values.showInStatusBar,
-      UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols
-    ])
-    
-    // unlike maccy, app doesn't populate these in its app delegates's migration method,
-    // maybe should go in Clipboard.init instead though
-    UserDefaults.standard.register(defaults: [
-      UserDefaults.Keys.enabledPasteboardTypes: UserDefaults.Values.enabledPasteboardTypes,
-      UserDefaults.Keys.ignoredPasteboardTypes: UserDefaults.Values.ignoredPasteboardTypes,
+      UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols,
+      UserDefaults.Keys.keepHistory: UserDefaults.Values.keepHistory,
     ])
     
     super.init()
-    initializeObservers()
-    
     initializeStateFlags()
     
     settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
@@ -176,7 +184,9 @@ class AppModel: NSObject {
     queue = ClipboardQueue(clipboard: clipboard, history: history)
     
     clipboard.onNewCopy(clipboardChanged)
-    clipboard.start()
+    if UserDefaults.standard.keepHistory {
+      clipboard.start()
+    }
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     
@@ -199,9 +209,20 @@ class AppModel: NSObject {
       showIntro(self)
     } else if !Permissions.allowed {
       showIntroAtPermissionPage(self)
+    } else if historySettingsInconsistent() {
+      // this should only happen when starting after an update from a previous version,
+      // change to keep the history initially and let the user choose to keep it that way
+      // or go along with the new defaults and delete the history
+      UserDefaults.standard.keepHistory = true
+      os_log(.info, "resolving having items history vs. keep-history settings at their negative defaults by showing intro page covering migration")
+      showIntroAtHistoryUpdatePage(self)
     }
+    
+    // important to setup observers after potential early changes to observees above
+    // (for example UserDefaults.standard.keepHistory)
+    initializeObservers()
   }
-
+  
   deinit {
     clipboardCheckIntervalObserver?.invalidate()
     enabledPasteboardTypesObserver?.invalidate()
@@ -211,6 +232,7 @@ class AppModel: NSObject {
     showSpecialSymbolsObserver?.invalidate()
     statusItemConfigurationObserver?.invalidate()
     statusItemVisibilityObserver?.invalidate()
+    keepHistoryObserver?.invalidate()
     
     menuIcon.cancelBlinkTimer()
     #if APP_STORE
@@ -219,7 +241,7 @@ class AppModel: NSObject {
   }
 
   func terminate() {
-    if UserDefaults.standard.clearOnQuit {
+    if UserDefaults.standard.clearOnQuit || !UserDefaults.standard.keepHistory {
       clearHistory(suppressClearAlert: true)
     }
   }
@@ -252,6 +274,12 @@ class AppModel: NSObject {
   
   func clearHistory() {
     clearHistory(suppressClearAlert: false)
+  }
+  
+  func historySettingsInconsistent() -> Bool {
+    // this is when there are items in history even though the v1.1 keep-history settings
+    // are at their defaults that indicate it should be empty
+    return history.count > 0 && !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
   }
   
   private func initializeStateFlags() {
@@ -384,6 +412,18 @@ class AppModel: NSObject {
     Self.allowUndoCopy = hasPurchased
   }
   
+  func showIntroAtPermissionPage(_ sender: AnyObject) {
+    Self.returnFocusToPreviousApp = false
+    introWindowController.openIntro(atPage: .checkAuth, with: self)
+    Self.returnFocusToPreviousApp = true
+  }
+  
+  func showIntroAtHistoryUpdatePage(_ sender: AnyObject) {
+    Self.returnFocusToPreviousApp = false
+    introWindowController.openIntro(atPage: .checkAuth, with: self) // TODO: new page for migrating to disabled history
+    Self.returnFocusToPreviousApp = true
+  }
+  
   // Non-history items in the cleepp menu are defined in a nib file instead of programmatically
   // (the best code is no code), action methods for those items now live in this class,
   // defined in a class extension. Also history menu item subclasses no longer exist, actions for
@@ -401,20 +441,20 @@ class AppModel: NSObject {
   }
   
   private func withClearAlert(suppressClearAlert: Bool, _ closure: @escaping () -> Void) {
-    if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
+    guard !suppressClearAlert && !UserDefaults.standard.suppressClearAlert else {
       closure()
-    } else {
-      AppModel.returnFocusToPreviousApp = false
-      let alert = clearAlert
-      DispatchQueue.main.async {
-        if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-          if alert.suppressionButton?.state == .on {
-            UserDefaults.standard.suppressClearAlert = true
-          }
-          closure()
+      return
+    }
+    Self.returnFocusToPreviousApp = false
+    let alert = clearAlert
+    DispatchQueue.main.async {
+      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
+        if alert.suppressionButton?.state == .on {
+          UserDefaults.standard.suppressClearAlert = true
         }
-        AppModel.returnFocusToPreviousApp = true
+        closure()
       }
+      AppModel.returnFocusToPreviousApp = true
     }
   }
   
@@ -427,8 +467,59 @@ class AppModel: NSObject {
   }
   
   private func updateMenuIconEnabledness() {
-    menuIcon.isEnabled = !(UserDefaults.standard.ignoreEvents ||
-      UserDefaults.standard.enabledPasteboardTypes.isEmpty)
+    menuIcon.isEnabled = !(UserDefaults.standard.ignoreEvents || UserDefaults.standard.enabledPasteboardTypes.isEmpty)
+  }
+  
+  func updateSavingHistory() {
+    if UserDefaults.standard.keepHistory {
+      clipboard.restart()
+    } else {
+      withClearWhenDisablingHistoryAlert { retain in
+        self.clipboard.stop()
+        if !retain {
+          self.history.clear()
+        }
+      }
+    }
+//    if UserDefaults.standard.keepHistory {
+//      clipboard.restart()
+//    } else {
+//      clipboard.stop()
+//      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
+//        history.clear()
+//      }
+////      if let retain = UserDefaults.standard.saveClipsAcrossDisabledHistory, !retain == false {
+////        history.clear()
+////      }
+ //   }
+  }
+  
+  private func withClearWhenDisablingHistoryAlert(_ closure: @escaping (Bool) -> Void) {
+    guard !UserDefaults.standard.supressSaveClipsAlert else {
+      closure(UserDefaults.standard.saveClipsAcrossDisabledHistory)
+      return
+    }
+    Self.returnFocusToPreviousApp = false
+    let alert = clearWhenDisablingHistoryAlert
+    DispatchQueue.main.async {
+      switch alert.runModal() {
+      case NSApplication.ModalResponse.alertFirstButtonReturn:
+        if alert.suppressionButton?.state == .on {
+          UserDefaults.standard.supressSaveClipsAlert = true
+          UserDefaults.standard.saveClipsAcrossDisabledHistory = false
+        }
+        closure(false)
+      case NSApplication.ModalResponse.alertSecondButtonReturn:
+        if alert.suppressionButton?.state == .on {
+          UserDefaults.standard.supressSaveClipsAlert = true
+          UserDefaults.standard.saveClipsAcrossDisabledHistory = true
+        }
+        closure(true)
+      default:
+        break
+      }
+    }
+    Self.returnFocusToPreviousApp = true
   }
   
   private func initializeObservers() {
@@ -447,6 +538,9 @@ class AppModel: NSObject {
     maxMenuItemLengthObserver = UserDefaults.standard.observe(\.maxMenuItemLength, options: .new) { _, _ in
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
+    }
+    keepHistoryObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { _, _ in
+      self.updateSavingHistory()
     }
     #if FALSE
     hideSearchObserver = UserDefaults.standard.observe(\.hideSearch, options: .new) { _, _ in

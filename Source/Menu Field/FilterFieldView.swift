@@ -9,8 +9,8 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
+import AppKit
 import Carbon
-import Cocoa
 import Sauce
 
 class FilterFieldView: NSView, NSSearchFieldDelegate {
@@ -36,7 +36,7 @@ class FilterFieldView: NSView, NSSearchFieldDelegate {
   }
   
   private lazy var customMenu: AppMenu? = self.enclosingMenuItem?.menu as? AppMenu
-  private lazy var headerHeight = UserDefaults.standard.hideSearch ? 1 : 28
+  private lazy var headerHeight = 28
   private lazy var headerSize = NSSize(width: AppMenu.menuWidth, height: headerHeight)
   
   override func awakeFromNib() {

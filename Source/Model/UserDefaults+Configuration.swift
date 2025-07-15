@@ -9,7 +9,7 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-// There's lots still in here from the Maccy project unused and yet to be deleted
+// There may still be Maccy settings in here that are no longer used and yet to be deleted
 
 import AppKit
 
@@ -20,9 +20,7 @@ extension UserDefaults {
     static let clearSystemClipboard = "clearSystemClipboard"
     static let clipboardCheckInterval = "clipboardCheckInterval"
     static let enabledPasteboardTypes = "enabledPasteboardTypes"
-    static let hideFooter = "hideFooter"
     static let hideSearch = "hideSearch"
-    static let hideTitle = "hideTitle"
     static let ignoreEvents = "ignoreEvents"
     static let ignoreOnlyNextEvent = "ignoreOnlyNextEvent"
     static let ignoreAllAppsExceptListed = "ignoreAllAppsExceptListed"
@@ -32,20 +30,12 @@ extension UserDefaults {
     static let lastReviewRequestedAt = "lastReviewRequestedAt"
     static let maxMenuItems = "maxMenuItems"
     static let maxMenuItemLength = "maxMenuItemLength"
-    static let menuIcon = "menuIcon"
     static let migrations = "migrations"
     static let numberOfUsages = "numberOfUsages"
-    static let pasteByDefault = "pasteByDefault"
-    static let pinTo = "pinTo"
-    static let popupPosition = "popupPosition"
-    static let popupScreen = "popupScreen"
     static let previewDelay = "previewDelay"
     static let searchMode = "searchMode"
-    static let removeFormattingByDefault = "removeFormattingByDefault"
-    static let showRecentCopyInMenuBar = "showRecentCopyInMenuBar"
     static let showSpecialSymbols = "showSpecialSymbols"
     static let size = "historySize"
-    static let sortBy = "sortBy"
     static let suppressClearAlert = "suppressClearAlert"
     static let ignoreRegexp = "ignoreRegexp"
     static let highlightMatch = "highlightMatch"
@@ -53,6 +43,9 @@ extension UserDefaults {
     static let promoteExtras = "promoteExtras"
     static let promoteExtrasExpires = "promoteExtrasExpires"
     static let promoteExtrasExpiration = "promoteExtrasExpiration"
+    static let keepHistory = "keepHistory"
+    static let saveClipsAcrossDisabledHistory = "saveClipsAcrossDisabledHistory"
+    static let supressSaveClipsAlert = "supressSaveClipsAlert"
     
     static var showInStatusBar: String {
       ProcessInfo.processInfo.arguments.contains("ui-testing") ? "showInStatusBarUITests" : "showInStatusBar"
@@ -73,16 +66,13 @@ extension UserDefaults {
     static let maxMenuItems = 20
     static let maxMenuItemLength = 50
     static let migrations: [String: Bool] = [:]
-    static let pinTo = "top"
-    static let popupPosition = "cursor"
     static let previewDelay = 1500
     static let searchMode = "exact"
     static let showInStatusBar = true
     static let showSpecialSymbols = true
     static let size = 200
-    static let sortBy = "lastCopiedAt"
-    static let menuIcon = "maccy"
     static let highlightMatch = "bold"
+    static let keepHistory = false
   }
   
   public var avoidTakingFocus: Bool {
@@ -113,24 +103,17 @@ extension UserDefaults {
     set { set(Array(newValue.map({ $0.rawValue })), forKey: Keys.enabledPasteboardTypes) }
   }
   
-  @objc dynamic public var hideFooter: Bool {
-    get { bool(forKey: Keys.hideFooter) }
-    set { set(newValue, forKey: Keys.hideFooter) }
-  }
-  
   @objc dynamic public var hideSearch: Bool {
     get { bool(forKey: Keys.hideSearch) }
     set { set(newValue, forKey: Keys.hideSearch) }
   }
   
-  @objc dynamic public var hideTitle: Bool {
-    get { bool(forKey: Keys.hideTitle) }
-    set { set(newValue, forKey: Keys.hideTitle) }
-  }
-  
   @objc dynamic public var ignoreEvents: Bool {
     get { bool(forKey: Keys.ignoreEvents) }
     set { set(newValue, forKey: Keys.ignoreEvents) }
+//      print("before calling ignoreEvents set(\(newValue), forKey: Keys.ignoreEvents)")
+//      set(newValue, forKey: Keys.ignoreEvents)
+//      print("after calling ignoreEvents set(\(newValue), forKey: Keys.ignoreEvents)")
   }
   
   public var ignoreOnlyNextEvent: Bool {
@@ -181,11 +164,6 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.maxMenuItemLength) }
   }
   
-  @objc dynamic public var menuIcon: String {
-    get { string(forKey: Keys.menuIcon) ?? Values.menuIcon }
-    set { set(newValue, forKey: Keys.menuIcon) }
-  }
-  
   public var migrations: [String: Bool] {
     get { dictionary(forKey: Keys.migrations) as? [String: Bool] ?? Values.migrations }
     set { set(newValue, forKey: Keys.migrations) }
@@ -196,34 +174,9 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.numberOfUsages) }
   }
   
-  @objc dynamic public var pasteByDefault: Bool {
-    get { bool(forKey: Keys.pasteByDefault) }
-    set { set(newValue, forKey: Keys.pasteByDefault) }
-  }
-  
-  @objc dynamic public var pinTo: String {
-    get { string(forKey: Keys.pinTo) ?? Values.pinTo }
-    set { set(newValue, forKey: Keys.pinTo) }
-  }
-  
-  public var popupPosition: String {
-    get { string(forKey: Keys.popupPosition) ?? Values.popupPosition }
-    set { set(newValue, forKey: Keys.popupPosition) }
-  }
-  
-  public var popupScreen: Int {
-    get { integer(forKey: Keys.popupScreen) }
-    set { set(newValue, forKey: Keys.popupScreen) }
-  }
-  
   public var previewDelay: Int {
     get { integer(forKey: Keys.previewDelay) }
     set { set(newValue, forKey: Keys.previewDelay) }
-  }
-  
-  @objc dynamic public var removeFormattingByDefault: Bool {
-    get { bool(forKey: Keys.removeFormattingByDefault) }
-    set { set(newValue, forKey: Keys.removeFormattingByDefault) }
   }
   
   public var searchMode: String {
@@ -236,11 +189,6 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.showInStatusBar) }
   }
   
-  @objc dynamic public var showRecentCopyInMenuBar: Bool {
-    get { bool(forKey: Keys.showRecentCopyInMenuBar) }
-    set { set(newValue, forKey: Keys.showRecentCopyInMenuBar) }
-  }
-  
   @objc dynamic var showSpecialSymbols: Bool {
     get { bool(forKey: Keys.showSpecialSymbols) }
     set { set(newValue, forKey: Keys.showSpecialSymbols) }
@@ -249,11 +197,6 @@ extension UserDefaults {
   public var size: Int {
     get { integer(forKey: Keys.size) }
     set { set(newValue, forKey: Keys.size) }
-  }
-  
-  @objc dynamic public var sortBy: String {
-    get { string(forKey: Keys.sortBy) ?? Values.sortBy }
-    set { set(newValue, forKey: Keys.sortBy) }
   }
   
   public var suppressClearAlert: Bool {
@@ -301,5 +244,31 @@ extension UserDefaults {
       removeObject(forKey: Keys.promoteExtrasExpiration)
     }
   }
+  
+  @objc dynamic public var keepHistory: Bool {
+    get { bool(forKey: Keys.keepHistory) }
+    set { set(newValue, forKey: Keys.keepHistory) }
+  }
+  
+  public var saveClipsAcrossDisabledHistory: Bool {
+    get { bool(forKey: Keys.saveClipsAcrossDisabledHistory) }
+    set { set(newValue, forKey: Keys.saveClipsAcrossDisabledHistory) }
+  }
+  
+  public var supressSaveClipsAlert: Bool {
+    get { bool(forKey: Keys.supressSaveClipsAlert) }
+    set { set(newValue, forKey: Keys.supressSaveClipsAlert) }
+  }
+  
+  // These avoid double-fired kvo observations ... somehow
+  @objc dynamic public class func automaticallyNotifiesObserversOfClipboardCheckInterval() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfEnabledPasteboardTypes() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfHideSearch() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfIgnoreEvents() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfImageMaxHeight() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItemLength() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowInStatusBar() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowSpecialSymbols() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfKeepHistory() -> Bool { false }
   
 }

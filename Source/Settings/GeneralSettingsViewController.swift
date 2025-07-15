@@ -9,7 +9,7 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 import KeyboardShortcuts
 import Settings
 #if SPARKLE_UPDATES
@@ -46,12 +46,12 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var openLoginItemsPanelButton: NSButton!
   @IBOutlet weak var openLoginItemsPanelRow: NSGridRow!
   @IBOutlet weak var automaticUpdatesButton: NSButton!
-  @IBOutlet weak var searchModeButton: NSPopUpButton!
+  @IBOutlet weak var keepHistorySwitch: NSSwitch!
+  @IBOutlet weak var keepHistoryOnDescription: NSTextField!
+  @IBOutlet weak var keepHistoryOffDescription: NSTextField!
   @IBOutlet weak var promoteExtrasCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
   @IBOutlet weak var checkForUpdatesItemsRow: NSGridRow!
-  @IBOutlet weak var searchModeSeparatorRow: NSGridRow!
-  @IBOutlet weak var searchModeItemsRow: NSGridRow!
   @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
   @IBOutlet weak var promoteExtrasItemsRow: NSGridRow!
 
@@ -85,22 +85,26 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     addSubviewWithManualLayout(copyHotkeyContainerView, copyHotkeyRecorder)
     addSubviewWithManualLayout(pasteHotkeyContainerView, pasteHotkeyRecorder)
     
-    #if !SPARKLE_UPDATES
-    hideSparkleUpdateRows()
+    #if SPARKLE_UPDATES
+    showSparkleUpdateRows(true)
+    #else
+    showSparkleUpdateRows(false)
     #endif
     
     #if APP_STORE
-    if #unavailable(macOS 14) { // badged menu items first available in macOS 14
-      hidePromoteExtrasRow()
+    if #available(macOS 14, *) { // badged menu items first available in macOS 14
+      showPromoteExtrasRow(true)
+    } else {
+      showPromoteExtrasRow(false)
     }
     #else
-    hidePromoteExtrasRow()
+    showPromoteExtrasRow(false)
     #endif
     
     if #available(macOS 13.0, *) {
-      showLaunchAtLoginRow()
+      showLaunchAtLoginRow(true)
     } else {
-      showOpenLoginItemsPanelRow()
+      showLaunchAtLoginRow(false) // show instead the open login items button 
     }
   }
   
@@ -108,12 +112,14 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     super.viewWillAppear()
     populateLaunchAtLogin()
     populateSparkleAutomaticUpdates()
-    populateSearchMode()
+    populateClipboardHistoryToggle()
+    updateVisibleClipboardHistoryDescription()
     #if APP_STORE
     populatePromoteExtrasOptions()
     #endif
-    showSearchOptionRows(AppModel.allowHistorySearch)
   }
+  
+  // MARK: -
   
   public func promoteExtrasStateChanged() {
     #if APP_STORE
@@ -133,6 +139,44 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     automaticUpdatesButton.state = automatic ? .on : .off
     #endif
   }
+  
+  private func populateLaunchAtLogin() {
+    guard #available(macOS 13.0, *) else {
+      return
+    }
+    launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
+  }
+  
+  private func populateClipboardHistoryToggle() {
+    keepHistorySwitch.state = UserDefaults.standard.keepHistory ? .on : .off
+  }
+  
+  private func updateVisibleClipboardHistoryDescription() {
+    keepHistoryOnDescription.isHidden = !UserDefaults.standard.keepHistory
+    keepHistoryOffDescription.isHidden = UserDefaults.standard.keepHistory
+  }
+  
+  #if APP_STORE
+  private func populatePromoteExtrasOptions() {
+    promoteExtrasCheckbox.state = UserDefaults.standard.promoteExtras ? .on : .off
+    promoteExtrasExpiresCheckbox.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
+    promoteExtrasCheckbox.isEnabled = !AppModel.hasBoughtExtras
+    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+  }
+
+  private func updatePromoteExtrasExpirationOption() {
+    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+  }
+
+  private func updatePromoteExtrasExpirationTimer() {
+    guard let model = (NSApp.delegate as? AppDelegate)?.model else {
+      return
+    }
+    model.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
+  }
+  #endif
+
+  // MARK: -
   
   @IBAction func sparkleUpdateCheck(_ sender: NSButton) {
     #if SPARKLE_UPDATES
@@ -170,58 +214,10 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     NSWorkspace.shared.open(url)
   }
   
-  @IBAction func searchModeChanged(_ sender: NSPopUpButton) {
-    switch sender.selectedTag() {
-    case 3:
-      UserDefaults.standard.searchMode = Searcher.Mode.mixed.rawValue
-    case 2:
-      UserDefaults.standard.searchMode = Searcher.Mode.regexp.rawValue
-    case 1:
-      UserDefaults.standard.searchMode = Searcher.Mode.fuzzy.rawValue
-    default:
-      UserDefaults.standard.searchMode = Searcher.Mode.exact.rawValue
-    }
+  @IBAction func clipboardHistoryToggleChanged(_ sender: NSSwitch) {
+    UserDefaults.standard.keepHistory = (sender.state == .on)
+    updateVisibleClipboardHistoryDescription()
   }
-
-  private func populateLaunchAtLogin() {
-    guard #available(macOS 13.0, *) else {
-      return
-    }
-    launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
-  }
-
-  private func populateSearchMode() {
-    switch Searcher.Mode(rawValue: UserDefaults.standard.searchMode) {
-    case .mixed:
-      searchModeButton.selectItem(withTag: 3)
-    case .regexp:
-      searchModeButton.selectItem(withTag: 2)
-    case .fuzzy:
-      searchModeButton.selectItem(withTag: 1)
-    default:
-      searchModeButton.selectItem(withTag: 0)
-    }
-  }
-
-  #if APP_STORE
-  private func populatePromoteExtrasOptions() {
-    promoteExtrasCheckbox.state = UserDefaults.standard.promoteExtras ? .on : .off
-    promoteExtrasExpiresCheckbox.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
-    promoteExtrasCheckbox.isEnabled = !AppModel.hasBoughtExtras
-    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
-  }
-  
-  private func updatePromoteExtrasExpirationOption() {
-    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
-  }
-  
-  private func updatePromoteExtrasExpirationTimer() {
-    guard let model = (NSApp.delegate as? AppDelegate)?.model else {
-      return
-    }
-    model.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
-  }
-  #endif
   
   @IBAction func promoteExtrasChanged(_ sender: NSButton) {
     #if APP_STORE
@@ -242,28 +238,20 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     #endif
   }
   
-  private func showSearchOptionRows(_ show: Bool) {
-    searchModeSeparatorRow.isHidden = !show
-    searchModeItemsRow.isHidden = !show
+  // MARK: -
+  
+  private func showSparkleUpdateRows(_ show: Bool) {
+    checkForUpdatesItemsRow.isHidden = !show
   }
   
-  private func hideSparkleUpdateRows() {
-    checkForUpdatesItemsRow.isHidden = true
+  private func showPromoteExtrasRow(_ show: Bool) {
+    promoteExtrasSeparatorRow.isHidden = !show
+    promoteExtrasItemsRow.isHidden = !show
   }
   
-  private func hidePromoteExtrasRow() {
-    promoteExtrasSeparatorRow.isHidden = true
-    promoteExtrasItemsRow.isHidden = true
-  }
-  
-  private func showLaunchAtLoginRow() {
-    launchAtLoginRow.isHidden = false
-    openLoginItemsPanelRow.isHidden = true
-  }
-  
-  private func showOpenLoginItemsPanelRow() {
-    launchAtLoginRow.isHidden = true
-    openLoginItemsPanelRow.isHidden = false
+  private func showLaunchAtLoginRow(_ show: Bool) {
+    launchAtLoginRow.isHidden = !show
+    openLoginItemsPanelRow.isHidden = show
   }
   
 }

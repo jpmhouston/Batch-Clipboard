@@ -37,22 +37,17 @@ enum FilterFieldKeyCmd: CaseIterable {
     (NSApp.delegate as? AppDelegate)?.cutMenuItem.keyEquivalentModifierMask ?? [.command]
   }
   
-  case clearHistory
-  case clearHistoryAll
   case clearSearch
-  case deleteCurrentItem
   case deleteOneCharFromSearch
   case deleteLastWordFromSearch
-  case hide
-  case ignored
   case moveToNext
   case moveToPrevious
   case openPreferences
   case cut
   case copy
   case paste
-  case pinOrUnpin
   case selectCurrentItem
+  case ignored
   case unknown
   
   // swiftlint:disable cyclomatic_complexity
