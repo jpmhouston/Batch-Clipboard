@@ -3,10 +3,10 @@
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-21.
-//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//  Portions Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 //  Based on UserDefaults+Configuration.swift from the Maccy project
-//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 // There may still be Maccy settings in here that are no longer used and yet to be deleted

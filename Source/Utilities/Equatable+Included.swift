@@ -3,7 +3,7 @@
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-10.
-//  Copyright © 2024 Bananameter Labs. All rights reserved.
+//  Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 //  Insired by https://forums.swift.org/t/iscontained-in-array-extension-of-equatable/20223/28
 //  Exercise for the reader: define operators ∈ and ∉

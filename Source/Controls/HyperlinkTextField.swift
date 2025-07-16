@@ -3,7 +3,7 @@
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-03-28.
-//  Copyright © 2024 Bananameter Labs. All rights reserved.
+//  Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 //  Based on snippits and tips from
 //  https://stackoverflow.com/a/56854375/592739

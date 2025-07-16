@@ -3,10 +3,10 @@
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-07-10.
-//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//  Portions Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 //  Based on MenuController.swift from the Maccy project
-//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 import AppKit
@@ -104,7 +104,7 @@ class MenuController {
   // Beware of hacks. This code is so fragile that you should
   // avoid touching it unless you really know what you do.
   // The code is based on hours of googling, trial-and-error
-  // and testing sessions. Apologies to any future me.
+  // and testing sessions. Apologies from Maccy authors accepted..
   //
   // Once we scheduled menu popup, we need to activate
   // the application to let search text field become first
@@ -124,7 +124,7 @@ class MenuController {
   //
   // Once we are done working with menu, we need to return
   // focus to previous application. However, if our selection
-  // triggered new windows (Preferences, About, Accessibility),
+  // triggered new windows (Preferences, About, Intro),
   // we should preserve focus. Additionally, we should not
   // hide an application if there are additional visible windows
   // opened before.
