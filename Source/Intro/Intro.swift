@@ -92,7 +92,8 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBOutlet var demoPasteBubble: NSView?
   @IBOutlet var specialCopyPasteBehaviorLabel: NSTextField?
   @IBOutlet var filledIconLabel: NSTextField?
-  @IBOutlet var enteringQueueModeLabel: NSTextField?
+  @IBOutlet var manuallyEnterQueueModeLabel: NSTextField?
+  @IBOutlet var manuallyStartReplayingLabel: NSTextField?
   @IBOutlet var inAppPurchageTitle: NSTextField?
   @IBOutlet var inAppPurchageLabel: NSView?
   @IBOutlet var appStorePromoTitle: NSTextField?
@@ -114,7 +115,9 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBOutlet var openMaccyLinkButton: NSButton?
   @IBOutlet var copyMaccyLinkButton: NSButton?
   
-  private var labelsToStyle: [NSTextField] { [specialCopyPasteBehaviorLabel, filledIconLabel, enteringQueueModeLabel].compactMap({$0}) }
+  private var labelsToStyle: [NSTextField] { [
+    specialCopyPasteBehaviorLabel, filledIconLabel, manuallyEnterQueueModeLabel, manuallyStartReplayingLabel
+  ].compactMap({$0}) }
   
   private var preAuthorizationPageFirsTime = true
   private var skipSetAuthorizationPage = false
@@ -132,7 +135,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   
   public override func viewDidLoad() {
     styleLabels()
-    setupAnimatedLogo()
+    setupLogo()
   }
   
   deinit {
@@ -165,11 +168,13 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     
     switch page {
     case .welcome:
+      #if INTRO_ANIMATED_LOGO
       if !visited.contains(page) {
         startAnimatedLogo(withDelay: true)
       } else {
         resetAnimatedLogo()
       }
+      #endif
       if Permissions.allowed {
         setupNeededLabel?.isHidden = true
       }
@@ -234,7 +239,9 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     
     switch page {
     case .welcome:
+      #if INTRO_ANIMATED_LOGO
       stopAnimatedLogo()
+      #endif
     case .checkAuth:
       openSecurityPanelSpinner?.stopAnimation(self)
     case .demo:
@@ -262,8 +269,8 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     }
   }
   
-  private func setupAnimatedLogo() {
-    #if INTRO_ANIMATED_LOGO // app currently has no animated logo
+  private func setupLogo() {
+    #if INTRO_ANIMATED_LOGO // note, app currently has no animated logo
     animatedLogoImage?.autoPlayAnimatedImage = false
     animatedLogoImage?.isHidden = true
     logoStopButton?.isHidden = true
@@ -282,24 +289,20 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     #endif
   }
   
+  #if INTRO_ANIMATED_LOGO
   private func resetAnimatedLogo() {
-    #if INTRO_ANIMATED_LOGO
     stopAnimatedLogo() // show static logo initially
-    #endif
   }
   
   private func stopAnimatedLogo() {
-    #if INTRO_ANIMATED_LOGO
     cancelLogoTimer()
     animatedLogoImage?.player?.stopPlaying()
     animatedLogoImage?.isHidden = true
     logoStopButton?.isHidden = true
     logoRestartButton?.isHidden = false
-    #endif
   }
   
   private func startAnimatedLogo(withDelay useDelay: Bool = false) {
-    #if INTRO_ANIMATED_LOGO
     let initialDelay = 2.0
     
     // reset player to the start and setup to stop after a loop completes
@@ -325,8 +328,8 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
         self?.animatedLogoImage?.player?.startPlaying()
       }
     }
-    #endif
   }
+  #endif // INTRO_ANIMATED_LOGO
   
   private func setupOptionKeyObserver(_ observe: @escaping (NSEvent) -> Void) {
     if let previousMonitor = optionKeyEventMonitor {
@@ -456,13 +459,17 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   // MARK: -
   
   @IBAction func stopLogoAnimation(_ sender: AnyObject) {
+    #if INTRO_ANIMATED_LOGO
     stopAnimatedLogo()
+    #endif
   }
   
   @IBAction func restartLogoAnimation(_ sender: AnyObject) {
+    #if INTRO_ANIMATED_LOGO
     startAnimatedLogo()
+    #endif
   }
-
+  
   @IBAction func openGeneralSettings(_ sender: AnyObject) {
     model.showSettings(selectingPane: .general)
   }
