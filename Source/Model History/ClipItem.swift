@@ -9,7 +9,7 @@
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 import CoreData
 import Sauce
 
@@ -37,6 +37,7 @@ class ClipItem: NSManagedObject {
   }
   
   @NSManaged public var application: String?
+  @NSManaged public var batches: NSSet?
   @NSManaged public var contents: NSSet?
   @NSManaged public var firstCopiedAt: Date!
   @NSManaged public var lastCopiedAt: Date!
@@ -102,8 +103,8 @@ class ClipItem: NSManagedObject {
     return Int(modified)
   }
   
-  var fromMaccy: Bool { contentData([.fromMaccy]) != nil }
-  var universalClipboard: Bool { contentData([.universalClipboard]) != nil }
+  var fromSelf: Bool { hasContentData([.fromSelf]) || hasContentData([.fromMaccy]) }
+  var universalClipboard: Bool { hasContentData([.universalClipboard]) }
   
   private let filePasteboardTypes: [NSPasteboard.PasteboardType] = [.fileURL]
   private let htmlPasteboardTypes: [NSPasteboard.PasteboardType] = [.html]
@@ -113,8 +114,8 @@ class ClipItem: NSManagedObject {
   
   private var universalClipboardImage: Bool { universalClipboard && fileURLs.first?.pathExtension == "jpeg" }
   private var universalClipboardText: Bool {
-     universalClipboard &&
-      contentData(htmlPasteboardTypes + imagePasteboardTypes + rtfPasteboardTypes + textPasteboardTypes) != nil
+    universalClipboard &&
+    hasContentData(htmlPasteboardTypes + imagePasteboardTypes + rtfPasteboardTypes + textPasteboardTypes)
   }
   
   // swiftlint:disable nsobject_prefer_isequal
@@ -155,7 +156,8 @@ class ClipItem: NSManagedObject {
       .filter { content in
         ![
           NSPasteboard.PasteboardType.modified.rawValue,
-          NSPasteboard.PasteboardType.fromMaccy.rawValue
+          NSPasteboard.PasteboardType.fromMaccy.rawValue,
+          NSPasteboard.PasteboardType.fromSelf.rawValue
         ].contains(content.type)
       }
       .allSatisfy { content in
@@ -206,6 +208,13 @@ class ClipItem: NSManagedObject {
     })
     
     return content?.value
+  }
+  
+  private func hasContentData(_ types: [NSPasteboard.PasteboardType]) -> Bool {
+    let contents = getContents()
+    return contents.contains(where: { content in
+      return types.contains(NSPasteboard.PasteboardType(content.type))
+    })
   }
   
   private func allContentData(_ types: [NSPasteboard.PasteboardType]) -> [Data] {

@@ -29,8 +29,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D1D91FCA-2A5E-45CE-B0B6-3D341E584C86"
-            shouldBeEnabled = "Yes"
+            uuid = "9D8F6A4B-5862-4635-AF97-B16533E688F7"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/App/AppDelegate.swift"

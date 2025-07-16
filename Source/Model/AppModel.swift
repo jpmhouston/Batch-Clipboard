@@ -29,6 +29,7 @@ class AppModel: NSObject {
   static var allowReplayFromHistory = false
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
+  static var allowSavedBatches = false
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
   
@@ -410,6 +411,7 @@ class AppModel: NSObject {
     Self.allowReplayFromHistory = hasPurchased
     Self.allowPasteMultiple = hasPurchased
     Self.allowUndoCopy = hasPurchased
+    Self.allowSavedBatches = hasPurchased
   }
   
   func showIntroAtPermissionPage(_ sender: AnyObject) {
@@ -473,25 +475,16 @@ class AppModel: NSObject {
   func updateSavingHistory() {
     if UserDefaults.standard.keepHistory {
       clipboard.restart()
+      menu.buildHistoryItems(includingHistory: true)
     } else {
       withClearWhenDisablingHistoryAlert { retain in
         self.clipboard.stop()
         if !retain {
           self.history.clear()
         }
+        self.menu.buildHistoryItems(includingHistory: false)
       }
     }
-//    if UserDefaults.standard.keepHistory {
-//      clipboard.restart()
-//    } else {
-//      clipboard.stop()
-//      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
-//        history.clear()
-//      }
-////      if let retain = UserDefaults.standard.saveClipsAcrossDisabledHistory, !retain == false {
-////        history.clear()
-////      }
- //   }
   }
   
   private func withClearWhenDisablingHistoryAlert(_ closure: @escaping (Bool) -> Void) {
