@@ -51,7 +51,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private var historyMenuItemsGroupCount: Int { usePopoverAnchors ? 3 : 2 } // 1 main, 1 alternate, 1 popover anchor
   private var maxMenuItems: Int {
-    let numMenuItemsSetting = max(Self.minNumMenuItems, UserDefaults.standard.maxMenuItems)
+    let numMenuItemsSetting = max(Self.minNumMenuItems, UserDefaults.standard.maxMenuItems == 0 ?
+                                  UserDefaults.standard.size : UserDefaults.standard.maxMenuItems)
     let numItemsStoredSetting = max(Self.minNumMenuItems, UserDefaults.standard.size)
     return if !AppModel.allowDictinctStorageSize {
       numMenuItemsSetting
@@ -81,6 +82,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var showsExpandedMenu = false
   private var showsFullExpansion = false
   private var showsSearchHeader = false
+  private var showsSavedBatches = false
   private var isFiltered = false
   
   private var historyHeaderView: FilterFieldView? { historyHeaderItem?.view as? FilterFieldView ?? historyHeaderViewCache }
@@ -173,6 +175,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     previewController.menuWillOpen()
     
+    if showsExpandedMenu && (!AppModel.allowExpandedHistory || historyMenuItems.isEmpty) {
+      showsExpandedMenu = false
+    }
+    
     if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch && !clips.isEmpty,
        let field = historyHeaderView?.queryField
     {
@@ -181,6 +187,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
       showsSearchHeader = true
     } else {
       showsSearchHeader = false
+    }
+    
+    if !showsExpandedMenu && AppModel.allowSavedBatches && queue.isEmpty {
+      showsSavedBatches = true
     }
   }
   
@@ -234,14 +244,14 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   // MARK: -
   
-  func buildHistoryItems() {
+  func buildHistoryItems(includingHistory useHistory: Bool = true) {
     clearHistoryItems() // wipes `clips` as well as history menu items
     
     if usePopoverAnchors {
       insertTopAnchorItem()
     }
     
-    let historyItems = history.all.prefix(maxMenuItems)
+    let historyItems = useHistory ? history.all.prefix(maxMenuItems) : []
     
     for item in historyItems {
       let menuItems = buildMenuItemAlternates(item)
@@ -526,10 +536,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func enableExpandedMenu(_ enable: Bool, full: Bool = false) {
-    guard AppModel.allowExpandedHistory && !historyMenuItems.isEmpty else {
-      return
-    }
-    showsExpandedMenu = enable // gets set back to false in menuDidClose
+    showsExpandedMenu = enable // gets set back to false in menuWillOpen or menuDidClose
     showsFullExpansion = full
   }
   

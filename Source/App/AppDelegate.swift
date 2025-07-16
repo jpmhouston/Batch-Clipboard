@@ -88,6 +88,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
   
   private func clearOrphanRecords() {
+    #if DEBUG
+    let countRequest = NSFetchRequest<ClipItem>(entityName: "HistoryItem")
+    let count = try? CoreDataManager.shared.viewContext.count(for: countRequest)
+    print("\(count ?? 0) clip items stored")
+    #endif
+    
     let fetchRequest = NSFetchRequest<ClipContent>(entityName: "HistoryItemContent")
     fetchRequest.predicate = NSPredicate(format: "item == nil")
     do {
