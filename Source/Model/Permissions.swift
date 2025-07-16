@@ -6,7 +6,7 @@
 //  Portions Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 //  Based on Accessibility.swift from the Maccy project
-//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
 import AppKit
