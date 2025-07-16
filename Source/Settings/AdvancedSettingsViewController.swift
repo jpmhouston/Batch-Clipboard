@@ -1,4 +1,15 @@
-import Cocoa
+//
+//  AdvancedSettingsViewController.swift
+//  Batch Clipboard
+//
+//  Created by Pierre Houston on 2025-07-10.
+//  Portions Copyright © 2024 Bananameter Labs. All rights reserved.
+//
+//  Based on AdvancedSettingsViewController.swift from the Maccy project
+//  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
+//
+
+import AppKit
 import Settings
 
 class AdvancedSettingsViewController: NSViewController, SettingsPane {
@@ -12,7 +23,13 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var avoidTakingFocusButton: NSButton!
   @IBOutlet weak var clearOnQuitButton: NSButton!
   @IBOutlet weak var clearSystemClipboardButton: NSButton!
-
+  @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField!
+  @IBOutlet weak var subsequentHistoryOnDescriptionField: NSTextField!
+  @IBOutlet weak var historyOffDescriptionConstraintAbove: NSLayoutConstraint!
+  @IBOutlet var historyOffDescriptionConstraintBelow: NSLayoutConstraint! // muat not weak
+  
+  private var replacementHistoryOnDescriptionConstraintAbove: NSLayoutConstraint?
+  
   private let exampleIgnoredType = "zzz.yyy.xxx"
 
   override func viewWillAppear() {
@@ -21,6 +38,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     populateAvoidTakingFocus()
     populateClearOnQuit()
     populateClearSystemClipboard()
+    updateMonitoringDescription()
   }
 
   @IBAction func turnOffChanged(_ sender: NSButton) {
@@ -54,4 +72,43 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   private func populateClearSystemClipboard() {
     clearSystemClipboardButton.state = UserDefaults.standard.clearSystemClipboard ? .on : .off
   }
+  
+  private func updateMonitoringDescription() {
+    if UserDefaults.standard.keepHistory {
+      // hide the extra description label that's regarding history and continuous
+      // clipboard monitoring being off
+      if let replacementConstraint = replacementHistoryOnDescriptionConstraintAbove {
+        replacementConstraint.isActive = true
+      } else {
+        // make duplcate of historyOffDescriptionConstraintAbove but for subsequentHistoryOnDescriptionField
+        let originalConstraint: NSLayoutConstraint = historyOffDescriptionConstraintAbove
+        guard var from = originalConstraint.firstItem, var to = originalConstraint.secondItem else {
+          return
+        }
+        if originalConstraint.firstItem as? NSTextField == initialHistoryOffDescriptionField {
+          from = subsequentHistoryOnDescriptionField
+        } else if originalConstraint.secondItem as? NSTextField == initialHistoryOffDescriptionField {
+          to = subsequentHistoryOnDescriptionField
+        } else {
+          return
+        }
+        let replacementConstraint = NSLayoutConstraint(
+          item: from, attribute: originalConstraint.firstAttribute, relatedBy: originalConstraint.relation,
+          toItem: to, attribute: originalConstraint.secondAttribute, multiplier: originalConstraint.multiplier, constant: originalConstraint.constant)
+        replacementHistoryOnDescriptionConstraintAbove = replacementConstraint 
+        replacementConstraint.isActive = true
+      }
+      historyOffDescriptionConstraintBelow.isActive = false
+      initialHistoryOffDescriptionField.isHidden = true
+      view.layer?.setNeedsLayout()
+    } else {
+      // ensure the extra description label is shown that's regarding history and
+      // continuous clipboard monitoring being off
+      replacementHistoryOnDescriptionConstraintAbove?.isActive = false
+      historyOffDescriptionConstraintBelow.isActive = true
+      initialHistoryOffDescriptionField.isHidden = false
+      view.layer?.setNeedsLayout()
+    }
+  }
+  
 }

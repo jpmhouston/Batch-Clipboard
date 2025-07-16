@@ -9,7 +9,7 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 import Settings
 
 class IgnoreSettingsViewController: NSViewController, SettingsPane {

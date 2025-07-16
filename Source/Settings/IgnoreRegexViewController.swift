@@ -9,7 +9,7 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 
 class IgnoreRegexViewController: NSViewController, NSTableViewDataSource {
   @IBOutlet weak var ignoredItemsTable: NSTableView!
