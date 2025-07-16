@@ -9,7 +9,7 @@
 //  Portions are copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 
 class IgnoreApplicationsViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
   @IBOutlet weak var ignoredItemsTable: NSTableView!

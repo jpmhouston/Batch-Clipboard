@@ -11,143 +11,193 @@
                 <outlet property="avoidTakingFocusButton" destination="4MH-H4-Ce2" id="iHM-Ux-GrT"/>
                 <outlet property="clearOnQuitButton" destination="O2y-qd-u6c" id="awd-Ep-Rex"/>
                 <outlet property="clearSystemClipboardButton" destination="lGE-3K-m2Y" id="yUd-O9-5tm"/>
+                <outlet property="historyOffDescriptionConstraintAbove" destination="kuV-yu-4CT" id="fme-ft-cvM"/>
+                <outlet property="historyOffDescriptionConstraintBelow" destination="eT9-zi-r8M" id="CsY-F3-pYV"/>
+                <outlet property="initialHistoryOffDescriptionField" destination="PGC-0Y-l3G" id="IM3-fX-r0y"/>
+                <outlet property="subsequentHistoryOnDescriptionField" destination="ahJ-Lm-rjm" id="vSr-7E-gK2"/>
                 <outlet property="turnOffButton" destination="RTY-w8-2Wt" id="xy5-W3-yjD"/>
                 <outlet property="view" destination="vfL-pB-YIa" id="gmn-hk-Nsm"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView translatesAutoresizingMaskIntoConstraints="NO" id="vfL-pB-YIa">
-            <rect key="frame" x="0.0" y="0.0" width="442" height="312"/>
+        <customView misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vfL-pB-YIa">
+            <rect key="frame" x="0.0" y="0.0" width="472" height="487"/>
             <subviews>
-                <gridView xPlacement="fill" yPlacement="top" rowAlignment="lastBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="FlB-UI-Pmg">
-                    <rect key="frame" x="22" y="20" width="398" height="272"/>
-                    <rows>
-                        <gridRow id="CZD-ac-NuU"/>
-                        <gridRow id="l2s-iI-2ix"/>
-                        <gridRow id="M6T-bh-slS"/>
-                        <gridRow id="klT-Xg-5Xa"/>
-                        <gridRow id="Ffc-bg-XxF"/>
-                        <gridRow topPadding="4" bottomPadding="4" id="ey0-TY-bAY"/>
-                        <gridRow id="tDm-DG-HuU"/>
-                        <gridRow id="fzu-MZ-Qf6"/>
-                        <gridRow height="18" id="srs-kY-zXE"/>
-                    </rows>
-                    <columns>
-                        <gridColumn width="398" id="8aH-p4-Hiw"/>
-                    </columns>
-                    <gridCells>
-                        <gridCell row="CZD-ac-NuU" column="8aH-p4-Hiw" id="PcE-h5-Afe">
-                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-w8-2Wt">
-                                <rect key="frame" x="-2" y="255" width="400" height="18"/>
-                                <buttonCell key="cell" type="check" title="Turn off" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="RA0-eh-Udt">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="turnOffChanged:" target="-2" id="Kk2-0S-Xoz"/>
-                                </connections>
-                            </button>
-                        </gridCell>
-                        <gridCell row="l2s-iI-2ix" column="8aH-p4-Hiw" id="XZW-aJ-d98">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
-                                <rect key="frame" x="-2" y="206" width="402" height="42"/>
-                                <textFieldCell key="cell" selectable="YES" id="Ejh-zi-AFs">
-                                    <font key="font" metaFont="controlContent" size="11"/>
-                                    <string key="title">Temporarily ignore all new copies.
-You are likely to use it programmatically and disable application while copying sensitive data.</string>
-                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="M6T-bh-slS" column="8aH-p4-Hiw" id="dQu-KC-grG">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
-                                <rect key="frame" x="-2" y="165" width="402" height="33"/>
-                                <textFieldCell key="cell" selectable="YES" id="LFh-6b-GFi">
-                                    <font key="font" size="10" name="Menlo-Regular"/>
-                                    <string key="title">defaults write lol.bananameter.batchclip ignoreEvents true
+                <button toolTip="Automatically remove all unpinned items before quitting the application." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O2y-qd-u6c">
+                    <rect key="frame" x="26" y="450" width="149" height="18"/>
+                    <buttonCell key="cell" type="check" title="Clear history on quit" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JvB-ng-8vt">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="clearOnQuitChanged:" target="-2" id="ngS-Z0-MAR"/>
+                    </connections>
+                </button>
+                <button toolTip="When enabled, clearing the history would also clear the current system clipboard." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lGE-3K-m2Y">
+                    <rect key="frame" x="34" y="428" width="212" height="18"/>
+                    <buttonCell key="cell" type="check" title="Clear the system clipboard too" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WSh-1o-SG8">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="clearSystemClipboardChanged:" target="-2" id="1Lb-Tj-REC"/>
+                    </connections>
+                </button>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="uoQ-aq-GS3">
+                    <rect key="frame" x="22" y="410" width="428" height="5"/>
+                </box>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-w8-2Wt">
+                    <rect key="frame" x="26" y="379" width="273" height="18"/>
+                    <buttonCell key="cell" type="check" title="Temporarily disable clipboard monitoring" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="RA0-eh-Udt">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="turnOffChanged:" target="-2" id="Kk2-0S-Xoz"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="PGC-0Y-l3G">
+                    <rect key="frame" x="26" y="312" width="420" height="56"/>
+                    <textFieldCell key="cell" id="VHi-Vw-nEB">
+                        <font key="font" metaFont="systemSemibold" size="11"/>
+                        <string key="title">With Clipboard History turned off (in the General settings panel) the app does not continually monitor the clipboard until you start collecting a batch. There is reduced need for these monitor disabling features, but they are still available.</string>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
+                    <rect key="frame" x="26" y="292" width="420" height="14"/>
+                    <textFieldCell key="cell" title="You may wish to disable monitoring while copying sensitive data." id="Ejh-zi-AFs">
+                        <font key="font" metaFont="system" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="pW7-e8-4Mf">
+                    <rect key="frame" x="26" y="258" width="420" height="28"/>
+                    <textFieldCell key="cell" title="You can also disable by clicking the menu icon with ^⌥ pressed, and the same again to re-enable." id="54J-ir-wdI">
+                        <font key="font" metaFont="system" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="tCt-i9-YKv">
+                    <rect key="frame" x="26" y="238" width="420" height="14"/>
+                    <textFieldCell key="cell" title="To disable and then re-enable programmatically:" id="fjJ-ch-q05">
+                        <font key="font" metaFont="system" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
+                    <rect key="frame" x="34" y="195" width="420" height="33"/>
+                    <textFieldCell key="cell" selectable="YES" id="LFh-6b-GFi">
+                        <font key="font" size="10" name="Menlo-Regular"/>
+                        <string key="title">defaults write lol.bananameter.batchclip ignoreEvents true
 # copy data
 defaults write lol.bananameter.batchclip ignoreEvents false</string>
-                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="klT-Xg-5Xa" column="8aH-p4-Hiw" id="9Bn-10-d0I">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
-                                <rect key="frame" x="-2" y="129" width="402" height="28"/>
-                                <textFieldCell key="cell" selectable="YES" id="lwS-2p-WwS">
-                                    <font key="font" metaFont="controlContent" size="11"/>
-                                    <string key="title">You can also click the menu icon with ^⌥ pressed.
-To ignore only the next copy, click with ^⌥⇧.</string>
-                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="Ffc-bg-XxF" column="8aH-p4-Hiw" id="bLA-hg-jtA">
-                            <textField key="contentView" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
-                                <rect key="frame" x="-2" y="99" width="402" height="22"/>
-                                <textFieldCell key="cell" selectable="YES" id="yeX-On-Ble">
-                                    <font key="font" size="10" name="Menlo-Regular"/>
-                                    <string key="title">defaults write lol.bananameter.batchclip ignoreOnlyNextEvent true
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
+                    <rect key="frame" x="26" y="157" width="420" height="28"/>
+                    <textFieldCell key="cell" title="Or you can momentarily disable for just the next copy, click the menu with ^⌥⇧ pressed." id="lwS-2p-WwS">
+                        <font key="font" metaFont="system" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Z0r-EQ-N1g">
+                    <rect key="frame" x="26" y="137" width="420" height="14"/>
+                    <textFieldCell key="cell" title="To momentarily disable for just the next copy programmatically:" id="9FD-O1-EeI">
+                        <font key="font" metaFont="system" size="11"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
+                    <rect key="frame" x="34" y="105" width="420" height="22"/>
+                    <textFieldCell key="cell" selectable="YES" id="yeX-On-Ble">
+                        <font key="font" size="10" name="Menlo-Regular"/>
+                        <string key="title">defaults write lol.bananameter.batchclip ignoreOnlyNextEvent true
 # copy data</string>
-                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="ey0-TY-bAY" column="8aH-p4-Hiw" id="uUX-Op-ca8">
-                            <box key="contentView" verticalHuggingPriority="750" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="uoQ-aq-GS3">
-                                <rect key="frame" x="0.0" y="84" width="398" height="5"/>
-                            </box>
-                        </gridCell>
-                        <gridCell row="tDm-DG-HuU" column="8aH-p4-Hiw" id="d4M-7j-KcB">
-                            <button key="contentView" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4MH-H4-Ce2">
-                                <rect key="frame" x="-2" y="57" width="400" height="18"/>
-                                <string key="toolTip">Batch Clipboard takes an active application focus when the popup is shown and gives focus back when it's closed. The focus is needed for advanced macOS input handling such as Chinese helper or accent menu. Enabling this option would prevent Batch Clipboard from taking focus. There are certain situations when this can be useful: for example, pasting to a text editor that auto-formats code when it loses focus.</string>
-                                <buttonCell key="cell" type="check" title="Avoid taking application focus" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jjU-HE-iIA">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="avoidTakingFocusChanged:" target="-2" id="5Pw-LA-h4U"/>
-                                </connections>
-                            </button>
-                        </gridCell>
-                        <gridCell row="fzu-MZ-Qf6" column="8aH-p4-Hiw" id="oYJ-Lk-nQt">
-                            <button key="contentView" toolTip="Automatically remove all unpinned items before quitting the application." verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O2y-qd-u6c">
-                                <rect key="frame" x="-2" y="25" width="400" height="18"/>
-                                <buttonCell key="cell" type="check" title="Clear history on quit" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JvB-ng-8vt">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="clearOnQuitChanged:" target="-2" id="ngS-Z0-MAR"/>
-                                </connections>
-                            </button>
-                        </gridCell>
-                        <gridCell row="srs-kY-zXE" column="8aH-p4-Hiw" id="i2r-hf-2WV">
-                            <button key="contentView" toolTip="When enabled, clearing the history would also clear the current system clipboard." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lGE-3K-m2Y">
-                                <rect key="frame" x="-2" y="1" width="400" height="18"/>
-                                <buttonCell key="cell" type="check" title="Clear the system clipboard too" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WSh-1o-SG8">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="clearSystemClipboardChanged:" target="-2" id="1Lb-Tj-REC"/>
-                                </connections>
-                            </button>
-                        </gridCell>
-                    </gridCells>
-                </gridView>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="oBX-KF-KmM">
+                    <rect key="frame" x="22" y="86" width="428" height="5"/>
+                </box>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4MH-H4-Ce2">
+                    <rect key="frame" x="18" y="55" width="207" height="18"/>
+                    <string key="toolTip">Batch Clipboard takes an active application focus when the popup is shown and gives focus back when it's closed. The focus is needed for advanced macOS input handling such as Chinese helper or accent menu. Enabling this option would prevent Batch Clipboard from taking focus. There are certain situations when this can be useful: for example, pasting to a text editor that auto-formats code when it loses focus.</string>
+                    <buttonCell key="cell" type="check" title="Avoid taking application focus" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jjU-HE-iIA">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="avoidTakingFocusChanged:" target="-2" id="5Pw-LA-h4U"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="t0P-wy-4AO">
+                    <rect key="frame" x="18" y="20" width="436" height="28"/>
+                    <textFieldCell key="cell" title="Turn this on only if you have issues with how the Batch Clipboard menu opens when using some of your applications." id="kOc-YD-pYC">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <constraints>
-                <constraint firstItem="FlB-UI-Pmg" firstAttribute="centerX" secondItem="vfL-pB-YIa" secondAttribute="centerX" id="5Df-de-3FT"/>
-                <constraint firstItem="FlB-UI-Pmg" firstAttribute="width" secondItem="vfL-pB-YIa" secondAttribute="width" multiplier="0.9" id="7tk-Oh-85A"/>
-                <constraint firstItem="FlB-UI-Pmg" firstAttribute="centerY" secondItem="vfL-pB-YIa" secondAttribute="centerY" id="SNC-0D-pSa"/>
-                <constraint firstItem="FlB-UI-Pmg" firstAttribute="height" secondItem="vfL-pB-YIa" secondAttribute="height" constant="-40" id="tsa-Jn-Abh"/>
+                <constraint firstItem="O2y-qd-u6c" firstAttribute="top" secondItem="vfL-pB-YIa" secondAttribute="top" constant="20" id="10g-JJ-LYe"/>
+                <constraint firstItem="t0P-wy-4AO" firstAttribute="top" secondItem="4MH-H4-Ce2" secondAttribute="bottom" constant="8" symbolic="YES" id="42e-BZ-i0Z"/>
+                <constraint firstItem="4MH-H4-Ce2" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="20" id="6xL-m7-nfD"/>
+                <constraint firstAttribute="trailing" secondItem="pW7-e8-4Mf" secondAttribute="trailing" constant="28" id="AEY-5g-ff1"/>
+                <constraint firstItem="b73-sw-gL3" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Czx-hr-QSQ"/>
+                <constraint firstAttribute="width" constant="472" id="Don-lS-OlP"/>
+                <constraint firstItem="Sb1-dZ-Kuf" firstAttribute="top" secondItem="Z0r-EQ-N1g" secondAttribute="bottom" constant="10" id="EtG-TW-w2r"/>
+                <constraint firstItem="lGE-3K-m2Y" firstAttribute="leading" secondItem="O2y-qd-u6c" secondAttribute="leading" constant="8" id="FUN-2S-Vs1"/>
+                <constraint firstItem="Z0r-EQ-N1g" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="LnO-Xr-Aa4"/>
+                <constraint firstItem="pW7-e8-4Mf" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="MlS-4C-uld"/>
+                <constraint firstAttribute="trailing" secondItem="PGC-0Y-l3G" secondAttribute="trailing" constant="28" id="MmF-1a-4V7"/>
+                <constraint firstItem="4MH-H4-Ce2" firstAttribute="top" secondItem="oBX-KF-KmM" secondAttribute="bottom" constant="16" id="NO6-H7-z0c"/>
+                <constraint firstAttribute="trailing" secondItem="ahJ-Lm-rjm" secondAttribute="trailing" constant="28" id="P5Z-GX-Qhs"/>
+                <constraint firstItem="ahJ-Lm-rjm" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Psr-Oe-onZ"/>
+                <constraint firstItem="oBX-KF-KmM" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="22" id="R3M-RK-6xe"/>
+                <constraint firstItem="Z0r-EQ-N1g" firstAttribute="top" secondItem="b73-sw-gL3" secondAttribute="bottom" constant="6" id="RWW-nz-fCr"/>
+                <constraint firstItem="pW7-e8-4Mf" firstAttribute="top" secondItem="ahJ-Lm-rjm" secondAttribute="bottom" constant="6" id="Rdc-P2-u4k"/>
+                <constraint firstItem="O2y-qd-u6c" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="S7A-Rl-5L5"/>
+                <constraint firstAttribute="trailing" secondItem="t0P-wy-4AO" secondAttribute="trailing" constant="20" id="S9Z-hI-uvH"/>
+                <constraint firstItem="b73-sw-gL3" firstAttribute="top" secondItem="Fpb-AC-gT0" secondAttribute="bottom" constant="10" id="SD7-KG-9Fl"/>
+                <constraint firstItem="Fpb-AC-gT0" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="36" id="TXr-4n-wvQ"/>
+                <constraint firstAttribute="trailing" secondItem="b73-sw-gL3" secondAttribute="trailing" constant="28" id="Umg-ZF-vwg"/>
+                <constraint firstItem="tCt-i9-YKv" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="WCw-2t-XgN"/>
+                <constraint firstItem="RTY-w8-2Wt" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Z3b-Ys-t4I"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="lGE-3K-m2Y" secondAttribute="trailing" constant="20" id="bce-dG-4Kv"/>
+                <constraint firstAttribute="trailing" secondItem="uoQ-aq-GS3" secondAttribute="trailing" constant="22" id="c8M-jS-XZc"/>
+                <constraint firstAttribute="bottom" secondItem="t0P-wy-4AO" secondAttribute="bottom" constant="20" id="cf7-3g-Lon"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="4MH-H4-Ce2" secondAttribute="trailing" constant="20" id="clz-nQ-wEc"/>
+                <constraint firstAttribute="trailing" secondItem="tCt-i9-YKv" secondAttribute="trailing" constant="28" id="d6P-yn-zOJ"/>
+                <constraint firstItem="Fpb-AC-gT0" firstAttribute="top" secondItem="tCt-i9-YKv" secondAttribute="bottom" constant="10" id="dkC-dc-kqk"/>
+                <constraint firstItem="ahJ-Lm-rjm" firstAttribute="top" secondItem="PGC-0Y-l3G" secondAttribute="bottom" constant="6" id="eT9-zi-r8M"/>
+                <constraint firstAttribute="trailing" secondItem="Z0r-EQ-N1g" secondAttribute="trailing" constant="28" id="fGY-9U-ChO"/>
+                <constraint firstAttribute="trailing" secondItem="oBX-KF-KmM" secondAttribute="trailing" constant="22" id="iBl-HH-iVj"/>
+                <constraint firstAttribute="trailing" secondItem="Fpb-AC-gT0" secondAttribute="trailing" constant="20" id="jB9-qL-bcJ"/>
+                <constraint firstAttribute="trailing" secondItem="Sb1-dZ-Kuf" secondAttribute="trailing" constant="20" id="jCg-WK-dKz"/>
+                <constraint firstItem="RTY-w8-2Wt" firstAttribute="top" secondItem="uoQ-aq-GS3" secondAttribute="bottom" constant="16" id="jHQ-6p-Glq"/>
+                <constraint firstItem="PGC-0Y-l3G" firstAttribute="top" secondItem="RTY-w8-2Wt" secondAttribute="bottom" constant="12" id="kuV-yu-4CT"/>
+                <constraint firstItem="t0P-wy-4AO" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="20" id="luC-i8-quA"/>
+                <constraint firstItem="uoQ-aq-GS3" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="22" id="mQq-tr-G2X"/>
+                <constraint firstItem="lGE-3K-m2Y" firstAttribute="top" secondItem="O2y-qd-u6c" secondAttribute="bottom" constant="6" symbolic="YES" id="n09-54-egH"/>
+                <constraint firstItem="Sb1-dZ-Kuf" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="36" id="nlB-IY-pnL"/>
+                <constraint firstItem="uoQ-aq-GS3" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" constant="16" id="oHa-fF-dqb"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RTY-w8-2Wt" secondAttribute="trailing" constant="28" id="p1N-sZ-7gu"/>
+                <constraint firstItem="PGC-0Y-l3G" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="ugI-qm-AOX"/>
+                <constraint firstItem="oBX-KF-KmM" firstAttribute="top" secondItem="Sb1-dZ-Kuf" secondAttribute="bottom" constant="16" id="vhR-9u-Zdy"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="O2y-qd-u6c" secondAttribute="trailing" constant="28" id="xJF-uf-eRx"/>
+                <constraint firstItem="tCt-i9-YKv" firstAttribute="top" secondItem="pW7-e8-4Mf" secondAttribute="bottom" constant="6" id="ybu-si-QwG"/>
             </constraints>
             <point key="canvasLocation" x="148" y="110"/>
         </customView>
