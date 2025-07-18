@@ -1,5 +1,5 @@
 //
-//  ClipItem.swift
+//  Clip.swift
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-07-10.
@@ -14,28 +14,7 @@ import CoreData
 import Sauce
 
 @objc(HistoryItem)
-class ClipItem: NSManagedObject {
-  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(ClipItem.firstCopiedAt), ascending: false)
-  
-  static var all: [ClipItem] {
-    let fetchRequest = NSFetchRequest<ClipItem>(entityName: "HistoryItem")
-    fetchRequest.sortDescriptors = [ClipItem.sortByFirstCopiedAt]
-    do {
-      return try CoreDataManager.shared.viewContext.fetch(fetchRequest)
-    } catch {
-      return []
-    }
-  }
-  
-  static var count: Int {
-    let fetchRequest = NSFetchRequest<ClipItem>(entityName: "HistoryItem")
-    do {
-      return try CoreDataManager.shared.viewContext.count(for: fetchRequest)
-    } catch {
-      return 0
-    }
-  }
-  
+class Clip: NSManagedObject {
   @NSManaged public var application: String?
   @NSManaged public var batches: NSSet?
   @NSManaged public var contents: NSSet?
@@ -103,6 +82,10 @@ class ClipItem: NSManagedObject {
     return Int(modified)
   }
   
+  var value: String {
+    return calculateValue()
+  }
+  
   var fromSelf: Bool { hasContentData([.fromSelf]) || hasContentData([.fromMaccy]) }
   var universalClipboard: Bool { hasContentData([.universalClipboard]) }
   
@@ -118,12 +101,48 @@ class ClipItem: NSManagedObject {
     hasContentData(htmlPasteboardTypes + imagePasteboardTypes + rtfPasteboardTypes + textPasteboardTypes)
   }
   
+  // MARK: -
+  
+  static var all: [Clip] {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    do {
+      return try CoreDataManager.shared.viewContext.fetch(fetchRequest)
+    } catch {
+      return []
+    }
+  }
+  
+  static var first: Clip? {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    fetchRequest.fetchLimit = 1
+    do {
+      return try CoreDataManager.shared.viewContext.fetch(fetchRequest).first
+    } catch {
+      return nil
+    }
+  }
+  
+  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(Clip.firstCopiedAt), ascending: false)
+  
+  static var count: Int {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    do {
+      return try CoreDataManager.shared.viewContext.count(for: fetchRequest)
+    } catch {
+      return 0
+    }
+  }
+  
   // swiftlint:disable nsobject_prefer_isequal
   // Class 'HistoryItem' for entity 'HistoryItem' has an illegal override of NSManagedObject -isEqual
-  static func == (lhs: ClipItem, rhs: ClipItem) -> Bool {
+  static func == (lhs: Clip, rhs: Clip) -> Bool {
     return lhs.getContents().count == rhs.getContents().count && lhs.supersedes(rhs)
   }
   // swiftlint:enable nsobject_prefer_isequal
+  
+  // MARK: -
   
   convenience init(contents: [ClipContent], application: String? = nil) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItem",
@@ -151,8 +170,8 @@ class ClipItem: NSManagedObject {
     return (contents?.allObjects as? [ClipContent]) ?? []
   }
   
-  func supersedes(_ item: ClipItem) -> Bool {
-    return item.getContents()
+  func supersedes(_ clip: Clip) -> Bool {
+    return clip.getContents()
       .filter { content in
         ![
           NSPasteboard.PasteboardType.modified.rawValue,
@@ -224,8 +243,31 @@ class ClipItem: NSManagedObject {
       .compactMap { $0.value }
   }
   
-  // MARK: -
+  var isImage: Bool { image != nil }
+  var isFile: Bool { !fileURLs.isEmpty }
+  var isRTF: Bool { rtf != nil }
+  var isHTML: Bool { html != nil }
+  var isText: Bool { text != nil }
   
+  private func calculateValue() -> String {
+    if isImage {
+      return ""
+    } else if isFile {
+      return fileURLs
+        .compactMap { $0.absoluteString.removingPercentEncoding }
+        .joined(separator: "\n")
+    } else if isText {
+      return  text ?? ""
+    } else if isRTF {
+      return rtf?.string ?? ""
+    } else if isHTML {
+      return html?.string ?? ""
+    }
+    return ""
+  }
+  
+  // MARK: -
+    
   override var debugDescription: String {
     debugDescription()
   }

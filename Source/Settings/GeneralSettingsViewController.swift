@@ -23,17 +23,17 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   public let paneIdentifier = Settings.PaneIdentifier.general
   public let paneTitle = NSLocalizedString("preferences_general", comment: "")
   public let toolbarItemIcon = NSImage(named: .gear)!
-
+  
   override var nibName: NSNib.Name? { "GeneralSettingsViewController" }
-
+  
   private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
   private let copyHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedCopy)
   private let pasteHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedPaste)
-
+  
   #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
   #endif
-  
+  private var historySavingObserver: NSKeyValueObservation?
   private lazy var loginItemsURL = URL(
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
@@ -106,6 +106,8 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     } else {
       showLaunchAtLoginRow(false) // show instead the open login items button 
     }
+    
+    
   }
   
   override func viewWillAppear() {
@@ -117,6 +119,25 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     #if APP_STORE
     populatePromoteExtrasOptions()
     #endif
+    addObservers()
+  }
+  
+  override func viewWillDisappear() {
+    super.viewWillDisappear()
+    removeObservers()
+  }
+  
+  private func addObservers() {
+    // need to obsevre this because shortly after setting keepHistory to false,
+    // a subsequent confirmation alert can turn it back to true
+    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { [weak self] _, _ in
+      self?.populateClipboardHistoryToggle()
+    }
+  }
+  
+  private func removeObservers() {
+    historySavingObserver?.invalidate()
+    historySavingObserver = nil
   }
   
   // MARK: -

@@ -15,8 +15,10 @@ import CoreData
 class ClipContent: NSManagedObject {
   @NSManaged public var type: String!
   @NSManaged public var value: Data?
-  @NSManaged public var item: ClipItem?
-
+  @NSManaged public var item: Clip?
+  
+  // MARK: -
+  
   // swiftlint:disable nsobject_prefer_isequal
   // Class 'HistoryItemContent' for entity 'HistoryItemContent' has an illegal override of NSManagedObject -isEqual
   static func == (lhs: ClipContent, rhs: ClipContent) -> Bool {
@@ -24,6 +26,8 @@ class ClipContent: NSManagedObject {
   }
   // swiftlint:enable nsobject_prefer_isequal
 
+  // MARK: -
+  
   convenience init(type: String, value: Data?) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItemContent",
                                             in: CoreDataManager.shared.viewContext)!
@@ -32,4 +36,5 @@ class ClipContent: NSManagedObject {
     self.type = type
     self.value = value
   }
+  
 }

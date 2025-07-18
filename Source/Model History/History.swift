@@ -13,40 +13,32 @@ import AppKit
 
 class History {
   var maxItemsOverride = 0
-  private var sortBy = "lastCopiedAt"
   
-  var all: [ClipItem] {
-    let sorter = Sorter(by: sortBy)
-    var items = sorter.sort(ClipItem.all)
-    
-    // trim results and the database based on size setting, but also if queueing then include all those
-    let maxItems = max(UserDefaults.standard.size, UserDefaults.standard.maxMenuItems, AppMenu.minNumMenuItems, maxItemsOverride)
-    while items.count > maxItems {
-      remove(items.removeLast())
-    }
-    
-    return items
+  var all: [Clip] {
+    return Clip.all
   }
   
-  var first: ClipItem? {
-    let sorter = Sorter(by: sortBy)
-    return sorter.first(ClipItem.all)
+  var first: Clip? {
+    return Clip.first
   }
   
   var count: Int {
-    ClipItem.count
+    return Clip.count
   }
   
-  private var sessionLog: [Int: ClipItem] = [:]
+  var batches: [Batch] {
+    return Batch.all
+  }
+  
+  private var sessionLog: [Int: Clip] = [:]
   
   init() {
-    UserDefaults.standard.register(defaults: [UserDefaults.Keys.size: UserDefaults.Values.size])
     if ProcessInfo.processInfo.arguments.contains("ui-testing") {
       clear()
     }
   }
   
-  func add(_ item: ClipItem) {
+  func add(_ item: Clip) {
     if let existingHistoryItem = findSimilarItem(item) {
       if isModified(item) == nil {
         item.contents = existingHistoryItem.contents
@@ -65,22 +57,28 @@ class History {
     CoreDataManager.shared.saveContext()
   }
   
-  func update(_ item: ClipItem?) {
+  func update(_ item: Clip?) {
     CoreDataManager.shared.saveContext()
   }
   
-  func remove(_ item: ClipItem?) {
+  func remove(_ item: Clip?) {
     guard let item else { return }
     
     item.getContents().forEach(CoreDataManager.shared.viewContext.delete(_:))
     CoreDataManager.shared.viewContext.delete(item)
   }
   
+  func trim(to maxItems: Int) {
+    // trim results and the database based on size setting
+    let overflowItems = all.suffix(from: maxItems)
+    overflowItems.forEach(remove(_:))
+  }
+  
   func clear() {
     all.forEach(remove(_:))
   }
   
-  private func findSimilarItem(_ item: ClipItem) -> ClipItem? {
+  private func findSimilarItem(_ item: Clip) -> Clip? {
     let duplicates = all.filter({ $0 == item || $0.supersedes(item) })
     if duplicates.count > 1 {
       return duplicates.first(where: { $0.objectID != item.objectID })
@@ -89,7 +87,7 @@ class History {
     }
   }
   
-  private func isModified(_ item: ClipItem) -> ClipItem? {
+  private func isModified(_ item: Clip) -> Clip? {
     if let modified = item.modified, sessionLog.keys.contains(modified) {
       return sessionLog[modified]
     }

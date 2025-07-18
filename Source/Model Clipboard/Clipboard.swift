@@ -15,7 +15,7 @@ import Sauce
 class Clipboard: CustomDebugStringConvertible {
   static let shared = Clipboard()
   
-  typealias OnNewCopyHook = (ClipItem) -> Void
+  typealias OnNewCopyHook = (Clip) -> Void
   
   private var onNewCopyHooks: [OnNewCopyHook] = []
   var changeCount: Int
@@ -94,7 +94,7 @@ class Clipboard: CustomDebugStringConvertible {
     }
   }
   
-  func copy(_ item: ClipItem?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
+  func copy(_ item: Clip?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
     guard let item else { return }
     
     pasteboard.clearContents()
@@ -274,7 +274,7 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
     
-    let historyItem = ClipItem(contents: contents, application: sourceApp?.bundleIdentifier)
+    let historyItem = Clip(contents: contents, application: sourceApp?.bundleIdentifier)
     onNewCopyHooks.forEach({ $0(historyItem) })
   }
   
@@ -365,7 +365,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
       contents += types.compactMap { if let d = item.data(forType: $0) { ($0, d) } else { nil } }
     })
-    return ClipItem.debugDescription(for: contents, ofLength: length)
+    return Clip.debugDescription(for: contents, ofLength: length)
   }
   
 }

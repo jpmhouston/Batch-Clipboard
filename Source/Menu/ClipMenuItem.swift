@@ -16,8 +16,10 @@ import Cocoa
 //}
 
 class ClipMenuItem: NSMenuItem {
-  var clipItem: ClipItem?
-  var value = ""
+  var clip: Clip?
+  var value = "" // TODO: perhaps remove if this truly is no longer needed
+  var groupIndex = 0
+  var groupCount = 0 
   
   var isHeadOfQueue = false {
     didSet { updateHeadOfQueueIndication() }
@@ -84,19 +86,22 @@ class ClipMenuItem: NSMenuItem {
     super.init(title: title, action: action, keyEquivalent: keyEquivalent)
   }
   
-  func configured(withItem item: ClipItem, distinguishForDebugging: Bool = false) -> Self {
-    self.clipItem = item
+  func configured(withClip clip: Clip, num: Int, of count: Int, distinguishForDebugging: Bool = false) -> Self {
+    groupIndex = num - 1
+    groupCount = count
+    self.clip = clip
+    self.value = clip.value
     
-    if isImage(item) {
-      loadImage(item)
-    } else if isFile(item) {
-      loadFile(item)
-    } else if isText(item) {
-      loadText(item)
-    } else if isRTF(item) {
-      loadRTF(item)
-    } else if isHTML(item) {
-      loadHTML(item)
+    if clip.isImage {
+      loadImage(clip)
+    } else if clip.isFile {
+      loadFile(clip)
+    } else if clip.isText {
+      loadText(clip)
+    } else if clip.isRTF {
+      loadRTF(clip)
+    } else if clip.isHTML {
+      loadHTML(clip)
     }
     
     if distinguishForDebugging {
@@ -106,17 +111,6 @@ class ClipMenuItem: NSMenuItem {
     return self
   }
   
-  @objc
-  func onSelect(_ sender: NSMenuItem) {
-    select()
-    // Only call this in the App Store version.
-    // AppStoreReview.ask()
-  }
-
-  func select() {
-    // Override in children.
-  }
-
   func alternate() {
     isAlternate = true
     // isHidden is implicit in macOS 14.4 and completely prevents selecting hidden item.
@@ -126,19 +120,21 @@ class ClipMenuItem: NSMenuItem {
   }
   
   func resizeImage() {
-    guard let clipItem, !isImage(clipItem) else {
+    guard let clip, !clip.isImage else {
       return
     }
     
-    loadImage(clipItem)
+    loadImage(clip)
   }
   
   func regenerateTitle() {
-    guard let clipItem, !isImage(clipItem) else {
+    guard let clip, !clip.isImage else {
       return
     }
     
-    clipItem.title = clipItem.generateTitle(clipItem.getContents())
+    let newTitle = clip.generateTitle(clip.getContents())
+    clip.title = newTitle
+    title = newTitle
   }
   
   func highlight(_ ranges: [ClosedRange<Int>]) {
@@ -174,28 +170,8 @@ class ClipMenuItem: NSMenuItem {
     }
   }
   
-  private func isImage(_ item: ClipItem) -> Bool {
-    return item.image != nil
-  }
-  
-  private func isFile(_ item: ClipItem) -> Bool {
-    return !item.fileURLs.isEmpty
-  }
-  
-  private func isRTF(_ item: ClipItem) -> Bool {
-    return item.rtf != nil
-  }
-  
-  private func isHTML(_ item: ClipItem) -> Bool {
-    return item.html != nil
-  }
-  
-  private func isText(_ item: ClipItem) -> Bool {
-    return item.text != nil
-  }
-  
-  private func loadImage(_ item: ClipItem) {
-    guard let image = item.image else {
+  private func loadImage(_ clip: Clip) {
+    guard let image = clip.image else {
       return
     }
     
@@ -214,45 +190,23 @@ class ClipMenuItem: NSMenuItem {
     self.title = imageTitle
   }
   
-  private func loadFile(_ item: ClipItem) {
-    guard !item.fileURLs.isEmpty else {
-      return
-    }
-    
-    self.value = item.fileURLs
-      .compactMap { $0.absoluteString.removingPercentEncoding }
-      .joined(separator: "\n")
-    self.title = item.title ?? ""
+  private func loadFile(_ clip: Clip) {
+    self.title = clip.title ?? ""
     self.image = ColorImage.from(title)
   }
   
-  private func loadRTF(_ item: ClipItem) {
-    guard let string = item.rtf?.string else {
-      return
-    }
-    
-    self.value = string
-    self.title = item.title ?? ""
+  private func loadRTF(_ clip: Clip) {
+    self.title = clip.title ?? ""
     self.image = ColorImage.from(title)
   }
   
-  private func loadHTML(_ item: ClipItem) {
-    guard let string = item.html?.string else {
-      return
-    }
-    
-    self.value = string
-    self.title = item.title ?? ""
+  private func loadHTML(_ clip: Clip) {
+    self.title = clip.title ?? ""
     self.image = ColorImage.from(title)
   }
   
-  private func loadText(_ item: ClipItem) {
-    guard let string = item.text else {
-      return
-    }
-    
-    self.value = string
-    self.title = item.title ?? ""
+  private func loadText(_ clip: Clip) {
+    self.title = clip.title ?? ""
     self.image = ColorImage.from(title)
   }
   

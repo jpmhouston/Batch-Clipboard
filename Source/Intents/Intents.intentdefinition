@@ -9,11 +9,11 @@
 	<key>INIntentDefinitionNamespace</key>
 	<string>F3nH0s</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>23F79</string>
+	<string>24F74</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
-	<string>15E204a</string>
+	<string>16E140</string>
 	<key>INIntentDefinitionToolsVersion</key>
-	<string>15.3</string>
+	<string>16.3</string>
 	<key>INIntents</key>
 	<array>
 		<dict>
@@ -432,7 +432,7 @@
 			<key>INIntentConfigurable</key>
 			<true/>
 			<key>INIntentDescription</key>
-			<string>Deletes an item from the Batch Clipboard history.</string>
+			<string>Deletes an item from the Batch Clipboard history. The returned deleted item can be used to access its plain/rich/HTML text, image contents or file location.</string>
 			<key>INIntentDescriptionID</key>
 			<string>I316c6</string>
 			<key>INIntentInput</key>
@@ -573,22 +573,28 @@
 					</dict>
 				</array>
 				<key>INIntentResponseLastParameterTag</key>
-				<integer>1</integer>
+				<integer>2</integer>
+				<key>INIntentResponseOutput</key>
+				<string>item</string>
 				<key>INIntentResponseParameters</key>
 				<array>
 					<dict>
 						<key>INIntentResponseParameterDisplayName</key>
-						<string>Value</string>
+						<string>item</string>
 						<key>INIntentResponseParameterDisplayNameID</key>
 						<string>AsA6IJ</string>
 						<key>INIntentResponseParameterDisplayPriority</key>
 						<integer>1</integer>
 						<key>INIntentResponseParameterName</key>
-						<string>value</string>
+						<string>item</string>
+						<key>INIntentResponseParameterObjectType</key>
+						<string>IntentHistoryItem</string>
+						<key>INIntentResponseParameterObjectTypeNamespace</key>
+						<string>F3nH0s</string>
 						<key>INIntentResponseParameterTag</key>
-						<integer>1</integer>
+						<integer>2</integer>
 						<key>INIntentResponseParameterType</key>
-						<string>String</string>
+						<string>Object</string>
 					</dict>
 				</array>
 			</dict>

@@ -90,7 +90,7 @@
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Advance to Next Batch Item" hidden="YES" id="TLY-ku-V0E">
+                <menuItem title="Advance to Next Batch Item" enabled="NO" id="TLY-ku-V0E">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
                     <connections>
                         <action selector="advanceReplay:" target="-2" id="Bb4-sn-Nnk"/>
@@ -114,39 +114,47 @@
                         <outlet property="view" destination="XAP-KR-RlP" id="gJN-xE-3BH"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="JrS-zo-Haf"/>
-                <menuItem title="Placeholder Copy History Item" id="1hg-yO-AD0" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
+                <menuItem isSeparatorItem="YES" id="k7r-jZ-eci"/>
+                <menuItem title="prototype copy clip item" id="1hg-yO-AD0" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="copyFromHistory:" target="-2" id="dkX-Up-627"/>
+                        <action selector="copyClip:" target="-2" id="dkX-Up-627"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Placeholder Replay History Item" alternate="YES" id="u5y-6g-IID" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
+                <menuItem title="prototype replay clip Item" alternate="YES" id="u5y-6g-IID" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="replayFromHistory:" target="-2" id="BLU-IN-o9D"/>
                     </connections>
                 </menuItem>
-                <menuItem enabled="NO" id="pms-CA-OfJ" userLabel="Placeholder Anchor Item" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
+                <menuItem title="prototype achor item" enabled="NO" id="pms-CA-OfJ" userLabel="Placeholder Anchor Item" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="replayFromHistory:" target="-2" id="srV-C0-AYl"/>
                         <outlet property="view" destination="9fv-At-xQC" id="1Dr-Z4-0vJ"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Placeholder History Header" hidden="YES" id="MMa-qd-9PO">
+                <menuItem isSeparatorItem="YES" id="Qdr-dc-0KU"/>
+                <menuItem title="filter field item" hidden="YES" id="MMa-qd-9PO">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="Hz6-mo-xeY" id="qea-wg-GoD"/>
                     </connections>
                 </menuItem>
+                <menuItem title="⌘-⌫ key detector item" enabled="NO" id="90h-qR-Mlh">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="11V-7Q-FUf" id="zGF-Tm-171"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="rXg-Ma-ibC"/>
                 <menuItem isSeparatorItem="YES" hidden="YES" id="5yx-82-0Qq"/>
                 <menuItem title="Delete History Item" id="vGj-r1-rIx">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
                     <connections>
-                        <action selector="deleteHighlightedHistoryItem:" target="-2" id="NuH-2A-vmC"/>
+                        <action selector="deleteHighlightedClip:" target="-2" id="NuH-2A-vmC"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Clear History…" tag="105" id="u3d-qz-ihN">
@@ -174,18 +182,17 @@ CA
                         <action selector="quit:" target="-2" id="DKY-Ef-7Mu"/>
                     </connections>
                 </menuItem>
-                <menuItem id="90h-qR-Mlh">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <outlet property="view" destination="11V-7Q-FUf" id="zGF-Tm-171"/>
-                    </connections>
-                </menuItem>
             </items>
             <connections>
                 <outlet property="clearItem" destination="u3d-qz-ihN" id="aak-jk-gan"/>
                 <outlet property="deleteItem" destination="vGj-r1-rIx" id="wrK-G3-cEq"/>
-                <outlet property="historyHeaderItem" destination="MMa-qd-9PO" id="Isx-BV-gjX"/>
+                <outlet property="filterFieldItem" destination="MMa-qd-9PO" id="Isx-BV-gjX"/>
+                <outlet property="keyDetectorItem" destination="90h-qR-Mlh" id="qED-tN-70Q"/>
+                <outlet property="leadingSeparatorItem" destination="k7r-jZ-eci" id="EeR-v3-0xV"/>
                 <outlet property="noteItem" destination="f7O-Xw-4yJ" id="MEb-0U-qJb"/>
+                <outlet property="postBatchesSeparatorItem" destination="5yx-82-0Qq" id="7jE-RB-GZd"/>
+                <outlet property="postHistorySeparatorItem" destination="rXg-Ma-ibC" id="l1r-rC-cAk"/>
+                <outlet property="postQueueSeparatorItem" destination="Qdr-dc-0KU" id="Ngt-xV-kDh"/>
                 <outlet property="prototypeAnchorItem" destination="pms-CA-OfJ" id="SCX-Hb-a2C"/>
                 <outlet property="prototypeCopyItem" destination="1hg-yO-AD0" id="BFx-GW-cTS"/>
                 <outlet property="prototypeReplayItem" destination="u5y-6g-IID" id="BiY-9N-axa"/>
@@ -197,7 +204,6 @@ CA
                 <outlet property="queuedPasteAllItem" destination="mK7-my-GpM" id="1fB-7e-6og"/>
                 <outlet property="queuedPasteItem" destination="WZ5-r7-f8t" id="nfN-UU-R2i"/>
                 <outlet property="queuedPasteMultipleItem" destination="4b4-xr-zN6" id="tAs-Yl-Dbs"/>
-                <outlet property="trailingSeparatorItem" destination="5yx-82-0Qq" id="Yna-RH-BVK"/>
                 <outlet property="undoCopyItem" destination="FT3-WA-g9c" id="VA5-67-hoL"/>
             </connections>
             <point key="canvasLocation" x="-22" y="-81"/>
@@ -206,7 +212,7 @@ CA
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
