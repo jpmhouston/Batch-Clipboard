@@ -82,14 +82,14 @@ class ClipboardQueue {
   
   // MARK: -
   
-  func add(_ item: ClipItem) throws {
+  func add(_ clip: Clip) throws {
     if !isOn {
       on(allowStayingOnAfterDecrementToZero: false)
     }
     
     // currently item not treated differently by history when queue on vs off
     // but this may change in the future
-    history.add(item)
+    history.add(clip)
     
     size += 1
     

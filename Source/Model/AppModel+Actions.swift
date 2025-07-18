@@ -35,32 +35,36 @@ extension AppModel {
     //if #unavailable(macOS 14) { true } else { false }
   }
   
-  private func accessibilityCheck(interactive: Bool = true) -> Bool {
-    #if DEBUG
-    if AppDelegate.shouldFakeAppInteraction {
-      return true // clipboard short-circuits the frontmost app TODO: eventually use a mock clipboard obj
+  // MARK: - simple intent handlers
+  
+  func delete(position: Int) -> Clip? {
+    guard position < history.count else {
+      return nil
     }
-    #endif
-    return interactive ? Permissions.check() : Permissions.allowed
+    let clip: Clip = history.all[position]
+    deleteClip(atIndex: position)
+    return clip
   }
   
-  private func restoreClipboardMonitoring() {
-    if !UserDefaults.standard.keepHistory {
-      clipboard.restart()
-    } else if UserDefaults.standard.ignoreEvents {
-      UserDefaults.standard.ignoreEvents = false
-      UserDefaults.standard.ignoreOnlyNextEvent = false
+  func item(at position: Int) -> Clip? {
+    guard position < history.count else {
+      return nil
+    }
+    return history.all[position]
+  }
+  
+  func clearHistory(suppressClearAlert: Bool = false) {
+    withClearAlert(suppressClearAlert: suppressClearAlert) {
+      self.queue.off()
+      self.history.clear()
+      self.menu.deletedHistory()
+      self.clipboard.clear()
+      self.updateMenuIcon()
+      self.updateMenuTitle()
     }
   }
   
-  private func updateClipboardMonitoring() {
-    if !UserDefaults.standard.keepHistory && !queue.isOn {
-      clipboard.stop()
-      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
-        history.clear()
-      }
-    }
-  }
+  // MARK: - clipboard features
   
   @IBAction
   func startQueueMode(_ sender: AnyObject) {
@@ -109,7 +113,7 @@ extension AppModel {
     }
     
     queue.off()
-    menu.updateHeadOfQueue(index: nil)
+    menu.cancelledQueue()
     updateClipboardMonitoring()
     updateMenuIcon()
     updateMenuTitle()
@@ -173,7 +177,7 @@ extension AppModel {
     return true
   }
   
-  func clipboardChanged(_ item: ClipItem) {
+  func clipboardChanged(_ clip: Clip) {
     // cancel timeout if its timer is active and clear the busy flag controlled by the timer
     let withinTimeout = copyTimeoutTimer != nil
     if withinTimeout {
@@ -186,19 +190,16 @@ extension AppModel {
     
     if queue.isOn {
       do {
-        try queue.add(item)
-      } catch {
-        return
-      }
+        try queue.add(clip)
+        
+        menu.addedClipToQueue(clip)
+        updateMenuIcon(.increment)
+        updateMenuTitle()
+      } catch { }
       
-      menu.add(item) // or different queue-aware add function
-      menu.updateHeadOfQueue(index: queue.headIndex) // or don't pass in index, inject queue into menu when its created?
-      
-      updateMenuIcon(.increment)
-      updateMenuTitle()
     } else {
-      history.add(item)
-      menu.add(item)
+      history.add(clip)
+      menu.addedClipToHistory(clip)
     }
   }
   
@@ -246,12 +247,12 @@ extension AppModel {
       
       do {
         try self.queue.remove()
+        
+        menu.poppedClipOffQueue()
+        updateClipboardMonitoring()
+        updateMenuIcon(.decrement)
+        updateMenuTitle()
       } catch { }
-      
-      menu.updateHeadOfQueue(index: self.queue.headIndex)
-      updateClipboardMonitoring()
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
       
       Self.busy = false
       
@@ -334,7 +335,7 @@ extension AppModel {
     queuedPasteMultiple(queue.size, interactive: true)
   }
   
-  // TODO: add support for paste multiple from an intent
+  // TODO: add support for paste all/multiple from an intent
   
   @discardableResult
   private func queuedPasteMultiple(_ count: Int, interactive: Bool = true) -> Bool {
@@ -355,13 +356,13 @@ extension AppModel {
       // menu icon will show "-" for the duration
       updateMenuIcon(.persistentDecrement)
       
-      queuedPasteMultipleIterator(count) { [weak self] in
+      queuedPasteMultipleIterator(to: count) { [weak self] num in
         guard let self = self else { return }
         
         self.queue.finishBulkRemove()
         
-        // final update to these and including icon not updated since the syaty
-        self.menu.updateHeadOfQueue(index: self.queue.headIndex)
+        // final update to these and including icon not updated since the start
+        self.menu.poppedClipsOffQueue(num)
         updateClipboardMonitoring()
         self.updateMenuIcon()
         self.updateMenuTitle()
@@ -379,10 +380,10 @@ extension AppModel {
     }
   }
   
-  private func queuedPasteMultipleIterator(_ count: Int, then completion: @escaping ()->Void) {
-    guard count > 0, let index = queue.headIndex, index < history.count else {
-      // don't expect to ever be called with count = 0, exit condition is below, before recursive call
-      completion()
+  private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, then completion: @escaping (Int)->Void) {
+    guard max > 0 && count < max, let index = queue.headIndex, index < history.count else {
+      // don't expect to ever be called with count>=max, exit condition is below, before recursive call
+      completion(count)
       return
     }
     
@@ -396,19 +397,16 @@ extension AppModel {
       do {
         try queue.bulkRemoveNext()
       } catch {
-        completion()
+        completion(count + 1)
         return
       }
-      if queue.isEmpty || count <= 1 {
-        completion()
+      if queue.isEmpty || count + 1 >= max {
+        completion(count + 1)
         return
       }
       
-      menu.updateHeadOfQueue(index: queue.headIndex)
-      updateClipboardMonitoring()
       updateMenuTitle()
-      
-      self.queuedPasteMultipleIterator(count - 1, then: completion)
+      self.queuedPasteMultipleIterator(increment: count + 1, to: max, then: completion)
     }
   }
   
@@ -434,7 +432,7 @@ extension AppModel {
       return
     }
     
-    menu.updateHeadOfQueue(index: queue.headIndex)
+    menu.poppedClipOffQueue()
     updateClipboardMonitoring()
     updateMenuIcon(.decrement)
     updateMenuTitle()
@@ -443,8 +441,7 @@ extension AppModel {
   @IBAction
   func replayFromHistory(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    guard let item = (sender as? ClipMenuItem)?.clipItem,
-          let index = history.all.firstIndex(of: item) else {
+    guard let clip = (sender as? ClipMenuItem)?.clip, let index = history.all.firstIndex(of: clip) else {
       return
     }
     replayFromHistory(atIndex: index, interactive: true)
@@ -462,71 +459,78 @@ extension AppModel {
       return false
     }
     
+    guard index < history.count else {
+      return false
+    }
+    let clip = history.all[index]
+    
     queue.on()
     do {
       try queue.setHead(toIndex: index)
+      
+      menu.startedQueueFromHistory(atClip: clip)
+      updateClipboardMonitoring()
+      updateMenuIcon()
+      updateMenuTitle()
     } catch {
       queue.off()
       return false
     }
     
-    menu.updateHeadOfQueue(index: index)
-    updateClipboardMonitoring()
-    updateMenuIcon()
-    updateMenuTitle()
-    
     return true
   }
   
   @IBAction
-  func copyFromHistory(_ sender: AnyObject) {
+  func copyClip(_ sender: AnyObject) {
     guard !Self.busy else {
       return
     }
     
-    guard let item = (sender as? ClipMenuItem)?.clipItem else {
+    guard let clip = (sender as? ClipMenuItem)?.clip else {
       return
     }
     
-    clipboard.copy(item)
+    clipboard.copy(clip)
   }
   
-  @IBAction
-  func deleteHistoryItem(_ sender: AnyObject) {
-    guard let item = (sender as? ClipMenuItem)?.clipItem, let index = history.all.firstIndex(of: item) else {
-      return
-    }
-    
-    deleteHistoryItem(index)
-  }
-  
-  @discardableResult
-  func deleteHistoryItem(_ index: Int) -> Bool {
+  func deleteClip(atIndex index: Int) {
     guard !Self.busy else {
-      return false
+      return
     }
     guard index < history.count else {
-      return false
+      return
+    }
+    let clip = history.all[index]
+    
+    if index < queue.size {
+      menu.deletedClipFromQueue(clip)
+      
+      fixQueueAfterDeletingClip(atIndex: index)
+    } else {
+      menu.deletedClipFromHistory(clip)
     }
     
-    menu.delete(position: index)
-    
-    fixQueueAfterDeletingItem(atIndex: index)
-    
-    return true
+    return
   }
   
   @IBAction
-  func deleteHighlightedHistoryItem(_ sender: AnyObject) {
+  func deleteHighlightedClip(_ sender: AnyObject) {
     guard !Self.busy else {
       return // TODO: restore logging breakpoint here once solving why it fires even when guard passes
     }
     
-    guard let deletedIndex = menu.deleteHighlightedItem() else {
+    guard let clip = menu.highlightedClipMenuItem()?.clip, let index = history.all.firstIndex(of: clip) else {
       return
     }
     
-    fixQueueAfterDeletingItem(atIndex: deletedIndex)
+    history.remove(clip)
+    
+    if index < queue.size {
+      menu.deletedClipFromQueue(clip)
+      fixQueueAfterDeletingClip(atIndex: index)
+    } else {
+      menu.deletedClipFromHistory(clip)
+    }
   }
   
   @IBAction
@@ -535,7 +539,7 @@ extension AppModel {
       return
     }
     
-    clearHistory()
+    clearHistory(suppressClearAlert: false)
   }
   
   @IBAction
@@ -549,17 +553,21 @@ extension AppModel {
       return
     }
     
-    guard let removeItem = history.first else {
+    guard let clip = history.first else {
       return
     }
     
-    history.remove(removeItem)
-    menu.delete(position: 0)
+    history.remove(clip)
     
     if !queue.isEmpty {
-      fixQueueAfterDeletingItem(atIndex: 0)
+      menu.deletedClipFromQueue(clip)
+      fixQueueAfterDeletingClip(atIndex: 0)
+    } else {
+      menu.deletedClipFromHistory(clip)
     }
   }
+  
+  // MARK: - opening windows
   
   @IBAction
   func showAbout(_ sender: AnyObject) {
@@ -593,35 +601,24 @@ extension AppModel {
     Self.returnFocusToPreviousApp = true
   }
   
+  func showIntroAtPermissionPage(_ sender: AnyObject) {
+    Self.returnFocusToPreviousApp = false
+    introWindowController.openIntro(atPage: .checkAuth, with: self)
+    Self.returnFocusToPreviousApp = true
+  }
+  
+  func showIntroAtHistoryUpdatePage(_ sender: AnyObject) {
+    Self.returnFocusToPreviousApp = false
+    introWindowController.openIntro(atPage: .checkAuth, with: self) // TODO: new page for migrating to disabled history
+    Self.returnFocusToPreviousApp = true
+  }
+  
   @IBAction
   func quit(_ sender: AnyObject) {
     NSApp.terminate(sender)
   }
   
-  // MARK: -
-  
-  func fixQueueAfterDeletingItem(atIndex index: Int) {
-    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        os_log(.default, "failed to fix queue after deleting item, %@", error.localizedDescription)
-        queue.off()
-      }
-      
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
-      // menu updates the head of queue item itself when deleting
-    }
-  }
-  
-  internal func updateMenuIcon(_ direction: MenuBarIcon.QueueChangeDirection = .none) {
-    menuIcon.update(forQueueSize: (queue.isOn ? queue.size : nil), direction) 
-  }
-  
-  internal func updateMenuTitle() {
-    menuIcon.badge = queue.isOn ? String(queue.size) : ""
-  }
+  // MARK: - alerts
   
   private func showBonusFeaturePromotionAlert() {
     Self.returnFocusToPreviousApp = false
@@ -636,7 +633,7 @@ extension AppModel {
     }
   }
   
-  internal func withNumberToPasteAlert(_ closure: @escaping (Int) -> Void) {
+  private func withNumberToPasteAlert(_ closure: @escaping (Int) -> Void) {
     let alert = numberQueuedAlert
     guard let field = alert.accessoryView as? RangedIntegerTextField else {
       return
@@ -655,7 +652,75 @@ extension AppModel {
     }
   }
   
-  // MARK: -
+  private func withClearAlert(suppressClearAlert: Bool, _ closure: @escaping () -> Void) {
+    guard !suppressClearAlert && !UserDefaults.standard.suppressClearAlert else {
+      closure()
+      return
+    }
+    Self.returnFocusToPreviousApp = false
+    let alert = clearAlert
+    DispatchQueue.main.async {
+      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
+        if alert.suppressionButton?.state == .on {
+          UserDefaults.standard.suppressClearAlert = true
+        }
+        closure()
+      }
+      AppModel.returnFocusToPreviousApp = true
+    }
+  }
+  
+  // MARK: - utility functions
+  
+  internal func updateMenuIcon(_ direction: MenuBarIcon.QueueChangeDirection = .none) {
+    menuIcon.update(forQueueSize: (queue.isOn ? queue.size : nil), direction) 
+  }
+  
+  internal func updateMenuTitle() {
+    menuIcon.badge = queue.isOn ? String(queue.size) : ""
+  }
+  
+  private func accessibilityCheck(interactive: Bool = true) -> Bool {
+    #if DEBUG
+    if AppDelegate.shouldFakeAppInteraction {
+      return true // clipboard short-circuits the frontmost app TODO: eventually use a mock clipboard obj
+    }
+    #endif
+    return interactive ? Permissions.check() : Permissions.allowed
+  }
+  
+  private func restoreClipboardMonitoring() {
+    if !UserDefaults.standard.keepHistory {
+      clipboard.restart()
+    } else if UserDefaults.standard.ignoreEvents {
+      UserDefaults.standard.ignoreEvents = false
+      UserDefaults.standard.ignoreOnlyNextEvent = false
+    }
+  }
+  
+  private func updateClipboardMonitoring() {
+    if !UserDefaults.standard.keepHistory && !queue.isOn {
+      clipboard.stop()
+      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
+        history.clear()
+      }
+    }
+  }
+  
+  private func fixQueueAfterDeletingClip(atIndex index: Int) {
+    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
+      do {
+        try queue.remove(atIndex: index)
+      } catch {
+        os_log(.default, "failed to fix queue after deleting item, %@", error.localizedDescription)
+        queue.off()
+      }
+      
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
+      // menu updates the head of queue item itself when deleting
+    }
+  }
   
   // `copyTimeoutTimer: DispatchSourceTimer?` must be declared as a property
   

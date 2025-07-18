@@ -32,6 +32,12 @@ class AppModel: NSObject {
   static var allowSavedBatches = false
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
+  static var effectiveMaxClips: Int {
+    if allowDictinctStorageSize { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems }
+  }
+  static var effectiveMaxVisibleClips: Int {
+    if allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0 { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems } 
+  }
   
   static var firstLaunch = false
   
@@ -100,7 +106,7 @@ class AppModel: NSObject {
     return alert
   }
   
-  private var clearAlert: NSAlert {
+  internal var clearAlert: NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("clear_alert_message", comment: "")
     alert.informativeText = NSLocalizedString("clear_alert_comment", comment: "")
@@ -151,10 +157,13 @@ class AppModel: NSObject {
   private var imageHeightObserver: NSKeyValueObservation?
   private var hideSearchObserver: NSKeyValueObservation?
   private var maxMenuItemLengthObserver: NSKeyValueObservation?
+  private var storageSizeObserver: NSKeyValueObservation?
   private var showSpecialSymbolsObserver: NSKeyValueObservation?
   private var statusItemConfigurationObserver: NSKeyValueObservation?
   private var statusItemVisibilityObserver: NSKeyValueObservation?
   private var keepHistoryObserver: NSKeyValueObservation?
+  
+  // MARK: -
   
   override init() {
     UserDefaults.standard.register(defaults: [
@@ -168,9 +177,12 @@ class AppModel: NSObject {
       UserDefaults.Keys.maxMenuItems: UserDefaults.Values.maxMenuItems,
       UserDefaults.Keys.maxMenuItemLength: UserDefaults.Values.maxMenuItemLength,
       UserDefaults.Keys.previewDelay: UserDefaults.Values.previewDelay,
+      UserDefaults.Keys.searchMode: UserDefaults.Values.searchMode,
       UserDefaults.Keys.showInStatusBar: UserDefaults.Values.showInStatusBar,
       UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols,
-      UserDefaults.Keys.keepHistory: UserDefaults.Values.keepHistory,
+      UserDefaults.Keys.size: UserDefaults.Values.size,
+      UserDefaults.Keys.highlightMatch: UserDefaults.Values.highlightMatch,
+      UserDefaults.Keys.keepHistory: UserDefaults.Values.keepHistory
     ])
     
     super.init()
@@ -183,28 +195,24 @@ class AppModel: NSObject {
     pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
-    
-    clipboard.onNewCopy(clipboardChanged)
+    clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
     if UserDefaults.standard.keepHistory {
       clipboard.start()
     }
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
-    
-    menuController = MenuController(menu, menuIcon.statusItem)
-    
-    menuIcon.enableRemoval(true)
-    menuIcon.isVisible = true
-    updateMenuIconEnabledness()
-    
-    menu.buildHistoryItems()
-    
+    menu.buildDynamicItems()
     // prepareForPopup() can take a while the first time so do it early
     // instead of the first time the menu is clicked on, and in case the
     // intro needs to be shown, delay this call a bit to let that open
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
       self.menu.prepareForPopup()
     }
+    
+    menuIcon.enableRemoval(true)
+    menuIcon.isVisible = true
+    updateMenuIconEnabledness()
+    menuController = MenuController(menu, menuIcon.statusItem)
     
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
@@ -230,6 +238,7 @@ class AppModel: NSObject {
     ignoreEventsObserver?.invalidate()
     hideSearchObserver?.invalidate()
     maxMenuItemLengthObserver?.invalidate()
+    storageSizeObserver?.invalidate()
     showSpecialSymbolsObserver?.invalidate()
     statusItemConfigurationObserver?.invalidate()
     statusItemVisibilityObserver?.invalidate()
@@ -259,29 +268,7 @@ class AppModel: NSObject {
     menuController.popUp()
   }
   
-  func select(position: Int) -> String? {
-    return menu.select(position: position)
-  }
-  
-  func delete(position: Int) -> String? {
-    let result = menu.delete(position: position)
-    fixQueueAfterDeletingItem(atIndex: position)
-    return result
-  }
-  
-  func item(at position: Int) -> ClipItem? {
-    return menu.historyItem(at: position)
-  }
-  
-  func clearHistory() {
-    clearHistory(suppressClearAlert: false)
-  }
-  
-  func historySettingsInconsistent() -> Bool {
-    // this is when there are items in history even though the v1.1 keep-history settings
-    // are at their defaults that indicate it should be empty
-    return history.count > 0 && !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
-  }
+  // MARK: - features & purchases
   
   private func initializeStateFlags() {
     let userDefaults = UserDefaults.standard
@@ -393,6 +380,8 @@ class AppModel: NSObject {
   
   private func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
     #if !BONUS_FEATUES_ON
+    let alreadtHadExtras = Self.hasBoughtExtras
+    
     setFeatureFlags(givenPurchase: purchases.hasBoughtExtras)
     Self.hasBoughtExtras = purchases.hasBoughtExtras
     
@@ -400,6 +389,12 @@ class AppModel: NSObject {
       clearPromoteExtrasExpirationTimer()
       UserDefaults.standard.promoteExtras = false
       UserDefaults.standard.promoteExtrasExpiration = nil
+    }
+    
+    if Self.hasBoughtExtras != alreadtHadExtras { // in most cases unnecessary, but just be sure
+      self.history.trim()
+      self.menu.buildDynamicItems()
+      CoreDataManager.shared.saveContext()
     }
     #endif
   }
@@ -414,58 +409,23 @@ class AppModel: NSObject {
     Self.allowSavedBatches = hasPurchased
   }
   
-  func showIntroAtPermissionPage(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
-    introWindowController.openIntro(atPage: .checkAuth, with: self)
-    Self.returnFocusToPreviousApp = true
-  }
-  
-  func showIntroAtHistoryUpdatePage(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
-    introWindowController.openIntro(atPage: .checkAuth, with: self) // TODO: new page for migrating to disabled history
-    Self.returnFocusToPreviousApp = true
-  }
+  // MARK: - observations
   
   // Non-history items in the cleepp menu are defined in a nib file instead of programmatically
   // (the best code is no code), action methods for those items now live in this class,
-  // defined in a class extension. Also history menu item subclasses no longer exist, actions for
-  // those are also defined in the extension, and other "business logic" for the queueing feature.
+  // defined in a class extension AppModel+Actions. Also history menu item subclasses no longer exist,
+  // the actions for those are also defined in the extension, and other "business logic" for the
+  // queueing feature.
   
-  private func clearHistory(suppressClearAlert: Bool) {
-    withClearAlert(suppressClearAlert: suppressClearAlert) {
-      self.history.clear()
-      self.menu.clearHistoryItems()
-      self.clipboard.clear()
-      self.queue.off()
-      self.updateMenuIcon()
-      self.updateMenuTitle()
-    }
-  }
+  // TODO: remove this?
+//  private func rebuild() {
+//    menu.buildDynamicItems()
+//  }
   
-  private func withClearAlert(suppressClearAlert: Bool, _ closure: @escaping () -> Void) {
-    guard !suppressClearAlert && !UserDefaults.standard.suppressClearAlert else {
-      closure()
-      return
-    }
-    Self.returnFocusToPreviousApp = false
-    let alert = clearAlert
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        if alert.suppressionButton?.state == .on {
-          UserDefaults.standard.suppressClearAlert = true
-        }
-        closure()
-      }
-      AppModel.returnFocusToPreviousApp = true
-    }
-  }
-  
-  private func rebuild() {
-    menu.clearHistoryItems()
-    menu.buildHistoryItems()
-    if queue.isOn {
-      menu.updateHeadOfQueue(index: queue.headIndex)
-    }
+  func historySettingsInconsistent() -> Bool {
+    // this is when there are items in history even though the v1.1 keep-history settings
+    // are at their defaults that indicate it should be empty
+    return history.count > 0 && !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
   }
   
   private func updateMenuIconEnabledness() {
@@ -475,14 +435,14 @@ class AppModel: NSObject {
   func updateSavingHistory() {
     if UserDefaults.standard.keepHistory {
       clipboard.restart()
-      menu.buildHistoryItems(includingHistory: true)
+      menu.buildDynamicItems()
     } else {
-      withClearWhenDisablingHistoryAlert { retain in
+      withClearWhenDisablingHistoryAlert { keep in
         self.clipboard.stop()
-        if !retain {
+        if keep {
           self.history.clear()
         }
-        self.menu.buildHistoryItems(includingHistory: false)
+        self.menu.buildDynamicItems()
       }
     }
   }
@@ -509,47 +469,72 @@ class AppModel: NSObject {
         }
         closure(true)
       default:
-        break
+        UserDefaults.standard.keepHistory = true // undo
       }
     }
     Self.returnFocusToPreviousApp = true
   }
   
   private func initializeObservers() {
-    clipboardCheckIntervalObserver = UserDefaults.standard.observe(\.clipboardCheckInterval, options: .new) { _, _ in
-      self.clipboard.restart()
+    clipboardCheckIntervalObserver = UserDefaults.standard.observe(\.clipboardCheckInterval, options: .new) { [weak self] _, _ in
+      self?.clipboard.restart()
     }
-    enabledPasteboardTypesObserver = UserDefaults.standard.observe(\.enabledPasteboardTypes, options: .new) { _, _ in
-      self.updateMenuIconEnabledness()
+    enabledPasteboardTypesObserver = UserDefaults.standard.observe(\.enabledPasteboardTypes, options: .new) { [weak self] _, _ in
+      self?.updateMenuIconEnabledness()
     }
-    ignoreEventsObserver = UserDefaults.standard.observe(\.ignoreEvents, options: .new) { _, _ in
-      self.updateMenuIconEnabledness()
+    ignoreEventsObserver = UserDefaults.standard.observe(\.ignoreEvents, options: .new) { [weak self] _, _ in
+      self?.updateMenuIconEnabledness()
     }
-    imageHeightObserver = UserDefaults.standard.observe(\.imageMaxHeight, options: .new) { _, _ in
-      self.menu.resizeImageMenuItems()
+    imageHeightObserver = UserDefaults.standard.observe(\.imageMaxHeight, options: .new) { [weak self] _, _ in
+      self?.menu.resizeImageMenuItems()
     }
-    maxMenuItemLengthObserver = UserDefaults.standard.observe(\.maxMenuItemLength, options: .new) { _, _ in
+    maxMenuItemLengthObserver = UserDefaults.standard.observe(\.showSpecialSymbols, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
     }
-    keepHistoryObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { _, _ in
-      self.updateSavingHistory()
+    maxMenuItemLengthObserver = UserDefaults.standard.observe(\.maxMenuItemLength, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
+      self.menu.regenerateMenuItemTitles()
+      CoreDataManager.shared.saveContext()
+    }
+    storageSizeObserver = UserDefaults.standard.observe(\.maxMenuItems, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
+      if self.queue.isEmpty { // don't trim when using queue, possible for there to be more than the max items  queued
+        self.history.trim(to: Self.effectiveMaxClips)
+        CoreDataManager.shared.saveContext()
+      }
+      self.menu.buildDynamicItems()
+    }
+    storageSizeObserver = UserDefaults.standard.observe(\.size, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
+      if self.queue.isEmpty { // don't trim when using queue, possible for there to be more than the max items  queued
+        self.history.trim(to: Self.effectiveMaxClips)
+        CoreDataManager.shared.saveContext()          // TODO: also trim (and inform menu to stay in sync) after adding clips and bumping old off
+      }
+      self.menu.buildDynamicItems()
+    }
+    keepHistoryObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { [weak self] _, _ in
+      self?.updateSavingHistory()
     }
     #if FALSE
-    hideSearchObserver = UserDefaults.standard.observe(\.hideSearch, options: .new) { _, _ in
-      self.updateHeader()
+    hideSearchObserver = UserDefaults.standard.observe(\.hideSearch, options: .new) { [weak self] _, _ in
+      self?.updateHeader()
     }
-    showSpecialSymbolsObserver = UserDefaults.standard.observe(\.showSpecialSymbols, options: .new) { _, _ in
+    showSpecialSymbolsObserver = UserDefaults.standard.observe(\.showSpecialSymbols, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
       self.menu.regenerateMenuItemTitles()
       CoreDataManager.shared.saveContext()
     }
     statusItemConfigurationObserver = UserDefaults.standard.observe(\.showInStatusBar,
-                                                                    options: .new) { _, change in
+                                                                    options: .new) { [weak self] _, change in
+      guard let self = self else { return }
       if self.statusItem.isVisible != change.newValue! {
         self.statusItem.isVisible = change.newValue!
       }
     }
-    statusItemVisibilityObserver = observe(\.statusItem.isVisible, options: .new) { _, change in
+    statusItemVisibilityObserver = observe(\.statusItem.isVisible, options: .new) { [weak self] _, change in
+      guard let self = self else { return }
       if UserDefaults.standard.showInStatusBar != change.newValue! {
         UserDefaults.standard.showInStatusBar = change.newValue!
       }

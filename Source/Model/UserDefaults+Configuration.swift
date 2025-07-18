@@ -30,7 +30,6 @@ extension UserDefaults {
     static let lastReviewRequestedAt = "lastReviewRequestedAt"
     static let maxMenuItems = "maxMenuItems"
     static let maxMenuItemLength = "maxMenuItemLength"
-    static let migrations = "migrations"
     static let numberOfUsages = "numberOfUsages"
     static let previewDelay = "previewDelay"
     static let searchMode = "searchMode"
@@ -58,14 +57,13 @@ extension UserDefaults {
   
   public struct Values {
     static let clipboardCheckInterval = 0.5
-    static let ignoredApps: [String] = []
     static let enabledPasteboardTypes: [String] = [ "public.rtf", "public.utf8-plain-text", "public.file-url", "public.tiff", "public.png", "public.html" ]
     static let ignoredPasteboardTypes: [String] = [ "net.antelle.keeweb", "com.agilebits.onepassword", "com.typeit4me.clipping", "Pasteboard generator type", "de.petermaurer.TransientPasteboardType" ]
+    static let ignoredApps: [String] = []
     static let ignoreRegexp: [String] = []
     static let imageMaxHeight = 40.0
     static let maxMenuItems = 20
     static let maxMenuItemLength = 50
-    static let migrations: [String: Bool] = [:]
     static let previewDelay = 1500
     static let searchMode = "exact"
     static let showInStatusBar = true
@@ -94,6 +92,8 @@ extension UserDefaults {
     get { double(forKey: Keys.clipboardCheckInterval) }
     set { set(newValue, forKey: Keys.clipboardCheckInterval) }
   }
+  // this somehow avoids double-fired kvo observations:
+  @objc dynamic public class func automaticallyNotifiesObserversOfClipboardCheckInterval() -> Bool { false }
   
   @objc dynamic public var enabledPasteboardTypes: Set<NSPasteboard.PasteboardType> {
     get {
@@ -102,19 +102,19 @@ extension UserDefaults {
     }
     set { set(Array(newValue.map({ $0.rawValue })), forKey: Keys.enabledPasteboardTypes) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfEnabledPasteboardTypes() -> Bool { false }
   
   @objc dynamic public var hideSearch: Bool {
     get { bool(forKey: Keys.hideSearch) }
     set { set(newValue, forKey: Keys.hideSearch) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfHideSearch() -> Bool { false }
   
   @objc dynamic public var ignoreEvents: Bool {
     get { bool(forKey: Keys.ignoreEvents) }
     set { set(newValue, forKey: Keys.ignoreEvents) }
-//      print("before calling ignoreEvents set(\(newValue), forKey: Keys.ignoreEvents)")
-//      set(newValue, forKey: Keys.ignoreEvents)
-//      print("after calling ignoreEvents set(\(newValue), forKey: Keys.ignoreEvents)")
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfIgnoreEvents() -> Bool { false }
   
   public var ignoreOnlyNextEvent: Bool {
     get { bool(forKey: Keys.ignoreOnlyNextEvent) }
@@ -145,6 +145,7 @@ extension UserDefaults {
     get { integer(forKey: Keys.imageMaxHeight) }
     set { set(newValue, forKey: Keys.imageMaxHeight) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfImageMaxHeight() -> Bool { false }
   
   public var lastReviewRequestedAt: Date {
     get {
@@ -154,20 +155,17 @@ extension UserDefaults {
     set { set(Int(newValue.timeIntervalSince1970), forKey: Keys.lastReviewRequestedAt) }
   }
   
-  public var maxMenuItems: Int {
+  @objc dynamic public var maxMenuItems: Int {
     get { integer(forKey: Keys.maxMenuItems) }
     set { set(newValue, forKey: Keys.maxMenuItems) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItems() -> Bool { false }
   
   @objc dynamic public var maxMenuItemLength: Int {
     get { integer(forKey: Keys.maxMenuItemLength) }
     set { set(newValue, forKey: Keys.maxMenuItemLength) }
   }
-  
-  public var migrations: [String: Bool] {
-    get { dictionary(forKey: Keys.migrations) as? [String: Bool] ?? Values.migrations }
-    set { set(newValue, forKey: Keys.migrations) }
-  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItemLength() -> Bool { false }
   
   public var numberOfUsages: Int {
     get { integer(forKey: Keys.numberOfUsages) }
@@ -188,16 +186,19 @@ extension UserDefaults {
     get { ProcessInfo.processInfo.arguments.contains("ui-testing") ? true : bool(forKey: Keys.showInStatusBar) }
     set { set(newValue, forKey: Keys.showInStatusBar) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowInStatusBar() -> Bool { false }
   
   @objc dynamic var showSpecialSymbols: Bool {
     get { bool(forKey: Keys.showSpecialSymbols) }
     set { set(newValue, forKey: Keys.showSpecialSymbols) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowSpecialSymbols() -> Bool { false }
   
-  public var size: Int {
+  @objc dynamic public var size: Int {
     get { integer(forKey: Keys.size) }
     set { set(newValue, forKey: Keys.size) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfSize() -> Bool { false }
   
   public var suppressClearAlert: Bool {
     get { bool(forKey: Keys.suppressClearAlert) }
@@ -249,6 +250,7 @@ extension UserDefaults {
     get { bool(forKey: Keys.keepHistory) }
     set { set(newValue, forKey: Keys.keepHistory) }
   }
+  @objc dynamic public class func automaticallyNotifiesObserversOfKeepHistory() -> Bool { false }
   
   public var saveClipsAcrossDisabledHistory: Bool {
     get { bool(forKey: Keys.saveClipsAcrossDisabledHistory) }
@@ -259,16 +261,5 @@ extension UserDefaults {
     get { bool(forKey: Keys.supressSaveClipsAlert) }
     set { set(newValue, forKey: Keys.supressSaveClipsAlert) }
   }
-  
-  // These avoid double-fired kvo observations ... somehow
-  @objc dynamic public class func automaticallyNotifiesObserversOfClipboardCheckInterval() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfEnabledPasteboardTypes() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfHideSearch() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfIgnoreEvents() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfImageMaxHeight() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItemLength() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfShowInStatusBar() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfShowSpecialSymbols() -> Bool { false }
-  @objc dynamic public class func automaticallyNotifiesObserversOfKeepHistory() -> Bool { false }
   
 }

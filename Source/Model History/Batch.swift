@@ -12,15 +12,12 @@ import Sauce
 
 @objc(Batch)
 class Batch: NSManagedObject {
-  
-  @NSManaged public var index: NSNumber?
+  @NSManaged public var index: Int
   @NSManaged public var items: NSOrderedSet?
   @NSManaged public var shortcut: Data?
   @NSManaged public var title: String?
   
   // MARK: -
-  
-  static let sortByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: true)
   
   static var all: [Batch] {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
@@ -32,8 +29,26 @@ class Batch: NSManagedObject {
     }
   }
   
-  func getClipItems() -> [ClipItem] {
-    return items?.array as? [ClipItem] ?? []
+  static let sortByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: true)
+  
+  // swiftlint:disable nsobject_prefer_isequal
+  // i'm guessing we'd similarly get this error if tried having `-isEqual` instead of `==`:
+  //   Class 'Batch' for entity 'Batch' has an illegal override of NSManagedObject -isEqual
+  static func == (lhs: Batch, rhs: Batch) -> Bool {
+    return lhs.title == rhs.title // yes, identify by title alone
+  }
+  // swiftlint:enable nsobject_prefer_isequal
+  
+  // MARK: -
+  
+  convenience init(index: Int, title: String, shortcut: Data?) {
+    let entity = NSEntityDescription.entity(forEntityName: "Batch",
+                                            in: CoreDataManager.shared.viewContext)!
+    self.init(entity: entity, insertInto: CoreDataManager.shared.viewContext)
+
+    self.index = index
+    self.title = title
+    self.shortcut = shortcut
   }
   
   // MARK: -
@@ -44,7 +59,7 @@ class Batch: NSManagedObject {
   
   func debugDescription(ofLength length: Int? = nil) -> String {
     let t = title ?? "no-title"
-    let clips = getClipItems()
+    let clips = Self.all
     let c = clips.count
     if let len = length {
       let temp = "'' \(c): "

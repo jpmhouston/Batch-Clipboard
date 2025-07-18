@@ -14,7 +14,6 @@ import Intents
 
 @available(macOS 11.0, *)
 class GetIntentHandler: NSObject, GetIntentHandling {
-  private let positionOffset = 0
   private var model: AppModel!
 
   init(_ model: AppModel) {
@@ -22,24 +21,21 @@ class GetIntentHandler: NSObject, GetIntentHandling {
   }
 
   func handle(intent: GetIntent, completion: @escaping (GetIntentResponse) -> Void) {
-    guard let number = intent.number as? Int else {
+    guard let index = intent.number as? Int,
+          let clip = model.item(at: index) else {
       return completion(GetIntentResponse(code: .failure, userActivity: nil))
     }
 
-    let index = number - positionOffset
+    // this code duplicated here and in DeleteIntentHandler :( d.r.y.
+    let title = clip.title ?? "clipboard item"
+    let intentItem = IntentHistoryItem(identifier: clip.title, display: title)
+    intentItem.text = clip.text
 
-    guard let item = model.item(at: index), let title = item.title else {
-      return completion(GetIntentResponse(code: .failure, userActivity: nil))
-    }
-
-    let intentItem = IntentHistoryItem(identifier: item.title, display: title)
-    intentItem.text = item.text
-
-    if let html = item.htmlData {
+    if let html = clip.htmlData {
       intentItem.html = String(data: html, encoding: .utf8)
     }
 
-    if let fileURL = item.fileURLs.first {
+    if let fileURL = clip.fileURLs.first {
       intentItem.file = INFile(
         fileURL: fileURL,
         filename: "",
@@ -47,11 +43,11 @@ class GetIntentHandler: NSObject, GetIntentHandling {
       )
     }
 
-    if let image = item.image?.tiffRepresentation {
+    if let image = clip.image?.tiffRepresentation {
       intentItem.image = INFile(data: image, filename: "", typeIdentifier: nil)
     }
 
-    if let rtf = item.rtfData {
+    if let rtf = clip.rtfData {
       intentItem.richText = String(data: rtf, encoding: .utf8)
     }
 

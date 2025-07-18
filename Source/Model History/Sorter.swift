@@ -19,15 +19,15 @@ class Sorter {
     self.by = by
   }
   
-  public func sort(_ items: [ClipItem]) -> [ClipItem] {
+  public func sort(_ items: [Clip]) -> [Clip] {
     return items.sorted(by: bySortingAlgorithm(_:_:))
   }
   
-  public func first(_ items: [ClipItem]) -> ClipItem? {
+  public func first(_ items: [Clip]) -> Clip? {
     return items.min(by: bySortingAlgorithm(_:_:))
   }
   
-  private func bySortingAlgorithm(_ lhs: ClipItem, _ rhs: ClipItem) -> Bool {
+  private func bySortingAlgorithm(_ lhs: Clip, _ rhs: Clip) -> Bool {
     switch by {
     case "firstCopiedAt":
       return lhs.firstCopiedAt > rhs.firstCopiedAt

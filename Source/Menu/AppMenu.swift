@@ -16,52 +16,39 @@ import os.log
 // Custom menu supporting "search-as-you-type" based on https://github.com/mikekazakov/MGKMenuWithFilter.
 // swiftlint:disable type_body_length
 class AppMenu: NSMenu, NSMenuDelegate {
-  static let menuWidth = 300
-  static let popoverGap = 5.0
-  static let minNumMenuItems = 5 // things get weird if the effective menu size is 0
-  
-  private var isVisible = false
-  
   private var history: History!
   private var queue: ClipboardQueue!
   private let previewController = PreviewPopoverController()
+  private let search = Searcher()
   
-  class ClipRecord: NSObject {
-    var value: String
-    var title: String { item?.title ?? "" }
-    var item: ClipItem?
-    var menuItems: [ClipMenuItem]
-    var popoverAnchor: NSMenuItem? { menuItems.last } // only when usePopoverAnchors, caller must know this :/
-    
-    init(value: String, item: ClipItem?, menuItems: [ClipMenuItem]) {
-      self.value = value
-      self.item = item
-      self.menuItems = menuItems
-    }
+  static let menuWidth = 300
+  static let popoverGap = 5.0
+  static let minNumMenuItems = 5 // things get weird if the effective menu size is 0
+  private var historyItemGroupCount: Int { usePopoverAnchors ? 3 : 2 } // an optional anchor, keep in sync with buildHistoryItemAlternates
+  private var batchItemGroupCount: Int { usePopoverAnchors ? 2 : 1 } // an optional anchor, keep in sync with buildHistoryItemAlternates
+  
+//  private var effectiveMaxClips: Int {
+//    if AppModel.allowDictinctStorageSize { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems }
+//  }
+//  private var effectiveMaxVisibleClips: Int {
+//    if AppModel.allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0 { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems } 
+//  }
+  private var maxClipMenuItems: Int { max(AppModel.effectiveMaxClips, queue.size) }
+  private var maxVisibleHistoryClips: Int {
+    showsExpandedMenu && showsFullExpansion ? maxClipMenuItems - queue.size : max(AppModel.effectiveMaxVisibleClips  - queue.size, 0)
   }
-  
-  private var clips: [ClipRecord] = []
-  private var headOfQueueClip: ClipRecord?
-  private var queueItemsSeparator: NSMenuItem?
-  private var disableDeleteTimer: DispatchSourceTimer?
-  
-  internal var historyMenuItems: [ClipMenuItem] {
-    items.compactMap({ $0 as? ClipMenuItem }).excluding([topAnchorItem])
-  }
-  
-  private var historyMenuItemsGroupCount: Int { usePopoverAnchors ? 3 : 2 } // 1 main, 1 alternate, 1 popover anchor
-  private var maxMenuItems: Int {
-    let numMenuItemsSetting = max(Self.minNumMenuItems, UserDefaults.standard.maxMenuItems == 0 ?
-                                  UserDefaults.standard.size : UserDefaults.standard.maxMenuItems)
-    let numItemsStoredSetting = max(Self.minNumMenuItems, UserDefaults.standard.size)
-    return if !AppModel.allowDictinctStorageSize {
-      numMenuItemsSetting
-    } else if showsExpandedMenu && showsFullExpansion {
-      max(numMenuItemsSetting, numItemsStoredSetting)
-    } else {
-      min(numMenuItemsSetting, numItemsStoredSetting)
-    }
-  }
+//  private var maxHistoryClips: Int {
+//    let numMenuItemsSetting = max(Self.minNumMenuItems, UserDefaults.standard.maxMenuItems == 0 ?
+//                                  UserDefaults.standard.size : UserDefaults.standard.maxMenuItems)
+//    let numItemsStoredSetting = max(Self.minNumMenuItems, UserDefaults.standard.size)
+//    return if !AppModel.allowDictinctStorageSize {
+//      numMenuItemsSetting
+//    } else if showsExpandedMenu && showsFullExpansion {
+//      max(numMenuItemsSetting, numItemsStoredSetting)
+//    } else {
+//      min(numMenuItemsSetting, numItemsStoredSetting)
+//    }
+//  }
   
   private var usePopoverAnchors: Bool {
     // note: hardcoding false to exercise using anchors on >=sonoma won't work currently
@@ -71,31 +58,63 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var removeViewToHideMenuItem: Bool {
     if #unavailable(macOS 14) { true } else { false }
   }
-  private var useQueueItemsSeparator: Bool {
-    // to use the separator _and_ badge on >=sonoma
-    true
-    // to skip using separator when using the badge on >=sonoma. still deciding
-    //if #unavailable(macOS 14) { true } else { false }
-  }
-  private var promoteExtrasBadge: NSObject?
-  private var cacheUndoCopyItemShortcut = ""
   private var showsExpandedMenu = false
   private var showsFullExpansion = false
-  private var showsSearchHeader = false
+  private var showsFilterField = false
   private var showsSavedBatches = false
   private var isFiltered = false
+  private var isVisible = false
   
-  private var historyHeaderView: FilterFieldView? { historyHeaderItem?.view as? FilterFieldView ?? historyHeaderViewCache }
-  private var historyHeaderViewCache: FilterFieldView?
-  private let search = Searcher()
-  private var lastHighlightedItem: ClipMenuItem?
-  private var topAnchorItem: ClipMenuItem?
+  private var disableDeleteTimer: DispatchSourceTimer?
+  private var promoteExtrasBadge: NSObject?
+  private var cacheUndoCopyItemShortcut = ""
+  private var historyHeaderView: FilterFieldView? { filterFieldItem?.view as? FilterFieldView }
+  private var filterFieldViewCache: FilterFieldView?
+  private var menuWindow: NSWindow? { NSApp.menuWindow }
+  
+  private var lastHighlightedMenuItem: NSMenuItem?
   private var previewPopover: NSPopover?
   private var protoCopyItem: ClipMenuItem?
   private var protoReplayItem: ClipMenuItem?
-  private var protoAnchorItem: ClipMenuItem?
-  private var menuWindow: NSWindow? { NSApp.menuWindow }
-  private var deleteAction: Selector?
+  private var protoAnchorItem: NSMenuItem?
+  
+  private var topQueueAnchorItem: NSMenuItem?
+  private var preQueueItem: NSMenuItem?
+  private var postQueueItem: NSMenuItem? { postQueueSeparatorItem }
+//  private var firstQueueItem: NSMenuItem? {
+//    guard let index = firstQueueItemIndex else { return nil }
+//    return item(at: index) // result might be postQueueSeparatorItem
+//  }
+//  private var firstQueueItemIndex: Int? {
+//    guard let preIndex = safeIndex(of: preQueueItem) else { return nil }
+//    return preIndex + 1 // result might be the index of postQueueSeparatorItem
+//  }
+  private var firstQueueItem: NSMenuItem? { safeItem(at: firstQueueItemIndex) } // result might be postQueueSeparatorItem
+  private var firstQueueItemIndex: Int? { safeIndex(of: preQueueItem)?.advanced(by: 1) }
+  private var postQueueItemIndex: Int? { safeIndex(of: postQueueItem) }
+  private var queueItemCount: Int {
+    guard let firstIndex = firstQueueItemIndex, let postIndex = postQueueItemIndex else { return 0 }
+    return postIndex - firstIndex
+  }
+  private var topHistoryAnchorItem: NSMenuItem?
+  private var preHistoryItem: NSMenuItem?
+  private var postHistoryItem: NSMenuItem? { postHistorySeparatorItem }
+  private var firstHistoryItem: NSMenuItem? { safeItem(at: firstHistoryItemIndex) } // result might be postHistorySeparatorItem
+  private var firstHistoryItemIndex: Int? { safeIndex(of: preHistoryItem)?.advanced(by: 1) }
+  private var postHistoryItemIndex: Int? { safeIndex(of: postHistoryItem) }
+  private var historyItemCount: Int {
+    guard let firstIndex = firstHistoryItemIndex, let postIndex = postHistoryItemIndex else { return 0 }
+    return postIndex - firstIndex
+  }
+  private var preBatchesItem: NSMenuItem?
+  private var postBatchesItem: NSMenuItem? { postBatchesSeparatorItem }
+  private var firstBatchItem: NSMenuItem? { safeItem(at: firstBatchItemIndex) } // result might be postBatchesSeparatorItem
+  private var firstBatchItemIndex: Int? { safeIndex(of: preBatchesItem)?.advanced(by: 1) }
+  private var postBatchesItemIndex: Int? { safeIndex(of: postBatchesItem) }
+  private var batchItemCount: Int {
+    guard let firstIndex = firstBatchItemIndex, let postIndex = postBatchesItemIndex else { return 0 }
+    return postIndex - firstIndex
+  }
   
   @IBOutlet weak var queueStartItem: NSMenuItem?
   @IBOutlet weak var queueStopItem: NSMenuItem?
@@ -106,16 +125,20 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var queuedPasteMultipleItem: NSMenuItem?
   @IBOutlet weak var queuedPasteAllItem: NSMenuItem?
   @IBOutlet weak var noteItem: NSMenuItem?
-  @IBOutlet weak var historyHeaderItem: NSMenuItem?
   @IBOutlet weak var prototypeCopyItem: NSMenuItem?
   @IBOutlet weak var prototypeReplayItem: NSMenuItem?
   @IBOutlet weak var prototypeAnchorItem: NSMenuItem?
-  @IBOutlet weak var trailingSeparatorItem: NSMenuItem?
+  @IBOutlet weak var filterFieldItem: NSMenuItem?
+  @IBOutlet weak var keyDetectorItem: NSMenuItem?
+  @IBOutlet weak var leadingSeparatorItem: NSMenuItem?
+  @IBOutlet weak var postQueueSeparatorItem: NSMenuItem?
+  @IBOutlet weak var postHistorySeparatorItem: NSMenuItem?
+  @IBOutlet weak var postBatchesSeparatorItem: NSMenuItem?
   @IBOutlet weak var deleteItem: NSMenuItem?
   @IBOutlet weak var clearItem: NSMenuItem?
   @IBOutlet weak var undoCopyItem: NSMenuItem?
   
-  // MARK: -
+  // MARK: - lifecycle, overrides, delegate methods
   
   static func load(withHistory history: History, queue: ClipboardQueue, owner: Any) -> Self {
     // somewhat unconventional, perhaps in part because most of this code belongs in a controller class?
@@ -145,70 +168,81 @@ class AppMenu: NSMenu, NSMenuDelegate {
     if let prototypeCopyItem = prototypeCopyItem as? ClipMenuItem {
       protoCopyItem = prototypeCopyItem
       removeItem(prototypeCopyItem)
+      protoCopyItem?.title = ""
     }
     if let prototypeReplayItem = prototypeReplayItem as? ClipMenuItem {
       protoReplayItem = prototypeReplayItem
       removeItem(prototypeReplayItem)
+      protoReplayItem?.title = ""
     }
-    if let prototypeAnchorItem = prototypeAnchorItem as? ClipMenuItem {
+    if let prototypeAnchorItem = prototypeAnchorItem {
       protoAnchorItem = prototypeAnchorItem
       removeItem(prototypeAnchorItem)
+      protoAnchorItem?.title = ""
     }
     
-    // save aside this action for when we clear it so search box key events can drive item deletions instead
-    deleteAction = deleteItem?.action
+    // strip these placeholder item titles, only to identify them in interface builder
+    filterFieldItem?.title = ""
+    keyDetectorItem?.title = ""
     
-    // remove this placeholder title just in case there's another bug and the headerview isn't shown
-    historyHeaderItem?.title = ""
+    if usePopoverAnchors {
+      insertTopAnchorItems()
+    }
+    preQueueItem = topQueueAnchorItem ?? leadingSeparatorItem
+    preHistoryItem = topHistoryAnchorItem ?? keyDetectorItem
+    preBatchesItem = postHistorySeparatorItem
+    
+    addDebugItems()
   }
   
   func prepareForPopup() {
-    rebuildItemsAsNeeded()
-    updateShortcuts()
-    updateItemVisibility()
-    updateDisabledMenuItems()
-    addQueueItemsSeparator()
+    updateStaticItemShortcuts()
+    updateDisabledStaticItems()
+    updateStaticItemVisibility()
+    updateDynamicClipItemVisibility()
   }
   
   func menuWillOpen(_ menu: NSMenu) {
     isVisible = true
     
-    previewController.menuWillOpen()
-    
-    if showsExpandedMenu && (!AppModel.allowExpandedHistory || historyMenuItems.isEmpty) {
+    // potentially revert expanded mode flag initially set from an option-click on the menu icon
+    if showsExpandedMenu && !(AppModel.allowExpandedHistory && historyItemCount > 0) {
       showsExpandedMenu = false
     }
     
-    if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch && !clips.isEmpty,
+    if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch,
        let field = historyHeaderView?.queryField
     {
       field.refusesFirstResponder = false
       field.window?.makeFirstResponder(field)
-      showsSearchHeader = true
+      showsFilterField = true
     } else {
-      showsSearchHeader = false
+      showsFilterField = false
     }
     
     if !showsExpandedMenu && AppModel.allowSavedBatches && queue.isEmpty {
       showsSavedBatches = true
+    } else {
+      showsSavedBatches = false
     }
+    
+    previewController.menuWillOpen()
   }
   
   func menuDidClose(_ menu: NSMenu) {
     isVisible = false
     showsExpandedMenu = false
-    removeQueueItemsSeparator()
-    
-    previewController.menuDidClose()
     
     isFiltered = false
-    if showsSearchHeader {
+    if showsFilterField {
       // not sure why this is in a dispatch to the main thread, some timing thing i'm guessing
       DispatchQueue.main.async { 
         self.historyHeaderView?.setQuery("", throttle: false)
         self.historyHeaderView?.queryField.refusesFirstResponder = true
       }
     }
+    
+    previewController.menuDidClose()
   }
   
   func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
@@ -220,9 +254,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     if let historyItem = item as? ClipMenuItem {
       deleteItem?.isEnabled = !AppModel.busy
-      lastHighlightedItem = historyItem
+      lastHighlightedMenuItem = historyItem
       
-      previewController.showPopover(for: historyItem, allClips: clips)
+      previewController.showPopover(for: historyItem, anchors: clipItemAnchors(for: historyItem))
       
     } else if item == nil || item == deleteItem {
       // called with nil when cursor is over a disabled item, a separator, or is
@@ -233,77 +267,202 @@ class AppMenu: NSMenu, NSMenuDelegate {
       nop()
       disableDeleteTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: 0.5) { [weak self] in
         self?.deleteItem?.isEnabled = false
-        self?.lastHighlightedItem = nil
+        self?.lastHighlightedMenuItem = nil
         self?.disableDeleteTimer = nil
       }
     } else {
       deleteItem?.isEnabled = false
-      lastHighlightedItem = nil
+      lastHighlightedMenuItem = nil
     }
   }
   
-  // MARK: -
+  // MARK: - adding / removing dynamic clip menu items
   
-  func buildHistoryItems(includingHistory useHistory: Bool = true) {
-    clearHistoryItems() // wipes `clips` as well as history menu items
-    
-    if usePopoverAnchors {
-      insertTopAnchorItem()
-    }
-    
-    let historyItems = useHistory ? history.all.prefix(maxMenuItems) : []
-    
-    for item in historyItems {
-      let menuItems = buildMenuItemAlternates(item)
-      guard let menuItem = menuItems.first else {
-        continue
-      }
-      let clip = ClipRecord(
-        value: menuItem.value,
-        item: item,
-        menuItems: menuItems
-      )
-      clips.append(clip)
-      menuItems.forEach(appendMenuItem)
-    }
-    
-    addDebugItems()
-  }
-  
-  private func addQueueItemsSeparator() {
-    if !useQueueItemsSeparator {
+  private func insertTopAnchorItems() {
+    // Anchor items are used in older versions of the OS as nearly empty items containing views
+    // who's view frames are used to as bounds for mouse tracking to open the preview popups.
+    // Menu item groups for each clip include a trailing anchor item, one preceding all queue items
+    // and history items are needed to as the leading fencepost IYKWIM
+    guard let protoAnchorItem = protoAnchorItem,
+          let preQueueIndex = safeIndex(of: leadingSeparatorItem),
+          let preHistoryIndex = safeIndex(of: keyDetectorItem) else {
       return
     }
     
-    if queueItemsSeparator != nil {
-      removeQueueItemsSeparator() // expected to already be removed! but ensure now that it really is
+    guard let topQueueAnchorItem = protoAnchorItem.copy() as? NSMenuItem else {
+      return
+    } 
+    insertItem(topQueueAnchorItem, at: preQueueIndex + 1)
+    
+    guard let topHistoryAnchorItem = protoAnchorItem.copy() as? NSMenuItem else {
+      return
+    }
+    insertItem(topHistoryAnchorItem, at: preHistoryIndex + 1)
+  }
+  
+  func buildDynamicItems() {
+    clearQueueItems()
+    clearHistoryItems()
+    clearBatchItems()
+    
+    let clips = Array<Clip>(history.all.prefix(maxClipMenuItems))
+    guard clips.count >= queue.size else {
+      print("yikes, queue size \(queue.size) bigger than the number of stored clips \(clips.count)")
+      return
     }
     
-    if showsExpandedMenu && !isFiltered && !AppModel.busy && !queue.isEmpty &&
-        clips.count > queue.size
-    {
-      let followingItem = clips[queue.size]
-      guard let followingMenuItem = followingItem.menuItems.first, let index = safeIndex(of: followingMenuItem) else {
+    guard var queueInsertIndex = postQueueItemIndex else {
+      print("yikes, can't find the place to insert queue menu items")
+      return
+    }
+    for clip in clips.prefix(queue.size) {
+      let menuItems = buildHistoryItemAlternates(clip)
+      safeInsertItems(menuItems, at: queueInsertIndex)
+      queueInsertIndex += menuItems.count
+    }
+    
+    if UserDefaults.standard.keepHistory {
+      guard var historyInsertIndex = postHistoryItemIndex else {
+        print("yikes, can't find the place to insert history menu items")
         return
       }
-      let separator = NSMenuItem.separator()
-      insertItem(separator, at: index)
-      queueItemsSeparator = separator
-    }
-  }
-  
-  private func removeQueueItemsSeparator() {
-    if let separator = queueItemsSeparator {
-      if index(of: separator) < 0 {
-        queueItemsSeparator = nil
-      } else {
-        removeItem(separator)
-        queueItemsSeparator = nil
+      for clip in clips.suffix(from: queue.size) {
+        let menuItems = buildHistoryItemAlternates(clip)
+        safeInsertItems(menuItems, at: historyInsertIndex)
+        historyInsertIndex += menuItems.count
       }
     }
+    
+    guard var batchInsertIndex = postBatchesItemIndex else {
+      print("yikes, can't find the place to insert batch menu items")
+      return
+    }
+    for batch in history.batches {
+      let menuItem = buildBatchItem(batch)
+      safeInsertItem(menuItem, at: batchInsertIndex)
+      batchInsertIndex += 1
+    }
   }
   
-  private func updateDisabledMenuItems() {
+  private func buildHistoryItemAlternates(_ clip: Clip) -> [NSMenuItem] {
+    guard let protoCopyItem = protoCopyItem, let protoReplayItem = protoReplayItem,
+          let protoAnchorItem = protoAnchorItem else {
+      return []
+    }
+    
+    let menuItems: [NSMenuItem]
+    if !usePopoverAnchors {
+      menuItems = [
+        (protoCopyItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 1, of: 2),
+        (protoReplayItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 2, of: 2)
+      ]
+    } else {
+      menuItems = [
+        (protoCopyItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 1, of: 3),
+        (protoReplayItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 2, of: 3),
+        (protoAnchorItem.copy() as! NSMenuItem)
+      ]
+    }
+    
+    assert(menuItems.count == historyItemGroupCount)
+    
+    return menuItems
+  }
+  
+  private func buildBatchItem(_ batch: Batch) -> NSMenuItem {
+    // TODO: this
+    NSMenuItem()
+  }
+  
+  private func clipItemAnchors(for clipItem: ClipMenuItem) -> (NSView, NSView)? {
+    guard usePopoverAnchors else {
+      return nil
+    }
+    let clipIndex = index(of: clipItem) 
+    let leadingAchorIndex = clipIndex - clipItem.groupIndex
+    let trailingAchorIndex = clipIndex - clipItem.groupIndex + clipItem.groupCount + 1
+    guard let leadingAchorItem = item(at: leadingAchorIndex), let trailingAchorItem = item(at: trailingAchorIndex) else {
+      return nil // not likely
+    }
+    guard let leadingAchor = leadingAchorItem.view, let trailingAchor = trailingAchorItem.view else {
+      print("yikes, can't find anchors for for clip item \(clipIndex), \(leadingAchorIndex),\(trailingAchorIndex) don't both have views")
+      return nil
+    }
+    return (leadingAchor, trailingAchor)
+  }
+  
+  private func clearQueueItems() {
+    guard let fromIndex = firstQueueItemIndex, let toIndex = postQueueItemIndex else {
+      return
+    }
+    safeRemoveItem(from: fromIndex, to: toIndex)
+  }
+  
+  private func clearHistoryItems() {
+    guard let fromIndex = firstHistoryItemIndex, let toIndex = postHistoryItemIndex else {
+      return
+    }
+    safeRemoveItem(from: fromIndex, to: toIndex)
+  }
+  
+  private func clearBatchItems() {
+    guard let fromIndex = firstBatchItemIndex, let toIndex = postBatchesItemIndex else {
+      return
+    }
+    safeRemoveItem(from: fromIndex, to: toIndex)
+  }
+  
+  func iterateOverClipMenuItems(_ closure: (ClipMenuItem)->Void) {
+    if let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex,
+        firstQueueIndex <= postQueueIndex
+    { 
+      for index in firstQueueIndex ..< postQueueIndex {
+        if let menuItem = item(at: index) as? ClipMenuItem { 
+          closure(menuItem)
+        }
+      }
+    } else {
+      print("yikes, can't locate the queue menu items section")
+    }
+    
+    if let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex,
+        firstHistoryIndex <= postHistoryIndex
+    { 
+      for index in firstHistoryIndex ..< postHistoryIndex {
+        if let menuItem = item(at: index) as? ClipMenuItem { 
+          closure(menuItem)
+        }
+      }
+    } else {
+      print("yikes, can't locate the history menu items section")
+    }
+    
+    // TODO: also submenus items in each batch 
+  }
+  
+  // MARK: - update disabled / hidden menu items
+  
+  private func updateStaticItemShortcuts() {
+    // need explicit dispatch to main queue because setShortcut's MainActor declaration
+    //DispatchQueue.main.async { [weak self] in
+    //  guard let self = self else { return }
+    MainActor.assumeIsolated {
+      queueStartItem?.setShortcut(for: .queueStart)
+      queuedCopyItem?.setShortcut(for: .queuedCopy)
+      queuedPasteItem?.setShortcut(for: .queuedPaste)
+      
+      // might have a start/stop hotkey at some point, something like:
+      //if !queue.isOn {
+      //  queueStartItem?.setShortcut(for: .queueStartStop)
+      //  queueStopItem?.setShortcut(for: nil)
+      //} else {
+      //  queueStartItem?.setShortcut(for: nil)
+      //  queueStopItem?.setShortcut(for: .queueStartStop)
+      //}
+    }
+  }
+  
+  private func updateDisabledStaticItems() {
     let notBusy = !AppModel.busy
     queueStartItem?.isEnabled = notBusy && !queue.isOn // although expect to be hidden if invalid
     queueReplayItem?.isEnabled = notBusy && queue.isOn && !queue.isReplaying
@@ -312,105 +471,322 @@ class AppMenu: NSMenu, NSMenuDelegate {
     queuedPasteItem?.isEnabled = notBusy && !queue.isEmpty
     queuedPasteMultipleItem?.isEnabled = notBusy && !queue.isEmpty
     queuedPasteAllItem?.isEnabled = notBusy && !queue.isEmpty
-    queueAdvanceItem?.isEnabled = notBusy && !queue.isEmpty // although expect to be hidden if invalid
+    queueAdvanceItem?.isEnabled = notBusy && !queue.isEmpty
 
     clearItem?.isEnabled = notBusy
     undoCopyItem?.isEnabled = notBusy
     
     deleteItem?.isEnabled = false // until programmatically enabled later as items are highlighted
-    
-    // clear delete actions when search box showing so its key events can drive item deletions instead
-    let searchHeaderVisible = !(historyHeaderItem?.isHidden ?? true) // ie. if not hidden
-    deleteItem?.action = searchHeaderVisible ? nil : deleteAction
   }
   
-  func add(_ item: ClipItem) {
-    let sortedItems = history.all
-    guard let insertionIndex = sortedItems.firstIndex(where: { $0 == item }) else {
-      return
+  private func updateStaticItemVisibility() {
+    let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
+    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
+    if promoteExtras && promoteExtrasBadge == nil, #available(macOS 14, *) {
+      promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
     }
-    guard let zerothHistoryHeaderItem = topAnchorItem ?? historyHeaderItem else {
-      return
+    let haveQueueItems = !queue.isEmpty
+    let haveHistoryItems = showsExpandedMenu && historyItemCount > 0
+    let haveBatchItems = AppModel.allowSavedBatches && batchItemCount > 0
+    
+    // Switch visibility of start vs replay menu item
+    queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
+    queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying
+    
+    // Show cancel & advance menu items only when allowed?
+    //queueStopItem?.isVisible = queue.isOn
+    //queueAdvanceItem?.isVisible = !queue.isEmpty
+    
+    // Bonus features to hide when not purchased
+    queuedPasteAllItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
+    queuedPasteMultipleItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
+    if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+      queuedPasteAllItem?.badge = bedge
+      queuedPasteMultipleItem?.badge = bedge
+      // important: if we add key equivalents to these items, must save those here
+      // and clear the shortcut when adding badge, like the undo item below
+    }
+    undoCopyItem?.isVisible = AppModel.allowUndoCopy || promoteExtras
+    if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+      undoCopyItem?.badge = bedge
+      cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
+      undoCopyItem?.keyEquivalent = ""
+    } else if (undoCopyItem?.keyEquivalent.isEmpty ?? false) && !cacheUndoCopyItemShortcut.isEmpty {
+      undoCopyItem?.keyEquivalent = cacheUndoCopyItemShortcut
+      cacheUndoCopyItemShortcut = ""
     }
     
-    let menuItems = buildMenuItemAlternates(item)
-    guard let menuItem = menuItems.first else {
-      return
-    }
-    let clip = ClipRecord(
-      value: menuItem.value,
-      item: item,
-      menuItems: menuItems
-    )
-    clips.insert(clip, at: insertionIndex)
+    // Delete item visibility
+    deleteItem?.isVisible = haveQueueItems || haveHistoryItems || haveBatchItems
+    clearItem?.isVisible = haveQueueItems || haveHistoryItems
+  }
+  
+  private func updateDynamicClipItemVisibility() {
+    let showQueueSection = !queue.isEmpty
+    let showHistorySection = showsExpandedMenu && historyItemCount > 0
+    let showBatchItems = AppModel.allowSavedBatches && !showsExpandedMenu && batchItemCount > 0
     
-    let firstHistoryMenuItemIndex = index(of: zerothHistoryHeaderItem) + 1
-    let menuItemInsertionIndex = firstHistoryMenuItemIndex + self.historyMenuItemsGroupCount * insertionIndex
-    
-    ensureInEventTrackingModeIfVisible {
-      var index = menuItemInsertionIndex
-      for menuItem in menuItems {
-        self.safeInsertItem(menuItem, at: index)
-        index += 1
+    // Queue section
+    if let from = firstQueueItemIndex, let to = postQueueItemIndex, from <= to {
+      if !showQueueSection && queueItemCount > 0 {
+        print("yikes, queue is empty but there still exists some queue menu items")
       }
-      
-      // i wish there was an explanation why clearRemovedItems should be called here
-      self.clearRemovedItems()
-    }
-  }
-  
-  func clearHistoryItems() {
-    clear(clips)
-    clearAllHistoryMenuItems()
-    headOfQueueClip = nil
-  }
-  
-  func updateHeadOfQueue(index: Int?) {
-    headOfQueueClip?.menuItems.forEach { $0.isHeadOfQueue = false }
-    if let index = index, index >= 0, index < clips.count {
-      setHeadOfQueueClipItem(clips[index])
+      for index in from ..< to {
+        makeVisible(showQueueSection, clipMenuItemAt: index)
+      }
+      postQueueSeparatorItem?.isVisible = showQueueSection
     } else {
-      setHeadOfQueueClipItem(nil)
+      print("yikes, can't locate the queue menu items section")
+    }
+    
+    // History section, starting with the filter field
+    let showFilterField = showsFilterField && showHistorySection
+    if !removeViewToHideMenuItem {
+      filterFieldItem?.isVisible = showFilterField
+    } else if let filterFieldItem = filterFieldItem {
+      // hiding items with views not working well in macOS <= 14! remove view when hiding
+      if !showFilterField && filterFieldItem.view != nil {
+        filterFieldViewCache = filterFieldItem.view as? FilterFieldView
+        filterFieldItem.view = nil
+      } else if showFilterField && filterFieldItem.view == nil {
+        filterFieldItem.view = filterFieldViewCache
+        filterFieldViewCache = nil
+      }
+    }
+    if let from = firstHistoryItemIndex, let to = postHistoryItemIndex, from <= to {
+      let endVisible = from + maxVisibleHistoryClips * historyItemGroupCount
+      for index in from ..< to {
+        makeVisible(showHistorySection && index < endVisible, clipMenuItemAt: index)
+      }
+      postHistorySeparatorItem?.isVisible = showHistorySection
+    } else {
+      print("yikes, can't locate the history menu items section")
+    }
+    
+    // Batches section
+    if let from = firstBatchItemIndex, let to = postBatchesItemIndex, from <= to {
+      //if showBatchItems
+      for index in from ..< to {
+        makeVisible(showBatchItems, clipMenuItemAt: index)
+      }
+      postBatchesSeparatorItem?.isVisible = showBatchItems
+    } else {
+      print("yikes, can't locate the batches menu items section")
     }
   }
   
-  func setHeadOfQueueClipItem(_ clip: ClipRecord?) {
-    headOfQueueClip = clip
-    clip?.menuItems.forEach { $0.isHeadOfQueue = true }
+  // MARK: - sync up menu when history and queue changed
+  
+  func addedClipToQueue(_ clip: Clip) {
+    // TODO: this
+    // potentially remove last history menu items
   }
+  
+  func addedClipToHistory(_ clip: Clip) {
+    // TODO: this
+  }
+  
+  func poppedClipOffQueue() {
+    // TODO: this
+  }
+  
+  func poppedClipsOffQueue(_ count: Int) {
+    // TODO: this
+  }
+  
+  func cancelledQueue() {
+    // TODO: this
+  }
+  
+  func startedQueueFromHistory(atClip headClip: Clip) {
+    // TODO: this
+  }
+  
+  func deletedClipFromQueue(_ clip: Clip) {
+    // TODO: this, refer to old delete(position:)
+  }
+  
+  //  @discardableResult
+  //  func delete(position: Int) -> String? {
+  //    guard position >= 0 && position < clips.count else {
+  //      return nil
+  //    }
+  //    
+  //    let clip = clips[position]
+  //    let value = clip.value
+  //    let wasHighlighted = clip.item == lastHighlightedItem?.clipItem
+  //    
+  //    // remove menu items, history item, this class's indexing item
+  //    clip.menuItems.forEach(safeRemoveItem)
+  //    history.remove(clip.item)
+  //    clips.remove(at: position)
+  //    
+  //    // clean up head of queue item
+  //    if clip == headOfQueueClip {
+  //      setHeadOfQueueClipItem(position > 0 ? clips[position - 1] : nil)
+  //      
+  //      // after deleting the selected last-queued item, highlight the previous item (new last one in queue)
+  //      // instead of letting the system highlight the next one
+  //      if wasHighlighted && position > 0 {
+  //        let prevItem = clips[position - 1].menuItems[0]
+  //        highlight(prevItem)
+  //        lastHighlightedItem = prevItem
+  //      }
+  //    }
+  //    
+  //    return value
+  //  }
+  
+  func deletedClipFromHistory(_ clip: Clip) {
+    // TODO: this
+  }
+    
+  func deletedHistory() {
+    // TODO: this
+  }
+  
+  func addedBatch(_ batch: Batch) {
+    let sortedBatches = history.batches
+    guard let insertionIndex = sortedBatches.firstIndex(where: { $0 == batch }) else {
+      return
+    }
+    
+    let menuItem = buildBatchItem(batch)
+    // TODO: finish this
+    // ...
+    //appendBatchMenuItem(menuItem)
+  }
+  
+  func deletedBatch(_ batch: Batch) {
+    // TODO: this
+  }
+  
+  func assignedShortcut(toBatch batch: Batch) {
+    // TODO: this
+  }
+  
+//  func add(_ clip: Clip) {
+//    let sortedClips = history.all
+//    guard let clipIndex = sortedClips.firstIndex(where: { $0 == clip }) else {
+//      print("yikes, called with clip not stored in history \"\(clip.title?.prefix(8) ?? "?")\"")
+//      return
+//    }
+//    
+//    guard let z = topHistoryAnchorItem ?? keyDetectorItem, let zerothHistoryIndex = safeIndex(of: z) else {
+//      return
+//    }
+//    let insertionIndex = zerothHistoryIndex + clipIndex * historyItemGroupCount
+//    
+//    let menuItems = buildHistoryItemAlternates(clip)
+//    guard let menuItem = menuItems.first else {
+//      return
+//    }
+//    let clip = ClipRecord(
+//      value: menuItem.value,
+//      item: clip,
+//      menuItems: menuItems
+//    )
+//    clips.insert(clip, at: insertionIndex)
+//    
+//    let firstHistoryMenuItemIndex = index(of: zerothHistoryHeaderItem) + 1
+//    let menuItemInsertionIndex = firstHistoryMenuItemIndex + self.historyMenuItemsGroupCount * insertionIndex
+//    if let historyEndItem = trailingSeparatorItem {
+//      let sanityCheckIndex = index(of: historyEndItem)
+//      if menuItemInsertionIndex != sanityCheckIndex {
+//        print("yikes, inserting menu items for clip \"\(clip.title ?? "?")\", insertion index \(menuItemInsertionIndex) doesn't match that appendHistoryMenuItem would have used \(sanityCheckIndex)")
+//      }
+//    } else {
+//      print("yikes, inserting menu items for clip \"\(clip.title ?? "?")\", cannot compare insertion index \(menuItemInsertionIndex) because boundary menu item appendHistoryMenuItem would have used is nil")
+//    }
+//    
+//    ensuringInEventModeIfVisible {
+////      for menuItem in menuItems {
+////        self.appendHistoryMenuItem(menuItem)
+////      }
+//      var index = menuItemInsertionIndex
+//      for menuItem in menuItems {
+//        self.safeInsertItem(menuItem, at: index)
+//        index += 1
+//      }
+//      
+//      // i wish there was an explanation why clearRemovedItems should be called here
+//      self.clearRemovedItems()
+//    }
+//  }
+  
+//  func clearHistoryItems() {
+//    for clipRecord in clips {
+//      clipRecord.menuItems.forEach(safeRemoveItem)
+//      
+//      if let removeIndex = clips.firstIndex(of: clipRecord) {
+//        clips.remove(at: removeIndex)
+//      }
+//    }
+//    
+//    if let item = headOfQueueClip, clips.contains(item) {
+//      headOfQueueClip = nil
+//    }
+//    
+//    clearAllHistoryMenuItems()
+//    headOfQueueClip = nil
+//  }
+  
+//  func updateHeadOfQueue(index: Int?) {
+//    headOfQueueClip?.menuItems.forEach { $0.isHeadOfQueue = false }
+//    if let index = index, index >= 0, index < clips.count {
+//      setHeadOfQueueClipItem(clips[index])
+//    } else {
+//      setHeadOfQueueClipItem(nil)
+//    }
+//  }
+//  
+//  func setHeadOfQueueClipItem(_ clipRecord: ClipRecord?) {
+//    headOfQueueClip = clipRecord
+//    clipRecord?.menuItems.forEach { $0.isHeadOfQueue = true }
+//  }
+  
+  // MARK: - helpers for filter field view
   
   func updateFilter(filter: String) {
-    var results = search.search(string: filter, within: clips)
-    
-    // Strip the results that are longer than visible items.
-    if maxMenuItems > 0 && maxMenuItems < results.count {
-      results = Array(results[0...maxMenuItems - 1])
-    }
-    
-    // Remove existing menu history items
-    guard let zerothHistoryHeaderItem = topAnchorItem ?? historyHeaderItem,
-          let trailingSeparatorItem = trailingSeparatorItem else {
+    let clips = Array<Clip>(history.all.prefix(maxClipMenuItems).suffix(from: queue.size))
+    guard !clips.isEmpty, let firstMenuIndex = firstHistoryItemIndex else {
       return
     }
-    assert(index(of: zerothHistoryHeaderItem) < index(of: trailingSeparatorItem))
-    
-    for index in (index(of: zerothHistoryHeaderItem) + 1 ..< index(of: trailingSeparatorItem)).reversed() {
-      safeRemoveItem(at: index)
+    guard historyItemCount == clips.count, let firstItem = firstHistoryItem as? ClipMenuItem, firstItem.clip == clips.first else {
+      print("yikes, clips and clip menu items are not in sync, \(historyItemCount) vs \(clips.count), " +
+            "first clip \"\(clips.first?.title ?? "")\" vs \((firstHistoryItem as? ClipMenuItem)?.title ?? String(describing: firstHistoryItem))")
+      return
     }
     
-    // Add back matching ones in search results order... if search is empty should be all original items
+    let results = search.search(string: filter, within: clips)
+    
+    var firstResultMenuItem: ClipMenuItem? = nil
+    
+    // Make visible only the clip menu items corresponding to the results: for each result, scan the
+    // next group of menu items and hide them until a match to the result is found/
+    // This presumes the results and the menu items are in the same order, and wouldn't work otherwise.
+    var menuIndex = firstMenuIndex
     for result in results {
-      for menuItem in result.object.menuItems {
-        menuItem.highlight(result.titleMatches)
-        appendMenuItem(menuItem)
+      var found = false
+      while !found && menuIndex < firstMenuIndex {
+        guard let menuItem = item(at: menuIndex) as? ClipMenuItem, let menuItemClip = menuItem.clip else {
+          break
+        }
+        found = menuItemClip === result.object
+        if found && firstResultMenuItem == nil {
+          firstResultMenuItem = menuItem
+        }
+        for index in menuIndex ..< menuIndex + historyItemGroupCount {
+          makeVisible(found, clipMenuItemAt: index)
+        }
+        menuIndex += historyItemGroupCount
       }
     }
     
     isFiltered = results.count < clips.count
-    
-    removeQueueItemsSeparator()
-    
-    highlight(historyMenuItems.first)
+    if let firstItem = firstResultMenuItem {
+      highlight(firstItem)
+    }
   }
   
   func select(_ searchQuery: String) {
@@ -419,24 +795,6 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     // omit Maccy fallback of copying the search query, i can't make sense of that
     // Maccy does this here, maybe keep?: cancelTrackingWithoutAnimation()
-  }
-  
-  func select(position: Int) -> String? {
-    guard clips.count > position,
-          let item = clips[position].menuItems.first else {
-      return nil
-    }
-    
-    performActionForItem(at: index(of: item))
-    return clips[position].value
-  }
-  
-  func historyItem(at position: Int) -> ClipItem? {
-    guard clips.indices.contains(position) else {
-      return nil
-    }
-    
-    return clips[position].item
   }
   
   func selectPrevious() {
@@ -451,72 +809,31 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func highlightedMenuItem() -> ClipMenuItem? {
-    nop() // TODO: remove once no longer need a breakpoint here
-    
-    guard let menuItem = highlightedItem, let historyMenuItem = menuItem as? ClipMenuItem else {
+  // MARK: - helpers for model & others
+  
+  func highlightedClipMenuItem() -> ClipMenuItem? {
+    guard let menuItem = lastHighlightedMenuItem as? ClipMenuItem else {
       return nil
     }
     
     // When deleting mulitple items by holding the removal keys
     // we sometimes get into a race condition with menu updating indices.
     // https://github.com/p0deje/Maccy/issues/628
-    guard index(of: historyMenuItem) >= 0 else {
+    guard index(of: menuItem) >= 0 else {
       return nil
     }
     
-    return historyMenuItem
-  }
-  
-  @discardableResult
-  func delete(position: Int) -> String? {
-    guard position >= 0 && position < clips.count else {
-      return nil
-    }
-    
-    let clip = clips[position]
-    let value = clip.value
-    let wasHighlighted = clip.item == lastHighlightedItem?.clipItem
-    
-    // remove menu items, history item, this class's indexing item
-    clip.menuItems.forEach(safeRemoveItem)
-    history.remove(clip.item)
-    clips.remove(at: position)
-    
-    // clean up head of queue item
-    if clip == headOfQueueClip {
-      setHeadOfQueueClipItem(position > 0 ? clips[position - 1] : nil)
-      
-      // after deleting the selected last-queued item, highlight the previous item (new last one in queue)
-      // instead of letting the system highlight the next one
-      if wasHighlighted && position > 0 {
-        let prevItem = clips[position - 1].menuItems[0]
-        highlight(prevItem)
-        lastHighlightedItem = prevItem
-      }
-    }
-    
-    return value
-  }
-  
-  func deleteHighlightedItem() -> Int? {
-    guard let item = lastHighlightedItem,
-          let position = clips.firstIndex(where: { $0.menuItems.contains(item) }) else {
-      return nil
-    }
-    delete(position: position)
-    
-    return position
+    return menuItem
   }
   
   func resizeImageMenuItems() {
-    historyMenuItems.forEach {
+    iterateOverClipMenuItems {
       $0.resizeImage()
     }
   }
   
   func regenerateMenuItemTitles() {
-    historyMenuItems.forEach {
+    iterateOverClipMenuItems {
       $0.regenerateTitle()
     }
     update()
@@ -540,40 +857,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     showsFullExpansion = full
   }
   
-  // MARK: -
-  
-  private func insertTopAnchorItem() {
-    // need an anchor item above all the history items because they're like fenceposts
-    // (see "the fencepost problem") cannot use the saarch header item like Maccy because it can be hidden
-    guard let protoAnchorItem = protoAnchorItem, let historyHeaderItem = historyHeaderItem else {
-      return
-    }
-    let anchorItem = protoAnchorItem.copy() as! ClipMenuItem
-    
-    let index = index(of: historyHeaderItem) + 1
-    insertItem(anchorItem, at: index)
-    
-    topAnchorItem = anchorItem
-  }
-  
-  private func updateShortcuts() {
-    DispatchQueue.main.async { [weak self] in
-      guard let self = self else { return }
-      
-      queueStartItem?.setShortcut(for: .queueStart)
-      queuedCopyItem?.setShortcut(for: .queuedCopy)
-      queuedPasteItem?.setShortcut(for: .queuedPaste)
-      
-      // might have a start stop hotkey at some point, something like:
-      //if !queue.isOn {
-      //  queueStartItem?.setShortcut(for: .queueStartStop)
-      //  queueStopItem?.setShortcut(for: nil)
-      //} else {
-      //  queueStartItem?.setShortcut(for: nil)
-      //  queueStopItem?.setShortcut(for: .queueStartStop)
-      //}
-    }
-  }
+  // MARK: - menu item highlighting
   
   private func highlightNext(_ items: [NSMenuItem]) -> Bool {
     let highlightableItems = self.highlightableItems(items)
@@ -585,13 +869,18 @@ class AppMenu: NSMenu, NSMenuDelegate {
           highlight(itemToHighlight)
           return true
         }
+        break
       }
     }
     return false
   }
   
   private func highlightableItems(_ items: [NSMenuItem]) -> [NSMenuItem] {
-    return items.filter { !$0.isSeparatorItem && $0.isEnabled && !$0.isHidden }
+    return items.filter {
+      if $0.isSeparatorItem || !$0.isEnabled || $0.isHidden { return false }
+      if $0 is ClipMenuItem && $0.keyEquivalentModifierMask.isEmpty == false { return false }
+      return true
+    }
   }
   
   private func highlight(_ itemToHighlight: NSMenuItem?) {
@@ -604,260 +893,248 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func highlightItem(_ itemToHighlight: NSMenuItem?) {
     let highlightItemSelector = NSSelectorFromString("highlightItem:")
-    // we need to highlight a near-the-top menu item to force menu redrawing
-    // (was ...need to highlight the filter menu item)
-    // when it has more items that can fit into the screen height
-    // and scrolling items are added to the top and bottom of menu
-    perform(highlightItemSelector, with: historyMenuItems.first)
+    // We need to first highlight am menu item somewhere near the top of the menu to
+    // force menu redrawing  (was using the search menu item, but its now sometimes gone)
+    // when it has more items that can fit into the screen height and scrolling items
+    // are added to the top and bottom of menu.
+    perform(highlightItemSelector, with: queuedCopyItem)
     if let item = itemToHighlight, !item.isHighlighted, items.contains(item) {
       perform(highlightItemSelector, with: item)
     } else {
-      // Unhighlight current item.
+      // un-highlight the copy menu item we just highlighted
       perform(highlightItemSelector, with: nil)
     }
   }
   
-  private func clear(_ clipsToClear: [ClipRecord]) {
-    for clip in clipsToClear {
-      clip.menuItems.forEach(safeRemoveItem)
-      
-      if let removeIndex = clips.firstIndex(of: clip) {
-        clips.remove(at: removeIndex)
-      }
-    }
-    
-    if let item = headOfQueueClip, clipsToClear.contains(item) {
-      headOfQueueClip = nil
-    }
-  }
+  // rethink if something like these functinos are needed now:
+//  private func rebuildItemsAsNeeded() {
+//    let availableHistoryCount = clips.count
+//    let presentItemsCount = historyMenuItems.count / historyMenuItemsGroupCount
+//    
+//    let maxItems = queue.isOn ? max(maxMenuItems, queue.size) : maxMenuItems
+//    
+//    let maxAvailableItems = maxItems <= 0 || maxItems > availableHistoryCount ? availableHistoryCount : maxItems
+//    if presentItemsCount < maxAvailableItems {
+//      appendItemsUntilLimit(maxAvailableItems)
+//    } else if presentItemsCount > maxAvailableItems {
+//      removeItemsOverLimit(maxItems)
+//    }
+//  }
+//  
+//  private func removeItemsOverLimit(_ limit: Int) {
+//    var count = historyMenuItems.count / historyMenuItemsGroupCount
+//    for clipRecord in clips.reversed() {
+//      if count <= limit {
+//        return
+//      }
+//      
+//      // if menu doesn't contains this item, skip it
+//      let menuItems = clipRecord.menuItems.filter({ historyMenuItems.contains($0) })
+//      if menuItems.isEmpty {
+//        continue
+//      }
+//      
+//      menuItems.forEach(safeRemoveItem)
+//      count -= 1
+//    }
+//  }
+//  
+//  private func appendItemsUntilLimit(_ limit: Int) {
+//    var count = historyMenuItems.count / historyMenuItemsGroupCount
+//    for clipRecord in clips {
+//      if count >= limit {
+//        return
+//      }
+//      
+//      // if menu contains this item already, skip it
+//      let menuItems = clipRecord.menuItems.filter({ !historyMenuItems.contains($0) })
+//      if menuItems.isEmpty {
+//        continue
+//      }
+//      
+//      menuItems.forEach(appendHistoryMenuItem)
+//      if clipRecord == headOfQueueClip {
+//        menuItems.forEach { $0.isHeadOfQueue = true }
+//      }
+//      count += 1
+//    }
+//  }
   
-  private func appendMenuItem(_ item: NSMenuItem) {
-    guard let historyEndItem = trailingSeparatorItem else { return }
-    safeInsertItem(item, at: index(of: historyEndItem))
-  }
+//  private func clearRemovedItems() {
+//    let currentHistoryItems = history.all
+//    for clipRecord in clips {
+//      if let historyItem = clipRecord.item, !currentHistoryItems.contains(historyItem) {
+//        clipRecord.menuItems.forEach(safeRemoveItem)
+//        
+//        if let removeIndex = clips.firstIndex(of: clipRecord) {
+//          clips.remove(at: removeIndex)
+//        }
+//        
+//        if let item = headOfQueueClip, item == clipRecord {
+//          headOfQueueClip = nil
+//        }
+//      }
+//    }
+//  }
   
-  private func rebuildItemsAsNeeded() {
-    let availableHistoryCount = clips.count
-    let presentItemsCount = historyMenuItems.count / historyMenuItemsGroupCount
-    
-    let maxItems = queue.isOn ? max(maxMenuItems, queue.size) : maxMenuItems
-    
-    let maxAvailableItems = maxItems <= 0 || maxItems > availableHistoryCount ? availableHistoryCount : maxItems
-    if presentItemsCount < maxAvailableItems {
-      appendItemsUntilLimit(maxAvailableItems)
-    } else if presentItemsCount > maxAvailableItems {
-      removeItemsOverLimit(maxItems)
-    }
-  }
+//  private func updateMenuItemVisibility() {
+//    guard let historyHeaderItem = filterFieldItem, let trailingSeparatorItem = trailingSeparatorItem else {
+//      return
+//    }
+//    let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
+//    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
+//    if promoteExtras && promoteExtrasBadge == nil, #available(macOS 14, *) {
+//      promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
+//    }
+//    
+//    let haveHistoryItems = !queue.isEmpty || (showsExpandedMenu && !clips.isEmpty)
+//    
+//    // Switch visibility of start vs replay menu item
+//    queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
+//    queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying
+//    
+//    // Show cancel & advance menu items only when allowed?
+//    //queueStopItem?.isVisible = queue.isOn
+//    //queueAdvanceItem?.isVisible = !queue.isEmpty
+//    
+//    // Bonus features to hide when not purchased
+//    queuedPasteAllItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
+//    queuedPasteMultipleItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
+//    if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+//      queuedPasteAllItem?.badge = bedge
+//      queuedPasteMultipleItem?.badge = bedge
+//      // important: if we add key equivalents to these items, must save those here
+//      // and clear the shortcut when adding badge, like the undo item below
+//    }
+//    undoCopyItem?.isVisible = AppModel.allowUndoCopy || promoteExtras
+//    if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+//      undoCopyItem?.badge = bedge
+//      cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
+//      undoCopyItem?.keyEquivalent = ""
+//    } else if (undoCopyItem?.keyEquivalent.isEmpty ?? false) && !cacheUndoCopyItemShortcut.isEmpty {
+//      undoCopyItem?.keyEquivalent = cacheUndoCopyItemShortcut
+//      cacheUndoCopyItemShortcut = ""
+//    }
+//    
+//    // Delete item visibility
+//    deleteItem?.isVisible = haveHistoryItems
+//    clearItem?.isVisible = haveHistoryItems
+//    
+//    // Visiblity of the history header and trailing separator
+//    // (the expanded menu means the search header and all of the history items)
+//    // hiding items with views not working well in macOS <= 14! remove view when hiding
+//    if removeViewToHideMenuItem {
+//      if !showsFilterField && historyHeaderItem.view != nil {
+//        historyHeaderViewCache = historyHeaderItem.view as? FilterFieldView
+//        historyHeaderItem.view = nil
+//      } else if showsFilterField && historyHeaderItem.view == nil {
+//        historyHeaderItem.view = historyHeaderViewCache
+//        historyHeaderViewCache = nil
+//      }
+//    }
+//    historyHeaderItem.isVisible = showsFilterField
+//    trailingSeparatorItem.isVisible = showsSearchHeader || haveHistoryItems
+//    
+//    // Show or hide the desired history items
+//    let zerothHistoryHeaderItem = topHistoryAnchorItem ?? historyHeaderItem
+//    let firstHistoryMenuItemIndex = index(of: zerothHistoryHeaderItem) + 1
+//    let endHistoryMenuItemIndex = index(of: trailingSeparatorItem)
+//    var remainingHistoryMenuItemIndex = firstHistoryMenuItemIndex
+//    
+//    // First queue items to always show when not filtering by a search term
+//    if !queue.isEmpty && !isFiltered {
+//      let endQueuedItemIndex = firstHistoryMenuItemIndex + historyItemGroupCount * queue.size
+//      
+//      for index in firstHistoryMenuItemIndex ..< endQueuedItemIndex {
+//        makeVisible(true, clipMenuItemAt: index)
+//      }
+//      
+//      remainingHistoryMenuItemIndex = endQueuedItemIndex
+//    }
+//    
+//    if remainingHistoryMenuItemIndex > endHistoryMenuItemIndex {
+//      os_log(.default, "range fail %d ..< %d, has topanchor: %d, first %d, end %d, remaining %d which might eq first + queue size %d * %d",
+//             remainingHistoryMenuItemIndex, endHistoryMenuItemIndex,
+//             topHistoryAnchorItem != nil ? 1 : 0, firstHistoryMenuItemIndex, endHistoryMenuItemIndex,
+//             remainingHistoryMenuItemIndex, queue.size, historyItemGroupCount)
+//      remainingHistoryMenuItemIndex = endHistoryMenuItemIndex
+//    }
+//    
+//    // Remaining history items hidden unless showing the expanded menu
+//    for index in remainingHistoryMenuItemIndex ..< endHistoryMenuItemIndex {
+//      makeVisible(showsExpandedMenu, clipMenuItemAt: index)
+//    }
+//  }
   
-  private func removeItemsOverLimit(_ limit: Int) {
-    var count = historyMenuItems.count / historyMenuItemsGroupCount
-    for clip in clips.reversed() {
-      if count <= limit {
-        return
-      }
-      
-      // if menu doesn't contains this item, skip it
-      let menuItems = clip.menuItems.filter({ historyMenuItems.contains($0) })
-      if menuItems.isEmpty {
-        continue
-      }
-      
-      menuItems.forEach(safeRemoveItem)
-      count -= 1
-    }
-  }
+  // MARK: - utility functions
   
-  private func appendItemsUntilLimit(_ limit: Int) {
-    var count = historyMenuItems.count / historyMenuItemsGroupCount
-    for clip in clips {
-      if count >= limit {
-        return
-      }
-      
-      // if menu contains this item already, skip it
-      let menuItems = clip.menuItems.filter({ !historyMenuItems.contains($0) })
-      if menuItems.isEmpty {
-        continue
-      }
-      
-      menuItems.forEach(appendMenuItem)
-      if clip == headOfQueueClip {
-        menuItems.forEach { $0.isHeadOfQueue = true }
-      }
-      count += 1
-    }
-  }
-  
-  private func buildMenuItemAlternates(_ item: ClipItem) -> [ClipMenuItem] {
-    // (including the preview item) making the HistoryMenuItem subclasses unnecessary,
-    guard let protoCopyItem = protoCopyItem, let protoReplayItem = protoReplayItem else {
-      return []
-    }
-    
-    var menuItems = [
-      (protoCopyItem.copy() as! ClipMenuItem).configured(withItem: item),
-      (protoReplayItem.copy() as! ClipMenuItem).configured(withItem: item) // distinguishForDebugging:true
-    ]
-    menuItems.sort(by: { !$0.isAlternate && $1.isAlternate })
-    
-    if usePopoverAnchors {
-      guard let protoAnchorItem = protoAnchorItem else {
-        return []
-      }
-      menuItems.append(protoAnchorItem.copy() as! ClipMenuItem)
-    }
-    
-    assert(menuItems.count == historyMenuItemsGroupCount)
-    
-    return menuItems
-  }
-  
-  private func clearRemovedItems() {
-    let currentHistoryItems = history.all
-    for clip in clips {
-      if let historyItem = clip.item, !currentHistoryItems.contains(historyItem) {
-        clip.menuItems.forEach(safeRemoveItem)
-        
-        if let removeIndex = clips.firstIndex(of: clip) {
-          clips.remove(at: removeIndex)
-        }
-        
-        if let item = headOfQueueClip, item == clip {
-          headOfQueueClip = nil
-        }
-      }
-    }
-  }
-  
-  private func clearAllHistoryMenuItems() {
-    guard let zerothHistoryHeaderItem = topAnchorItem ?? historyHeaderItem,
-          let trailingSeparatorItem = trailingSeparatorItem else {
+  private func makeVisible(_ visible: Bool, clipMenuItemAt index: Int) {
+    guard let menuItem = item(at: index) else {
       return
     }
-    assert(index(of: zerothHistoryHeaderItem) < index(of: trailingSeparatorItem))
-    
-    for index in (index(of: zerothHistoryHeaderItem) + 1 ..< index(of: trailingSeparatorItem)).reversed() {
-      safeRemoveItem(at: index)
-    }
-    assert(historyMenuItems.isEmpty)
-  }
-  
-  private func updateItemVisibility() {
-    guard let historyHeaderItem = historyHeaderItem, let trailingSeparatorItem = trailingSeparatorItem else {
-      return
-    }
-    let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
-    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
-    if promoteExtras && promoteExtrasBadge == nil, #available(macOS 14, *) {
-      promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
-    }
-    
-    let haveHistoryItems = !queue.isEmpty || (showsExpandedMenu && !clips.isEmpty)
-    
-    // Switch visibility of start vs replay menu item
-    queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
-    queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying
-    
-    // show advance menu item only when allowed
-    queueAdvanceItem?.isVisible = !queue.isEmpty
-
-    // Bonus features to hide when not purchased
-    queuedPasteAllItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
-    queuedPasteMultipleItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
-    if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
-      queuedPasteAllItem?.badge = bedge
-      queuedPasteMultipleItem?.badge = bedge
-      // important: if we add key equivalents to these items, must save those here
-      // and clear the shortcut when adding badge, like the undo item below
-    }
-    undoCopyItem?.isVisible = AppModel.allowUndoCopy || promoteExtras
-    if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
-      undoCopyItem?.badge = bedge
-      cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
-      undoCopyItem?.keyEquivalent = ""
-    } else if (undoCopyItem?.keyEquivalent.isEmpty ?? false) && !cacheUndoCopyItemShortcut.isEmpty {
-      undoCopyItem?.keyEquivalent = cacheUndoCopyItemShortcut
-      cacheUndoCopyItemShortcut = ""
-    }
-    
-    // Delete item visibility
-    deleteItem?.isVisible = haveHistoryItems
-    clearItem?.isVisible = haveHistoryItems
-    
-    // Visiblity of the history header and trailing separator
-    // (the expanded menu means the search header and all of the history items)
-    // hiding items with views not working well in macOS <= 14! remove view when hiding
-    if removeViewToHideMenuItem {
-      if !showsSearchHeader && historyHeaderItem.view != nil {
-        historyHeaderViewCache = historyHeaderItem.view as? FilterFieldView
-        historyHeaderItem.view = nil
-      } else if showsSearchHeader && historyHeaderItem.view == nil {
-        historyHeaderItem.view = historyHeaderViewCache
-        historyHeaderViewCache = nil
+    if menuItem is ClipMenuItem {
+      // any of our clip menu items with a keyEquivalentModifierMask set are alternatess,
+      // they need special case for making hidden or visible
+      if menuItem.keyEquivalentModifierMask.isEmpty {
+        menuItem.isVisible = visible
+      } else {
+        menuItem.isVisibleAlternate = visible
       }
-    }
-    historyHeaderItem.isVisible = showsSearchHeader
-    trailingSeparatorItem.isVisible = showsSearchHeader || haveHistoryItems
-    
-    // Show or hide the desired history items
-    let zerothHistoryHeaderItem = topAnchorItem ?? historyHeaderItem
-    let firstHistoryMenuItemIndex = index(of: zerothHistoryHeaderItem) + 1
-    let endHistoryMenuItemIndex = index(of: trailingSeparatorItem)
-    var remainingHistoryMenuItemIndex = firstHistoryMenuItemIndex
-    
-    // First queue items to always show when not filtering by a search term
-    if !queue.isEmpty && !isFiltered {
-      let endQueuedItemIndex = firstHistoryMenuItemIndex + historyMenuItemsGroupCount * queue.size
-      
-      for index in firstHistoryMenuItemIndex ..< endQueuedItemIndex {
-        makeVisible(true, historyMenuItemAt: index)
-      }
-      
-      remainingHistoryMenuItemIndex = endQueuedItemIndex
-    }
-    
-    if remainingHistoryMenuItemIndex > endHistoryMenuItemIndex {
-      os_log(.default, "range fail %d ..< %d, has topanchor: %d, first %d, end %d, remaining %d which might eq first + queue size %d * %d",
-             remainingHistoryMenuItemIndex, endHistoryMenuItemIndex,
-             topAnchorItem != nil ? 1 : 0, firstHistoryMenuItemIndex, endHistoryMenuItemIndex,
-             remainingHistoryMenuItemIndex, queue.size, historyMenuItemsGroupCount)
-      remainingHistoryMenuItemIndex = endHistoryMenuItemIndex
-    }
-    
-    // Remaining history items hidden unless showing the expanded menu
-    for index in remainingHistoryMenuItemIndex ..< endHistoryMenuItemIndex {
-      makeVisible(showsExpandedMenu, historyMenuItemAt: index)
-    }
-  }
-  
-  private func makeVisible(_ visible: Bool, historyMenuItemAt index: Int) {
-    guard let menuItem = item(at: index) else { return }
-    if menuItem.keyEquivalentModifierMask.isEmpty {
-      menuItem.isVisible = visible
     } else {
-      menuItem.isVisibleAlternate = visible
+      // expect this to be used on ClipMenuItem, anchors, maybe separators and for those
+      // this is ok, but wouldn't be if given some other NSMenuItem that's an alternate
+      menuItem.isVisible = visible
     }
   }
   
-  private func safeInsertItem(_ item: NSMenuItem, at index: Int) {
-    guard !items.contains(item), index <= items.count else {
+  private func safeInsertItem(_ newItem: NSMenuItem, at index: Int) {
+    guard !items.contains(newItem), index <= items.count else {
       return
     }
     
-    sanityCheckIndexIsHistoryItemIndex(index, forInserting: true)
+    sanityCheckIndexClipMenuItemIndex(index, forInserting: true)
     
-    insertItem(item, at: index)
+    insertItem(newItem, at: index)
   }
   
-  private func safeRemoveItem(_ item: NSMenuItem) {
-    guard items.contains(item) else {
+  private func safeInsertItems(_ newItems: [NSMenuItem], at index: Int) {
+    guard index <= items.count else {
       return
     }
     
-    sanityCheckIndexIsHistoryItemIndex(index(of: item))
+    sanityCheckIndexClipMenuItemIndex(index, forInserting: true)
     
-    removeItem(item)
+    var incrementIndex = index
+    for newItem in newItems {
+      guard !items.contains(newItem) else {
+        continue
+      }
+      
+      insertItem(newItem, at: incrementIndex)
+      incrementIndex += 1
+    }
+  }
+  
+  private func safeRemoveItem(_ deleteItem: NSMenuItem) {
+    guard items.contains(deleteItem) else {
+      return
+    }
+    
+    sanityCheckIndexClipMenuItemIndex(index(of: deleteItem))
+    
+    removeItem(deleteItem)
+  }
+  
+  private func safeRemoveItems(_ deleteItems: [NSMenuItem]) {
+    for deleteItem in deleteItems {
+      guard items.contains(deleteItem) else {
+        return
+      }
+      
+      sanityCheckIndexClipMenuItemIndex(index(of: deleteItem))
+      
+      removeItem(deleteItem)
+    }
   }
   
   private func safeRemoveItem(at index: Int) {
@@ -865,98 +1142,72 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return
     }
     
-    sanityCheckIndexIsHistoryItemIndex(index)
+    sanityCheckIndexClipMenuItemIndex(index)
     
     removeItem(at: index)
   }
   
-  private func safeIndex(of item: NSMenuItem) -> Int? {
+  private func safeRemoveItem(from fromIndex: Int, to toIndex: Int) {
+    guard fromIndex <= toIndex && toIndex <= items.count else {
+      return
+    }
+    
+    for index in fromIndex ..< toIndex {
+      sanityCheckIndexClipMenuItemIndex(index)
+      
+      removeItem(at: index)
+    }
+  }
+  
+  private func safeIndex(of item: NSMenuItem?) -> Int? {
+    guard let item = item else {
+      return nil
+    }
     let index = index(of: item)
-    return index >= 0 ? index : nil
+    guard index >= 0 else {
+      return nil
+    }
+    return index
   }
   
-  private func sanityCheckIndexIsHistoryItemIndex(_ i: Int, forInserting inserting: Bool = false) {
-    if item(at: i) != nil, let historyHeaderItem, let trailingSeparatorItem {
-      if i <= index(of: topAnchorItem ?? historyHeaderItem) {
-        fatalError("sanityCheckIndex failure 1")
-      }
-      if i > index(of: trailingSeparatorItem) {
-        fatalError("sanityCheckIndex failure 2")
-      }
-      if !inserting && i == index(of: trailingSeparatorItem) {
-        fatalError("sanityCheckIndex failure 3")
-      }
+  private func safeItem(at index: Int?) -> NSMenuItem? {
+    guard let index = index else {
+      return nil
+    }
+    return item(at: index)
+  }  
+  
+  private func sanityCheckIndexClipMenuItemIndex(_ i: Int, forInserting inserting: Bool = false) {
+    guard item(at: i) != nil else { // never add clip item to very end, so don't have to add `inserting==false`
+      fatalError("sanityCheckIndex failure 1")
+    }
+    guard let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex,
+          let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex else {
+      fatalError("sanityCheckIndex failure 2")
+    }
+    if i < firstQueueIndex {
+      fatalError("sanityCheckIndex failure 3")
+    }
+    if i > (inserting ? postQueueIndex : postQueueIndex - 1) && i < firstHistoryIndex {
+      fatalError("sanityCheckIndex failure 4")
+    }
+    if i > (inserting ? postHistoryIndex : postHistoryIndex - 1) {
+      fatalError("sanityCheckIndex failure 5")
     }
   }
   
-  private func boundsOfMenuItem(_ item: NSMenuItem, _ windowContentView: NSView) -> NSRect? {
-    if !usePopoverAnchors {
-      let windowRectInScreenCoordinates = windowContentView.accessibilityFrame()
-      let menuItemRectInScreenCoordinates = item.accessibilityFrame()
-      return NSRect(
-        origin: NSPoint(
-          x: menuItemRectInScreenCoordinates.origin.x - windowRectInScreenCoordinates.origin.x,
-          y: menuItemRectInScreenCoordinates.origin.y - windowRectInScreenCoordinates.origin.y),
-        size: menuItemRectInScreenCoordinates.size
-      )
-    } else {
-      // assumes the last of a group of history items is the anchor
-      guard let topAnchorView = topAnchorItem?.view, let item = item as? ClipMenuItem,
-            let itemIndex = clips.firstIndex(where: { $0.menuItems.contains(item) }) else {
-        return nil
-      }
-      let clip = clips[itemIndex]
-      guard let previewView = clip.menuItems.last?.view else {
-        return nil
-      }
-      
-      var precedingView = topAnchorView
-      for index in (0..<itemIndex).reversed() {
-        // Check if anchor for this item is visible (it may be hidden by the search filter)
-        if let view = clips[index].menuItems.last?.view, view.window != nil {
-          precedingView = view
-          break
-        }
-      }
-      
-      let bottomPoint = previewView.convert(
-        NSPoint(x: previewView.bounds.minX, y: previewView.bounds.maxY),
-        to: windowContentView
-      )
-      let topPoint = precedingView.convert(
-        NSPoint(x: previewView.bounds.minX, y: precedingView.bounds.minY),
-        to: windowContentView
-      )
-      
-      let heightOfVisibleMenuItem = abs(topPoint.y - bottomPoint.y)
-      return NSRect(
-        origin: bottomPoint,
-        size: NSSize(width: item.menu?.size.width ?? 0, height: heightOfVisibleMenuItem)
-      )
-    }
-  }
-  
-  private func ensureInEventTrackingModeIfVisible(
-    dispatchLater: Bool = false,
-    block: @escaping () -> Void
-  ) {
+  private func ensuringInEventModeIfVisible(dispatchLater: Bool = false, block: @escaping () -> Void) {
     if isVisible && (
       dispatchLater ||
       RunLoop.current != RunLoop.main ||
-      RunLoop.current.currentMode != .eventTracking
-    ) {
+      RunLoop.current.currentMode != .eventTracking)
+    {
       RunLoop.main.perform(inModes: [.eventTracking], block: block)
     } else {
       block()
     }
   }
   
-}
-// swiftlint:enable type_body_length
-
-// MARK: -
-
-extension AppMenu {
   func addDebugItems() {
     #if DEBUG
     if AppDelegate.allowTestWindow {
@@ -969,11 +1220,16 @@ extension AppMenu {
     }
     #endif
   }
+  
 }
+// swiftlint:enable type_body_length
 
-// an isVisible property made logic more clear than with the isHidden property,
+// MARK: -
+
+// an isVisible property makes logic more clear than with the isHidden property,
 // eliminating many double negatives
-// and isVisibleAlternate isolates differences between macOS14 and earlier
+// isVisibleAlternate is for making an alternate menu items visible, it isolates
+// some differences between macOS14 and earlier
 extension NSMenuItem {
   var isVisible: Bool {
     get {

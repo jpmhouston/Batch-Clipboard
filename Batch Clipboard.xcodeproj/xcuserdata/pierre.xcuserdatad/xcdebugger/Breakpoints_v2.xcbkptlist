@@ -30,7 +30,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9D8F6A4B-5862-4635-AF97-B16533E688F7"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Source/App/AppDelegate.swift"
@@ -39,6 +39,22 @@
             startingLineNumber = "92"
             endingLineNumber = "92"
             landmarkName = "clearOrphanRecords()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "907F83D7-329F-431D-81F8-EF391AE9CD4F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Source/Menu/AppMenu.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "525"
+            endingLineNumber = "525"
+            landmarkName = "updateDynamicClipItemVisibility()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
