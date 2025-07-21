@@ -33,10 +33,11 @@ class AppModel: NSObject {
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
   static var effectiveMaxClips: Int {
-    if allowDictinctStorageSize { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems }
+    allowDictinctStorageSize ? UserDefaults.standard.size : UserDefaults.standard.maxMenuItems
   }
   static var effectiveMaxVisibleClips: Int {
-    if allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0 { UserDefaults.standard.size } else { UserDefaults.standard.maxMenuItems } 
+    (allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0) ? UserDefaults.standard.size
+      : UserDefaults.standard.maxMenuItems
   }
   
   static var firstLaunch = false
@@ -60,8 +61,8 @@ class AppModel: NSObject {
   internal let clipboard = Clipboard.shared
   internal let history = History()
   internal var menu: AppMenu!
-  private var menuController: MenuController!
-
+  internal var menuController: MenuController!
+  
   private var startHotKey: StartKeyboardShortcutHandler!
   private var copyHotKey: CopyKeyboardShortcutHandler!
   private var pasteHotKey: PasteKeyboardShortcutHandler!
@@ -76,7 +77,7 @@ class AppModel: NSObject {
   internal var introWindowController = IntroWindowController()
   internal var licensesWindowController = LicensesWindowController()
   
-  internal var queue: ClipboardQueue! // can this be injected wherever its needed, or must is be static & public?
+  internal var queue: ClipboardQueue!
   internal var copyTimeoutTimer: DispatchSourceTimer?
   
   internal var bonusFeaturePromotionAlert: NSAlert {

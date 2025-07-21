@@ -1,5 +1,5 @@
 //
-//  MenuLoader.swift
+//  ProxyMenu.swift
 //  Batch Clipboard
 //
 //  Created by Pierre Houston on 2024-07-10.
@@ -14,7 +14,7 @@ import AppKit
 // execute callback when it's being opened. This gives us an
 // possibility to load other menu in a non-blocking manner.
 // See Maccy.withFocus() for more details about why this is needed.
-class MenuLoader: NSMenu, NSMenuDelegate {
+class ProxyMenu: NSMenu, NSMenuDelegate {
   typealias LoaderCallback = (NSEvent.ModifierFlags, Bool) -> Void
   private var loader: LoaderCallback!
 
