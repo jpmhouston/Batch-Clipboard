@@ -92,11 +92,10 @@ extension AppModel {
       return false
     }
     
-    restoreClipboardMonitoring()
-    
     queue.on()
     menuIcon.update(forQueueSize: 0)
     updateMenuTitle()
+    commenceClipboardMonitoring()
     
     return true
   }
@@ -111,12 +110,17 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
+    guard queue.isOn else {
+      return false
+    }
+    
+    let count = queue.size
     
     queue.off()
-    menu.cancelledQueue()
-    updateClipboardMonitoring()
+    menu.cancelledQueue(count)
     updateMenuIcon()
     updateMenuTitle()
+    updateClipboardMonitoring()
     
     return true
   }
@@ -153,7 +157,7 @@ extension AppModel {
       return false
     }
     
-    restoreClipboardMonitoring()
+    commenceClipboardMonitoring()
     
     if !queue.isOn {
       queue.on()
@@ -249,9 +253,9 @@ extension AppModel {
         try self.queue.remove()
         
         menu.poppedClipOffQueue()
-        updateClipboardMonitoring()
         updateMenuIcon(.decrement)
         updateMenuTitle()
+        updateClipboardMonitoring()
       } catch { }
       
       Self.busy = false
@@ -363,9 +367,9 @@ extension AppModel {
         
         // final update to these and including icon not updated since the start
         self.menu.poppedClipsOffQueue(num)
-        updateClipboardMonitoring()
         self.updateMenuIcon()
         self.updateMenuTitle()
+        self.updateClipboardMonitoring()
         
         Self.busy = false
         
@@ -433,9 +437,9 @@ extension AppModel {
     }
     
     menu.poppedClipOffQueue()
-    updateClipboardMonitoring()
     updateMenuIcon(.decrement)
     updateMenuTitle()
+    updateClipboardMonitoring()
   }
   
   @IBAction
@@ -459,21 +463,23 @@ extension AppModel {
       return false
     }
     
-    guard index < history.count else {
+    guard !queue.isOn && index < history.count else {
       return false
     }
-    let clip = history.all[index]
     
     queue.on()
     do {
+      #if DEBUG
       try queue.setHead(toIndex: index)
+      #endif
       
-      menu.startedQueueFromHistory(atClip: clip)
-      updateClipboardMonitoring()
+      menu.startedQueueFromHistory(index)
       updateMenuIcon()
       updateMenuTitle()
+      commenceClipboardMonitoring()
     } catch {
       queue.off()
+      
       return false
     }
     
@@ -502,12 +508,20 @@ extension AppModel {
     }
     let clip = history.all[index]
     
+    history.remove(clip)
+    
     if index < queue.size {
-      menu.deletedClipFromQueue(clip)
+      do {
+        try queue.remove(atIndex: index)
+      } catch {
+        queue.off()
+      }
       
-      fixQueueAfterDeletingClip(atIndex: index)
+      menu.deletedClipFromQueue(index)
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
     } else {
-      menu.deletedClipFromHistory(clip)
+      menu.deletedClipFromHistory(index - queue.size)
     }
     
     return
@@ -526,10 +540,28 @@ extension AppModel {
     history.remove(clip)
     
     if index < queue.size {
-      menu.deletedClipFromQueue(clip)
-      fixQueueAfterDeletingClip(atIndex: index)
+      do {
+        try queue.remove(atIndex: index)
+      } catch {
+        queue.off()
+      }
+      
+      menu.deletedClipFromQueue(index)
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
+      
     } else {
-      menu.deletedClipFromHistory(clip)
+      menu.deletedClipFromHistory(index)
+    }
+  }
+  
+  private func maintainQueueAfterDeletion(atIndex index: Int) {
+    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
+      do {
+        try queue.remove(atIndex: index)
+      } catch {
+        fatalError("failed to fix queue after deleting item")
+      }
     }
   }
   
@@ -560,10 +592,17 @@ extension AppModel {
     history.remove(clip)
     
     if !queue.isEmpty {
-      menu.deletedClipFromQueue(clip)
-      fixQueueAfterDeletingClip(atIndex: 0)
+      do {
+        try queue.remove(atIndex: 0)
+      } catch {
+        queue.off()
+      }
+      
+      menu.deletedClipFromQueue(0)
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
     } else {
-      menu.deletedClipFromHistory(clip)
+      menu.deletedClipFromHistory(0)
     }
   }
   
@@ -578,6 +617,7 @@ extension AppModel {
   
   @IBAction
   func showIntro(_ sender: AnyObject) {
+    sanityCheckStatusItem() // log this here because it can be triggered from an open about box
     Self.returnFocusToPreviousApp = false
     introWindowController.openIntro(with: self)
     Self.returnFocusToPreviousApp = true
@@ -595,6 +635,7 @@ extension AppModel {
   }
   
   func showSettings(selectingPane pane: Settings.PaneIdentifier? = nil) {
+    sanityCheckStatusItem() // log stuff here because it can be triggered from an open intro window
     Self.returnFocusToPreviousApp = false
     settingsWindowController.show(pane: pane)
     settingsWindowController.window?.orderFrontRegardless()
@@ -609,13 +650,21 @@ extension AppModel {
   
   func showIntroAtHistoryUpdatePage(_ sender: AnyObject) {
     Self.returnFocusToPreviousApp = false
-    introWindowController.openIntro(atPage: .checkAuth, with: self) // TODO: new page for migrating to disabled history
+    introWindowController.openIntro(atPage: .aboutMenu, with: self) // TODO: new page for migrating to disabled history
     Self.returnFocusToPreviousApp = true
   }
   
   @IBAction
   func quit(_ sender: AnyObject) {
     NSApp.terminate(sender)
+  }
+  
+  func sanityCheckStatusItem() {
+    #if false // DEBUG
+    os_log(.debug, "NSStatusItem = %@, isVisible = %d, UserDefaults showInStatusBar = %d, AppModel = %@, ProxyMenu = %@",
+           menuIcon.statusItem, menuIcon.statusItem.isVisible, UserDefaults.standard.showInStatusBar,
+           (NSApp.delegate as! AppDelegate).model!, (NSApp.delegate as! AppDelegate).model!.menuController!.proxyMenu)
+    #endif
   }
   
   // MARK: - alerts
@@ -689,7 +738,7 @@ extension AppModel {
     return interactive ? Permissions.check() : Permissions.allowed
   }
   
-  private func restoreClipboardMonitoring() {
+  private func commenceClipboardMonitoring() {
     if !UserDefaults.standard.keepHistory {
       clipboard.restart()
     } else if UserDefaults.standard.ignoreEvents {
@@ -703,22 +752,8 @@ extension AppModel {
       clipboard.stop()
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
         history.clear()
+        menu.deletedHistory()
       }
-    }
-  }
-  
-  private func fixQueueAfterDeletingClip(atIndex index: Int) {
-    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        os_log(.default, "failed to fix queue after deleting item, %@", error.localizedDescription)
-        queue.off()
-      }
-      
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
-      // menu updates the head of queue item itself when deleting
     }
   }
   

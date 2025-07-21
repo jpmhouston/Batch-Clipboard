@@ -12,10 +12,10 @@
 import AppKit
 import KeyboardShortcuts
 
-class MenuController {
+class MenuController { 
   private let menu: AppMenu
   private let statusItem: NSStatusItem
-  private var menuLoader: MenuLoader!
+  var proxyMenu: ProxyMenu! // not private (temporarily maybe) for debug logging code in appModel 
   
   private var extraVisibleWindows: [NSWindow] {
     NSApp.windows.filter({ $0.isVisible && $0.className != NSApp.statusBarWindow?.className })
@@ -24,8 +24,8 @@ class MenuController {
   init(_ menu: AppMenu, _ statusItem: NSStatusItem) {
     self.menu = menu
     self.statusItem = statusItem
-    self.menuLoader = MenuLoader(performStatusItemClick)
-    self.statusItem.menu = menuLoader
+    proxyMenu = ProxyMenu(performStatusItemClick) 
+    statusItem.menu = proxyMenu
   }
   
   func popUp() {
@@ -96,7 +96,7 @@ class MenuController {
   private func linkingMenuToStatusItem(_ closure: @escaping () -> Void) {
     statusItem.menu = menu
     closure()
-    statusItem.menu = menuLoader
+    statusItem.menu = proxyMenu
   }
   
   // Executes closure with application focus (pun intended).
