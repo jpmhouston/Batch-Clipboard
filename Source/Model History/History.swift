@@ -62,7 +62,9 @@ class History {
   }
   
   func remove(_ item: Clip?) {
-    guard let item else { return }
+    guard let item else {
+      return
+    }
     
     item.getContents().forEach(CoreDataManager.shared.viewContext.delete(_:))
     CoreDataManager.shared.viewContext.delete(item)
@@ -70,6 +72,10 @@ class History {
   
   func trim(to maxItems: Int) {
     // trim results and the database based on size setting
+    guard count > maxItems else {
+      return
+    }
+    
     let overflowItems = all.suffix(from: maxItems)
     overflowItems.forEach(remove(_:))
   }

@@ -26,12 +26,6 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   @IBOutlet weak var previewDelayField: NSTextField!
   @IBOutlet weak var previewDelayStepper: NSStepper!
   @IBOutlet weak var showSpecialSymbolsButton: NSButton!
-  @IBOutlet weak var numberOfItemsField: NSTextField!
-  @IBOutlet weak var numberOfItemsDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsExtendedDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsAltDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsMootDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsStepper: NSStepper!
   @IBOutlet weak var filterFieldVisibleCheckbox: NSButton!
   @IBOutlet weak var filterModeButton: NSPopUpButton!
   @IBOutlet weak var filterFieldVisibleRow: NSGridRow!
@@ -49,16 +43,11 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   private let previewDelayMax = 100_000
   private var previewDelayFormatter: NumberFormatter!
   
-  private let numberOfItemsMin = AppMenu.minNumMenuItems
-  private let numberOfItemsMax = 99
-  private var numberOfItemsFormatter: NumberFormatter!
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     setImageHeightRange()
     setTitleLengthRange()
     setPreviewDelayRange()
-    setNumberOfItemsRange()
   }
   
   override func viewWillAppear() {
@@ -67,10 +56,6 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     populateTitleLength()
     populatePreviewDelay()
     populateShowSpecialSymbols()
-    
-    populateNumberOfItems()
-    updateNumberOfItemsEmptyAllowed()
-    updateVisislbeNumberOfItemsDescription()
     
     if AppModel.allowHistorySearch {
       showFilterFieldOptions(true)
@@ -94,29 +79,13 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     imageHeightField.integerValue = sender.integerValue
   }
   
-  @IBAction func numberOfItemsFieldChanged(_ sender: NSTextField) {
-    if sender.stringValue.isEmpty {
-      UserDefaults.standard.maxMenuItems = 0
-    } else {
-      UserDefaults.standard.maxMenuItems = sender.integerValue
-      numberOfItemsStepper.integerValue = sender.integerValue
-    }
-    updateVisislbeNumberOfItemsDescription()
-  }
-  
-  @IBAction func numberOfItemsStepperChanged(_ sender: NSStepper) {
-    UserDefaults.standard.maxMenuItems = sender.integerValue
-    numberOfItemsField.integerValue = sender.integerValue
-    updateVisislbeNumberOfItemsDescription()
-  }
-  
   @IBAction func titleLengthFieldChanged(_ sender: NSTextField) {
-    UserDefaults.standard.maxMenuItemLength = sender.integerValue
+    UserDefaults.standard.maxTitleLength = sender.integerValue
     titleLengthStepper.integerValue = sender.integerValue
   }
   
   @IBAction func titleLengthStepperChanged(_ sender: NSStepper) {
-    UserDefaults.standard.maxMenuItemLength = sender.integerValue
+    UserDefaults.standard.maxTitleLength = sender.integerValue
     titleLengthField.integerValue = sender.integerValue
   }
   
@@ -183,8 +152,8 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   }
   
   private func populateTitleLength() {
-    titleLengthField.integerValue = UserDefaults.standard.maxMenuItemLength
-    titleLengthStepper.integerValue = UserDefaults.standard.maxMenuItemLength
+    titleLengthField.integerValue = UserDefaults.standard.maxTitleLength
+    titleLengthStepper.integerValue = UserDefaults.standard.maxTitleLength
   }
   
   private func setPreviewDelayRange() {
@@ -208,73 +177,6 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   
   private func populateShowSpecialSymbols() {
     showSpecialSymbolsButton.state = UserDefaults.standard.showSpecialSymbols ? .on : .off
-  }
-  
-  private func setNumberOfItemsRange() {
-    numberOfItemsFormatter = EmptyPermittingNumberFormatter()
-    numberOfItemsFormatter.maximum = numberOfItemsMax as NSNumber
-    numberOfItemsFormatter.maximumFractionDigits = 0
-    numberOfItemsField.formatter = numberOfItemsFormatter
-    //numberOfItemsField.delegate = self
-    
-    numberOfItemsStepper.minValue = Double(numberOfItemsMin)
-    numberOfItemsStepper.maxValue = Double(numberOfItemsMax)
-  }
-  
-  func updateNumberOfItemsEmptyAllowed() {
-    guard let formatter = numberOfItemsField.formatter as? EmptyPermittingNumberFormatter else {
-      return
-    }  
-    formatter.emptyPermitted = AppModel.allowDictinctStorageSize
-  }
-  
-  // if really dont need this then also remove NSTextFieldDelegate
-//  func control(_ control: NSControl, textShouldEndEditing fieldEditor: NSText) -> Bool {
-//    guard let textField = control as? NSTextField, textField === numberOfItemsField else {
-//      return true
-//    }
-//    if AppModel.allowDictinctStorageSize {
-//      if fieldEditor.string.isEmpty {
-//        
-//      }
-//      let value = Int(fieldEditor.string) ?? 0
-//      if value > 0 && value < numberOfItemsMin {
-//        fieldEditor.string = String(numberOfItemsMin)
-//      }
-//    }
-//    return true
-//  }
-  
-  private func updateVisislbeNumberOfItemsDescription() {
-    let historyEnabled = UserDefaults.standard.keepHistory
-    let fullHistoryAllowed = AppModel.allowFullyExpandedHistory
-    let useStorageMax = AppModel.allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0
-    
-    numberOfItemsDescription.isHidden = !(historyEnabled && !useStorageMax && !fullHistoryAllowed)
-    numberOfItemsExtendedDescription.isHidden = !(historyEnabled && !useStorageMax && fullHistoryAllowed)
-    numberOfItemsAltDescription.isHidden = !(historyEnabled && useStorageMax)
-    numberOfItemsMootDescription.isHidden = historyEnabled
-  }
-  
-  private func populateNumberOfItems() {
-    if !UserDefaults.standard.keepHistory {
-      numberOfItemsField.stringValue = ""
-      numberOfItemsField.isEnabled = false
-      numberOfItemsStepper.isEnabled = false
-    } else {
-      var value = UserDefaults.standard.maxMenuItems
-      // when allowing separate storage setting  allow empty, otherwise numberOfItemsMin..numberOfItemsMax
-      if AppModel.allowDictinctStorageSize && value == 0 {
-        numberOfItemsField.stringValue = ""
-        numberOfItemsStepper.integerValue = numberOfItemsMin
-      } else {
-        value = min(max(value, numberOfItemsMin), numberOfItemsMax)
-        numberOfItemsField.integerValue = value
-        numberOfItemsStepper.integerValue = value
-      }
-      numberOfItemsField.isEnabled = true
-      numberOfItemsStepper.isEnabled = true
-    }
   }
   
   private func populateFilterFieldVisibility() {

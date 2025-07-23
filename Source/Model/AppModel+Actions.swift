@@ -667,7 +667,7 @@ extension AppModel {
     #endif
   }
   
-  // MARK: - alerts
+  // MARK: - opening alerts
   
   private func showBonusFeaturePromotionAlert() {
     Self.returnFocusToPreviousApp = false
@@ -757,7 +757,8 @@ extension AppModel {
     }
   }
   
-  // `copyTimeoutTimer: DispatchSourceTimer?` must be declared as a property
+  // `runOnCopyTimeoutTimer` requires that `copyTimeoutTimer: DispatchSourceTimer?`
+  // be declared as a property, cannot be done within this extension
   
   private func runOnCopyTimeoutTimer(afterTimeout timeout: Double, _ action: @escaping () -> Void) {
     if copyTimeoutTimer != nil {

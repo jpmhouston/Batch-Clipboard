@@ -33,7 +33,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
   #endif
-  private var historySavingObserver: NSKeyValueObservation?
   private lazy var loginItemsURL = URL(
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
@@ -46,9 +45,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var openLoginItemsPanelButton: NSButton!
   @IBOutlet weak var openLoginItemsPanelRow: NSGridRow!
   @IBOutlet weak var automaticUpdatesButton: NSButton!
-  @IBOutlet weak var keepHistorySwitch: NSSwitch!
-  @IBOutlet weak var keepHistoryOnDescription: NSTextField!
-  @IBOutlet weak var keepHistoryOffDescription: NSTextField!
   @IBOutlet weak var promoteExtrasCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
   @IBOutlet weak var checkForUpdatesItemsRow: NSGridRow!
@@ -106,38 +102,15 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     } else {
       showLaunchAtLoginRow(false) // show instead the open login items button 
     }
-    
-    
   }
   
   override func viewWillAppear() {
     super.viewWillAppear()
     populateLaunchAtLogin()
     populateSparkleAutomaticUpdates()
-    populateClipboardHistoryToggle()
-    updateVisibleClipboardHistoryDescription()
     #if APP_STORE
     populatePromoteExtrasOptions()
     #endif
-    addObservers()
-  }
-  
-  override func viewWillDisappear() {
-    super.viewWillDisappear()
-    removeObservers()
-  }
-  
-  private func addObservers() {
-    // need to obsevre this because shortly after setting keepHistory to false,
-    // a subsequent confirmation alert can turn it back to true
-    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { [weak self] _, _ in
-      self?.populateClipboardHistoryToggle()
-    }
-  }
-  
-  private func removeObservers() {
-    historySavingObserver?.invalidate()
-    historySavingObserver = nil
   }
   
   // MARK: -
@@ -166,15 +139,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
       return
     }
     launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
-  }
-  
-  private func populateClipboardHistoryToggle() {
-    keepHistorySwitch.state = UserDefaults.standard.keepHistory ? .on : .off
-  }
-  
-  private func updateVisibleClipboardHistoryDescription() {
-    keepHistoryOnDescription.isHidden = !UserDefaults.standard.keepHistory
-    keepHistoryOffDescription.isHidden = UserDefaults.standard.keepHistory
   }
   
   #if APP_STORE
@@ -233,11 +197,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
       return
     }
     NSWorkspace.shared.open(url)
-  }
-  
-  @IBAction func clipboardHistoryToggleChanged(_ sender: NSSwitch) {
-    UserDefaults.standard.keepHistory = (sender.state == .on)
-    updateVisibleClipboardHistoryDescription()
   }
   
   @IBAction func promoteExtrasChanged(_ sender: NSButton) {

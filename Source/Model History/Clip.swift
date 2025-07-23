@@ -217,7 +217,7 @@ class Clip: NSManagedObject {
       title = title.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    return title.shortened(to: UserDefaults.standard.maxMenuItemLength)
+    return title.shortened(to: UserDefaults.standard.maxTitleLength)
   }
   
   private func contentData(_ types: [NSPasteboard.PasteboardType]) -> Data? {

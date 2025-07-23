@@ -8,14 +8,24 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="StorageSettingsViewController" customModule="Batch_Clipboard" customModuleProvider="target">
             <connections>
-                <outlet property="sizeAltDescription" destination="II4-Op-k5e" id="4GC-rW-Ilm"/>
-                <outlet property="sizeDescription" destination="YEc-L3-sWC" id="zm6-p3-8a5"/>
-                <outlet property="sizeDescriptionRow" destination="Vrf-Na-hEn" id="Mi8-QM-tWc"/>
-                <outlet property="sizeMootDescription" destination="4Ot-tg-9lt" id="CFn-sh-mOE"/>
-                <outlet property="sizeSeparatorRow" destination="0hg-v1-My2" id="vfR-5i-m7w"/>
-                <outlet property="sizeStepper" destination="GVm-Pb-Osd" id="Zuf-kU-vVM"/>
-                <outlet property="sizeTextField" destination="Net-9d-Fk3" id="mAo-Hx-kVR"/>
-                <outlet property="sizeTextFieldRow" destination="m0w-B8-cHU" id="EgC-2Y-b4a"/>
+                <outlet property="historySizeDescription" destination="YEc-L3-sWC" id="zm6-p3-8a5"/>
+                <outlet property="historySizeDescriptionRow" destination="Vrf-Na-hEn" id="Mi8-QM-tWc"/>
+                <outlet property="historySizeDisabledDescription" destination="IKk-0N-lvf" id="GyE-Qt-rjl"/>
+                <outlet property="historySizeField" destination="Net-9d-Fk3" id="mAo-Hx-kVR"/>
+                <outlet property="historySizeFieldRow" destination="m0w-B8-cHU" id="EgC-2Y-b4a"/>
+                <outlet property="historySizeOnlyDescription" destination="II4-Op-k5e" id="4GC-rW-Ilm"/>
+                <outlet property="historySizeStepper" destination="GVm-Pb-Osd" id="Zuf-kU-vVM"/>
+                <outlet property="keepHistoryOffDescription" destination="HWF-no-L4S" id="sA1-Ps-7ta"/>
+                <outlet property="keepHistoryOnDescription" destination="9zH-R5-NLD" id="RYL-Q6-mhe"/>
+                <outlet property="keepHistorySwitch" destination="uwe-cn-sSr" id="SLb-y6-qgF"/>
+                <outlet property="numberOfItemsDescription" destination="kVF-fP-yxq" id="tPb-KN-iqk"/>
+                <outlet property="numberOfItemsDescriptionRow" destination="fUC-i8-kJL" id="a7d-9w-wc1"/>
+                <outlet property="numberOfItemsDisabledDescription" destination="Z6G-1n-nWH" id="N0o-wr-NwJ"/>
+                <outlet property="numberOfItemsEmptyDescription" destination="dNn-BR-hrs" id="RJY-6k-fo8"/>
+                <outlet property="numberOfItemsExtendedDescription" destination="Jjb-u7-A5V" id="f0q-3b-PuB"/>
+                <outlet property="numberOfItemsField" destination="6gh-ih-g73" id="uA4-cX-8sD"/>
+                <outlet property="numberOfItemsFieldRow" destination="Oxj-Qh-NDh" id="gaq-xe-FiY"/>
+                <outlet property="numberOfItemsStepper" destination="L8t-ar-zyG" id="Iqk-0M-lhm"/>
                 <outlet property="storeFilesButton" destination="DGV-TD-dLP" id="3gA-Vk-m45"/>
                 <outlet property="storeImagesButton" destination="npf-ct-C6S" id="jAG-5r-Fhe"/>
                 <outlet property="storeTextButton" destination="jjl-jH-9i9" id="ipN-5Q-F8P"/>
@@ -25,20 +35,25 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="320"/>
+            <rect key="frame" x="0.0" y="0.0" width="562" height="571"/>
             <subviews>
-                <gridView xPlacement="leading" yPlacement="top" rowAlignment="lastBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="GOB-4Q-pQY">
-                    <rect key="frame" x="25" y="20" width="450" height="280"/>
+                <gridView xPlacement="leading" yPlacement="top" rowAlignment="firstBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="GOB-4Q-pQY">
+                    <rect key="frame" x="28" y="20" width="506" height="531"/>
+                    <constraints>
+                        <constraint firstItem="lg4-9d-kQh" firstAttribute="top" secondItem="69x-4x-yEK" secondAttribute="bottom" constant="12" id="gBm-Rj-4Wy"/>
+                    </constraints>
                     <rows>
                         <gridRow id="WLw-gz-XMs"/>
                         <gridRow id="dVV-fo-7IJ"/>
                         <gridRow id="wb4-w2-i9U"/>
-                        <gridRow id="5Ho-hd-kNX"/>
+                        <gridRow topPadding="2" bottomPadding="4" id="5Ho-hd-kNX"/>
                         <gridRow id="0hg-v1-My2"/>
-                        <gridRow id="wNj-Zd-EOz"/>
-                        <gridRow height="35" id="m0w-B8-cHU"/>
+                        <gridRow topPadding="4" bottomPadding="6" id="wNj-Zd-EOz"/>
+                        <gridRow id="40e-Cd-hAg"/>
+                        <gridRow rowAlignment="lastBaseline" topPadding="2" bottomPadding="4" id="Oxj-Qh-NDh"/>
+                        <gridRow id="fUC-i8-kJL"/>
+                        <gridRow rowAlignment="lastBaseline" topPadding="10" bottomPadding="4" id="m0w-B8-cHU"/>
                         <gridRow id="Vrf-Na-hEn"/>
-                        <gridRow id="R3L-FF-12o"/>
                     </rows>
                     <columns>
                         <gridColumn xPlacement="trailing" id="vOJ-9h-G8Y"/>
@@ -47,8 +62,8 @@
                     <gridCells>
                         <gridCell row="WLw-gz-XMs" column="vOJ-9h-G8Y" id="zSJ-6e-DJn">
                             <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LLZ-6w-uaM">
-                                <rect key="frame" x="52" y="264" width="37" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="Save:" id="Cal-Kj-TqV">
+                                <rect key="frame" x="68" y="515" width="77" height="16"/>
+                                <textFieldCell key="cell" alignment="right" title="Data Saved:" id="Cal-Kj-TqV">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -57,7 +72,7 @@
                         </gridCell>
                         <gridCell row="WLw-gz-XMs" column="pQU-Pz-q1v" id="kZF-a7-Sbf">
                             <button key="contentView" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="DGV-TD-dLP">
-                                <rect key="frame" x="98" y="263" width="54" height="18"/>
+                                <rect key="frame" x="154" y="514" width="54" height="18"/>
                                 <buttonCell key="cell" type="check" title="Files" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Pr2-Ic-sUM">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -70,7 +85,7 @@
                         <gridCell row="dVV-fo-7IJ" column="vOJ-9h-G8Y" id="nBX-Fj-2bC"/>
                         <gridCell row="dVV-fo-7IJ" column="pQU-Pz-q1v" id="P1t-gO-1ux">
                             <button key="contentView" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="npf-ct-C6S">
-                                <rect key="frame" x="98" y="239" width="70" height="18"/>
+                                <rect key="frame" x="154" y="490" width="70" height="18"/>
                                 <buttonCell key="cell" type="check" title="Images" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IT6-JX-vi3">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -83,7 +98,7 @@
                         <gridCell row="wb4-w2-i9U" column="vOJ-9h-G8Y" id="OEV-NG-PrW"/>
                         <gridCell row="wb4-w2-i9U" column="pQU-Pz-q1v" id="Mr7-oB-BTl">
                             <button key="contentView" verticalHuggingPriority="752" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jjl-jH-9i9">
-                                <rect key="frame" x="98" y="215" width="52" height="18"/>
+                                <rect key="frame" x="154" y="466" width="52" height="18"/>
                                 <buttonCell key="cell" type="check" title="Text" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="TyZ-pU-eZ3">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -95,23 +110,40 @@
                         </gridCell>
                         <gridCell row="5Ho-hd-kNX" column="vOJ-9h-G8Y" id="7GD-BL-fI2"/>
                         <gridCell row="5Ho-hd-kNX" column="pQU-Pz-q1v" id="Nw9-Z6-JIK">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="A5G-dc-gpB">
-                                <rect key="frame" x="100" y="168" width="350" height="40"/>
+                            <textField key="contentView" focusRingType="none" verticalHuggingPriority="751" horizontalCompressionResistancePriority="250" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TOm-A3-UNH">
+                                <rect key="frame" x="154" y="429" width="354" height="28"/>
+                                <textFieldCell key="cell" selectable="YES" title="These checkboxes select what types of clipboard content should be stored." id="GDB-hB-d75">
+                                    <font key="font" metaFont="controlContent" size="11"/>
+                                    <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="0hg-v1-My2" column="vOJ-9h-G8Y" headOfMergedCell="omO-W3-sR2" id="omO-W3-sR2">
+                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="6jk-to-ck8">
+                                <rect key="frame" x="406" y="414" width="100" height="5"/>
+                            </box>
+                        </gridCell>
+                        <gridCell row="0hg-v1-My2" column="pQU-Pz-q1v" headOfMergedCell="omO-W3-sR2" id="TES-cX-Wqi"/>
+                        <gridCell row="wNj-Zd-EOz" column="vOJ-9h-G8Y" id="ia1-1X-36n"/>
+                        <gridCell row="wNj-Zd-EOz" column="pQU-Pz-q1v" id="bh1-mp-jvG">
+                            <stackView key="contentView" distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="900" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BSU-X8-pWv">
+                                <rect key="frame" x="156" y="382" width="246" height="22"/>
                                 <subviews>
-                                    <textField focusRingType="none" verticalHuggingPriority="751" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="TOm-A3-UNH">
-                                        <rect key="frame" x="-2" y="12" width="354" height="28"/>
-                                        <textFieldCell key="cell" selectable="YES" title="These checkboxes select what types of clipboard content should be stored." id="GDB-hB-d75">
-                                            <font key="font" metaFont="controlContent" size="11"/>
-                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vPI-dy-fSJ">
+                                        <rect key="frame" x="-2" y="3" width="192" height="16"/>
+                                        <textFieldCell key="cell" title="Store Recent Clipboard History" id="OB8-ff-bx5">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="W8p-GL-4Zf">
-                                        <rect key="frame" x="0.0" y="0.0" width="163" height="4"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="4" id="QvS-JF-K3O"/>
-                                        </constraints>
-                                    </customView>
+                                    <switch horizontalHuggingPriority="750" verticalHuggingPriority="750" baseWritingDirection="leftToRight" alignment="left" translatesAutoresizingMaskIntoConstraints="NO" id="uwe-cn-sSr">
+                                        <rect key="frame" x="206" y="-2" width="42" height="25"/>
+                                        <connections>
+                                            <action selector="clipboardHistoryToggleChanged:" target="-2" id="ouT-fJ-uvg"/>
+                                        </connections>
+                                    </switch>
                                 </subviews>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
@@ -123,27 +155,166 @@
                                 </customSpacing>
                             </stackView>
                         </gridCell>
-                        <gridCell row="0hg-v1-My2" column="vOJ-9h-G8Y" headOfMergedCell="omO-W3-sR2" id="omO-W3-sR2">
-                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="6jk-to-ck8">
-                                <rect key="frame" x="350" y="157" width="100" height="5"/>
-                            </box>
+                        <gridCell row="40e-Cd-hAg" column="vOJ-9h-G8Y" id="QYr-HF-QcQ"/>
+                        <gridCell row="40e-Cd-hAg" column="pQU-Pz-q1v" id="8k9-u7-GHw">
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="1" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5aL-9S-vPc">
+                                <rect key="frame" x="156" y="256" width="350" height="112"/>
+                                <subviews>
+                                    <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9zH-R5-NLD">
+                                        <rect key="frame" x="-2" y="70" width="1693" height="42"/>
+                                        <textFieldCell key="cell" id="gAt-mJ-azX">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">With this on, Batch Clipboard will continually monitor the clipboard and maintain a history of recent items. visible in the expanded Batch Clipboard menu (option-click the menu bar icon). Selecting a recent clipboard item recalls it so you can paste it again. Batch and history items will appear in the menu in bottom-up order.
+
+Turn this off to disable the expanded menu with recent clipboard items, and only monitor the global clipboard when collecting clipboard items in batch mode. It allows batch items to appear in the menu in natural order.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HWF-no-L4S">
+                                        <rect key="frame" x="-2" y="0.0" width="354" height="112"/>
+                                        <textFieldCell key="cell" id="GHw-6D-Nlo">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">With this off, Batch Clipboard won't monitor the global clipboard when not in batch mode or maintain a history of recent items. Batch items will appear in the menu in natural order.
+
+Turn this on to continually monitor the global clipboard and allow viewing the recent history of items in the expanded Batch Clipboard menu (option-click the menu bar icon) and selecting one to recall it.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </gridCell>
-                        <gridCell row="0hg-v1-My2" column="pQU-Pz-q1v" headOfMergedCell="omO-W3-sR2" id="TES-cX-Wqi"/>
-                        <gridCell row="wNj-Zd-EOz" column="vOJ-9h-G8Y" id="ia1-1X-36n"/>
-                        <gridCell row="wNj-Zd-EOz" column="pQU-Pz-q1v" id="bh1-mp-jvG"/>
-                        <gridCell row="m0w-B8-cHU" column="vOJ-9h-G8Y" id="tyg-75-szb">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UIV-uq-49Q">
-                                <rect key="frame" x="10" y="127" width="79" height="16"/>
-                                <textFieldCell key="cell" alignment="right" title="History size:" id="5og-JF-cpR">
+                        <gridCell row="Oxj-Qh-NDh" column="vOJ-9h-G8Y" id="ooP-mU-4ch">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="1000" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oVn-CV-gF3">
+                                <rect key="frame" x="-2" y="214" width="147" height="32"/>
+                                <textFieldCell key="cell" alignment="right" title="Number of history menu items:" id="vQS-vc-Gq3">
                                     <font key="font" usesAppearanceFont="YES"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
                         </gridCell>
-                        <gridCell row="m0w-B8-cHU" column="pQU-Pz-q1v" rowAlignment="none" id="FA9-Qz-afB">
-                            <stackView key="contentView" toolTip="Number of clipboard items stored in history. Default 200." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69x-4x-yEK">
-                                <rect key="frame" x="100" y="122" width="288" height="21"/>
+                        <gridCell row="Oxj-Qh-NDh" column="pQU-Pz-q1v" id="Z9a-om-T4T">
+                            <stackView key="contentView" toolTip="Number of history items to include in the menu. Leave blank to make all items visible. Default: 20." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="900" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YYS-4l-x7z">
+                                <rect key="frame" x="156" y="211" width="117" height="21"/>
+                                <subviews>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6gh-ih-g73">
+                                        <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="96" id="8Qx-SY-ib8"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="q5f-ib-8FQ">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <connections>
+                                            <action selector="numberOfItemsFieldChanged:" target="-2" id="ZyQ-Rb-R4b"/>
+                                            <outlet property="nextKeyView" destination="Net-9d-Fk3" id="wCg-pJ-7dE"/>
+                                        </connections>
+                                    </textField>
+                                    <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L8t-ar-zyG">
+                                        <rect key="frame" x="101" y="-3" width="19" height="28"/>
+                                        <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="Cul-cu-iUh"/>
+                                        <connections>
+                                            <action selector="numberOfItemsStepperChanged:" target="-2" id="8ko-tr-6HT"/>
+                                        </connections>
+                                    </stepper>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </gridCell>
+                        <gridCell row="fUC-i8-kJL" column="vOJ-9h-G8Y" id="GgT-tO-Tj6"/>
+                        <gridCell row="fUC-i8-kJL" column="pQU-Pz-q1v" id="ISB-ol-u01">
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iIA-wt-vaE">
+                                <rect key="frame" x="156" y="157" width="350" height="42"/>
+                                <subviews>
+                                    <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="kVF-fP-yxq">
+                                        <rect key="frame" x="-2" y="0.0" width="354" height="42"/>
+                                        <textFieldCell key="cell" selectable="YES" id="Vvw-pH-rY0">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Open the menu wiith the Option key held to view the expanded menu showing this many items of recent clipboard history. Select one to reccall it so you can paste it again.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Jjb-u7-A5V">
+                                        <rect key="frame" x="-2" y="0.0" width="898" height="42"/>
+                                        <textFieldCell key="cell" selectable="YES" id="UVc-Tf-2PN">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Open the menu wiith the Option key held to view the expanded menu showing this many items of recent clipboard history. Select one to reccall it so you can paste it again.
+
+Leave this empty to show all stored history in the menu, set below.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="dNn-BR-hrs">
+                                        <rect key="frame" x="-2" y="0.0" width="851" height="42"/>
+                                        <textFieldCell key="cell" selectable="YES" id="jOi-BF-zHZ">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Open the menu wiith the Option key held to view the expanded menu showing all stored recent clipboard history. Select one to reccall it so you can paste it again.
+
+You may enter here a smaller number of items to show by default.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Z6G-1n-nWH">
+                                        <rect key="frame" x="-2" y="0.0" width="851" height="42"/>
+                                        <textFieldCell key="cell" selectable="YES" id="gpZ-O0-9MB">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Open the menu wiith the Option key held to view the expanded menu showing all stored recent clipboard history. Select one to reccall it so you can paste it again.
+
+This option is unavailable when clipboard history is off.</string>
+                                            <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </gridCell>
+                        <gridCell row="m0w-B8-cHU" column="vOJ-9h-G8Y" id="tyg-75-szb">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UIV-uq-49Q">
+                                <rect key="frame" x="33" y="121" width="112" height="16"/>
+                                <textFieldCell key="cell" alignment="right" title="Total History size:" id="5og-JF-cpR">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="m0w-B8-cHU" column="pQU-Pz-q1v" rowAlignment="lastBaseline" id="FA9-Qz-afB">
+                            <stackView key="contentView" toolTip="Number of clipboard items stored in history. Default 200." distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalHuggingPriority="900" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69x-4x-yEK">
+                                <rect key="frame" x="156" y="118" width="117" height="21"/>
                                 <subviews>
                                     <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Net-9d-Fk3">
                                         <rect key="frame" x="0.0" y="0.0" width="96" height="21"/>
@@ -156,30 +327,23 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <connections>
-                                            <action selector="sizeFieldChanged:" target="-2" id="Nt0-Bj-MwI"/>
+                                            <action selector="historySizeFieldChanged:" target="-2" id="Nt0-Bj-MwI"/>
+                                            <outlet property="nextKeyView" destination="6gh-ih-g73" id="xiu-6M-J2d"/>
                                         </connections>
                                     </textField>
                                     <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GVm-Pb-Osd">
-                                        <rect key="frame" x="101" y="-4" width="19" height="29"/>
+                                        <rect key="frame" x="101" y="-3" width="19" height="28"/>
                                         <stepperCell key="cell" continuous="YES" alignment="left" maxValue="100" id="o9T-x9-fYv"/>
                                         <connections>
-                                            <action selector="sizeStepperChanged:" target="-2" id="0Of-d4-nhu"/>
+                                            <action selector="historySizeStepperChanged:" target="-2" id="0Of-d4-nhu"/>
                                         </connections>
                                     </stepper>
-                                    <customView verticalHuggingPriority="800" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W2x-Kg-0o7">
-                                        <rect key="frame" x="125" y="0.0" width="163" height="21"/>
-                                    </customView>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="W2x-Kg-0o7" firstAttribute="height" secondItem="GVm-Pb-Osd" secondAttribute="height" id="W1s-Ye-HPv"/>
-                                </constraints>
                                 <visibilityPriorities>
-                                    <integer value="1000"/>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
                                 </visibilityPriorities>
                                 <customSpacing>
-                                    <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                     <real value="3.4028234663852886e+38"/>
                                 </customSpacing>
@@ -188,35 +352,35 @@
                         <gridCell row="Vrf-Na-hEn" column="vOJ-9h-G8Y" id="KwK-G2-vhq"/>
                         <gridCell row="Vrf-Na-hEn" column="pQU-Pz-q1v" id="yYu-Il-jQZ">
                             <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lg4-9d-kQh">
-                                <rect key="frame" x="100" y="58" width="350" height="42"/>
+                                <rect key="frame" x="156" y="8" width="350" height="98"/>
                                 <subviews>
-                                    <textField focusRingType="none" verticalHuggingPriority="752" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="4Ot-tg-9lt">
-                                        <rect key="frame" x="-2" y="0.0" width="354" height="42"/>
-                                        <textFieldCell key="cell" id="TZS-YU-saf">
-                                            <font key="font" metaFont="smallSystem"/>
-                                            <string key="title">Unused when Global Clipboard History is off (in the General settings panel). If that is turned on, you can set here the maximum number of items stored in the recent clipboard history.</string>
-                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                        </textFieldCell>
-                                    </textField>
-                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="752" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="YEc-L3-sWC">
-                                        <rect key="frame" x="-2" y="0.0" width="1185" height="42"/>
+                                    <textField focusRingType="none" verticalHuggingPriority="752" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="YEc-L3-sWC">
+                                        <rect key="frame" x="-2" y="0.0" width="354" height="98"/>
                                         <textFieldCell key="cell" id="ERQ-Em-dmQ">
                                             <font key="font" metaFont="smallSystem"/>
                                             <string key="title">This is the maximum number of items stored in the recent clipboard history. When further items are copied to the clipnpard the oldest ones stored will be forgotten.
 
-Fewer history items will be shown in the expanded menu (option-click the menu bar icon), but the remaining items can be found using the filter field in the menu (number and field visibility set in the Appearance settings panel)</string>
+Fewer history items will be shown in the expanded menu by default, to show them all open the menu with both the Option and Shift keys held.</string>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
                                     <textField hidden="YES" focusRingType="none" verticalHuggingPriority="752" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="II4-Op-k5e">
-                                        <rect key="frame" x="-2" y="0.0" width="1128" height="42"/>
+                                        <rect key="frame" x="-2" y="84" width="1043" height="14"/>
                                         <textFieldCell key="cell" id="5Pl-Mv-DZj">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">This is the maximum number of items stored in the recent clipboard history, and shown in the expanded menu. When further items are copied to the clipnpard the oldest ones stored will be forgotten.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField hidden="YES" focusRingType="none" verticalHuggingPriority="752" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="IKk-0N-lvf">
+                                        <rect key="frame" x="-2" y="56" width="861" height="42"/>
+                                        <textFieldCell key="cell" id="P3u-fF-qAq">
                                             <font key="font" metaFont="smallSystem"/>
                                             <string key="title">This is the maximum number of items stored in the recent clipboard history. When further items are copied to the clipnpard the oldest ones stored will be forgotten.
 
-This many itens are also shown in the the expanded menu (option-click the menu bar icon). You can instead choose a larger size here than number shown in the menu (the latter set in the Appearance settings panel)</string>
+More items can be stored in the history than show by defaulr in the menu. This option is unavailable when clipboard history is off.</string>
                                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
@@ -234,16 +398,14 @@ This many itens are also shown in the the expanded menu (option-click the menu b
                                 </customSpacing>
                             </stackView>
                         </gridCell>
-                        <gridCell row="R3L-FF-12o" column="vOJ-9h-G8Y" id="ItI-xS-dfc"/>
-                        <gridCell row="R3L-FF-12o" column="pQU-Pz-q1v" id="51X-Ag-uLg"/>
                     </gridCells>
                 </gridView>
             </subviews>
             <constraints>
-                <constraint firstItem="GOB-4Q-pQY" firstAttribute="height" secondItem="Hz6-mo-xeY" secondAttribute="height" constant="-40" id="H9g-BS-pRz"/>
+                <constraint firstAttribute="height" secondItem="GOB-4Q-pQY" secondAttribute="height" constant="40" id="H9g-BS-pRz"/>
                 <constraint firstItem="GOB-4Q-pQY" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="VIM-wA-DYQ"/>
                 <constraint firstItem="GOB-4Q-pQY" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="lO1-LZ-qbm"/>
-                <constraint firstAttribute="width" constant="500" id="vo0-bz-uCi"/>
+                <constraint firstAttribute="width" constant="562" id="vo0-bz-uCi"/>
                 <constraint firstItem="GOB-4Q-pQY" firstAttribute="width" secondItem="Hz6-mo-xeY" secondAttribute="width" multiplier="0.9" id="zZd-wh-7Ux"/>
             </constraints>
             <point key="canvasLocation" x="169" y="31"/>

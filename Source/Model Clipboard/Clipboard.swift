@@ -60,8 +60,8 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func start() {
-    // check clipboard immediately
-    checkForChangesInPasteboard()
+    // prepare for the next item copied to the clipboard item to be detected
+    changeCount = pasteboard.changeCount
     
     // re-check periodically
     timer = Timer.scheduledTimer(

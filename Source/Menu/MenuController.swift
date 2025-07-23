@@ -36,14 +36,14 @@ class MenuController {
   
   @objc
   private func performStatusItemClick(_ modifierFlags: NSEvent.ModifierFlags, _ isRightClick: Bool) {
-    #if DEBUG
+#if DEBUG
     if AppDelegate.shouldFakeAppInteraction && modifierFlags.contains(.capsLock) {
       AppDelegate.putPasteHistoryOnClipboard()
       return
     }
-    #endif // DEBUG
+#endif // DEBUG
     
-    if !AppModel.busy {
+    if UserDefaults.standard.keepHistory {
       if modifierFlags.contains(.control) && modifierFlags.contains(.option) {
         UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
         
@@ -52,7 +52,9 @@ class MenuController {
         }
         return
       }
-      
+    }
+    
+    if !AppModel.busy {
       if !modifierFlags.contains(.option) && modifierFlags.contains(.control) {
         menu.performQueueModeToggle()
         return
