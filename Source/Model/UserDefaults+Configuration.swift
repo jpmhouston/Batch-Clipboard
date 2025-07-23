@@ -29,12 +29,12 @@ extension UserDefaults {
     static let imageMaxHeight = "imageMaxHeight"
     static let lastReviewRequestedAt = "lastReviewRequestedAt"
     static let maxMenuItems = "maxMenuItems"
-    static let maxMenuItemLength = "maxMenuItemLength"
+    static let maxTitleLength = "maxMenuItemLength"
     static let numberOfUsages = "numberOfUsages"
     static let previewDelay = "previewDelay"
     static let searchMode = "searchMode"
     static let showSpecialSymbols = "showSpecialSymbols"
-    static let size = "historySize"
+    static let historySize = "historySize"
     static let suppressClearAlert = "suppressClearAlert"
     static let ignoreRegexp = "ignoreRegexp"
     static let highlightMatch = "highlightMatch"
@@ -45,14 +45,13 @@ extension UserDefaults {
     static let keepHistory = "keepHistory"
     static let saveClipsAcrossDisabledHistory = "saveClipsAcrossDisabledHistory"
     static let supressSaveClipsAlert = "supressSaveClipsAlert"
+    static let supressUseHistoryAlert = "supressUseHistoryAlert"
+    static let showInStatusBar = "showInStatusBar"
     
-    static var showInStatusBar: String {
-      ProcessInfo.processInfo.arguments.contains("ui-testing") ? "showInStatusBarUITests" : "showInStatusBar"
-    }
-    
-    static var storage: String {
-      ProcessInfo.processInfo.arguments.contains("ui-testing") ? "historyUITests" : "history"
-    }
+    // maccy had a few like this, perhaps something to continue doing?
+//    static var showInStatusBar: String {
+//      ProcessInfo.processInfo.arguments.contains("ui-testing") ? "showInStatusBarUITests" : "showInStatusBar"
+//    }
   }
   
   public struct Values {
@@ -63,12 +62,12 @@ extension UserDefaults {
     static let ignoreRegexp: [String] = []
     static let imageMaxHeight = 40.0
     static let maxMenuItems = 20
-    static let maxMenuItemLength = 50
+    static let maxTitleLength = 50
     static let previewDelay = 1500
     static let searchMode = "exact"
     static let showInStatusBar = true
     static let showSpecialSymbols = true
-    static let size = 200
+    static let historySize = 100
     static let highlightMatch = "bold"
     static let keepHistory = false
   }
@@ -92,8 +91,6 @@ extension UserDefaults {
     get { double(forKey: Keys.clipboardCheckInterval) }
     set { set(newValue, forKey: Keys.clipboardCheckInterval) }
   }
-  // this somehow avoids double-fired kvo observations:
-  @objc dynamic public class func automaticallyNotifiesObserversOfClipboardCheckInterval() -> Bool { false }
   
   @objc dynamic public var enabledPasteboardTypes: Set<NSPasteboard.PasteboardType> {
     get {
@@ -141,12 +138,6 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.ignoreRegexp) }
   }
   
-  @objc dynamic public var imageMaxHeight: Int {
-    get { integer(forKey: Keys.imageMaxHeight) }
-    set { set(newValue, forKey: Keys.imageMaxHeight) }
-  }
-  @objc dynamic public class func automaticallyNotifiesObserversOfImageMaxHeight() -> Bool { false }
-  
   public var lastReviewRequestedAt: Date {
     get {
       let int = Int64(integer(forKey: Keys.lastReviewRequestedAt))
@@ -155,17 +146,23 @@ extension UserDefaults {
     set { set(Int(newValue.timeIntervalSince1970), forKey: Keys.lastReviewRequestedAt) }
   }
   
+  @objc dynamic public var imageMaxHeight: Int {
+    get { integer(forKey: Keys.imageMaxHeight) }
+    set { set(newValue, forKey: Keys.imageMaxHeight) }
+  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfImageMaxHeight() -> Bool { false }
+  
   @objc dynamic public var maxMenuItems: Int {
     get { integer(forKey: Keys.maxMenuItems) }
     set { set(newValue, forKey: Keys.maxMenuItems) }
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItems() -> Bool { false }
   
-  @objc dynamic public var maxMenuItemLength: Int {
-    get { integer(forKey: Keys.maxMenuItemLength) }
-    set { set(newValue, forKey: Keys.maxMenuItemLength) }
+  @objc dynamic public var maxTitleLength: Int {
+    get { integer(forKey: Keys.maxTitleLength) }
+    set { set(newValue, forKey: Keys.maxTitleLength) }
   }
-  @objc dynamic public class func automaticallyNotifiesObserversOfMaxMenuItemLength() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfMaxTitleLength() -> Bool { false }
   
   public var numberOfUsages: Int {
     get { integer(forKey: Keys.numberOfUsages) }
@@ -194,11 +191,11 @@ extension UserDefaults {
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfShowSpecialSymbols() -> Bool { false }
   
-  @objc dynamic public var size: Int {
-    get { integer(forKey: Keys.size) }
-    set { set(newValue, forKey: Keys.size) }
+  @objc dynamic public var historySize: Int {
+    get { integer(forKey: Keys.historySize) }
+    set { set(newValue, forKey: Keys.historySize) }
   }
-  @objc dynamic public class func automaticallyNotifiesObserversOfSize() -> Bool { false }
+  @objc dynamic public class func automaticallyNotifiesObserversOfHistorySize() -> Bool { false }
   
   public var suppressClearAlert: Bool {
     get { bool(forKey: Keys.suppressClearAlert) }
@@ -260,6 +257,11 @@ extension UserDefaults {
   public var supressSaveClipsAlert: Bool {
     get { bool(forKey: Keys.supressSaveClipsAlert) }
     set { set(newValue, forKey: Keys.supressSaveClipsAlert) }
+  }
+  
+  public var supressUseHistoryAlert: Bool {
+    get { bool(forKey: Keys.supressUseHistoryAlert) }
+    set { set(newValue, forKey: Keys.supressUseHistoryAlert) }
   }
   
 }
