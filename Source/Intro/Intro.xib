@@ -20,7 +20,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Intro" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
+        <window title="Introduction to Batch Clipboard" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="634" height="404"/>
@@ -120,7 +120,7 @@ DQ
             <point key="canvasLocation" x="174" y="210"/>
         </window>
         <customView id="rWC-ZD-zO1" userLabel="Intro Content View">
-            <rect key="frame" x="0.0" y="0.0" width="4228" height="324"/>
+            <rect key="frame" x="0.0" y="0.0" width="4832" height="324"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="4HE-o8-4GT" userLabel="one">
@@ -458,8 +458,185 @@ DQ
                         <constraint firstItem="NbK-HR-eEY" firstAttribute="top" secondItem="bNt-hn-8Hr" secondAttribute="top" id="pF2-nm-Qis"/>
                     </constraints>
                 </customView>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Lc8-1d-FJl" userLabel="four">
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="KsF-0O-kYb" userLabel="four">
                     <rect key="frame" x="1812" y="0.0" width="604" height="324"/>
+                    <subviews>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="IXd-5W-gVN" userLabel="History On X Ref">
+                            <rect key="frame" x="0.0" y="324" width="176" height="0.0"/>
+                            <constraints>
+                                <constraint firstAttribute="height" id="eTo-o3-l4h"/>
+                            </constraints>
+                        </customView>
+                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLU-4D-eX7" userLabel="History On">
+                            <rect key="frame" x="9" y="58" width="158" height="244"/>
+                            <subviews>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aQW-Cm-WI7">
+                                    <rect key="frame" x="6" y="6" width="146" height="232"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="HistoryOn" id="jAk-jR-q2s"/>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="aQW-Cm-WI7" secondAttribute="bottom" constant="6" id="Gwy-In-DiJ"/>
+                                <constraint firstItem="aQW-Cm-WI7" firstAttribute="top" secondItem="mLU-4D-eX7" secondAttribute="top" constant="6" id="S1I-1A-75C"/>
+                                <constraint firstItem="aQW-Cm-WI7" firstAttribute="leading" secondItem="mLU-4D-eX7" secondAttribute="leading" constant="6" id="VOg-vr-utz"/>
+                                <constraint firstAttribute="trailing" secondItem="aQW-Cm-WI7" secondAttribute="trailing" constant="6" id="YQl-ZU-KXn"/>
+                            </constraints>
+                        </customView>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2gU-aX-COh">
+                            <rect key="frame" x="13" y="21" width="150" height="30"/>
+                            <buttonCell key="cell" type="push" title="Keep Using History" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dGD-n6-63w">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="historyOnChosen:" target="o5X-kK-gzk" id="bzn-B3-r7s"/>
+                            </connections>
+                        </button>
+                        <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
+                            <rect key="frame" x="176" y="23" width="252" height="277"/>
+                            <subviews>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1E-a5-ph9">
+                                    <rect key="frame" x="-2" y="243" width="256" height="34"/>
+                                    <textFieldCell key="cell" alignment="center" title="It appears that you're upgrading from version 1.0 of Batch Clipboard." id="sli-fr-ZY7">
+                                        <font key="font" metaFont="system" size="14"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wIb-UL-fdx">
+                                    <rect key="frame" x="-2" y="160" width="256" height="75"/>
+                                    <textFieldCell key="cell" alignment="center" id="CzH-Ug-w4O">
+                                        <font key="font" metaFont="system" size="12.5"/>
+                                        <string key="title">The new default behavior no longer maintains a global clipboard history. This removes the expanded menu (opened with ⌥. held) that displays recent clips, letting you select one to re-paste it.</string>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
+                                    <rect key="frame" x="-2" y="92" width="256" height="60"/>
+                                    <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
+                                        <font key="font" metaFont="system" size="12.5"/>
+                                        <string key="title">With this change, performance of your OS is improved, the menu is simplified, and menu items displaying the current batch are displayed in a natural, top-down order.</string>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-u0-aIy">
+                                    <rect key="frame" x="-2" y="36" width="256" height="48"/>
+                                    <textFieldCell key="cell" alignment="center" title="Please choose now to adopt the new behavior, or confirm you prefer to keep using the clipboard history features." id="vmd-9Q-SJu">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfI-Cy-XwZ">
+                                    <rect key="frame" x="-2" y="260" width="671" height="17"/>
+                                    <textFieldCell key="cell" alignment="center" title="You've choosen to continue using the clipboard history features. Great that you're making use of them!" id="RPu-G4-0l5">
+                                        <font key="font" metaFont="system" size="14"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uzd-uG-7Kf">
+                                    <rect key="frame" x="-2" y="260" width="694" height="17"/>
+                                    <textFieldCell key="cell" alignment="center" title="You've choosen the new default that turns off the clipboard history. I hope you like the improved simplicity." id="LRW-UU-tmL">
+                                        <font key="font" metaFont="system" size="14"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KOt-85-QgQ">
+                                    <rect key="frame" x="-2" y="0.0" width="256" height="28"/>
+                                    <textFieldCell key="cell" alignment="center" title="If you just use the ^⌘C and ^⌘V shortcuts and didn't know about all this, pick “Use New” 🠊" id="wFx-Dt-X1x">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="width" priority="800" constant="252" id="xGq-4E-56d"/>
+                            </constraints>
+                            <visibilityPriorities>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                            </visibilityPriorities>
+                            <customSpacing>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                            </customSpacing>
+                        </stackView>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Ssk-Li-zU9" userLabel="History Off X Ref">
+                            <rect key="frame" x="428" y="324" width="176" height="0.0"/>
+                            <constraints>
+                                <constraint firstAttribute="height" id="sg3-eR-IUJ"/>
+                            </constraints>
+                        </customView>
+                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mPM-1H-u4B" userLabel="History Off">
+                            <rect key="frame" x="437" y="57" width="158" height="246"/>
+                            <subviews>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wwG-go-RH0">
+                                    <rect key="frame" x="6" y="6" width="146" height="232"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="HistoryOff" id="V6i-yd-x8K"/>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="wwG-go-RH0" secondAttribute="bottom" constant="6" id="5Ki-4a-fs6"/>
+                                <constraint firstItem="wwG-go-RH0" firstAttribute="leading" secondItem="mPM-1H-u4B" secondAttribute="leading" constant="6" id="8sb-nJ-TiT"/>
+                                <constraint firstItem="wwG-go-RH0" firstAttribute="top" secondItem="mPM-1H-u4B" secondAttribute="top" constant="8" id="M05-7i-7od"/>
+                                <constraint firstAttribute="trailing" secondItem="wwG-go-RH0" secondAttribute="trailing" constant="6" id="m6O-Vh-GHk"/>
+                            </constraints>
+                        </customView>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j0M-DH-c5a">
+                            <rect key="frame" x="444" y="21" width="145" height="29"/>
+                            <buttonCell key="cell" type="push" title="Use New Behavior" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mHu-VA-X6U">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="historyOffChosen:" target="o5X-kK-gzk" id="Dsd-xi-SWD"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="mPM-1H-u4B" firstAttribute="centerX" secondItem="Ssk-Li-zU9" secondAttribute="centerX" id="2we-ib-BbJ"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" constant="24" id="DHo-uh-Non"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" secondItem="IXd-5W-gVN" secondAttribute="trailing" id="EYm-F4-kWH"/>
+                        <constraint firstItem="IXd-5W-gVN" firstAttribute="leading" secondItem="KsF-0O-kYb" secondAttribute="leading" id="G3q-hs-G8K"/>
+                        <constraint firstItem="mPM-1H-u4B" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="12" id="GAV-qg-UNE"/>
+                        <constraint firstItem="mPM-1H-u4B" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cuh-Dc-5pF" secondAttribute="trailing" constant="5" id="Hu6-J2-WqG"/>
+                        <constraint firstAttribute="bottom" secondItem="2gU-aX-COh" secondAttribute="bottom" constant="28" id="Jek-D1-bH5"/>
+                        <constraint firstItem="j0M-DH-c5a" firstAttribute="centerX" secondItem="mPM-1H-u4B" secondAttribute="centerX" id="M8u-Rx-nn1"/>
+                        <constraint firstItem="Ssk-Li-zU9" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" id="NmN-B8-cZF"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="centerX" secondItem="KsF-0O-kYb" secondAttribute="centerX" id="PCJ-1u-Y2N"/>
+                        <constraint firstItem="j0M-DH-c5a" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mPM-1H-u4B" secondAttribute="bottom" constant="12" id="Phs-pM-KKo"/>
+                        <constraint firstItem="mPM-1H-u4B" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" constant="-18" id="SfF-jb-yGe"/>
+                        <constraint firstAttribute="trailing" secondItem="Ssk-Li-zU9" secondAttribute="trailing" id="Xs3-x3-7Ir"/>
+                        <constraint firstItem="mLU-4D-eX7" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" constant="-18" id="ZAw-5V-7PB"/>
+                        <constraint firstItem="2gU-aX-COh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mLU-4D-eX7" secondAttribute="bottom" constant="12" id="Zhc-ll-PM6"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mPM-1H-u4B" secondAttribute="trailing" constant="2" id="b2A-0R-Q2O"/>
+                        <constraint firstItem="Ssk-Li-zU9" firstAttribute="leading" secondItem="cuh-Dc-5pF" secondAttribute="trailing" id="e5a-CW-23H"/>
+                        <constraint firstItem="mLU-4D-eX7" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="12" id="eqO-D8-5Lm"/>
+                        <constraint firstItem="mLU-4D-eX7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="leading" constant="2" id="gLG-iW-7Qw"/>
+                        <constraint firstItem="IXd-5W-gVN" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" id="hwo-bR-AMW"/>
+                        <constraint firstItem="mLU-4D-eX7" firstAttribute="centerX" secondItem="IXd-5W-gVN" secondAttribute="centerX" id="i1w-eo-j2e"/>
+                        <constraint firstAttribute="bottom" secondItem="j0M-DH-c5a" secondAttribute="bottom" constant="28" id="m17-cK-9SD"/>
+                        <constraint firstItem="2gU-aX-COh" firstAttribute="centerX" secondItem="mLU-4D-eX7" secondAttribute="centerX" id="vQq-pk-fDh"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="mLU-4D-eX7" secondAttribute="trailing" constant="5" id="whj-D1-6vq"/>
+                    </constraints>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Lc8-1d-FJl" userLabel="five">
+                    <rect key="frame" x="2416" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2od-RL-Ncb">
                             <rect key="frame" x="20" y="79" width="256" height="221"/>
@@ -603,8 +780,8 @@ DQ
                         <constraint firstItem="lnS-C6-5P3" firstAttribute="centerX" secondItem="2Yt-bt-A1K" secondAttribute="centerX" id="yBq-E6-WYZ"/>
                     </constraints>
                 </customView>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="vdZ-kE-5lp" userLabel="five">
-                    <rect key="frame" x="2416" y="0.0" width="604" height="324"/>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="vdZ-kE-5lp" userLabel="six">
+                    <rect key="frame" x="3020" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-QF-9kR">
                             <rect key="frame" x="24" y="64" width="550" height="236"/>
@@ -719,8 +896,8 @@ DQ
                         <constraint firstAttribute="trailing" secondItem="OXy-QF-9kR" secondAttribute="trailing" constant="30" id="pJ0-gW-o56"/>
                     </constraints>
                 </customView>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="F4S-xT-lRf" userLabel="six">
-                    <rect key="frame" x="3020" y="0.0" width="604" height="324"/>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="F4S-xT-lRf" userLabel="seven">
+                    <rect key="frame" x="3624" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uBa-yQ-aIe">
                             <rect key="frame" x="24" y="24" width="550" height="276"/>
@@ -826,8 +1003,8 @@ DQ
                         <constraint firstAttribute="trailing" secondItem="uBa-yQ-aIe" secondAttribute="trailing" constant="30" id="iJM-xq-9fi"/>
                     </constraints>
                 </customView>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Emk-a5-EaI" userLabel="seven">
-                    <rect key="frame" x="3624" y="0.0" width="604" height="324"/>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Emk-a5-EaI" userLabel="eight">
+                    <rect key="frame" x="4228" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUk-ID-IIs">
                             <rect key="frame" x="24" y="33" width="550" height="267"/>
@@ -1195,12 +1372,12 @@ DQ
             <constraints>
                 <constraint firstItem="Emk-a5-EaI" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="0ZP-d3-ZpL"/>
                 <constraint firstItem="vdZ-kE-5lp" firstAttribute="leading" secondItem="Lc8-1d-FJl" secondAttribute="trailing" id="2YD-3n-65U"/>
+                <constraint firstItem="KsF-0O-kYb" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="3Jh-4A-n0E"/>
                 <constraint firstItem="F4S-xT-lRf" firstAttribute="leading" secondItem="vdZ-kE-5lp" secondAttribute="trailing" id="3dr-2b-54c"/>
                 <constraint firstItem="DiN-8O-NU2" firstAttribute="leading" secondItem="4HE-o8-4GT" secondAttribute="trailing" id="4cr-lO-ocz"/>
                 <constraint firstItem="Lc8-1d-FJl" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="4pR-zG-ogc"/>
                 <constraint firstItem="vdZ-kE-5lp" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="Amu-ro-m8u"/>
                 <constraint firstItem="4HE-o8-4GT" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="D0D-XD-WfQ"/>
-                <constraint firstItem="Lc8-1d-FJl" firstAttribute="leading" secondItem="ofC-q2-IhI" secondAttribute="trailing" id="Dsc-ME-J6w"/>
                 <constraint firstItem="ofC-q2-IhI" firstAttribute="leading" secondItem="DiN-8O-NU2" secondAttribute="trailing" id="ItV-po-fCy"/>
                 <constraint firstItem="vdZ-kE-5lp" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="PpC-4v-p4U"/>
                 <constraint firstItem="vdZ-kE-5lp" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="Vja-k1-myE"/>
@@ -1208,15 +1385,19 @@ DQ
                 <constraint firstItem="DiN-8O-NU2" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="X2D-hf-E2H"/>
                 <constraint firstItem="ofC-q2-IhI" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="Xsr-to-Sl6"/>
                 <constraint firstItem="Lc8-1d-FJl" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="Y7j-z3-z4V"/>
+                <constraint firstItem="Lc8-1d-FJl" firstAttribute="leading" secondItem="KsF-0O-kYb" secondAttribute="trailing" id="ZlY-dx-5sN"/>
                 <constraint firstItem="ofC-q2-IhI" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="cIz-41-COn"/>
                 <constraint firstItem="DiN-8O-NU2" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="dYA-cn-bTG"/>
+                <constraint firstItem="KsF-0O-kYb" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="er3-51-7Ff"/>
                 <constraint firstItem="F4S-xT-lRf" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="eyG-WN-wjg"/>
                 <constraint firstItem="Emk-a5-EaI" firstAttribute="leading" secondItem="F4S-xT-lRf" secondAttribute="trailing" id="hUB-bZ-XjS"/>
                 <constraint firstItem="F4S-xT-lRf" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="i7u-Cn-Mfc"/>
+                <constraint firstItem="KsF-0O-kYb" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="jGr-8i-FR1"/>
                 <constraint firstItem="F4S-xT-lRf" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="jdI-Gg-UHk"/>
                 <constraint firstItem="Lc8-1d-FJl" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="lFz-nj-i5z"/>
                 <constraint firstItem="4HE-o8-4GT" firstAttribute="leading" secondItem="rWC-ZD-zO1" secondAttribute="leading" id="m7A-jA-qsT"/>
                 <constraint firstItem="DiN-8O-NU2" firstAttribute="width" secondItem="4HE-o8-4GT" secondAttribute="width" id="msg-oX-ntd"/>
+                <constraint firstItem="KsF-0O-kYb" firstAttribute="leading" secondItem="ofC-q2-IhI" secondAttribute="trailing" id="qE7-we-n3w"/>
                 <constraint firstItem="ofC-q2-IhI" firstAttribute="height" secondItem="4HE-o8-4GT" secondAttribute="height" id="qRh-KN-tdf"/>
                 <constraint firstAttribute="trailing" secondItem="Emk-a5-EaI" secondAttribute="trailing" id="tVw-kG-lvb"/>
                 <constraint firstItem="Emk-a5-EaI" firstAttribute="top" secondItem="rWC-ZD-zO1" secondAttribute="top" id="u07-DI-zm5"/>
@@ -1244,6 +1425,13 @@ DQ
                 <outlet property="filledIconLabel" destination="kPk-oe-jvZ" id="x8z-3d-HsA"/>
                 <outlet property="hasAuthorizationEmoji" destination="Blh-fS-N36" id="eRF-FH-QKn"/>
                 <outlet property="hasAuthorizationLabel" destination="DkE-IU-Osz" id="H3p-a5-uM4"/>
+                <outlet property="historyChoiceNeededLabel" destination="q1e-u0-aIy" id="zUN-hV-INE"/>
+                <outlet property="historyOffButton" destination="j0M-DH-c5a" id="cDG-az-KdM"/>
+                <outlet property="historyOffChoiceLabel" destination="uzd-uG-7Kf" id="h7C-NH-yIR"/>
+                <outlet property="historyOffImageContainer" destination="mPM-1H-u4B" id="0Fi-BR-4qn"/>
+                <outlet property="historyOnButton" destination="2gU-aX-COh" id="tH5-KR-6XA"/>
+                <outlet property="historyOnChoiceLabel" destination="yfI-Cy-XwZ" id="eiR-Wg-fwB"/>
+                <outlet property="historyOnImageContainer" destination="mLU-4D-eX7" id="wgI-52-bjD"/>
                 <outlet property="inAppPurchageLabel" destination="P2t-k7-gU7" id="a6G-Nu-gN5"/>
                 <outlet property="inAppPurchageTitle" destination="UGh-0A-tPy" id="TLr-MX-UKf"/>
                 <outlet property="logoRestartButton" destination="VW6-3z-458" id="SHF-Tc-OkX"/>
@@ -1270,6 +1458,8 @@ DQ
         </viewController>
     </objects>
     <resources>
+        <image name="HistoryOff" width="73" height="116"/>
+        <image name="HistoryOn" width="73" height="116"/>
         <image name="IntroLogo" width="332" height="94"/>
         <image name="arrow.counterclockwise" catalog="system" width="11" height="13"/>
         <image name="introDemo1" width="300" height="284"/>

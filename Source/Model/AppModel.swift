@@ -117,16 +117,6 @@ class AppModel: NSObject {
     return alert
   }
   
-  private var reoderingWhenEenablingHistoryAlert: NSAlert {
-    let alert = NSAlert()
-    alert.messageText = NSLocalizedString("reverse_order_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("reverse_order_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("reverse_order_alert_confirm", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("reverse_order_alert_cancel", comment: ""))
-    alert.showsSuppressionButton = true
-    return alert
-  }
-  
   private var clearWhenDisablingHistoryAlert: NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("erase_history_alert_message", comment: "")
@@ -192,6 +182,7 @@ class AppModel: NSObject {
   private var maxMenuItemsObserver: NSKeyValueObservation?
   private var storageSizeObserver: NSKeyValueObservation?
   private var keepHistoryObserver: NSKeyValueObservation?
+  private var keepHistoryObserver2: NSKeyValueObservation?
   private var statusItemConfigurationObserver: NSKeyValueObservation?
   private var statusItemVisibilityObserver: NSKeyValueObservation?
   
@@ -227,9 +218,6 @@ class AppModel: NSObject {
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
     clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
-    if UserDefaults.standard.keepHistory {
-      clipboard.start()
-    }
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     menu.buildDynamicItems()
@@ -250,7 +238,7 @@ class AppModel: NSObject {
       menuIcon.setDirectOpen(toMenu: menu, menu.menuBarShouldOpen)
     }
     
-    if UserDefaults.standard.data(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
+    if UserDefaults.standard.object(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
       if Self.firstLaunch {
         UserDefaults.standard.keepHistory = false // deliberately omitted from registered defaults above
         UserDefaults.standard.keepHistoryChoicePending = false
@@ -259,8 +247,12 @@ class AppModel: NSObject {
         // offer to upgrade to new history-less default, but until they do, keep history on
         UserDefaults.standard.keepHistory = true
         UserDefaults.standard.keepHistoryChoicePending = true
-        os_log(.info, "need user to confirm leaving history on or migrating to the new default")
+        os_log(.info, "user must confirm history remaining on, or migrate to history off")
       } 
+    }
+    
+    if UserDefaults.standard.keepHistory {
+      clipboard.start()
     }
     
     if !UserDefaults.standard.completedIntro {
@@ -287,6 +279,7 @@ class AppModel: NSObject {
     maxMenuItemsObserver?.invalidate()
     storageSizeObserver?.invalidate()
     keepHistoryObserver?.invalidate()
+    keepHistoryObserver2?.invalidate()
     statusItemConfigurationObserver?.invalidate()
     statusItemVisibilityObserver?.invalidate()
     
@@ -498,10 +491,13 @@ class AppModel: NSObject {
   
   func updateSavingHistory(_ newKeepHistoryValue: Bool) {
     if newKeepHistoryValue {
-      withEnableHistoryConfirmationAlert { [weak self] in
-        self?.clipboard.restart()
-        self?.menu.buildDynamicItems()
-      }
+      UserDefaults.standard.keepHistory = true
+      clipboard.restart()
+      menu.buildDynamicItems()
+    } else if history.count == 0 { // turn off history but don't need to ask about retaining data
+      UserDefaults.standard.keepHistory = false
+      clipboard.stop()
+      menu.buildDynamicItems()
     } else {
       withDisableHistoryConfirmationAlert { [weak self] retainDB in
         self?.clipboard.stop()
@@ -510,28 +506,6 @@ class AppModel: NSObject {
         }
         self?.menu.buildDynamicItems()
       }
-    }
-  }
-  
-  private func withEnableHistoryConfirmationAlert(_ closure: @escaping () -> Void) {
-    if UserDefaults.standard.supressUseHistoryAlert {
-      UserDefaults.standard.keepHistory = true
-      closure()
-      return
-    }
-    takeFocus()
-    
-    let alert = reoderingWhenEenablingHistoryAlert
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        UserDefaults.standard.keepHistory = true
-        closure()
-      default:
-        UserDefaults.standard.keepHistory = false
-      }
-      
-      self.returnFocus()
     }
   }
   
@@ -619,6 +593,13 @@ class AppModel: NSObject {
       menu.buildDynamicItems()
     }
     keepHistoryObserver = storageSettingsPaneViewController.observe(\.keepHistoryChange, options: .new) { [weak self] _, change in
+      // old value of the flag is ephemeral, only care if its different than `keepHistory`
+      guard let self = self else { return }
+      //print("switch observer, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), keepHistory = \(UserDefaults.standard.keepHistory)")
+      guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
+      updateSavingHistory(newValue)
+    }
+    keepHistoryObserver2 = introWindowController.observe(\.viewController.keepHistoryChange, options: .new) { [weak self] _, change in
       // old value of the flag is ephemeral, only care if its different than `keepHistory`
       guard let self = self else { return }
       //print("switch observer, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), keepHistory = \(UserDefaults.standard.keepHistory)")

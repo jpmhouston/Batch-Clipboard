@@ -610,6 +610,12 @@ extension AppModel {
   
   @IBAction
   func showAbout(_ sender: AnyObject) {
+    #if DEBUG
+    if NSEvent.modifierFlags.contains(.option) {
+      print("\(history.count) clip items stored")
+      return
+    }
+    #endif
     takeFocus()
     about.openAbout()
   }
@@ -645,7 +651,7 @@ extension AppModel {
   
   func showIntroAtHistoryUpdatePage() {
     takeFocus()
-    introWindowController.openIntro(atPage: .aboutMenu, with: self) // TODO: new page for migrating to disabled history
+    introWindowController.openIntro(atPage: .historyChoice, with: self)
   }
   
   func openSecurityPanel() {

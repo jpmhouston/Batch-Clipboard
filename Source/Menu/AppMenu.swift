@@ -8,12 +8,15 @@
 //  Based on Menu.swift from Maccy
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
+//  Originally was a custom menu for supporting "search-as-you-type"
+//  based on https://github.com/mikekazakov/MGKMenuWithFilter.
+//  Now it's more controller than view, possibly a problem.
+//
 
 // swiftlint:disable file_length
 import AppKit
 import os.log
 
-// Custom menu supporting "search-as-you-type" based on https://github.com/mikekazakov/MGKMenuWithFilter.
 // swiftlint:disable type_body_length
 class AppMenu: NSMenu, NSMenuDelegate {
   private var history: History!
@@ -1370,7 +1373,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     guard let clipTitle = clip.title else {
       fatalError("menu item at \(index) has clip with a nil title")
     }
-    guard clipTitle == item.title else {
+    guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
       fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
     }
   }
@@ -1406,10 +1409,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
 
 // MARK: -
 
-// an isVisible property makes logic more clear than with the isHidden property,
+// An isVisible property makes logic more clear than with the isHidden property,
 // eliminating many double negatives
-// isVisibleAlternate is for making an alternate menu items visible, it isolates
-// some differences between macOS14 and earlier
+// `isVisibleAlternate` is for making an alternate menu items visible, it isolates
+// some differences between macOS 14 and earlier
 extension NSMenuItem {
   var isVisible: Bool {
     get {
