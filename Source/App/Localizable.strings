@@ -41,12 +41,8 @@
 "number_alert_comment" = "You have {number} clipboard items ready to replay, paste how many of them at once now?";
 "number_alert_cancel" = "Cancel";
 "number_alert_confirm" = "Paste";
-"reverse_order_alert_message" = "Are you sure you want to turn on detection and storage of clipboard history?";
-"reverse_order_alert_comment" = "With history turned on, opening the menu with the Option key held will show recent history, most recent at the top. Menu items displaying the current batch yet to be pasted will switch to use the sane order as the history items, most recent at the top, first to paste at the bottom.\n\nChecking for clipboard changes will happen continually in the background.";
-"reverse_order_alert_cancel" = "Cancel";
-"reverse_order_alert_confirm" = "OK";
 "erase_history_alert_message" = "Turning off clipboard history, do you want to clear the current history in the process?";
-"erase_history_alert_comment" = "With history turned off, menu items displaying the current batch yet to be pasted will switch to natural order, most recent at the bottom, first to paste at the top.\n\nYou may choose to continue storing the current clipboard items in the history, if you turn on history back on they will return, visible when opening the menu with the Option key held.";
+"erase_history_alert_comment" = "If you expect you might turn history back on, you may choose to continue storing the current clipboard items for now. If you turn history back on in the Storage panel of the Settings window then they will return, visible when opening the menu with the Option key held.";
 "erase_history_alert_cancel" = "Cancel";
 "erase_history_alert_confirm" = "Turn Off & Clear";
 "erase_history_alert_deny" = "Turn Off & Keep";

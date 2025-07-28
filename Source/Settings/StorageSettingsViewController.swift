@@ -91,15 +91,16 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
   }
   
   private func addObservers() {
-    // need to obsevre this because shortly after setting keepHistory to false,
-    // a subsequent confirmation alert can turn it back to true
+    // Need to obsevre `keepHistory` in defaults because we set it only indirectly,
+    // by first setting our var `keepHistoryChange` which the app model itself observes
+    // and potentially opens a confirmation alert before finally setting `keepHistory`.
     historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: [.old, .new]) { [weak self] _, change in
       guard let self = self else { return }
       //print("keepHistory observer, old = \(change.oldValue == nil ? "nil" : String(describing: change.oldValue!)),, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), old=new: \(change.newValue == change.oldValue)")
-      // always set the switch to match `keepHistory`, and the observable flag
-      populateClipboardHistoryToggle()
       keepHistoryChange = UserDefaults.standard.keepHistory
       
+      // always set the switch to match `keepHistory`, and the observable flag
+      populateClipboardHistoryToggle()
       // only update the UI if the value has truly changed
       if change.newValue != change.oldValue {
         updateClipboardHistoryDependencies()
@@ -148,8 +149,8 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     // defaults would have an injected abstraction...)
     //UserDefaults.standard.keepHistory = (sender.state == .on)
     
-    // assume this will be observed, and keepHistory in defauts will be
-    // changed on our behalf (which we must observe to detect that change)
+    // assume this var is observed, and `keepHistory` in defaults will be changed on
+    // our behalf to match if its confirmed (which we must observe to detect that change)
     keepHistoryChange = (sender.state == .on)
   }
   

@@ -14,7 +14,7 @@ extension NSWindow.FrameAutosaveName {
   static let introWindow: NSWindow.FrameAutosaveName = "lol.bananameter.batchclip.intro.FrameAutosaveName"
 }
 
-public class IntroWindowController: PagedWindowController {
+class IntroWindowController: PagedWindowController {
   @IBOutlet var viewController: IntroViewController!
   
   convenience init() {
@@ -72,7 +72,7 @@ public class IntroWindowController: PagedWindowController {
   
 }
 
-public class IntroViewController: NSViewController, PagedWindowControllerDelegate {
+class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   @IBOutlet var staticLogoImage: NSImageView?
   @IBOutlet var animatedLogoImage: SDAnimatedImageView?
   @IBOutlet var logoStopButton: NSButton?
@@ -92,6 +92,8 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBOutlet var historyOffChoiceLabel: NSTextField?
   @IBOutlet var historyOnButton: NSButton?
   @IBOutlet var historyOffButton: NSButton?
+  @IBOutlet var historyOnImageContainer: NSView?
+  @IBOutlet var historyOffImageContainer: NSView?
   @IBOutlet var demoImage: NSImageView?
   @IBOutlet var demoCopyBubble: NSView?
   @IBOutlet var demoPasteBubble: NSView?
@@ -135,23 +137,33 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   var startPage: Pages?
   
   enum Pages: Int {
-    case welcome = 0, checkAuth, setAuth, demo, aboutMenu, aboutMore, links
+    case welcome = 0, checkAuth, setAuth, historyChoice, demo, aboutMenu, aboutMore, links
   }
   private var visited: Set<Pages> = []
   
-  public override func viewDidLoad() {
+  @objc dynamic var keepHistoryChange = UserDefaults.standard.keepHistory
+  private var historySavingObserver: NSKeyValueObservation?
+  private var highlightChangeObserver: NSKeyValueObservation?
+  
+  override func viewDidLoad() {
     styleLabels()
     setupLogo()
+    setupHistoryChoiceImages()
   }
   
   deinit {
-    teardownOptionKeyObserver()
+    removeOptionKeyObserver()
+    removeHistoryChoiceObservers()
     cancelDemo()
   }
   
   // MARK: -
   
   func willOpen() -> Int {
+    // Unlike `skipSetAuthorizationPage` flag that's set as we go, decide whether or not
+    // to show this page up front and keep that until window closed and opened again. 
+    skipHistoryChoicePage = !(UserDefaults.standard.keepHistoryChoicePending || startPage == .historyChoice)
+    
     return startPage?.rawValue ?? Pages.welcome.rawValue
   }
   
@@ -202,9 +214,11 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
       authorizationVerifiedEmoji?.isHidden = true
       authorizationDeniedEmoji?.isHidden = true
       
-//    case .historyChoice:
-//      ...
-    
+    case .historyChoice:
+      showHistoryChoiceViews(forUpgradeChosen: UserDefaults.standard.keepHistoryChoicePending ? nil :
+                             !UserDefaults.standard.keepHistory)
+      setupHistoryChoiceObservers()
+      
     case .demo:
       runDemo()
       
@@ -255,10 +269,12 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
       #endif
     case .checkAuth:
       openSecurityPanelSpinner?.stopAnimation(self)
+    case .historyChoice:
+      removeHistoryChoiceObservers()
     case .demo:
       cancelDemo()
     case .links:
-      teardownOptionKeyObserver()
+      removeOptionKeyObserver()
     default:
       break
     }
@@ -269,7 +285,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   func shouldSkipPage(_ number: Int) -> Bool {
     switch Pages(rawValue: number) {
     case .setAuth: skipSetAuthorizationPage
-    //case .historyChoice: skipHistoryChoicePage
+    case .historyChoice: skipHistoryChoicePage
     default: false
     }
   }
@@ -356,7 +372,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     }
   }
   
-  private func teardownOptionKeyObserver() {
+  private func removeOptionKeyObserver() {
     if let eventMonitor = optionKeyEventMonitor {
       NSEvent.removeMonitor(eventMonitor)
       optionKeyEventMonitor = nil
@@ -378,6 +394,73 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
     copyGitHubLinkButton?.isHidden = !showCopy
     openMaccyLinkButton?.isHidden = showCopy
     copyMaccyLinkButton?.isHidden = !showCopy
+  }
+  
+  private func setupHistoryChoiceImages() {
+    historyOnImageContainer?.wantsLayer = true
+    historyOffImageContainer?.wantsLayer = true
+    historyOnImageContainer?.layer?.masksToBounds = true
+    historyOffImageContainer?.layer?.masksToBounds = true
+    let inset = if let imageSubview = historyOnImageContainer?.subviews.first {
+      imageSubview.frame.origin.x
+    } else {
+      8 as CGFloat
+    }
+    historyOnImageContainer?.layer?.borderWidth = inset / 3
+    historyOffImageContainer?.layer?.borderWidth = inset / 3
+    historyOnImageContainer?.layer?.cornerRadius = inset / 2
+    historyOffImageContainer?.layer?.cornerRadius = inset / 2
+  }
+  
+  private func showHistoryChoiceViews(forUpgradeChosen upgrade: Bool?) {
+    let clear = NSColor.clear
+    let highlight = NSColor.highlightColor
+    if let upgrade = upgrade {
+      historyChoiceNeededLabel?.isHidden = true
+      historyOnChoiceLabel?.isHidden = upgrade
+      historyOffChoiceLabel?.isHidden = !upgrade
+      historyOnButton?.isEnabled = upgrade
+      historyOffButton?.isEnabled = !upgrade
+      historyOnImageContainer?.layer?.borderColor = upgrade ? clear.cgColor : highlight.cgColor
+      historyOffImageContainer?.layer?.borderColor = upgrade ? highlight.cgColor : clear.cgColor
+    } else {
+      historyChoiceNeededLabel?.isHidden = false
+      historyOnChoiceLabel?.isHidden = true
+      historyOffChoiceLabel?.isHidden = true
+      historyOnButton?.isEnabled = true
+      historyOffButton?.isEnabled = true
+      historyOnImageContainer?.layer?.borderColor = clear.cgColor
+      historyOffImageContainer?.layer?.borderColor = clear.cgColor
+    }
+  }
+  
+  private func setupHistoryChoiceObservers() {
+    // Need to obsevre `keepHistory` in defaults because we set it only indirectly,
+    // by first setting our var `keepHistoryChange` which the app model itself observes
+    // and potentially opens a confirmation alert before finally setting `keepHistory`.
+    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: [.old, .new]) { [weak self] _, change in
+      guard self != nil else { return }
+      self?.keepHistoryChange = UserDefaults.standard.keepHistory
+      UserDefaults.standard.keepHistoryChoicePending = false
+      
+      DispatchQueue.main.async {
+        self?.showHistoryChoiceViews(forUpgradeChosen: !UserDefaults.standard.keepHistory)
+      }
+    }
+    highlightChangeObserver = NSApplication.shared.observe(\.effectiveAppearance, options: []) { [weak self] _, _ in
+      nop()
+      DispatchQueue.main.async {
+        self?.showHistoryChoiceViews(forUpgradeChosen: UserDefaults.standard.keepHistoryChoicePending ? nil :
+                                     !UserDefaults.standard.keepHistory)
+      }
+    }
+  }
+  
+  private func removeHistoryChoiceObservers() {
+    historySavingObserver?.invalidate()
+    historySavingObserver = nil
+    highlightChangeObserver?.invalidate()
+    highlightChangeObserver = nil
   }
   
   private func runDemo() {
@@ -520,6 +603,18 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
         wc.advance(self)
       }
     }
+  }
+  
+  @IBAction func historyOnChosen(_ sender: AnyObject) {
+    // assume this var is observed, and `keepHistory` in defaults will be changed on
+    // our behalf to match if its confirmed (which we must observe to detect that change)
+    keepHistoryChange = true
+  }
+  
+  @IBAction func historyOffChosen(_ sender: AnyObject) {
+    // assume this var is observed, and `keepHistory` in defaults will be changed on
+    // our behalf to match if its confirmed (which we must observe to detect that change)
+    keepHistoryChange = false
   }
   
   @IBAction func openAppInMacAppStore(_ sender: AnyObject) {

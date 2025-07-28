@@ -17,7 +17,7 @@ import Cocoa
 
 class ClipMenuItem: NSMenuItem {
   var clip: Clip?
-  var value = "" // TODO: perhaps remove if this truly is no longer needed
+  var value = "" // yes, title and valus string are kind of the same, but not exactly and need both
   var groupIndex = 0
   var groupCount = 0 
   
