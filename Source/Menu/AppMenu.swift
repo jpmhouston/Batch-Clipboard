@@ -46,6 +46,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var showsSavedBatches = false
   private var useHistory = true
   private var useNaturalOrder = false
+  private var useDirectMenu = false
   private var isFiltered = false
   private var isVisible = false
   
@@ -113,8 +114,11 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var filterFieldItem: NSMenuItem?
   @IBOutlet weak var keyDetectorItem: NSMenuItem?
   @IBOutlet weak var leadingSeparatorItem: NSMenuItem?
+  @IBOutlet weak var queueTitleItem: NSMenuItem?
   @IBOutlet weak var postQueueSeparatorItem: NSMenuItem?
+  @IBOutlet weak var historyTitleItem: NSMenuItem?
   @IBOutlet weak var postHistorySeparatorItem: NSMenuItem?
+  @IBOutlet weak var batchesTitleItem: NSMenuItem?
   @IBOutlet weak var postBatchesSeparatorItem: NSMenuItem?
   @IBOutlet weak var deleteItem: NSMenuItem?
   @IBOutlet weak var clearItem: NSMenuItem?
@@ -170,24 +174,82 @@ class AppMenu: NSMenu, NSMenuDelegate {
     if usePopoverAnchors {
       insertTopAnchorItems()
     }
-    preQueueItem = topQueueAnchorItem ?? leadingSeparatorItem
-    preHistoryItem = topHistoryAnchorItem ?? keyDetectorItem
+    preQueueItem = topQueueAnchorItem ?? queueTitleItem ?? leadingSeparatorItem
+    preHistoryItem = topHistoryAnchorItem ?? historyTitleItem ?? keyDetectorItem
     preBatchesItem = postHistorySeparatorItem
     
     addDebugItems()
   }
   
   func prepareForPopup() {
+    // used when menu opens via MenuController & ProxyMenu
     updateStaticItemShortcuts()
     updateMenuItemStates()
+  }
+  
+  func menuBarShouldOpen() -> Bool {
+    // used when menu opens directly from the MenuBarIcon, not MenuController & ProxyMenu
+    guard let event = NSApp.currentEvent else {
+      os_log(.debug, "NSApp.currentEvent is nil when intercepting statusbaritem click, just letting menu open")
+      updateStaticItemShortcuts()
+      updateMenuItemStates()
+      return true
+    }
+    
+    let modifierFlags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+    #if DEBUG
+    // testing affordance
+    if AppDelegate.shouldFakeAppInteraction && modifierFlags.contains(.capsLock) {
+      AppDelegate.putPasteHistoryOnClipboard()
+      return false
+    }
+    #endif
+    
+    // control-option-click to toggle saving clipboard items to history
+    // control-option-shift-click to set skip saving only the next clipboard item
+    if useHistory || queue.isOn {
+      if modifierFlags.contains(.control) && modifierFlags.contains(.option) {
+        UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
+        
+        if !modifierFlags.contains(.shift) && UserDefaults.standard.ignoreEvents {
+          UserDefaults.standard.ignoreOnlyNextEvent = true
+        }
+        return false
+      }
+    }
+    
+    // control-click or right-click to toggle queue mode on
+    if !AppModel.busy {
+      if modifierFlags.contains(.control) && !modifierFlags.contains(.option) {
+        performQueueModeToggle()
+        return false
+      }
+      if modifierFlags.isEmpty && (event.type == .rightMouseDown || event.type == .rightMouseUp) {
+        performQueueModeToggle()
+        return false
+      }
+    }
+    
+    // option-click open expanded menu that includes history items
+    if modifierFlags.contains(.option) && useHistory && AppModel.allowExpandedHistory && historyItemCount > 0 {
+      showsExpandedMenu = true
+      showsFullExpansion = modifierFlags.contains(.shift)
+    } else {
+      showsExpandedMenu = false
+    }
+    
+    prepareForPopup()
+    return true
   }
   
   func menuWillOpen(_ menu: NSMenu) {
     isVisible = true
     
-    // potentially revert expanded mode flag initially set from an option-click on the menu icon
-    if showsExpandedMenu && (!useHistory || !AppModel.allowExpandedHistory || historyItemCount == 0) {
-      showsExpandedMenu = false
+    if !useDirectMenu {
+      // potentially revert expanded mode flag initially set from an option-click on the menu icon
+      if showsExpandedMenu && (!useHistory || !AppModel.allowExpandedHistory || historyItemCount == 0) {
+        showsExpandedMenu = false
+      }
     }
     
     if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch,
@@ -277,7 +339,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     // Menu item groups for each clip include a trailing anchor item, one preceding all queue items
     // and history items are needed to as the leading fencepost IYKWIM
     guard let protoAnchorItem = protoAnchorItem,
-          let preQueueIndex = safeIndex(of: leadingSeparatorItem),
+          let preQueueIndex = safeIndex(of: queueTitleItem ?? leadingSeparatorItem),
           let preHistoryIndex = safeIndex(of: keyDetectorItem) else {
       return
     }
@@ -498,8 +560,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
       promoteExtrasBadge = NSMenuItemBadge(string: NSLocalizedString("promoteextras_menu_badge", comment: ""))
     }
     let haveQueueItems = !queue.isEmpty
-    let haveHistoryItems = showsExpandedMenu && historyItemCount > 0
-    let haveBatchItems = showsSavedBatches && batchItemCount > 0
+    let haveHistoryItems = showsExpandedMenu // flags never set when historyItemCount > 0
+    let haveBatchItems = showsSavedBatches && batchItemCount > 0 
     
     // Switch visibility of start vs replay menu item
     queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
@@ -534,8 +596,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func updateDynamicClipItemVisibility() {
+    // visibility of each of the 3 sections of clip items, plus their titles and trailing separators
     let showQueueSection = !queue.isEmpty 
-    let showHistorySection = showsExpandedMenu && historyItemCount > 0
+    let showHistorySection = showsExpandedMenu
     let showBatchSection = showsSavedBatches && batchItemCount > 0
     
     // Queue section
@@ -559,8 +622,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
           lastQueueItem.badge = queueHeadBadge as? NSMenuItemBadge
         }
       }
-      postQueueSeparatorItem?.isVisible = showQueueSection
       
+      queueTitleItem?.isVisible = showQueueSection
+      postQueueSeparatorItem?.isVisible = showQueueSection
     } else {
       fatalError("can't locate the queue menu items section")
     }
@@ -588,24 +652,28 @@ class AppMenu: NSMenu, NSMenuDelegate {
         for index in first ..< end {
           setClipItemVisibility(at: index, visible: showHistorySection && index < endVisible, badgeless: true)
         }
+        
+        historyTitleItem?.isVisible = showHistorySection
         postHistorySeparatorItem?.isVisible = showHistorySection
+        
       } else {
         fatalError("can't locate the history menu items section")
       }
     } else {
+      historyTitleItem?.isVisible = false
       postHistorySeparatorItem?.isVisible = false
     }
     
     // Batches section
-    if showsSavedBatches {
-      if let first = firstBatchItemIndex, let end = postBatchesItemIndex, first <= end {
-        for index in first ..< end {
-          setClipItemVisibility(at: index, visible: showBatchSection)
-        }
-        postBatchesSeparatorItem?.isVisible = showBatchSection
-      } else {
-        fatalError("can't locate the batches menu items section")
+    if let first = firstBatchItemIndex, let end = postBatchesItemIndex, first <= end {
+      for index in first ..< end {
+        setClipItemVisibility(at: index, visible: showBatchSection)
       }
+      
+      batchesTitleItem?.isVisible = showBatchSection
+      postBatchesSeparatorItem?.isVisible = showBatchSection
+    } else {
+      fatalError("can't locate the batches menu items section")
     }
   }
   
@@ -693,14 +761,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
       index = firstIndex
     }
     
-    let queueWasEmpty = queueItemCount == 0
-    
     let menuItems = buildHistoryItemAlternates(clip)
     safeInsertItems(menuItems, at: index)
     
-    if queueWasEmpty {
-      updateMenuItemStates()
-    }
     trimClipMenuItems()
     
     sanityCheckClipMenuItems()
@@ -723,13 +786,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
       fatalError("can't locate the queue menu items section")
     }
     
-    let historyWasEmpty = historyItemCount == 0
     let menuItems = buildHistoryItemAlternates(clip)
     safeInsertItems(menuItems, at:index)
     
-    if historyWasEmpty {
-      updateMenuItemStates()
-    }
     trimClipMenuItems()
     
     sanityCheckClipMenuItems()

@@ -43,15 +43,13 @@ class MenuController {
     }
 #endif // DEBUG
     
-    if UserDefaults.standard.keepHistory {
-      if modifierFlags.contains(.control) && modifierFlags.contains(.option) {
-        UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
-        
-        if !modifierFlags.contains(.shift) && UserDefaults.standard.ignoreEvents {
-          UserDefaults.standard.ignoreOnlyNextEvent = true
-        }
-        return
+    if modifierFlags.contains(.control) && modifierFlags.contains(.option) {
+      UserDefaults.standard.ignoreEvents = !UserDefaults.standard.ignoreEvents
+      
+      if !modifierFlags.contains(.shift) && UserDefaults.standard.ignoreEvents {
+        UserDefaults.standard.ignoreOnlyNextEvent = true
       }
+      return
     }
     
     if !AppModel.busy {
@@ -143,6 +141,7 @@ class MenuController {
         closure()
         if AppModel.returnFocusToPreviousApp && self.extraVisibleWindows.count == 0 {
           NSApp.hide(self)
+          // doesn't seem right, check history to see if this is in the right place:
           AppModel.returnFocusToPreviousApp = true
         }
       }
