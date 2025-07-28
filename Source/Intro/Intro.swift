@@ -87,6 +87,11 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBOutlet var nextAuthorizationDirectionsLabel: NSTextField?
   @IBOutlet var authorizationVerifiedEmoji: NSTextField?
   @IBOutlet var authorizationDeniedEmoji: NSTextField?
+  @IBOutlet var historyChoiceNeededLabel: NSTextField?
+  @IBOutlet var historyOnChoiceLabel: NSTextField?
+  @IBOutlet var historyOffChoiceLabel: NSTextField?
+  @IBOutlet var historyOnButton: NSButton?
+  @IBOutlet var historyOffButton: NSButton?
   @IBOutlet var demoImage: NSImageView?
   @IBOutlet var demoCopyBubble: NSView?
   @IBOutlet var demoPasteBubble: NSView?
@@ -121,6 +126,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   
   private var preAuthorizationPageFirsTime = true
   private var skipSetAuthorizationPage = false
+  private var skipHistoryChoicePage = false
   private var optionKeyEventMonitor: Any?
   private var logoTimer: DispatchSourceTimer?
   private var demoTimer: DispatchSourceTimer?
@@ -150,13 +156,15 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   }
   
   func willClose() {
-    visited.removeAll()
-    
-    // if leaving with accessibility now authorized then don't auto-open again
-    // thought about requiring that the user visit every page, but decided against it
-    if Permissions.allowed {
+    // If leaving without visiting past the first page then launching app code should
+    // auto-open again next time based on this flag. It expected to also open directly
+    // to the permission page if that wasn't setup on launch, or got reset.
+    // I thought about requiring that the user visit every page, but decided against it.
+    if !UserDefaults.standard.completedIntro && visited.count > 1 {
       UserDefaults.standard.completedIntro = true
     }
+    
+    visited.removeAll()
   }
   
   func willShowPage(_ number: Int) -> NSButton? {
@@ -175,12 +183,12 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
         resetAnimatedLogo()
       }
       #endif
-      if Permissions.allowed {
+      if model.hasAccessibilityPermissionBeenGranted() {
         setupNeededLabel?.isHidden = true
       }
       
     case .checkAuth:
-      let isAuthorized = Permissions.allowed
+      let isAuthorized = model.hasAccessibilityPermissionBeenGranted()
       hasAuthorizationEmoji?.isHidden = !isAuthorized
       needsAuthorizationEmoji?.isHidden = isAuthorized
       hasAuthorizationLabel?.isHidden = !isAuthorized
@@ -194,6 +202,9 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
       authorizationVerifiedEmoji?.isHidden = true
       authorizationDeniedEmoji?.isHidden = true
       
+//    case .historyChoice:
+//      ...
+    
     case .demo:
       runDemo()
       
@@ -256,7 +267,11 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   }
   
   func shouldSkipPage(_ number: Int) -> Bool {
-    return skipSetAuthorizationPage && Pages(rawValue: number) == .setAuth
+    switch Pages(rawValue: number) {
+    case .setAuth: skipSetAuthorizationPage
+    //case .historyChoice: skipHistoryChoicePage
+    default: false
+    }
   }
   
   // MARK: -
@@ -479,7 +494,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   }
   
   @IBAction func checkAccessibilityAuthorization(_ sender: AnyObject) {
-    let isAuthorized = Permissions.allowed
+    let isAuthorized = model.hasAccessibilityPermissionBeenGranted()
     authorizationVerifiedEmoji?.isHidden = !isAuthorized
     authorizationDeniedEmoji?.isHidden = isAuthorized
   }
@@ -487,7 +502,7 @@ public class IntroViewController: NSViewController, PagedWindowControllerDelegat
   @IBAction func openSettingsAppSecurityPanel(_ sender: AnyObject) {
     let openSecurityPanelSpinnerTime = 1.25
     
-    self.openURL(string: Permissions.openSettingsPaneURL)
+    model.openSecurityPanel()
     
     // make window controller skip ahead to the next page after a delay
     guard let windowController = (self.view.window?.windowController as? IntroWindowController) else {

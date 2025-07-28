@@ -15,6 +15,7 @@ class MenuBarIcon {
   }
   
   @objc let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+  var menu: NSMenu?
   
   var isEnabled: Bool = true {
     didSet {
@@ -52,6 +53,7 @@ class MenuBarIcon {
   private var visibilityObserver: NSKeyValueObservation?
   private var iconBlinkTimer: DispatchSourceTimer?
   private var iconBlinkIntervalSeconds: Double { 0.75 }
+  private var shouldOpenCallback: (()->Bool)?
   
   private enum SymbolTransition {
     case replace
@@ -62,6 +64,7 @@ class MenuBarIcon {
     setImage(named: .menuIcon)
     
     statusItem.button?.imagePosition = .imageRight
+    statusItem.button?.sendAction(on: .leftMouseDown)
     if #unavailable(macOS 11) {
       (statusItem.button?.cell as? NSButtonCell)?.highlightsBy = []
     }
@@ -72,6 +75,49 @@ class MenuBarIcon {
       return
     }
     self.image = iconImage
+  }
+  
+  func performClick() {
+    statusItem.button?.performClick(nil)
+  }
+  
+  func setDirectOpen(toMenu menu: NSMenu?, _ callback: (()->Bool)? = nil) {
+    if let menu = menu, let callback = callback {
+      self.menu = menu
+      shouldOpenCallback = callback
+      statusItem.button?.target = self
+      statusItem.button?.action = #selector(statusBarButtonClicked(sender:))
+      statusItem.menu = nil // has to be nil for the action to be called
+    } else {
+      // otherwise expect statusItem.menu to be set behind our backs to
+      // the ProxyMenu, and it's invoked just by being opened
+      self.menu = nil
+      shouldOpenCallback = nil
+      statusItem.button?.target = nil
+      statusItem.button?.action = nil
+    }
+  }
+  
+  @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
+    // thx to https://stackoverflow.com/a/59690507/592739
+    guard let callback = shouldOpenCallback, let menu = menu else {
+      return
+    }
+    if callback() {
+      statusItem.menu = menu
+      if #available(macOS 11, *) {
+        statusItem.button?.performClick(nil)
+      } else {
+        let buttonCell = statusItem.button?.cell as? NSButtonCell
+        buttonCell?.highlightsBy = [.changeGrayCellMask, .contentsCellMask, .pushInCellMask]
+        statusItem.button?.performClick(nil)
+        buttonCell?.highlightsBy = []
+      }
+      // example at SO sets menu to nil again in `menuDidClose`, but
+      // MenuController does it right after calling `button.performClick`
+      // so try that here too
+      statusItem.menu = nil
+    }
   }
   
   func enableRemoval(_ enable: Bool, wasRemoved: (()->Void)? = nil) {

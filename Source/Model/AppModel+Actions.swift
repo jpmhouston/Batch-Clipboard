@@ -610,23 +610,20 @@ extension AppModel {
   
   @IBAction
   func showAbout(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     about.openAbout()
-    Self.returnFocusToPreviousApp = true
   }
   
   @IBAction
   func showIntro(_ sender: AnyObject) {
     sanityCheckStatusItem() // log this here because it can be triggered from an open about box
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     introWindowController.openIntro(with: self)
-    Self.returnFocusToPreviousApp = true
   }
   
   func showLicenses() {
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     licensesWindowController.openLicenses()
-    Self.returnFocusToPreviousApp = true
   }
   
   @IBAction
@@ -636,22 +633,29 @@ extension AppModel {
   
   func showSettings(selectingPane pane: Settings.PaneIdentifier? = nil) {
     sanityCheckStatusItem() // log stuff here because it can be triggered from an open intro window
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     settingsWindowController.show(pane: pane)
     settingsWindowController.window?.orderFrontRegardless()
-    Self.returnFocusToPreviousApp = true
   }
   
-  func showIntroAtPermissionPage(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
+  func showIntroAtPermissionPage() {
+    takeFocus()
     introWindowController.openIntro(atPage: .checkAuth, with: self)
-    Self.returnFocusToPreviousApp = true
   }
   
-  func showIntroAtHistoryUpdatePage(_ sender: AnyObject) {
-    Self.returnFocusToPreviousApp = false
+  func showIntroAtHistoryUpdatePage() {
+    takeFocus()
     introWindowController.openIntro(atPage: .aboutMenu, with: self) // TODO: new page for migrating to disabled history
-    Self.returnFocusToPreviousApp = true
+  }
+  
+  func openSecurityPanel() {
+    guard let url = URL(string: Self.openSettingsPanelURL) else {
+      os_log(.default, "failed to create in-app URL to show Settings %@", Self.openSettingsPanelURL)
+      return
+    }
+    if !NSWorkspace.shared.open(url) {
+      os_log(.default, "failed to open in-app URL to show Settings %@", Self.openSettingsPanelURL)
+    }
   }
   
   @IBAction
@@ -670,7 +674,7 @@ extension AppModel {
   // MARK: - opening alerts
   
   private func showBonusFeaturePromotionAlert() {
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     DispatchQueue.main.async {
       switch self.bonusFeaturePromotionAlert.runModal() {
       case NSApplication.ModalResponse.alertFirstButtonReturn:
@@ -678,7 +682,7 @@ extension AppModel {
       default:
         break
       }
-      Self.returnFocusToPreviousApp = true
+      self.returnFocus()
     }
   }
   
@@ -687,7 +691,7 @@ extension AppModel {
     guard let field = alert.accessoryView as? RangedIntegerTextField else {
       return
     }
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     DispatchQueue.main.async {
       switch alert.runModal() {
       case NSApplication.ModalResponse.alertFirstButtonReturn:
@@ -697,7 +701,7 @@ extension AppModel {
       default:
         break
       }
-      Self.returnFocusToPreviousApp = true
+      self.returnFocus()
     }
   }
   
@@ -706,7 +710,7 @@ extension AppModel {
       closure()
       return
     }
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
     let alert = clearAlert
     DispatchQueue.main.async {
       if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
@@ -715,7 +719,24 @@ extension AppModel {
         }
         closure()
       }
-      AppModel.returnFocusToPreviousApp = true
+      self.returnFocus()
+    }
+  }
+  
+  enum PermissionResponse { case cancel, openSettings, openIntro  }
+  private func withPermissionAlert(_ closure: @escaping (PermissionResponse) -> Void) {
+    takeFocus()
+    let alert = permissionNeededAlert
+    DispatchQueue.main.async {
+      switch alert.runModal() {
+      case NSApplication.ModalResponse.alertSecondButtonReturn:
+        closure(.openSettings)
+      case NSApplication.ModalResponse.alertThirdButtonReturn:
+        closure(.openIntro)
+      default:
+        closure(.cancel)
+      }
+      self.returnFocus()
     }
   }
   
@@ -735,7 +756,20 @@ extension AppModel {
       return true // clipboard short-circuits the frontmost app TODO: eventually use a mock clipboard obj
     }
     #endif
-    return interactive ? Permissions.check() : Permissions.allowed
+    let permissionGranted = hasAccessibilityPermissionBeenGranted()
+    if interactive && !permissionGranted {
+      withPermissionAlert() { [weak self] response in
+        switch response {
+        case .openSettings:
+          self?.openSecurityPanel()
+        case .openIntro:
+          self?.showIntroAtPermissionPage()
+        default:
+          break
+        }
+      }
+    }
+    return permissionGranted
   }
   
   private func commenceClipboardMonitoring() {

@@ -43,10 +43,12 @@ extension UserDefaults {
     static let promoteExtrasExpires = "promoteExtrasExpires"
     static let promoteExtrasExpiration = "promoteExtrasExpiration"
     static let keepHistory = "keepHistory"
+    static let keepHistoryChoicePending = "keepHistoryChoicePending"
     static let saveClipsAcrossDisabledHistory = "saveClipsAcrossDisabledHistory"
     static let supressSaveClipsAlert = "supressSaveClipsAlert"
     static let supressUseHistoryAlert = "supressUseHistoryAlert"
     static let showInStatusBar = "showInStatusBar"
+    static let legacyFocusTechnique = "legacyFocus"
     
     // maccy had a few like this, perhaps something to continue doing?
 //    static var showInStatusBar: String {
@@ -69,7 +71,6 @@ extension UserDefaults {
     static let showSpecialSymbols = true
     static let historySize = 100
     static let highlightMatch = "bold"
-    static let keepHistory = false
   }
   
   public var avoidTakingFocus: Bool {
@@ -99,6 +100,7 @@ extension UserDefaults {
     }
     set { set(Array(newValue.map({ $0.rawValue })), forKey: Keys.enabledPasteboardTypes) }
   }
+  // these functions prevent duplicate observations, not exactly sure how it works 
   @objc dynamic public class func automaticallyNotifiesObserversOfEnabledPasteboardTypes() -> Bool { false }
   
   @objc dynamic public var hideSearch: Bool {
@@ -249,6 +251,11 @@ extension UserDefaults {
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfKeepHistory() -> Bool { false }
   
+  public var keepHistoryChoicePending: Bool {
+    get { bool(forKey: Keys.keepHistoryChoicePending) }
+    set { set(newValue, forKey: Keys.keepHistoryChoicePending) }
+  }
+  
   public var saveClipsAcrossDisabledHistory: Bool {
     get { bool(forKey: Keys.saveClipsAcrossDisabledHistory) }
     set { set(newValue, forKey: Keys.saveClipsAcrossDisabledHistory) }
@@ -263,5 +270,11 @@ extension UserDefaults {
     get { bool(forKey: Keys.supressUseHistoryAlert) }
     set { set(newValue, forKey: Keys.supressUseHistoryAlert) }
   }
+  
+  @objc dynamic public var legacyFocusTechnique: Bool {
+    get { bool(forKey: Keys.legacyFocusTechnique) }
+    set { set(newValue, forKey: Keys.legacyFocusTechnique) }
+  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfLegacyFocusTechnique() -> Bool { false }
   
 }

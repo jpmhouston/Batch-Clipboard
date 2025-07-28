@@ -21,12 +21,13 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
 
   @IBOutlet weak var turnOffButton: NSButton!
   @IBOutlet weak var avoidTakingFocusButton: NSButton!
+  @IBOutlet weak var legacyFocusButton: NSButton!
   @IBOutlet weak var clearOnQuitButton: NSButton!
   @IBOutlet weak var clearSystemClipboardButton: NSButton!
   @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField!
   @IBOutlet weak var subsequentHistoryOnDescriptionField: NSTextField!
   @IBOutlet weak var historyOffDescriptionConstraintAbove: NSLayoutConstraint!
-  @IBOutlet var historyOffDescriptionConstraintBelow: NSLayoutConstraint! // muat not weak
+  @IBOutlet var historyOffDescriptionConstraintBelow: NSLayoutConstraint! // muat not be weak
   
   private var replacementHistoryOnDescriptionConstraintAbove: NSLayoutConstraint?
   
@@ -36,6 +37,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     super.viewWillAppear()
     populateTurnOff()
     populateAvoidTakingFocus()
+    populateLegacyFocus()
     populateClearOnQuit()
     populateClearSystemClipboard()
     updateMonitoringDescription()
@@ -57,6 +59,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     UserDefaults.standard.clearSystemClipboard = (sender.state == .on)
   }
 
+  @IBAction func legacyFocusChanged(_ sender: NSButton) {
+    UserDefaults.standard.legacyFocusTechnique = (sender.state == .on)
+  }
+  
   private func populateTurnOff() {
     turnOffButton.state = UserDefaults.standard.ignoreEvents ? .on : .off
   }
@@ -65,6 +71,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     avoidTakingFocusButton.state = UserDefaults.standard.avoidTakingFocus ? .on : .off
   }
 
+  private func populateLegacyFocus() {
+    legacyFocusButton.state = UserDefaults.standard.legacyFocusTechnique ? .on : .off
+  }
+  
   private func populateClearOnQuit() {
     clearOnQuitButton.state = UserDefaults.standard.clearOnQuit ? .on : .off
   }

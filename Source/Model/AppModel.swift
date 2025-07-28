@@ -138,6 +138,26 @@ class AppModel: NSObject {
     return alert
   }
   
+  internal var permissionNeededAlert: NSAlert {
+    let alert = NSAlert()
+    alert.alertStyle = .warning
+    alert.messageText = NSLocalizedString("accessibility_alert_message", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_deny", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_open", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_show_intro", comment: ""))
+    alert.icon = NSImage(named: "NSSecurity")
+    var locationName = NSLocalizedString("system_settings_name", comment: "")
+    var paneName = NSLocalizedString("system_settings_pane", comment: "")
+    if #unavailable(macOS 13) {
+      locationName = NSLocalizedString("system_preferences_name", comment: "")
+      paneName = NSLocalizedString("system_preferences_pane", comment: "")
+    }
+    alert.informativeText = NSLocalizedString("accessibility_alert_comment", comment: "")
+      .replacingOccurrences(of: "{settings}", with: locationName)
+      .replacingOccurrences(of: "{pane}", with: paneName)
+    return alert
+  }
+  
   internal lazy var storageSettingsPaneViewController = StorageSettingsViewController()
   #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
@@ -193,8 +213,7 @@ class AppModel: NSObject {
       UserDefaults.Keys.showInStatusBar: UserDefaults.Values.showInStatusBar,
       UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols,
       UserDefaults.Keys.historySize: UserDefaults.Values.historySize,
-      UserDefaults.Keys.highlightMatch: UserDefaults.Values.highlightMatch,
-      UserDefaults.Keys.keepHistory: UserDefaults.Values.keepHistory
+      UserDefaults.Keys.highlightMatch: UserDefaults.Values.highlightMatch
     ])
     
     super.init()
@@ -224,19 +243,33 @@ class AppModel: NSObject {
     menuIcon.enableRemoval(true)
     menuIcon.isVisible = true
     updateMenuIconEnabledness()
-    menuController = MenuController(menu, menuIcon.statusItem)
+    
+    if UserDefaults.standard.legacyFocusTechnique {
+      menuController = MenuController(menu, menuIcon.statusItem)
+    } else {
+      menuIcon.setDirectOpen(toMenu: menu, menu.menuBarShouldOpen)
+    }
+    
+    if UserDefaults.standard.data(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
+      if Self.firstLaunch {
+        UserDefaults.standard.keepHistory = false // deliberately omitted from registered defaults above
+        UserDefaults.standard.keepHistoryChoicePending = false
+      } else {
+        // this 1.1 flag unset even though not first launch must mean migrating from 1.0
+        // offer to upgrade to new history-less default, but until they do, keep history on
+        UserDefaults.standard.keepHistory = true
+        UserDefaults.standard.keepHistoryChoicePending = true
+        os_log(.info, "need user to confirm leaving history on or migrating to the new default")
+      } 
+    }
     
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
-    } else if !Permissions.allowed {
-      showIntroAtPermissionPage(self)
-    } else if historySettingsInconsistent() {
-      // this should only happen when starting after an update from a previous version,
-      // change to keep the history initially and let the user choose to keep it that way
-      // or go along with the new defaults and delete the history
-      UserDefaults.standard.keepHistory = true
-      os_log(.info, "resolving having items history vs. keep-history settings at their negative defaults by showing intro page covering migration")
-      showIntroAtHistoryUpdatePage(self)
+    } else if !hasAccessibilityPermissionBeenGranted() {
+      showIntroAtPermissionPage()
+    } else if UserDefaults.standard.keepHistoryChoicePending {
+      // expect user migrating from 1.0 won't fall into cases above, get here & really see this page   
+      showIntroAtHistoryUpdatePage()
     }
     
     // important to setup observers after potential early changes to observees above
@@ -268,7 +301,7 @@ class AppModel: NSObject {
       clearHistory(suppressClearAlert: true)
     }
   }
-
+  
   func wasReopened() {
     // if the user has chosen to hide the menu bar icon when not in batch mode then
     // open the Settings window whenever the application icon is double clicked again
@@ -277,8 +310,27 @@ class AppModel: NSObject {
     }
   }
   
-  func popUp() {
-    menuController.popUp()
+  internal func takeFocus() {
+    if UserDefaults.standard.legacyFocusTechnique {
+      Self.returnFocusToPreviousApp = false
+    } else {
+      if !UserDefaults.standard.avoidTakingFocus {
+        NSApp.activate(ignoringOtherApps: true)
+      }
+    }
+  }
+  
+  internal func returnFocus() {
+    if UserDefaults.standard.legacyFocusTechnique {
+      Self.returnFocusToPreviousApp = true
+    } else {
+      if !UserDefaults.standard.avoidTakingFocus {
+        let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.className != NSApp.statusBarWindow?.className }
+        if AppModel.returnFocusToPreviousApp && visibleWindows.count == 0 {
+          NSApp.hide(self)
+        }
+      }
+    }
   }
   
   // MARK: - features & purchases
@@ -422,6 +474,10 @@ class AppModel: NSObject {
     Self.allowSavedBatches = hasPurchased
   }
   
+  func hasAccessibilityPermissionBeenGranted() -> Bool {
+    AXIsProcessTrustedWithOptions(nil)
+  }
+  
   // MARK: - observations
   
   // Non-history items in the cleepp menu are defined in a nib file instead of programmatically
@@ -463,7 +519,8 @@ class AppModel: NSObject {
       closure()
       return
     }
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
+    
     let alert = reoderingWhenEenablingHistoryAlert
     DispatchQueue.main.async {
       switch alert.runModal() {
@@ -473,8 +530,9 @@ class AppModel: NSObject {
       default:
         UserDefaults.standard.keepHistory = false
       }
+      
+      self.returnFocus()
     }
-    Self.returnFocusToPreviousApp = true
   }
   
   private func withDisableHistoryConfirmationAlert(_ closure: @escaping (Bool) -> Void) {
@@ -483,7 +541,8 @@ class AppModel: NSObject {
       closure(UserDefaults.standard.saveClipsAcrossDisabledHistory)
       return
     }
-    Self.returnFocusToPreviousApp = false
+    takeFocus()
+    
     let alert = clearWhenDisablingHistoryAlert
     DispatchQueue.main.async {
       switch alert.runModal() {
@@ -504,8 +563,9 @@ class AppModel: NSObject {
       default:
         UserDefaults.standard.keepHistory = true
       }
+      
+      self.returnFocus()
     }
-    Self.returnFocusToPreviousApp = true
   }
   
   private func initializeObservers() {
@@ -560,7 +620,6 @@ class AppModel: NSObject {
     }
     keepHistoryObserver = storageSettingsPaneViewController.observe(\.keepHistoryChange, options: .new) { [weak self] _, change in
       // old value of the flag is ephemeral, only care if its different than `keepHistory`
-      // insist that `oldValie` is present in `changed` param, avoid redundant calls to `updateSavingHistory`
       guard let self = self else { return }
       //print("switch observer, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), keepHistory = \(UserDefaults.standard.keepHistory)")
       guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }

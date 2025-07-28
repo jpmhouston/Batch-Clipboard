@@ -46,9 +46,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     if url.absoluteString == AppModel.showIntroInAppURL {
       model.showIntro(self)
     }
-    if url.absoluteString == AppModel.showIntroPermissionPageInAppURL {
-      model.showIntroAtPermissionPage(self)
-    }
     if url.absoluteString == AppModel.showLicensesInAppURL {
       model.showLicenses()
     }
@@ -92,6 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let countRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     let count = try? CoreDataManager.shared.viewContext.count(for: countRequest)
     print("\(count ?? 0) clip items stored")
+    // if breakpoint above, can do this: expr try! CoreDataManager.shared.viewContext.fetch(countRequest)
     #endif
     
     let fetchRequest = NSFetchRequest<ClipContent>(entityName: "HistoryItemContent")

@@ -22,8 +22,8 @@ extension AppModel {
   static var supportEmailURL = "mailto:" + AppModel.supportEmailAddress
   static var localizeVolunteerEmailAddress = "batchclipboard.l10nhelp@bananameter.lol"
   static var localizeVolunteerEmailURL = "mailto:" + AppModel.localizeVolunteerEmailAddress
+  static var openSettingsPanelURL = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
   static var showIntroInAppURL = "batchclipapp:intro"
-  static var showIntroPermissionPageInAppURL = "batchclipapp:intro/permissions"
   static var showLicensesInAppURL = "batchclipapp:licenses"
   
 }
