@@ -107,7 +107,8 @@ class Clip: NSManagedObject {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
     do {
-      return try CoreDataManager.shared.viewContext.fetch(fetchRequest)
+      let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
+      return fetched.filter { !$0.isDeleted }
     } catch {
       return []
     }
@@ -118,7 +119,7 @@ class Clip: NSManagedObject {
     fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
     fetchRequest.fetchLimit = 1
     do {
-      return try CoreDataManager.shared.viewContext.fetch(fetchRequest).first
+      return try CoreDataManager.shared.context.fetch(fetchRequest).first
     } catch {
       return nil
     }
@@ -129,7 +130,7 @@ class Clip: NSManagedObject {
   static var count: Int {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     do {
-      return try CoreDataManager.shared.viewContext.count(for: fetchRequest)
+      return try CoreDataManager.shared.context.count(for: fetchRequest)
     } catch {
       return 0
     }
@@ -146,8 +147,8 @@ class Clip: NSManagedObject {
   
   convenience init(contents: [ClipContent], application: String? = nil) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItem",
-                                            in: CoreDataManager.shared.viewContext)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.viewContext)
+                                            in: CoreDataManager.shared.context)!
+    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
     
     self.application = application
     self.firstCopiedAt = Date()
@@ -180,7 +181,7 @@ class Clip: NSManagedObject {
         ].contains(content.type)
       }
       .allSatisfy { content in
-        getContents().contains(where: { $0 == content})
+        getContents().contains { $0 == content }
       }
   }
   
@@ -222,18 +223,18 @@ class Clip: NSManagedObject {
   
   private func contentData(_ types: [NSPasteboard.PasteboardType]) -> Data? {
     let contents = getContents()
-    let content = contents.first(where: { content in
-      return types.contains(NSPasteboard.PasteboardType(content.type))
-    })
+    let content = contents.first {
+      return types.contains(NSPasteboard.PasteboardType($0.type))
+    }
     
     return content?.value
   }
   
   private func hasContentData(_ types: [NSPasteboard.PasteboardType]) -> Bool {
     let contents = getContents()
-    return contents.contains(where: { content in
-      return types.contains(NSPasteboard.PasteboardType(content.type))
-    })
+    return contents.contains {
+      return types.contains(NSPasteboard.PasteboardType($0.type))
+    }
   }
   
   private func allContentData(_ types: [NSPasteboard.PasteboardType]) -> [Data] {
@@ -241,6 +242,11 @@ class Clip: NSManagedObject {
     return contents
       .filter { types.contains(NSPasteboard.PasteboardType($0.type)) }
       .compactMap { $0.value }
+  }
+  
+  var types: [NSPasteboard.PasteboardType] {
+    let contents = getContents()
+    return contents.map { NSPasteboard.PasteboardType($0.type) }
   }
   
   var isImage: Bool { image != nil }
@@ -269,29 +275,39 @@ class Clip: NSManagedObject {
   // MARK: -
     
   override var debugDescription: String {
-    debugDescription()
+    debugContentsDescription()
   }
   
-  func debugDescription(ofLength length: Int? = nil) -> String {
-    let pairs = getContents().compactMap {
+  var desc: String { debugContentsDescription() }
+  var dump: String { debugContentsDescription(ofLength: 0) }
+  
+  // had these named `debugDescription(....)` which is apparently fine to call
+  // from `self` but other callers seem to be disambiguating different, accessing
+  // the property `debugDescription` and then trying to call it as a function
+  func debugContentsDescription(ofLength length: Int? = nil) -> String {
+    Self.debugContentsDescription(getContents(), ofLength: length)
+  }
+  
+  static func debugContentsDescription(_ contents: [ClipContent], ofLength length: Int? = nil) -> String {
+    let pairs = contents.compactMap {
       if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t),v) } else { nil }
     }
-    return Self.debugDescription(for: pairs, ofLength: length)
+    return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
   
-  static func debugDescription(for pairs: [(NSPasteboard.PasteboardType, Data)], ofLength length: Int? = nil) -> String {
-    return debugDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
+  static func debugContentsDescription(for pairs: [(NSPasteboard.PasteboardType, Data)], ofLength length: Int? = nil) -> String {
+    return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
   
-  static func debugDescription(forKeys keys: [NSPasteboard.PasteboardType], values: [Data], ofLength length: Int? = nil) -> String {
+  static func debugContentsDescription(forKeys keys: [NSPasteboard.PasteboardType], values: [Data], ofLength length: Int? = nil) -> String {
     let len = length ?? 16 // length <= 0 means unlimited length string, length nil means pick this default length
     var desc: String
     if keys.count != values.count {
       desc = "(bad)"
     } else if keys.isEmpty {
-      desc = len.isInside(range: 1..<7) ? "_" : "(empty)"
+      desc = len.isInside(range: 1 ..< 7) ? "_" : "(empty)"
     } else if keys.includes([.tiff, .png, .jpeg]) {
-      desc = len.isInside(range: 1..<5) ? "img" : "image"
+      desc = len.isInside(range: 1 ..< 5) ? "img" : "image"
     } else if keys.contains(.fileURL) {
       let n = keys.filter({$0 == .fileURL}).count
       desc = len.isInside(range: 1 ..< 6) ? "f\(n)" : "\(n) files"
@@ -300,7 +316,7 @@ class Clip: NSManagedObject {
       if let s = s {
         let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
         desc = len.isInside(range: 1 ..< 5) ? "r" + String(t.prefix(len)) :
-          len.isInside(range: 5 ..< t.count) ? "rtf " + String(t.prefix(len)) : t
+          "rtf " + (len.isInside(range: 5 ..< max(5, t.count)) ? String(t.prefix(len)) : t)
       } else {
         desc = "rtf?"
       }
@@ -309,15 +325,14 @@ class Clip: NSManagedObject {
       if let s = s {
         let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
         desc = len.isInside(range: 1 ..< 6) ? "h" + String(t.prefix(len)) :
-          len.isInside(range: 6 ..< t.count) ? "html " + String(t.prefix(len)) : t
+          "html " + (len.isInside(range: 6 ..< max(6,t.count)) ? String(t.prefix(len)) : t)
       } else {
         desc = "html?"
       }
     } else if let i = keys.firstIndex(of: .string) {
       let s = String(data: values[i], encoding: .utf8)
-      if let s = s {
-        let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        desc = len.isInside(range: 1 ..< t.count) ? String(t.prefix(len)) : t
+      if let s = s { // s?..trimmingCharacters(in: .whitespacesAndNewlines)
+        desc = len.isInside(range: 1 ..< max(1,s.count)) ? String(s.prefix(len)) : s
       } else {
         desc = "str?"
       }

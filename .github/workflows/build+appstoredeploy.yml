@@ -28,7 +28,8 @@ env:
   profiledestinationfile: embedded.provisionprofile
   buildscheme: "Batch Clipboard (MAS)"
   productname: "Batch Clipboard"
-  bundlename: "Batch Clipboard.app"
+  buildbundlename: "Batch Clipboard (MAS).app"
+  finalbundlename: "Batch Clipboard.app"
   builddir: Build/Products/Release
   branch: main
 
@@ -211,7 +212,7 @@ jobs:
           
           echo "- Build with xcodebuild from $(xcodebuild -version)"
           # requires that env.projectfile is the name of the .xcodeproj, env.buildscheme is
-          # a valid build scheme, and and env.bundlename is name of the produced .app
+          # a valid build scheme, and and env.buildbundlename is name of the produced .app
           # note: not sure why ONLY_ACTIVE_ARCH=NO is required for xcodebuild, it should
           # already be NO for Release configuration
           set -o pipefail && xcodebuild ONLY_ACTIVE_ARCH=NO clean build analyze \
@@ -219,16 +220,16 @@ jobs:
             -project "${{ env.projectfile }}" $versionoverride -derivedDataPath . | \
             tee "$buildlogfile" | xcbeautify --renderer github-actions
           
-          if [[ ! -d "${{ env.builddir }}/${{ env.bundlename }}" ]] ; then
+          if [[ ! -d "${{ env.builddir }}/${{ env.buildbundlename }}" ]] ; then
             echo "::error::Unable to find the built app bundle"
             exit 1
           fi
           
           echo "- Extract bundle version from app"
           plutil -extract CFBundleVersion raw \
-            "${{ env.builddir }}/${{ env.bundlename }}/Contents/Info.plist"
+            "${{ env.builddir }}/${{ env.buildbundlename }}/Contents/Info.plist"
           bundleVersion=$(plutil -extract CFBundleVersion raw \
-            "${{ env.builddir }}/${{ env.bundlename }}/Contents/Info.plist" 2> /dev/null)
+            "${{ env.builddir }}/${{ env.buildbundlename }}/Contents/Info.plist" 2> /dev/null)
           if [[ -z $bundleVersion ]] ; then
             echo "::warning::Unable to find the app's bundle version"
           fi
@@ -239,13 +240,17 @@ jobs:
             echo "::notice::Built ${{ steps.version.outputs.releasename }} version ${{ steps.version.outputs.version }}, build number $bundleVersion"
           fi
           
-          symfilename="${{ env.bundlename }}.dSYM"
+          symfilename="${{ env.buildbundlename }}.dSYM"
           if [ ! -d "${{ env.builddir }}/$symfilename" ] ; then
             echo "::warning::Symbol file not found"
           fi
           
+          echo "- Make duplicate of app bundle \"${{ env.buildbundlename }}\" with final name"
+          ditto "${{ env.builddir }}/${{ env.buildbundlename }}" "${{ env.builddir }}/${{ env.finalbundlename }}""
+          
           echo "version=$bundleVersion" >> $GITHUB_OUTPUT
-          echo "appbundle=${{ env.builddir }}/${{ env.bundlename }}" >> $GITHUB_OUTPUT
+          echo "originalappbundle=${{ env.builddir }}/${{ env.buildbundlename }}" >> $GITHUB_OUTPUT
+          echo "appbundle=${{ env.builddir }}/${{ env.finalbundlename }}" >> $GITHUB_OUTPUT
           echo "symbolfilename=$symfilename" >> $GITHUB_OUTPUT
           echo "symbolfile=${{ env.builddir }}/$symfilename" >> $GITHUB_OUTPUT
           echo "log=$buildlogfile" >> $GITHUB_OUTPUT
@@ -268,12 +273,20 @@ jobs:
           ditto -c -k --keepParent "${{ steps.build.outputs.symbolfile }}" "$zipfilename"
           
           echo "filename=$zipfilename" >> $GITHUB_OUTPUT
+          
+          echo "- Also create archive of original un-renamed app bundle"
+          appzipfilename="${{steps.version.outputs.releasename}} Original App.zip"
+          ditto -c -k --keepParent "${{ steps.build.outputs.originalappbundle }}" "$appzipfilename"
+          
+          echo "appfilename=$appzipfilename" >> $GITHUB_OUTPUT
       
       - name: Save Zipped Symbol File as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: "Symbol file"
-          path: ${{ steps.symbols.outputs.filename }}
+          path: |
+            ${{ steps.symbols.outputs.filename }}
+            ${{ steps.symbols.outputs.appfilename }}
       
       - name: Add Provisioning Profile
         run: |
@@ -285,7 +298,7 @@ jobs:
           
           echo "- Copy provisioning profile into app bundle"
           
-          profiledest="${{ env.builddir }}/${{ env.bundlename }}/Contents/${{ env.profiledestinationfile }}"
+          profiledest="${{ steps.build.outputs.appbundle }}/Contents/${{ env.profiledestinationfile }}"
           echo "${{ secrets.STORE_MACOS_PROFILE }}" | base64 --decode > "$profiledest"
       
       - name: Setup Keychain
@@ -588,7 +601,7 @@ jobs:
         run: |
           :
           if [[ "${{ steps.inputs.outputs.upload }}" == 'true' && steps.version.outputs.tag ]] ; then
-            echo "::notice::Deployed \"${{ env.bundlename }}\" to app store, saved it and \"${{ steps.notes.outputs.filename }}\" as artifacts"
+            echo "::notice::Deployed \"${{ env.finalbundlename }}\" to app store, saved it and \"${{ steps.notes.outputs.filename }}\" as artifacts"
           else
-            echo "::notice::Saved \"${{ env.bundlename }}\" and \"${{ steps.notes.outputs.filename }}\" as artifacts"
+            echo "::notice::Saved \"${{ env.finalbundlename }}\" and \"${{ steps.notes.outputs.filename }}\" as artifacts"
           fi

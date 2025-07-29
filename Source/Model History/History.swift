@@ -15,6 +15,7 @@ class History {
   var maxItemsOverride = 0
   
   var all: [Clip] {
+    // currently merely all clips, perhaps will soon be filtering out ones within saved batches 
     return Clip.all
   }
   
@@ -66,13 +67,20 @@ class History {
       return
     }
     
-    item.getContents().forEach(CoreDataManager.shared.viewContext.delete(_:))
-    CoreDataManager.shared.viewContext.delete(item)
+    item.getContents().forEach(CoreDataManager.shared.context.delete(_:))
+    CoreDataManager.shared.context.delete(item)
+  }
+  
+  func remove(atIndex index: Int) {
+    guard index < count else {
+      return
+    }
+    remove(all[index])
   }
   
   func trim(to maxItems: Int) {
     // trim results and the database based on size setting
-    guard count > maxItems else {
+    guard maxItems < count else {
       return
     }
     
@@ -100,4 +108,14 @@ class History {
     
     return nil
   }
+  
+  // MARK: -
+  
+  var summary: String { "\(count) clips" }
+  var desc: String { all.map { $0.value }.joined(separator: ", ") }
+  var ptrs: String { all.map { "0x\(String(unsafeBitCast($0, to: Int.self), radix: 16))" }.joined(separator: ", ") }
+  
+  //var log: String { debugHistoryLog(ofLength: 0) }
+  //func debugHistoryLog(ofLength length: Int = 0) { ... }
+  
 }

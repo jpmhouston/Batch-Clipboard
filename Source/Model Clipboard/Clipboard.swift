@@ -48,6 +48,12 @@ class Clipboard: CustomDebugStringConvertible {
   private var sourceApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
   
   init() {
+    #if DEBUG || UNITTEST 
+    if Self.fakeryNeeded {
+      changeCount = 0 // avoid accessing the global pasteboard 
+      fakeryEngaged = true
+    }
+    #endif
     changeCount = pasteboard.changeCount
   }
   
@@ -60,6 +66,14 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func start() {
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      changeCount = fakePasteboardChangeCount
+      fakePasteboardObservationOn = true
+      return
+    }
+    #endif
+    
     // prepare for the next item copied to the clipboard item to be detected
     changeCount = pasteboard.changeCount
     
@@ -74,16 +88,45 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func stop() {
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      fakePasteboardObservationOn = false
+      return
+    }
+    #endif
+    
     timer?.invalidate()
     timer = nil
   }
   
   func restart() {
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      start()
+      return
+    }
+    #endif
+    
     timer?.invalidate()
     start()
   }
   
+  // TODO: maybe rename copy to putOnClipboard or something
+  
   func copy(_ string: String, excludeFromHistory: Bool = true) {
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      fakePasteboard = .barestr(string)
+      fakePasteboardChangeCount += 1
+      if excludeFromHistory {
+        changeCount = fakePasteboardChangeCount
+      } else {
+        checkForChangesInPasteboard()
+      }
+      return
+    }
+    #endif
+    
     pasteboard.clearContents()
     pasteboard.setString(string, forType: .string)
     
@@ -96,6 +139,22 @@ class Clipboard: CustomDebugStringConvertible {
   
   func copy(_ item: Clip?, removeFormatting: Bool = false, excludeFromHistory: Bool = true) {
     guard let item else { return }
+    
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      // save clip in fakePasteboard, don't make new clip replicating what code below does when
+      // removeFormatting set and adding .fromSelf key to content because that would involve
+      // making a new Clip object, affecting the current state of history
+      fakePasteboard = .clip(item.getContents())
+      fakePasteboardChangeCount += 1
+      if excludeFromHistory {
+        changeCount = fakePasteboardChangeCount
+      } else {
+        checkForChangesInPasteboard()
+      }
+      return
+    }
+    #endif
     
     pasteboard.clearContents()
     var contents = item.getContents()
@@ -129,7 +188,7 @@ class Clipboard: CustomDebugStringConvertible {
     }
     pasteboard.writeObjects(fileURLItems)
     
-    pasteboard.setString("", forType: .fromMaccy)
+    pasteboard.setString("", forType: .fromSelf)
     
     if excludeFromHistory {
       changeCount = pasteboard.changeCount
@@ -139,25 +198,33 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func invokeApplicationCopy(then action: (() -> Void)? = nil) {
-    #if DEBUG
-    if AppDelegate.shouldFakeAppInteraction {
-      copy(AppDelegate.fakedAppCopy, excludeFromHistory: false)
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      copy(nextCannedText, excludeFromHistory: false)
       action?()
       return
     }
     #endif
+    #if !UNITTEST
     postKeypress(FilterFieldKeyCmd.copyKeyModifiers, FilterFieldKeyCmd.copyKey, then: action)
+    #endif
   }
   
   func invokeApplicationPaste(then action: (() -> Void)? = nil) {
-    #if DEBUG
-    if AppDelegate.shouldFakeAppInteraction {
-      AppDelegate.fakedAppPaste = debugDescription(ofLength: 0)
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      switch fakePasteboard {
+      case .barestr(let str): accumulateStr(str)
+      case .clip(let contents): accumulateContents(contents)
+      default: break
+      }
       action?()
       return
     }
     #endif
+    #if !UNITTEST
     postKeypress(FilterFieldKeyCmd.pasteKeyModifiers, FilterFieldKeyCmd.pasteKey, then: action)
+    #endif
   }
   
   // Based on https://github.com/Clipy/Clipy/blob/develop/Clipy/Sources/Services/PasteService.swift.
@@ -200,6 +267,13 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
     
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      fakePasteboard = nil
+      return
+    }
+    #endif
+    
     pasteboard.clearContents()
   }
   
@@ -207,6 +281,38 @@ class Clipboard: CustomDebugStringConvertible {
   
   @objc
   func checkForChangesInPasteboard() {
+    #if DEBUG || UNITTEST
+    if fakeryEngaged {
+      // all the functionality below duplicated here :(
+      // to avoid multiple sets of ifdefs within
+      guard fakePasteboardChangeCount != changeCount else { return }
+      changeCount = fakePasteboardChangeCount
+      if UserDefaults.standard.ignoreEvents {
+        if UserDefaults.standard.ignoreOnlyNextEvent {
+          UserDefaults.standard.ignoreEvents = false
+          UserDefaults.standard.ignoreOnlyNextEvent = false
+        }
+        return
+      }
+      guard let pasteboardItem = fakePasteboard else { return }
+      // make new Clip with these contents
+      let newClipContents: [ClipContent]
+      switch pasteboardItem {
+      case .barestr(let str):
+        let textContent = ClipContent(type: NSPasteboard.PasteboardType.string.rawValue,
+                                      value: str.data(using: .utf8))
+        newClipContents = [textContent]
+      case .clip(let contents):
+        let types = contents.map { NSPasteboard.PasteboardType($0.type) }
+        if shouldIgnore(Set(types)) { return }
+        newClipContents = contents
+      }
+      let clip = Clip(contents: newClipContents, application: "Fake.app")
+      onNewCopyHooks.forEach({ $0(clip) })
+      return
+    }
+    #endif
+    
     guard pasteboard.changeCount != changeCount else {
       return
     }
@@ -233,6 +339,18 @@ class Clipboard: CustomDebugStringConvertible {
       return
     }
     
+    // Make new clip containing what's on the pasteboard now
+    let contents = currentContents()
+    guard !contents.isEmpty else {
+      return
+    }
+    let newPasteboardItem = Clip(contents: contents, application: sourceApp?.bundleIdentifier)
+    
+    // Disseminate
+    onNewCopyHooks.forEach({ $0(newPasteboardItem) })
+  }
+  
+  func currentContents() -> [ClipContent] {
     // Some applications (BBEdit, Edge) add 2 items to pasteboard when copying
     // so it's better to merge all data into a single record.
     // - https://github.com/p0deje/Maccy/issues/78
@@ -270,12 +388,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
     })
     
-    guard !contents.isEmpty else {
-      return
-    }
-    
-    let historyItem = Clip(contents: contents, application: sourceApp?.bundleIdentifier)
-    onNewCopyHooks.forEach({ $0(historyItem) })
+    return contents
   }
   
   // MARK: -
@@ -339,12 +452,12 @@ class Clipboard: CustomDebugStringConvertible {
   // MARK: -
   
   var debugDescription: String {
-    debugDescription()
+    debugCurrentItemDescription()
   }
   
-  func debugDescription(ofLength length: Int? = nil) -> String {
+  func debugCurrentItemDescription(ofLength length: Int? = nil) -> String {
     // a variation on the code in checkForChangesInPasteboard()
-    // future changes there should be reflected here also
+    // that notably doesn't create new ClipContent objects
     var contents: [(NSPasteboard.PasteboardType, Data)] = []
     pasteboard.pasteboardItems?.forEach({ item in
       var types = Set(item.types)
@@ -365,7 +478,62 @@ class Clipboard: CustomDebugStringConvertible {
       }
       contents += types.compactMap { if let d = item.data(forType: $0) { ($0, d) } else { nil } }
     })
-    return Clip.debugDescription(for: contents, ofLength: length)
+    return Clip.debugContentsDescription(for: contents, ofLength: length)
   }
+  
+  #if DEBUG || UNITTEST
+  static var fakeryNeeded = ProcessInfo.processInfo.processName == "xctest" ||
+                            CommandLine.arguments.contains("ui-testing")
+  var fakeryEngaged = false
+  enum FakePasteboardItem {
+    case barestr(String)
+    case clip([ClipContent])
+  }
+  var fakePasteboard: FakePasteboardItem?
+  var fakePasteboardObservationOn = false
+  var fakePasteboardChangeDelay = UserDefaults.standard.clipboardCheckInterval
+  var fakePasteboardChangeCount = 0 {
+    didSet {
+      if fakePasteboardObservationOn {
+        DispatchQueue.global().asyncAfter(deadline: .now() + fakePasteboardChangeDelay,
+                                          execute: checkForChangesInPasteboard)
+      }
+    }
+  }
+  var currentText: String? {
+    switch fakePasteboard {
+    case .barestr(let str): str
+    case .clip(let c): strForContents(c)
+    default: nil
+    }
+  }
+  func strForContents(_ contents: [ClipContent]) -> String? {
+    if let textContent = contents.first(where: { $0.type == NSPasteboard.PasteboardType.string.rawValue }),
+       let d = textContent.value { String(data: d, encoding: .utf8) }
+    else { nil }
+  }
+  var lastPastedClip: Clip?
+  var accumulatedDescriptions: [String] = []
+  var accumulatedTextBuffer = ""
+  func accumulateStr(_ str: String) {
+    accumulatedDescriptions.append("'\(str)'")
+    accumulatedTextBuffer.append(str)
+  }
+  func accumulateContents(_ contents: [ClipContent]) {
+    accumulatedDescriptions.append(Clip.debugContentsDescription(contents, ofLength: 0))
+    if let str = strForContents(contents) {
+      accumulatedTextBuffer.append(str)
+    }
+  }
+  func putPastedClipDescriptionOnClipboard() { copy(accumulatedDescriptions.joined(separator: "\n")) }
+  func putPastedClipTextOnClipboard() { copy(accumulatedDescriptions.joined(separator: "\n")) }
+  let cannedCopyText = [ "abc", "123", "xyz", "!@#" ]
+  var cannedCopyCount = 0
+  var nextCannedText: String {
+    let r = cannedCopyText[cannedCopyCount % cannedCopyText.count]
+    cannedCopyCount += 1 
+    return r
+  }
+  #endif
   
 }

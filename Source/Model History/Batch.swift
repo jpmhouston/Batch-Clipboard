@@ -23,7 +23,7 @@ class Batch: NSManagedObject {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
     fetchRequest.sortDescriptors = [Batch.sortByIndex]
     do {
-      return try CoreDataManager.shared.viewContext.fetch(fetchRequest)
+      return try CoreDataManager.shared.context.fetch(fetchRequest)
     } catch {
       return []
     }
@@ -43,8 +43,8 @@ class Batch: NSManagedObject {
   
   convenience init(index: Int, title: String, shortcut: Data?) {
     let entity = NSEntityDescription.entity(forEntityName: "Batch",
-                                            in: CoreDataManager.shared.viewContext)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.viewContext)
+                                            in: CoreDataManager.shared.context)!
+    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
 
     self.index = index
     self.title = title

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="Alerts" customModule="Batch_Clipboard" customModuleProvider="target">
+            <connections>
+                <outlet property="pasteMultipleAccessoryView" destination="y41-gr-I26" id="WE2-vw-uWi"/>
+                <outlet property="pasteMultipleField" destination="g7b-ej-XJP" id="eBd-PJ-Lz8"/>
+                <outlet property="pasteWithSeparatorPopup" destination="5OK-9O-70e" id="qD7-fG-g2O"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="y41-gr-I26">
+            <rect key="frame" x="0.0" y="0.0" width="222" height="59"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="g7b-ej-XJP" customClass="RangedIntegerTextField" customModule="Batch_Clipboard" customModuleProvider="target">
+                    <rect key="frame" x="71" y="38" width="80" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="80" id="bxX-Uh-ybj"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="ZF4-dx-btX">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XYg-PJ-efZ">
+                    <rect key="frame" x="0.0" y="0.0" width="222" height="20"/>
+                    <subviews>
+                        <textField focusRingType="none" horizontalHuggingPriority="800" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7D5-kP-IVS">
+                            <rect key="frame" x="-2" y="3" width="80" height="15"/>
+                            <textFieldCell key="cell" lineBreakMode="clipping" title="Separated By" id="riN-fo-Lcf">
+                                <font key="font" metaFont="cellTitle"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <popUpButton horizontalHuggingPriority="300" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="5OK-9O-70e">
+                            <rect key="frame" x="81" y="-4" width="145" height="25"/>
+                            <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Umy-et-KNZ" id="8or-z1-Gi7">
+                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" size="12" name="HelveticaNeue"/>
+                                <menu key="menu" id="dLO-2Q-8MS">
+                                    <items>
+                                        <menuItem title="None" state="on" id="Umy-et-KNZ">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem title="Newline" id="APQ-WJ-orG"/>
+                                        <menuItem title="Space" id="MY7-BU-Dyi"/>
+                                        <menuItem title="Comma + Space" id="rH5-Yh-SIb"/>
+                                    </items>
+                                </menu>
+                            </popUpButtonCell>
+                        </popUpButton>
+                    </subviews>
+                    <visibilityPriorities>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                    </visibilityPriorities>
+                    <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                    </customSpacing>
+                </stackView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="XYg-PJ-efZ" firstAttribute="top" secondItem="g7b-ej-XJP" secondAttribute="bottom" constant="18" id="ey5-5s-JAj"/>
+                <constraint firstItem="g7b-ej-XJP" firstAttribute="top" secondItem="y41-gr-I26" secondAttribute="top" id="nQD-J4-6JT"/>
+                <constraint firstItem="XYg-PJ-efZ" firstAttribute="leading" secondItem="y41-gr-I26" secondAttribute="leading" id="pO4-uu-mKW"/>
+                <constraint firstAttribute="trailing" secondItem="XYg-PJ-efZ" secondAttribute="trailing" id="rp6-ZF-Qbc"/>
+                <constraint firstAttribute="bottom" secondItem="XYg-PJ-efZ" secondAttribute="bottom" id="yrA-b5-DbA"/>
+                <constraint firstItem="g7b-ej-XJP" firstAttribute="centerX" secondItem="y41-gr-I26" secondAttribute="centerX" id="zh4-yV-A2X"/>
+            </constraints>
+            <point key="canvasLocation" x="137" y="320.5"/>
+        </customView>
+    </objects>
+</document>

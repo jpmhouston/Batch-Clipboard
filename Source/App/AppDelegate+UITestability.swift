@@ -27,16 +27,18 @@ extension AppDelegate {
 #if !DEBUG
   static var performingUITest: Bool { false }
   static var shouldFakeAppInteraction: Bool { false }
-  
 #else
-  
   static var performingUITest: Bool {
     CommandLine.arguments.contains("ui-testing")
   }
   static var shouldFakeAppInteraction: Bool {
     CommandLine.arguments.contains("ui-testing")
   }
+#endif
   
+  // The remaining fakery is now reimplemented in Clipboard where it's unsable from unit tests 
+  
+#if false
   static let fakeCopyText = [ "abc", "123", "xyz", "!@#" ]
   
   static var fakeCopyCountAssocObjKey: Int8 = 0
@@ -50,12 +52,14 @@ extension AppDelegate {
   }
   
   static var fakedAppCopy: String {
-    let i = (NSApp.delegate as? Self)?.fakeCopyCount ?? 0
-    (NSApp.delegate as? Self)?.fakeCopyCount = i + 1
+    guard let self = (NSApp.delegate as? Self) else { return fakeCopyText.first ?? "" }
+    let i = self.fakeCopyCount ?? 0
+    self.fakeCopyCount = i + 1
     return fakeCopyText[i % fakeCopyText.count]
   }
   
   static var fakePasteAssocObjKey: Int8 = 0
+  static var fakePasteBuffAssocObjKey: Int8 = 0
   var fakedPasteDescriptions: [String] {
     get {
       objc_getAssociatedObject(self, &Self.fakePasteAssocObjKey) as? [String] ?? []
@@ -64,13 +68,23 @@ extension AppDelegate {
       objc_setAssociatedObject(self, &Self.fakePasteAssocObjKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
+  var fakedPasteBuffer: String {
+    get {
+      objc_getAssociatedObject(self, &Self.fakePasteBuffAssocObjKey) as? String ?? ""
+    }
+    set {
+      objc_setAssociatedObject(self, &Self.fakePasteBuffAssocObjKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+  }
   
   static var fakedAppPaste: String {
     get {
       (NSApp.delegate as? Self)?.fakedPasteDescriptions.first ?? ""
     }
     set {
-      (NSApp.delegate as? Self)?.fakedPasteDescriptions.append(newValue)
+      guard let self = (NSApp.delegate as? Self) else { return }
+      self.fakedPasteDescriptions.append(newValue)
+      self.fakedPasteBuffer = self.fakedPasteBuffer + newValue
     }
   }
   
@@ -83,12 +97,8 @@ extension AppDelegate {
   // the test window plan didn't work, uitests weren't able to send events to the textview for some reason
   // leave code here in case its useful later though
   
-  // it was intended to be accompanied by a special case in Clipboard.invokeApplicationCopy() / Paste():
-  //  if let textView = AppDelegate.testTextView {
-  //    textView.copy(self) // .paste(self)
-  //    action()
-  //    return
-  //  }
+  // it was intended to be hooked into fakedAppCopy / fakedAppPaste, but never did figure out exactly
+  // how to make use of it, a buffer for paste output makes sense, but how does that help copying? 
   
   static var allowTestWindow: Bool {
     //CommandLine.arguments.contains("ui-testing")
@@ -169,6 +179,6 @@ extension AppDelegate {
     window.close()
   }
   
-#endif // DEBUG
+#endif
   
 }

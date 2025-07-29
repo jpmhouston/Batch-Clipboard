@@ -30,8 +30,8 @@ class ClipContent: NSManagedObject {
   
   convenience init(type: String, value: Data?) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItemContent",
-                                            in: CoreDataManager.shared.viewContext)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.viewContext)
+                                            in: CoreDataManager.shared.context)!
+    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
 
     self.type = type
     self.value = value

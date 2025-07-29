@@ -12,36 +12,17 @@ class RangedIntegerTextField: NSTextField {
   
   typealias ChangeValidationAction = (Bool)->Void
   
-//  enum EitherIntRange {
-//    case open(Range<Int>)
-//    case closed(ClosedRange<Int>)
-//  }
-//  var allowedRange: EitherIntRange = .closed(0...10)
   var allowEmpty = false
   var validationAction: ChangeValidationAction?
   
   init(acceptingRange range: Range<Int>, permittingEmpty: Bool, frame: NSRect, validationAction action: ChangeValidationAction? = nil) {
-//    allowedRange = .open(range)
-    allowEmpty = permittingEmpty
-    validationAction = action
     super.init(frame: frame)
-    let fmtr = NumberFormatter()
-    fmtr.minimum = range.lowerBound as NSNumber
-    fmtr.maximum = (!range.isEmpty ? range.upperBound - 1 : range.upperBound) as NSNumber
-    fmtr.maximumFractionDigits = 0
-    formatter = fmtr
+    configure(acceptingRange: range, permittingEmpty: permittingEmpty, validationAction: action)
   }
   
   init(acceptingRange range: ClosedRange<Int>, permittingEmpty: Bool, frame: NSRect, validationAction action: ChangeValidationAction? = nil) {
-//    allowedRange = .closed(range)
-    allowEmpty = permittingEmpty
-    validationAction = action
     super.init(frame: frame)
-    let fmtr = NumberFormatter()
-    fmtr.minimum = range.lowerBound as NSNumber
-    fmtr.maximum = range.upperBound as NSNumber
-    fmtr.maximumFractionDigits = 0
-    formatter = fmtr
+    configure(acceptingRange: range, permittingEmpty: permittingEmpty, validationAction: action)
   }
   
   init(permittingEmpty: Bool, frame: NSRect, validationAction action: ChangeValidationAction? = nil) {
@@ -57,7 +38,29 @@ class RangedIntegerTextField: NSTextField {
   }
   
   required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: coder)
+  }
+  
+  func configure(acceptingRange range: Range<Int>, permittingEmpty: Bool, validationAction action: ChangeValidationAction? = nil) {
+    let fmtr = NumberFormatter()
+    fmtr.minimum = range.lowerBound as NSNumber
+    fmtr.maximum = (!range.isEmpty ? range.upperBound - 1 : range.upperBound) as NSNumber
+    fmtr.maximumFractionDigits = 0
+    configure(withFormatter: fmtr, permittingEmpty: permittingEmpty, validationAction: action) 
+  }
+  
+  func configure(acceptingRange range: ClosedRange<Int>, permittingEmpty: Bool, validationAction action: ChangeValidationAction? = nil) {
+    let fmtr = NumberFormatter()
+    fmtr.minimum = range.lowerBound as NSNumber
+    fmtr.maximum = range.upperBound as NSNumber
+    fmtr.maximumFractionDigits = 0
+    configure(withFormatter: fmtr, permittingEmpty: permittingEmpty, validationAction: action) 
+  }
+  
+  func configure(withFormatter fmtr: Formatter?, permittingEmpty: Bool, validationAction action: ChangeValidationAction? = nil) {
+    formatter = fmtr
+    allowEmpty = permittingEmpty
+    validationAction = action
   }
   
   var isValid: Bool {

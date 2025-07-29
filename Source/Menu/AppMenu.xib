@@ -38,12 +38,12 @@
                 <outlet property="horizontalRightPadding" destination="9iL-Y8-VWA" id="Kbl-Wd-50R"/>
                 <outlet property="queryField" destination="MmW-Nx-C7z" id="blP-46-55K"/>
             </connections>
-            <point key="canvasLocation" x="-8" y="243"/>
+            <point key="canvasLocation" x="0" y="243"/>
         </customView>
         <customView id="9fv-At-xQC" userLabel="Placeholder Anchor Item View">
             <rect key="frame" x="0.0" y="0.0" width="100" height="0.0"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <point key="canvasLocation" x="-106" y="373"/>
+            <point key="canvasLocation" x="0" y="373"/>
         </customView>
         <menu title="Batch Clipboard" id="dqg-kI-Klz" customClass="AppMenu" customModule="Batch_Clipboard" customModuleProvider="target">
             <items>
@@ -108,13 +108,19 @@
                         <action selector="queuedPasteMultiple:" target="-2" id="iSw-Vb-ZeW"/>
                     </connections>
                 </menuItem>
-                <menuItem id="f7O-Xw-4yJ" userLabel="Note Item">
+                <menuItem id="f7O-Xw-4yJ" title="note">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="XAP-KR-RlP" id="gJN-xE-3BH"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="k7r-jZ-eci"/>
+                <menuItem id="a7s-Cu-BAT" title="current batch heading">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="SvR-Jd-hf3" id="U9F-Aa-N2W"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="prototype copy clip item" id="1hg-yO-AD0" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -127,7 +133,7 @@
                         <action selector="replayFromHistory:" target="-2" id="BLU-IN-o9D"/>
                     </connections>
                 </menuItem>
-                <menuItem title="prototype achor item" enabled="NO" id="pms-CA-OfJ" userLabel="Placeholder Anchor Item" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
+                <menuItem title="prototype achor item" enabled="NO" id="pms-CA-OfJ" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="replayFromHistory:" target="-2" id="srV-C0-AYl"/>
@@ -135,6 +141,12 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Qdr-dc-0KU"/>
+                <menuItem id="K6h-Sv-HIS" title="history heading item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="QzL-83-ay4" id="j4P-zX-e7Y"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="filter field item" hidden="YES" id="MMa-qd-9PO">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -148,7 +160,13 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="rXg-Ma-ibC"/>
-                <menuItem isSeparatorItem="YES" hidden="YES" id="5yx-82-0Qq"/>
+                <menuItem id="f2x-Sv-BAT" title="saved batches heading">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="kVS-Vi-MVF" id="P3r-5T-c0l"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="5yx-82-0Qq"/>
                 <menuItem title="Delete History Item" id="vGj-r1-rIx">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -190,6 +208,9 @@ CA
                 <outlet property="keyDetectorItem" destination="90h-qR-Mlh" id="qED-tN-70Q"/>
                 <outlet property="leadingSeparatorItem" destination="k7r-jZ-eci" id="EeR-v3-0xV"/>
                 <outlet property="noteItem" destination="f7O-Xw-4yJ" id="MEb-0U-qJb"/>
+                <outlet property="queueHeadingItem" destination="a7s-Cu-BAT" id="N1I-j5-C4Q"/>
+                <outlet property="historyHeadingItem" destination="K6h-Sv-HIS" id="b3m-K6-E7t"/>
+                <outlet property="batchesHeadingItem" destination="f2x-Sv-BAT" id="y8o-vZ-G4X"/>
                 <outlet property="postBatchesSeparatorItem" destination="5yx-82-0Qq" id="7jE-RB-GZd"/>
                 <outlet property="postHistorySeparatorItem" destination="rXg-Ma-ibC" id="l1r-rC-cAk"/>
                 <outlet property="postQueueSeparatorItem" destination="Qdr-dc-0KU" id="Ngt-xV-kDh"/>
@@ -206,7 +227,7 @@ CA
                 <outlet property="queuedPasteMultipleItem" destination="4b4-xr-zN6" id="tAs-Yl-Dbs"/>
                 <outlet property="undoCopyItem" destination="FT3-WA-g9c" id="VA5-67-hoL"/>
             </connections>
-            <point key="canvasLocation" x="-22" y="-81"/>
+            <point key="canvasLocation" x="0" y="-81"/>
         </menu>
         <customView id="XAP-KR-RlP" userLabel="Note Item View">
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
@@ -229,14 +250,77 @@ Shortcuts below only work while this menu is open.</string>
                 <constraint firstAttribute="trailing" secondItem="uIb-jp-yTA" secondAttribute="trailing" constant="4" id="OzH-Ah-gqy"/>
                 <constraint firstItem="uIb-jp-yTA" firstAttribute="leading" secondItem="XAP-KR-RlP" secondAttribute="leading" constant="13" id="kTC-Bh-igb"/>
             </constraints>
-            <point key="canvasLocation" x="-8" y="309"/>
+            <point key="canvasLocation" x="0" y="309"/>
         </customView>
         <customView id="11V-7Q-FUf" customClass="KeyDetectorView" customModule="Batch_Clipboard" customModuleProvider="target">
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <connections>
                 <outlet property="menuItem" destination="vGj-r1-rIx" id="3Gr-6X-14n"/>
             </connections>
-            <point key="canvasLocation" x="-60" y="284"/>
+            <point key="canvasLocation" x="0" y="284"/>
+        </customView>
+        <customView id="SvR-Jd-hf3" userLabel="Current Batch Heading View">
+            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                    <rect key="frame" x="11" y="2" width="177" height="14"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="CURRENT BATCH" id="r5c-9f-aE2">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="TeN-Rn-iTn" firstAttribute="top" secondItem="SvR-Jd-hf3" secondAttribute="top" constant="2" id="9XR-8P-vno"/>
+                <constraint firstItem="TeN-Rn-iTn" firstAttribute="leading" secondItem="SvR-Jd-hf3" secondAttribute="leading" constant="13" id="cq6-eK-PBs"/>
+                <constraint firstAttribute="trailing" secondItem="TeN-Rn-iTn" secondAttribute="trailing" constant="4" id="oiX-ZF-i8p"/>
+                <constraint firstAttribute="bottom" secondItem="TeN-Rn-iTn" secondAttribute="bottom" constant="2" id="ySh-K1-Y7W"/>
+            </constraints>
+            <point key="canvasLocation" x="0" y="537"/>
+        </customView>
+        <customView id="QzL-83-ay4" userLabel="History Heading View">
+            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                    <rect key="frame" x="11" y="2" width="177" height="14"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="Gcz-05-y5o" secondAttribute="bottom" constant="2" id="Dhk-2n-gHS"/>
+                <constraint firstAttribute="trailing" secondItem="Gcz-05-y5o" secondAttribute="trailing" constant="4" id="jGv-BJ-k28"/>
+                <constraint firstItem="Gcz-05-y5o" firstAttribute="leading" secondItem="QzL-83-ay4" secondAttribute="leading" constant="13" id="lhi-JM-nvE"/>
+                <constraint firstItem="Gcz-05-y5o" firstAttribute="top" secondItem="QzL-83-ay4" secondAttribute="top" constant="2" id="s5Q-G2-fZC"/>
+            </constraints>
+            <point key="canvasLocation" x="0" y="599"/>
+        </customView>
+        <customView id="kVS-Vi-MVF" userLabel="Saved Batches Heading View">
+            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                    <rect key="frame" x="11" y="2" width="177" height="14"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="sMM-dv-zr0" firstAttribute="leading" secondItem="kVS-Vi-MVF" secondAttribute="leading" constant="13" id="CiH-O1-jA9"/>
+                <constraint firstItem="sMM-dv-zr0" firstAttribute="top" secondItem="kVS-Vi-MVF" secondAttribute="top" constant="2" id="EaQ-Bd-OCA"/>
+                <constraint firstAttribute="bottom" secondItem="sMM-dv-zr0" secondAttribute="bottom" constant="2" id="PIa-VL-jiS"/>
+                <constraint firstAttribute="trailing" secondItem="sMM-dv-zr0" secondAttribute="trailing" constant="4" id="pw8-pp-4oU"/>
+            </constraints>
+            <point key="canvasLocation" x="0" y="660"/>
         </customView>
     </objects>
 </document>
