@@ -86,18 +86,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   
   private func clearOrphanRecords() {
     #if DEBUG
-    let countRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    let count = try? CoreDataManager.shared.viewContext.count(for: countRequest)
-    print("\(count ?? 0) clip items stored")
-    // if breakpoint above, can do this: expr try! CoreDataManager.shared.viewContext.fetch(countRequest)
+    CoreDataManager.shared.summary()
     #endif
     
     let fetchRequest = NSFetchRequest<ClipContent>(entityName: "HistoryItemContent")
     fetchRequest.predicate = NSPredicate(format: "item == nil")
     do {
-      try CoreDataManager.shared.viewContext
+      try CoreDataManager.shared.context
         .fetch(fetchRequest)
-        .forEach(CoreDataManager.shared.viewContext.delete(_:))
+        .forEach(CoreDataManager.shared.context.delete(_:))
       CoreDataManager.shared.saveContext()
     } catch {
       // Something went wrong, but it's no big deal.

@@ -6,17 +6,22 @@
 	<dict>
 		<key>Batch Clipboard (MAS).xcscheme_^#shared#^_</key>
 		<dict>
-			<key>isShown</key>
-			<true/>
 			<key>orderHint</key>
-			<integer>5</integer>
+			<integer>1</integer>
 		</dict>
 		<key>Batch Clipboard.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<true/>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>0</integer>
+		</dict>
+		<key>Unit Tests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<true/>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -27,6 +32,11 @@
 			<true/>
 		</dict>
 		<key>8F8C484D2BAD51B000C3A219</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8FC194772E3A3B86002589CF</key>
 		<dict>
 			<key>primary</key>
 			<true/>

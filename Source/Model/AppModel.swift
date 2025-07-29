@@ -60,6 +60,7 @@ class AppModel: NSObject {
   internal let about = About()
   internal let clipboard = Clipboard.shared
   internal let history = History()
+  internal let alerts = Alerts()
   internal var menu: AppMenu!
   internal var menuController: MenuController!
   
@@ -79,74 +80,6 @@ class AppModel: NSObject {
   
   internal var queue: ClipboardQueue!
   internal var copyTimeoutTimer: DispatchSourceTimer?
-  
-  internal var bonusFeaturePromotionAlert: NSAlert {
-    let alert = NSAlert()
-    alert.alertStyle = .informational
-    alert.messageText = NSLocalizedString("promoteextras_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("promoteextras_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_show_settings", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_cancel", comment: ""))
-    return alert
-  }
-  
-  internal var numberQueuedAlert: NSAlert {
-    let alert = NSAlert()
-    alert.messageText = NSLocalizedString("number_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("number_alert_comment", comment: "")
-      .replacingOccurrences(of: "{number}", with: String(queue.size))
-    alert.addButton(withTitle: NSLocalizedString("number_alert_confirm", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("number_alert_cancel", comment: ""))
-    let field = RangedIntegerTextField(acceptingRange: 1...queue.size, permittingEmpty: true,
-                                       frame: NSRect(x: 0, y: 0, width: 200, height: 24)) { valid in
-      alert.buttons[0].isEnabled = valid
-    }
-    field.placeholderString = String(queue.size)
-    alert.accessoryView = field
-    alert.window.initialFirstResponder = field
-    return alert
-  }
-  
-  internal var clearAlert: NSAlert {
-    let alert = NSAlert()
-    alert.messageText = NSLocalizedString("clear_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("clear_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("clear_alert_confirm", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("clear_alert_cancel", comment: ""))
-    alert.showsSuppressionButton = true
-    return alert
-  }
-  
-  private var clearWhenDisablingHistoryAlert: NSAlert {
-    let alert = NSAlert()
-    alert.messageText = NSLocalizedString("erase_history_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("erase_history_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("erase_history_alert_confirm", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("erase_history_alert_deny", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("erase_history_alert_cancel", comment: ""))
-    alert.showsSuppressionButton = true
-    return alert
-  }
-  
-  internal var permissionNeededAlert: NSAlert {
-    let alert = NSAlert()
-    alert.alertStyle = .warning
-    alert.messageText = NSLocalizedString("accessibility_alert_message", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_deny", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_open", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("accessibility_alert_show_intro", comment: ""))
-    alert.icon = NSImage(named: "NSSecurity")
-    var locationName = NSLocalizedString("system_settings_name", comment: "")
-    var paneName = NSLocalizedString("system_settings_pane", comment: "")
-    if #unavailable(macOS 13) {
-      locationName = NSLocalizedString("system_preferences_name", comment: "")
-      paneName = NSLocalizedString("system_preferences_pane", comment: "")
-    }
-    alert.informativeText = NSLocalizedString("accessibility_alert_comment", comment: "")
-      .replacingOccurrences(of: "{settings}", with: locationName)
-      .replacingOccurrences(of: "{pane}", with: paneName)
-    return alert
-  }
   
   internal lazy var storageSettingsPaneViewController = StorageSettingsViewController()
   #if APP_STORE
@@ -251,6 +184,7 @@ class AppModel: NSObject {
       } 
     }
     
+    queue.freshHistoryMode = !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
     if UserDefaults.standard.keepHistory {
       clipboard.start()
     }
@@ -492,53 +426,49 @@ class AppModel: NSObject {
   func updateSavingHistory(_ newKeepHistoryValue: Bool) {
     if newKeepHistoryValue {
       UserDefaults.standard.keepHistory = true
+      queue.freshHistoryMode = false
       clipboard.restart()
       menu.buildDynamicItems()
     } else if history.count == 0 { // turn off history but don't need to ask about retaining data
       UserDefaults.standard.keepHistory = false
+      queue.freshHistoryMode = true
+      clipboard.stop()
+      menu.buildDynamicItems()
+    } else if UserDefaults.standard.supressSaveClipsAlert {
+      UserDefaults.standard.keepHistory = false
+      queue.freshHistoryMode = UserDefaults.standard.saveClipsAcrossDisabledHistory
+      if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
+        history.clear()
+      }
       clipboard.stop()
       menu.buildDynamicItems()
     } else {
-      withDisableHistoryConfirmationAlert { [weak self] retainDB in
-        self?.clipboard.stop()
-        if !retainDB {
-          self?.history.clear()
+      takeFocus()
+      
+      alerts.withDisableHistoryConfirmationAlert { [weak self] confirm, retainDB, dontAskAgain in
+        guard let self = self else { return }
+        if confirm {
+          UserDefaults.standard.keepHistory = false
+          queue.freshHistoryMode = true
+          
+          UserDefaults.standard.saveClipsAcrossDisabledHistory = retainDB
+          if dontAskAgain {
+            UserDefaults.standard.supressSaveClipsAlert = true
+          }
+          
+          if !retainDB {
+            history.clear()
+          }
+          clipboard.stop()
+          menu.buildDynamicItems()
+          
+        } else {
+          UserDefaults.standard.keepHistory = true
         }
-        self?.menu.buildDynamicItems()
-      }
-    }
-  }
-  
-  private func withDisableHistoryConfirmationAlert(_ closure: @escaping (Bool) -> Void) {
-    if UserDefaults.standard.supressSaveClipsAlert {
-      UserDefaults.standard.keepHistory = false
-      closure(UserDefaults.standard.saveClipsAcrossDisabledHistory)
-      return
-    }
-    takeFocus()
-    
-    let alert = clearWhenDisablingHistoryAlert
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        UserDefaults.standard.keepHistory = false
-        if alert.suppressionButton?.state == .on {
-          UserDefaults.standard.supressSaveClipsAlert = true
-          UserDefaults.standard.saveClipsAcrossDisabledHistory = false
-        }
-        closure(false)
-      case NSApplication.ModalResponse.alertSecondButtonReturn:
-        UserDefaults.standard.keepHistory = false
-        if alert.suppressionButton?.state == .on {
-          UserDefaults.standard.supressSaveClipsAlert = true
-          UserDefaults.standard.saveClipsAcrossDisabledHistory = true
-        }
-        closure(true)
-      default:
-        UserDefaults.standard.keepHistory = true
+        
+        returnFocus()
       }
       
-      self.returnFocus()
     }
   }
   
@@ -606,6 +536,7 @@ class AppModel: NSObject {
       guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
       updateSavingHistory(newValue)
     }
+    // note: only code in this class should be changing UserDefaults.standard.keepHistory directly
     #if FALSE
     statusItemConfigurationObserver = UserDefaults.standard.observe(\.showInStatusBar, options: .old) { [weak self] _, change in
       guard let self = self else { return }

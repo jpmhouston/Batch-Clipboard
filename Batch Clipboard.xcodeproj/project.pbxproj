@@ -24,6 +24,8 @@
 		8F8C489C2BAD51B000C3A219 /* Fuse in Frameworks */ = {isa = PBXBuildFile; productRef = 8F8C48502BAD51B000C3A219 /* Fuse */; };
 		8F8C48A92BAD51B000C3A219 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = DA00992F256411F90030E697 /* LICENSE */; };
 		8F8C48B62BAD538600C3A219 /* TPInAppReceipt in Frameworks */ = {isa = PBXBuildFile; productRef = 8F8C48B52BAD538600C3A219 /* TPInAppReceipt */; };
+		8FC1949E2E3B78EC002589CF /* Sauce in Frameworks */ = {isa = PBXBuildFile; productRef = 8FC1949D2E3B78EC002589CF /* Sauce */; };
+		8FC194A02E3BB54E002589CF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC1949F2E3BB54D002589CF /* CoreData.framework */; };
 		8FCDFC172BC7E92400A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC162BC7E92400A16FBE /* SDWebImage */; };
 		8FCDFC192BC7E96C00A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC182BC7E96C00A16FBE /* SDWebImage */; };
 /* End PBXBuildFile section */
@@ -64,7 +66,10 @@
 /* Begin PBXFileReference section */
 		8F0D3C7A2BAB8F5A00DDB603 /* Batch Clipboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Batch Clipboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F4D26952BCFE2A1009A187B /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
-		8F8C48AF2BAD51B000C3A219 /* Batch Clipboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Batch Clipboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F8C48AF2BAD51B000C3A219 /* Batch Clipboard MAS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Batch Clipboard MAS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FC194782E3A3B86002589CF /* Unit Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8FC1948E2E3B6A7A002589CF /* Batch Clipboard (MAS).xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Batch Clipboard (MAS).xctestplan"; path = "Test Plans/Batch Clipboard (MAS).xctestplan"; sourceTree = "<group>"; };
+		8FC1949F2E3BB54D002589CF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		DA00992C256411F90030E697 /* appcast.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = appcast.xml; sourceTree = "<group>"; };
 		DA00992D256411F90030E697 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DA00992F256411F90030E697 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -111,6 +116,8 @@
 				Menu/MenuBarIcon.swift,
 				Menu/MenuController.swift,
 				Menu/ProxyMenu.swift,
+				"Misc Alerts/Alerts.swift",
+				"Misc Alerts/Alerts.xib",
 				"Model Clipboard/Clipboard.swift",
 				"Model Clipboard/PasteboardTypes.swift",
 				"Model History/Batch.swift",
@@ -119,7 +126,6 @@
 				"Model History/ClipContent.swift",
 				"Model History/CoreDataManager.swift",
 				"Model History/History.swift",
-				"Model History/Sorter.swift",
 				"Model History/Storage.xcdatamodeld",
 				Model/AppModel.swift,
 				"Model/AppModel+Actions.swift",
@@ -198,6 +204,8 @@
 				Menu/MenuBarIcon.swift,
 				Menu/MenuController.swift,
 				Menu/ProxyMenu.swift,
+				"Misc Alerts/Alerts.swift",
+				"Misc Alerts/Alerts.xib",
 				"Model Clipboard/Clipboard.swift",
 				"Model Clipboard/PasteboardTypes.swift",
 				"Model History/Batch.swift",
@@ -206,7 +214,6 @@
 				"Model History/ClipContent.swift",
 				"Model History/CoreDataManager.swift",
 				"Model History/History.swift",
-				"Model History/Sorter.swift",
 				"Model History/Storage.xcdatamodeld",
 				Model/AppModel.swift,
 				"Model/AppModel+Actions.swift",
@@ -251,10 +258,31 @@
 			);
 			target = 8F8C484D2BAD51B000C3A219 /* Batch Clipboard (MAS) */;
 		};
+		8FC194852E3AA6E6002589CF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Model Clipboard/Clipboard.swift",
+				"Model Clipboard/PasteboardTypes.swift",
+				"Model History/Batch.swift",
+				"Model History/Clip.swift",
+				"Model History/ClipboardQueue.swift",
+				"Model History/ClipContent.swift",
+				"Model History/CoreDataManager.swift",
+				"Model History/History.swift",
+				"Model History/Storage.xcdatamodeld",
+				"Model History/TestQueue.swift",
+				"Model/UserDefaults+Configuration.swift",
+				"Utilities/Equatable+Included.swift",
+				Utilities/KeyboardLayout.swift,
+				"Utilities/NSAttributedString+Style.swift",
+				"Utilities/String+Shortened.swift",
+			);
+			target = 8FC194772E3A3B86002589CF /* Unit Tests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8F301B272E1C43610066DAC4 /* Source */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (8F301B2C2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 8F301B2D2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {"Credits/License credits-MAS.mkdn" = net.daringfireball.markdown; "Credits/License credits.mkdn" = net.daringfireball.markdown; }; explicitFolders = (); path = Source; sourceTree = "<group>"; };
+		8F301B272E1C43610066DAC4 /* Source */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (8F301B2C2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 8F301B2D2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 8FC194852E3AA6E6002589CF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {"Credits/License credits-MAS.mkdn" = net.daringfireball.markdown; "Credits/License credits.mkdn" = net.daringfireball.markdown; }; explicitFolders = (); path = Source; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,12 +317,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8FC194752E3A3B86002589CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FC194A02E3BB54E002589CF /* CoreData.framework in Frameworks */,
+				8FC1949E2E3B78EC002589CF /* Sauce in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		C2D16D1C2EE365D52E1EE446 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8FC1949F2E3BB54D002589CF /* CoreData.framework */,
 				DA5F464F2020E4DF00425C11 /* Carbon.framework */,
 			);
 			name = Frameworks;
@@ -308,6 +346,7 @@
 				8F4D26952BCFE2A1009A187B /* CHANGELOG.md */,
 				DA00992F256411F90030E697 /* LICENSE */,
 				DA00992D256411F90030E697 /* README.md */,
+				8FC1948E2E3B6A7A002589CF /* Batch Clipboard (MAS).xctestplan */,
 				DAEE38441E3DBEB100DD2966 /* Products */,
 				C2D16D1C2EE365D52E1EE446 /* Frameworks */,
 			);
@@ -319,7 +358,8 @@
 			isa = PBXGroup;
 			children = (
 				8F0D3C7A2BAB8F5A00DDB603 /* Batch Clipboard.app */,
-				8F8C48AF2BAD51B000C3A219 /* Batch Clipboard.app */,
+				8F8C48AF2BAD51B000C3A219 /* Batch Clipboard MAS.app */,
+				8FC194782E3A3B86002589CF /* Unit Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -381,8 +421,28 @@
 				8F5CBF332C8CFBB70058C06C /* Flare */,
 			);
 			productName = Maccy;
-			productReference = 8F8C48AF2BAD51B000C3A219 /* Batch Clipboard.app */;
+			productReference = 8F8C48AF2BAD51B000C3A219 /* Batch Clipboard MAS.app */;
 			productType = "com.apple.product-type.application";
+		};
+		8FC194772E3A3B86002589CF /* Unit Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8FC194802E3A3B86002589CF /* Build configuration list for PBXNativeTarget "Unit Tests" */;
+			buildPhases = (
+				8FC194742E3A3B86002589CF /* Sources */,
+				8FC194752E3A3B86002589CF /* Frameworks */,
+				8FC194762E3A3B86002589CF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Unit Tests";
+			packageProductDependencies = (
+				8FC1949D2E3B78EC002589CF /* Sauce */,
+			);
+			productName = "Unit Tests";
+			productReference = 8FC194782E3A3B86002589CF /* Unit Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -391,9 +451,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 1530;
+				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1630;
 				ORGANIZATIONNAME = "Bananameter Labs";
+				TargetAttributes = {
+					8FC194772E3A3B86002589CF = {
+						CreatedOnToolsVersion = 16.3;
+					};
+				};
 			};
 			buildConfigurationList = DAEE383E1E3DBEB100DD2966 /* Build configuration list for PBXProject "Batch Clipboard" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -440,6 +505,7 @@
 			targets = (
 				8F0D3C0F2BAB8F5A00DDB603 /* Batch Clipboard */,
 				8F8C484D2BAD51B000C3A219 /* Batch Clipboard (MAS) */,
+				8FC194772E3A3B86002589CF /* Unit Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -458,6 +524,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F8C48A92BAD51B000C3A219 /* LICENSE in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8FC194762E3A3B86002589CF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -523,6 +596,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8FC194742E3A3B86002589CF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -553,7 +633,7 @@
 				);
 				MARKETING_VERSION = 1.1a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
-				PRODUCT_NAME = "Batch Clipboard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SPARKLE_UPDATES DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -588,7 +668,7 @@
 				);
 				MARKETING_VERSION = 1.1a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
-				PRODUCT_NAME = "Batch Clipboard";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SPARKLE_UPDATES;
 				SWIFT_VERSION = 5.0;
@@ -622,11 +702,12 @@
 				);
 				MARKETING_VERSION = 1.1a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
-				PRODUCT_NAME = "Batch Clipboard";
+				PRODUCT_NAME = "Batch Clipboard MAS";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE DEBUG BONUS_FEATUES_ON";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE DEBUG BONUS_FEATUES_ON $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				SYMROOT = "build-MAS";
 			};
 			name = Debug;
 		};
@@ -657,9 +738,66 @@
 				);
 				MARKETING_VERSION = 1.1a1;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
-				PRODUCT_NAME = "Batch Clipboard";
+				PRODUCT_NAME = "Batch Clipboard MAS";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE  CLEEPP";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE $(inherited)";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "build-MAS";
+			};
+			name = Release;
+		};
+		8FC1947E2E3A3B86002589CF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "lol.bananameter.batchclip-mas-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE UNITTEST DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8FC1947F2E3A3B86002589CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "lol.bananameter.batchclip-mas-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE UNITTEST $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -800,6 +938,15 @@
 			buildConfigurations = (
 				8F8C48AD2BAD51B000C3A219 /* Debug */,
 				8F8C48AE2BAD51B000C3A219 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8FC194802E3A3B86002589CF /* Build configuration list for PBXNativeTarget "Unit Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8FC1947E2E3A3B86002589CF /* Debug */,
+				8FC1947F2E3A3B86002589CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1043,6 +1190,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8F8C48B42BAD538600C3A219 /* XCRemoteSwiftPackageReference "TPInAppReceipt" */;
 			productName = TPInAppReceipt;
+		};
+		8FC1949D2E3B78EC002589CF /* Sauce */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DA5154D62564102900C01004 /* XCRemoteSwiftPackageReference "Sauce" */;
+			productName = Sauce;
 		};
 		8FCDFC162BC7E92400A16FBE /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;

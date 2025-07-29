@@ -53,15 +53,8 @@ extension AppModel {
     return history.all[position]
   }
   
-  func clearHistory(suppressClearAlert: Bool = false) {
-    withClearAlert(suppressClearAlert: suppressClearAlert) {
-      self.queue.off()
-      self.history.clear()
-      self.menu.deletedHistory()
-      self.clipboard.clear()
-      self.updateMenuIcon()
-      self.updateMenuTitle()
-    }
+  func clearHistory() {
+    deleteHistoryClips()
   }
   
   // MARK: - clipboard features
@@ -195,16 +188,20 @@ extension AppModel {
     if queue.isOn {
       do {
         try queue.add(clip)
-        
-        menu.addedClipToQueue(clip)
-        updateMenuIcon(.increment)
-        updateMenuTitle()
-      } catch { }
+      } catch {
+        return
+      }
+      
+      menu.addedClipToQueue(clip)
+      updateMenuIcon(.increment)
+      updateMenuTitle()
       
     } else {
       history.add(clip)
       menu.addedClipToHistory(clip)
     }
+    
+    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -249,16 +246,20 @@ extension AppModel {
     invokeApplicationPaste(plusDelay: decrementQueueDelay) { [weak self] in
       guard let self = self else { return }
       
-      do {
-        try self.queue.remove()
-        
-        menu.poppedClipOffQueue()
-        updateMenuIcon(.decrement)
-        updateMenuTitle()
-        updateClipboardMonitoring()
-      } catch { }
+      defer {
+        Self.busy = false // in a defer so the catch below can simply early-exit
+      }
       
-      Self.busy = false
+      do {
+        try self.queue.dequeue()
+      } catch {
+        return
+      }
+      
+      menu.poppedClipOffQueue()
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
+      updateClipboardMonitoring()
       
       #if APP_STORE
       if !queue.isOn {
@@ -299,21 +300,9 @@ extension AppModel {
     }
     
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    withNumberToPasteAlert() { number in
-      // Tricky! See MenuController for how `withFocus` normally uses NSApp.hide
-      // after making the menu open, except when returnFocusToPreviousApp false.
-      // `withNumberToPasteAlert` must set that flag to false to run the alert
-      // and so at this moment our app has not been hidden.
-      // `invokeApplicationPaste` internally does a dispatch async around
-      // controlling the frontmost app so it does so only after the `withFocus`
-      // closure does NSApp.hide as it exits.
-      // Because this runs after withFocus has already exited without doing
-      // NSApp.hide (since withNumberToPasteAlert sets returnFocusToPreviousApp
-      // to false), and we want to immediately control the app now, must do the
-      // NSApp.hide ourselves here.
-      NSApp.hide(self)
-      
-      self.queuedPasteMultiple(number, interactive: true)
+    
+    showNumberToPasteAlert { number, seperatorStr in
+      self.queuedPasteMultiple(number, seperator: seperatorStr, interactive: true)
     }
   }
   
@@ -342,7 +331,7 @@ extension AppModel {
   // TODO: add support for paste all/multiple from an intent
   
   @discardableResult
-  private func queuedPasteMultiple(_ count: Int, interactive: Bool = true) -> Bool {
+  private func queuedPasteMultiple(_ count: Int, seperator: String? = nil, interactive: Bool = true) -> Bool {
     guard count >= 1 && count <= queue.size else {
       return false
     }
@@ -350,7 +339,7 @@ extension AppModel {
       return queuedPaste(interactive: interactive)
     } else {
       do {
-        try queue.putNextOnClipboard()
+        try queue.replaying() // ensures queue head is on the clipboard
       } catch {
         return false
       }
@@ -360,13 +349,18 @@ extension AppModel {
       // menu icon will show "-" for the duration
       updateMenuIcon(.persistentDecrement)
       
-      queuedPasteMultipleIterator(to: count) { [weak self] num in
+      queuedPasteMultipleIterator(to: count, withSeparator: seperator) { [weak self] num in
         guard let self = self else { return }
         
-        self.queue.finishBulkRemove()
+        do {
+          try self.queue.finishBulkDequeue()
+        } catch {
+          // clipboard might be in wrong state, otherwise presume continuing
+          // should be the most correct thing
+        }
         
         // final update to these and including icon not updated since the start
-        self.menu.poppedClipsOffQueue(num)
+        self.menu.poppedClipsOffQueue(count)
         self.updateMenuIcon()
         self.updateMenuTitle()
         self.updateClipboardMonitoring()
@@ -384,7 +378,8 @@ extension AppModel {
     }
   }
   
-  private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, then completion: @escaping (Int)->Void) {
+  private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, withSeparator seperator: String?,
+                                           then completion: @escaping (Int)->Void) {
     guard max > 0 && count < max, let index = queue.headIndex, index < history.count else {
       // don't expect to ever be called with count>=max, exit condition is below, before recursive call
       completion(count)
@@ -398,19 +393,36 @@ extension AppModel {
     invokeApplicationPaste(plusDelay: self.pasteMultipleDelay) { [weak self] in
       guard let self = self else { return }
       
-      do {
-        try queue.bulkRemoveNext()
-      } catch {
-        completion(count + 1)
-        return
-      }
-      if queue.isEmpty || count + 1 >= max {
-        completion(count + 1)
+      // catch up to the paste that just happened, ie. after the first paste newCount=1 here
+      let newCount = count + 1
+      
+      if queue.isEmpty || newCount >= max { // exit after last item pasted
+        completion(newCount)
         return
       }
       
-      updateMenuTitle()
-      self.queuedPasteMultipleIterator(increment: count + 1, to: max, then: completion)
+      if let seperator = seperator, !seperator.isEmpty {
+        // paste the separator between clips
+        clipboard.copy(seperator)
+        invokeApplicationPaste(plusDelay: self.pasteMultipleDelay) { [weak self] in
+          guard self != nil else { return }
+          next(newCount)
+        }
+      } else {
+        next(newCount)
+      }
+      
+      func next(_ nextCount: Int) {
+        do {
+          try queue.bulkDequeueNext()
+        } catch {
+          completion(nextCount)
+          return
+        }
+        
+        updateMenuTitle()
+        queuedPasteMultipleIterator(increment: nextCount, to: max, withSeparator: nil, then: completion)
+      }
     }
   }
   
@@ -431,7 +443,7 @@ extension AppModel {
     }
     
     do {
-      try self.queue.remove()
+      try self.queue.dequeue()
     } catch {
       return
     }
@@ -469,19 +481,17 @@ extension AppModel {
     
     queue.on()
     do {
-      #if DEBUG
       try queue.setHead(toIndex: index)
-      #endif
-      
-      menu.startedQueueFromHistory(index)
-      updateMenuIcon()
-      updateMenuTitle()
-      commenceClipboardMonitoring()
+      try queue.replaying()
     } catch {
       queue.off()
-      
       return false
     }
+    
+    menu.startedQueueFromHistory(index)
+    updateMenuIcon()
+    updateMenuTitle()
+    commenceClipboardMonitoring()
     
     return true
   }
@@ -506,25 +516,27 @@ extension AppModel {
     guard index < history.count else {
       return
     }
-    let clip = history.all[index]
-    
-    history.remove(clip)
     
     if index < queue.size {
       do {
         try queue.remove(atIndex: index)
       } catch {
-        queue.off()
+        // was doing just `queue.off()` here but after that the menu
+        // wouldn't be in sync, probably best to do nothing
+        return
       }
       
       menu.deletedClipFromQueue(index)
       updateMenuIcon(.decrement)
       updateMenuTitle()
+      
     } else {
+      history.remove(atIndex: index)
+      
       menu.deletedClipFromHistory(index - queue.size)
     }
     
-    return
+    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -537,13 +549,12 @@ extension AppModel {
       return
     }
     
-    history.remove(clip)
-    
     if index < queue.size {
       do {
         try queue.remove(atIndex: index)
       } catch {
         queue.off()
+        return
       }
       
       menu.deletedClipFromQueue(index)
@@ -551,18 +562,12 @@ extension AppModel {
       updateMenuTitle()
       
     } else {
+      history.remove(clip)
+      
       menu.deletedClipFromHistory(index)
     }
-  }
-  
-  private func maintainQueueAfterDeletion(atIndex index: Int) {
-    if queue.isOn, let headIndex = queue.headIndex, index <= headIndex {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        fatalError("failed to fix queue after deleting item")
-      }
-    }
+    
+    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -571,7 +576,17 @@ extension AppModel {
       return
     }
     
-    clearHistory(suppressClearAlert: false)
+    clearHistory(suppressClearAlert: false) // calls back to deleteHistoryClips()
+  }
+  
+  func deleteHistoryClips() {
+    queue.off()
+    history.clear()
+    CoreDataManager.shared.saveContext()
+    menu.deletedHistory()
+    clipboard.clear()
+    updateMenuIcon()
+    updateMenuTitle()
   }
   
   @IBAction
@@ -596,6 +611,7 @@ extension AppModel {
         try queue.remove(atIndex: 0)
       } catch {
         queue.off()
+        return
       }
       
       menu.deletedClipFromQueue(0)
@@ -604,6 +620,8 @@ extension AppModel {
     } else {
       menu.deletedClipFromHistory(0)
     }
+    
+    CoreDataManager.shared.saveContext()
   }
   
   // MARK: - opening windows
@@ -677,72 +695,71 @@ extension AppModel {
     #endif
   }
   
-  // MARK: - opening alerts
+  // MARK: - alert details
+  
+  func showNumberToPasteAlert(_ completion: @escaping (Int, String?)->Void) {
+    takeFocus()
+    
+    var lastSeparator = Alerts.SeparatorChoice.none
+    if UserDefaults.standard.object(forKey: "lastPasteSeparatorIndex") != nil {
+      let index = UserDefaults.standard.integer(forKey: "lastPasteSeparatorIndex")
+      if let value = Alerts.BuiltInPasteSeparator(rawValue: index) {
+        lastSeparator = .builtIn(value)
+      }
+    } else if let title = UserDefaults.standard.string(forKey: "lastPasteSeparatorTitle") {
+      lastSeparator = .addOn(title)
+    }
+    alerts.withNumberToPasteAlert(maxValue: queue.size, separatorDefault: lastSeparator) { [weak self] num, seperator in
+      guard let self = self else { return }
+      if let num = num {
+        switch seperator {
+        case .builtIn(let value):
+          UserDefaults.standard.set(value.rawValue, forKey: "lastPasteSeparatorIndex")
+          UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
+        case .addOn(let title):
+          UserDefaults.standard.set(title, forKey: "lastPasteSeparatorTitle")
+          UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
+        default:
+          UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
+          UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
+        }
+        completion(num, seperator.string)
+      }
+      
+      returnFocus()
+    } 
+  }
+  
+  func clearHistory(suppressClearAlert: Bool) {
+    if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
+      deleteHistoryClips()
+    } else {
+      takeFocus()
+      
+      alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
+        if confirm {
+          self?.deleteHistoryClips()
+          
+          if dontAskAgain {
+            UserDefaults.standard.suppressClearAlert = true
+          }
+        }
+        
+        self?.returnFocus()
+      }
+    }
+  }
   
   private func showBonusFeaturePromotionAlert() {
     takeFocus()
-    DispatchQueue.main.async {
-      switch self.bonusFeaturePromotionAlert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        self.showSettings(selectingPane: .purchase)
-      default:
-        break
+    
+    alerts.withBonusFeaturePromotionAlert() { [weak self] confirm in
+      guard let self = self else { return }
+      if confirm {
+        showSettings(selectingPane: .purchase)
       }
-      self.returnFocus()
-    }
-  }
-  
-  private func withNumberToPasteAlert(_ closure: @escaping (Int) -> Void) {
-    let alert = numberQueuedAlert
-    guard let field = alert.accessoryView as? RangedIntegerTextField else {
-      return
-    }
-    takeFocus()
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        alert.window.orderOut(nil) // i think withClearAlert above should call this too
-        let number = Int(field.stringValue) ?? self.queue.size
-        closure(number)
-      default:
-        break
-      }
-      self.returnFocus()
-    }
-  }
-  
-  private func withClearAlert(suppressClearAlert: Bool, _ closure: @escaping () -> Void) {
-    guard !suppressClearAlert && !UserDefaults.standard.suppressClearAlert else {
-      closure()
-      return
-    }
-    takeFocus()
-    let alert = clearAlert
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        if alert.suppressionButton?.state == .on {
-          UserDefaults.standard.suppressClearAlert = true
-        }
-        closure()
-      }
-      self.returnFocus()
-    }
-  }
-  
-  enum PermissionResponse { case cancel, openSettings, openIntro  }
-  private func withPermissionAlert(_ closure: @escaping (PermissionResponse) -> Void) {
-    takeFocus()
-    let alert = permissionNeededAlert
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertSecondButtonReturn:
-        closure(.openSettings)
-      case NSApplication.ModalResponse.alertThirdButtonReturn:
-        closure(.openIntro)
-      default:
-        closure(.cancel)
-      }
-      self.returnFocus()
+      
+      returnFocus()
     }
   }
   
@@ -764,7 +781,9 @@ extension AppModel {
     #endif
     let permissionGranted = hasAccessibilityPermissionBeenGranted()
     if interactive && !permissionGranted {
-      withPermissionAlert() { [weak self] response in
+      takeFocus()
+      
+      alerts.withPermissionAlert() { [weak self] response in
         switch response {
         case .openSettings:
           self?.openSecurityPanel()
@@ -773,6 +792,8 @@ extension AppModel {
         default:
           break
         }
+        
+        self?.returnFocus()
       }
     }
     return permissionGranted

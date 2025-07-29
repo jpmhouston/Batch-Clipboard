@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "13DE9294-73FE-4922-ABA0-EA879FE6C09E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Batch Clipboard.xcodeproj",
+      "identifier" : "8F8C484D2BAD51B000C3A219",
+      "name" : "Batch Clipboard (MAS)"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Batch Clipboard.xcodeproj",
+        "identifier" : "8FC194772E3A3B86002589CF",
+        "name" : "Unit Tests"
+      }
+    }
+  ],
+  "version" : 1
+}
