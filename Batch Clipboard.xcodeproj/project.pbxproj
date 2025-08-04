@@ -707,7 +707,6 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE DEBUG BONUS_FEATUES_ON $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				SYMROOT = "build-MAS";
 			};
 			name = Debug;
 		};
@@ -742,7 +741,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE $(inherited)";
 				SWIFT_VERSION = 5.0;
-				SYMROOT = "build-MAS";
 			};
 			name = Release;
 		};
