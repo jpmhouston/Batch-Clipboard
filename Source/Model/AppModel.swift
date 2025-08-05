@@ -151,6 +151,7 @@ class AppModel: NSObject {
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
     clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
+    history.setupSavingLastBatch() // or stopSavingLastBatch based on defaults, or move below & based on feature flag?
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     menu.buildDynamicItems()
@@ -386,7 +387,6 @@ class AppModel: NSObject {
     if Self.hasBoughtExtras != alreadtHadExtras { // in most cases unnecessary, but just be sure
       self.history.trim()
       self.menu.buildDynamicItems()
-      CoreDataManager.shared.saveContext()
     }
     #endif
   }

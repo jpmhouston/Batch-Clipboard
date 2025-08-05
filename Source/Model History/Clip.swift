@@ -108,7 +108,9 @@ class Clip: NSManagedObject {
     fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
     do {
       let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
-      return fetched.filter { !$0.isDeleted }
+      
+      // documentation says deleted entities not fetched but saw it happen in unit tests, leave this in until that's solved
+      return fetched.filter { !$0.isDeleted } 
     } catch {
       return []
     }
@@ -145,7 +147,7 @@ class Clip: NSManagedObject {
   
   // MARK: -
   
-  convenience init(contents: [ClipContent], application: String? = nil) {
+  convenience init(contents: any Collection<ClipContent>, application: String? = nil) {
     let entity = NSEntityDescription.entity(forEntityName: "HistoryItem",
                                             in: CoreDataManager.shared.context)!
     self.init(entity: entity, insertInto: CoreDataManager.shared.context)
@@ -156,7 +158,7 @@ class Clip: NSManagedObject {
     self.numberOfCopies = 1
     contents.forEach(addToContents(_:))
     
-    self.title = generateTitle(contents)
+    title = generateTitle()
   }
   
 //  override func validateValue(_ value: AutoreleasingUnsafeMutablePointer<AnyObject?>, forKey key: String) throws {
@@ -167,8 +169,20 @@ class Clip: NSManagedObject {
   @objc(addContentsObject:)
   @NSManaged public func addToContents(_ value: ClipContent)
   
-  func getContents() -> [ClipContent] {
-    return (contents?.allObjects as? [ClipContent]) ?? []
+  func getContents() -> Set<ClipContent> {
+    (contents as? Set<ClipContent>) ?? Set()
+  }
+  
+  func getContentsArray() -> [ClipContent] {
+    (contents?.allObjects as? [ClipContent]) ?? []
+  }
+  
+  func getBatches() -> Set<Batch> {
+    (batches as? Set<Batch>) ?? Set()
+  }
+  
+  func getBatchesArray() -> [Batch] {
+    (batches?.allObjects as? [Batch]) ?? []
   }
   
   func supersedes(_ clip: Clip) -> Bool {
@@ -185,7 +199,7 @@ class Clip: NSManagedObject {
       }
   }
   
-  func generateTitle(_ contents: [ClipContent]) -> String {
+  func generateTitle() -> String {
     var title = ""
     
     guard image == nil else {
@@ -285,15 +299,21 @@ class Clip: NSManagedObject {
   // from `self` but other callers seem to be disambiguating different, accessing
   // the property `debugDescription` and then trying to call it as a function
   func debugContentsDescription(ofLength length: Int? = nil) -> String {
-    Self.debugContentsDescription(getContents(), ofLength: length)
+    Self.debugContentsDescription(getContentsArray(), ofLength: length)
   }
   
-  static func debugContentsDescription(_ contents: [ClipContent], ofLength length: Int? = nil) -> String {
+  static func debugContentsDescription(_ contents: any Collection<ClipContent>, ofLength length: Int? = nil) -> String {
     let pairs = contents.compactMap {
       if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t),v) } else { nil }
     }
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
+//  static func debugContentsDescription(_ contents: [ClipContent], ofLength length: Int? = nil) -> String {
+//    let pairs = contents.compactMap {
+//      if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t),v) } else { nil }
+//    }
+//    return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
+//  }
   
   static func debugContentsDescription(for pairs: [(NSPasteboard.PasteboardType, Data)], ofLength length: Int? = nil) -> String {
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)

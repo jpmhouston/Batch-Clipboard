@@ -66,9 +66,9 @@ class ClipboardQueue {
     stayOnWhenEmptied = allowEmpty
     size = 0
     
+    history.lastBatch?.clear()
     if freshHistoryMode {
       history.clear()
-      CoreDataManager.shared.saveContext()
     }
   }
   
@@ -101,6 +101,7 @@ class ClipboardQueue {
     // currently item not treated differently by history when queue on vs off
     // but this may change in the future
     history.add(clip)
+    history.lastBatch?.add(clip)
     
     size += 1
     
@@ -187,6 +188,9 @@ class ClipboardQueue {
     
     let clip = history.all[index]
     history.remove(clip)
+    if !isReplaying {
+      history.lastBatch?.remove(clip)
+    }
     
     size -= 1
     
@@ -220,9 +224,16 @@ class ClipboardQueue {
   }
   
   func setHead(toIndex index: Int) throws {
+    guard index >= 0 && index < history.count else {
+      throw QueueError.sizeExceedsHistory
+    }
+    
     if !isOn {
       on()
     }
+    
+    let clips = history.all[0 ..< index]
+    history.lastBatch?.add(Array(clips))
     
     size = index + 1
     
@@ -371,7 +382,7 @@ class ClipboardQueue {
     }
     
     // build string
-    for (i, clip) in history.all.enumerated() { // was `i in 0 ..< history.count` & `clip = history.all[i]` below
+    for (i, clip) in history.all.enumerated() {
       let remainlen = len - desc.count
       
       let ntogo = history.count - i // ie. how many left to add to str, including this one
@@ -407,6 +418,18 @@ class ClipboardQueue {
         desc += ", " // if change to omit this space, dont forget to change cntcomma to 1
       }
     }
+    
+    if len <= 0, let batchClips = history.lastBatch?.getClipsArray(), !batchClips.isEmpty {
+      desc += " [last batch \(batchClips.count)] "
+      for (i, clip) in batchClips.enumerated() {
+        let ntogo = batchClips.count - i
+        desc += clip.debugContentsDescription(ofLength: 0)
+        if ntogo > 1 {
+          desc += ", "
+        }
+      }
+    }
+    
     return desc
   }
   

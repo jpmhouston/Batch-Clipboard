@@ -200,8 +200,6 @@ extension AppModel {
       history.add(clip)
       menu.addedClipToHistory(clip)
     }
-    
-    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -535,8 +533,6 @@ extension AppModel {
       
       menu.deletedClipFromHistory(index - queue.size)
     }
-    
-    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -566,8 +562,6 @@ extension AppModel {
       
       menu.deletedClipFromHistory(index)
     }
-    
-    CoreDataManager.shared.saveContext()
   }
   
   @IBAction
@@ -582,7 +576,6 @@ extension AppModel {
   func deleteHistoryClips() {
     queue.off()
     history.clear()
-    CoreDataManager.shared.saveContext()
     menu.deletedHistory()
     clipboard.clear()
     updateMenuIcon()
@@ -620,8 +613,6 @@ extension AppModel {
     } else {
       menu.deletedClipFromHistory(0)
     }
-    
-    CoreDataManager.shared.saveContext()
   }
   
   // MARK: - opening windows
