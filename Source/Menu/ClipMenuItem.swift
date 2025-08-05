@@ -132,7 +132,7 @@ class ClipMenuItem: NSMenuItem {
       return
     }
     
-    let newTitle = clip.generateTitle(clip.getContents())
+    let newTitle = clip.generateTitle()
     clip.title = newTitle
     title = newTitle
   }

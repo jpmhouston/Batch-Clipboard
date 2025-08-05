@@ -15,21 +15,50 @@ class History {
   var maxItemsOverride = 0
   
   var all: [Clip] {
-    // currently merely all clips, perhaps will soon be filtering out ones within saved batches 
-    return Clip.all
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    // fetchRequest.predicate = Batch.clipsInNoSavedBatchesPredicate -- wanted this, but predicates suck, also commented-out code below
+    do {
+      return try CoreDataManager.shared.context.fetch(fetchRequest).filter { 
+        // documentation says deleted entities not fetched but saw it happen in unit tests, leave this in until that's solved
+        !$0.isDeleted && !$0.getBatches().contains(where: { $0.title != nil })
+      }
+    } catch {
+      return []
+    }
   }
   
   var first: Clip? {
-    return Clip.first
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    //fetchRequest.predicate = Batch.clipsInNoSavedBatchesPredicate
+    fetchRequest.fetchBatchSize = 1
+    do {
+      return try CoreDataManager.shared.context.fetch(fetchRequest).first {
+        !$0.isDeleted && !$0.getBatches().contains(where: { $0.title != nil })
+      }
+    } catch {
+      return nil
+    }
   }
   
   var count: Int {
-    return Clip.count
+    all.count
+    //let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    //fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    //fetchRequest.predicate = Batch.clipsInNoSavedBatchesPredicate
+    //do {
+    //  return try CoreDataManager.shared.context.count(for: fetchRequest)
+    //} catch {
+    //  return 0
+    //}
   }
   
   var batches: [Batch] {
-    return Batch.all
+    return Batch.saved
   }
+  
+  var lastBatch = Batch.last
   
   private var sessionLog: [Int: Clip] = [:]
   
@@ -39,36 +68,33 @@ class History {
     }
   }
   
-  func add(_ item: Clip) {
-    if let existingHistoryItem = findSimilarItem(item) {
-      if isModified(item) == nil {
-        item.contents = existingHistoryItem.contents
+  func add(_ clip: Clip) {
+    if let existingHistoryItem = findSimilarItem(clip) {
+      if isModified(clip) == nil {
+        clip.contents = existingHistoryItem.contents
       }
-      item.firstCopiedAt = existingHistoryItem.firstCopiedAt
-      item.numberOfCopies += existingHistoryItem.numberOfCopies
-      item.pin = existingHistoryItem.pin
-      item.title = existingHistoryItem.title
-      if !item.fromSelf {
-        item.application = existingHistoryItem.application
+      clip.firstCopiedAt = existingHistoryItem.firstCopiedAt
+      clip.numberOfCopies += existingHistoryItem.numberOfCopies
+      clip.pin = existingHistoryItem.pin
+      clip.title = existingHistoryItem.title
+      if !clip.fromSelf {
+        clip.application = existingHistoryItem.application
       }
       remove(existingHistoryItem)
     }
     
-    sessionLog[Clipboard.shared.changeCount] = item
+    sessionLog[Clipboard.shared.changeCount] = clip
     CoreDataManager.shared.saveContext()
   }
   
-  func update(_ item: Clip?) {
+  func update(_ clip: Clip?) {
     CoreDataManager.shared.saveContext()
   }
   
-  func remove(_ item: Clip?) {
-    guard let item else {
-      return
-    }
-    
-    item.getContents().forEach(CoreDataManager.shared.context.delete(_:))
-    CoreDataManager.shared.context.delete(item)
+  func remove(_ clip: Clip) {
+    clip.getContents().forEach(CoreDataManager.shared.context.delete(_:))
+    CoreDataManager.shared.context.delete(clip)
+    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
   }
   
   func remove(atIndex index: Int) {
@@ -76,6 +102,7 @@ class History {
       return
     }
     remove(all[index])
+    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
   }
   
   func trim(to maxItems: Int) {
@@ -86,27 +113,44 @@ class History {
     
     let overflowItems = all.suffix(from: maxItems)
     overflowItems.forEach(remove(_:))
+    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
   }
   
   func clear() {
     all.forEach(remove(_:))
+    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
   }
   
-  private func findSimilarItem(_ item: Clip) -> Clip? {
-    let duplicates = all.filter({ $0 == item || $0.supersedes(item) })
+  private func findSimilarItem(_ clip: Clip) -> Clip? {
+    let duplicates = all.filter({ $0 == clip || $0.supersedes(clip) })
     if duplicates.count > 1 {
-      return duplicates.first(where: { $0.objectID != item.objectID })
+      return duplicates.first(where: { $0.objectID != clip.objectID })
     } else {
-      return isModified(item)
+      return isModified(clip)
     }
   }
   
-  private func isModified(_ item: Clip) -> Clip? {
-    if let modified = item.modified, sessionLog.keys.contains(modified) {
+  private func isModified(_ clip: Clip) -> Clip? {
+    if let modified = clip.modified, sessionLog.keys.contains(modified) {
       return sessionLog[modified]
     }
     
     return nil
+  }
+  
+  func setupSavingLastBatch() {
+    if lastBatch == nil {
+      lastBatch = Batch.createImplicitBatch()
+    }
+  }
+  
+  func resetLastBatch() {
+    lastBatch = Batch.createImplicitBatch()
+  }
+  
+  func stopSavingLastBatch() {
+    Batch.deleteImplicitBatch()
+    lastBatch = nil
   }
   
   // MARK: -

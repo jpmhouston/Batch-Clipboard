@@ -86,6 +86,8 @@ class QueueSims {
     clipboard = Clipboard()
     history = History()
     queue = ClipboardQueue(clipboard: clipboard, history: history)
+    history.setupSavingLastBatch()
+    print("batch: \(history.lastBatch?.dump ?? "none")")
   }
   
   deinit {
@@ -100,10 +102,10 @@ class QueueSims {
   
   let logQueueAfterEveryOp = false
   let logClipObjPointers = false
-  let logQueueAfterRun = false
+  let logQueueAfterRun = true
   
-  static let sample = [ "#sample# " +     hon + "h1,h2" + start + "qA,qB,qC" + iscnt+"5" + issize+"3" + qpaste + qpaste + issize+"1" + iscnt+"5" + canc + isqoff + iscnt+"5" +
-                                           pasted+"qAqB" + begcmp + "h1,h2,qA,qB,qC" + endcmp ]
+  static let smoke = [ "#sample# " +      hon + "h1,h2" + start + "qA,qB,qC" + iscnt+"5" + issize+"3" + qpaste + qpaste + issize+"1" + iscnt+"5" + canc + isqoff + iscnt+"5" +
+                                            pasted+"qAqB" + begcmp + "h1,h2,qA,qB,qC" + endcmp ]
   
   static let paste1EmptyH = [ "#paste1# " +               hon + start + "qA,qB" + issize+"2" + iscnt+"2" + qpaste + isqon + iscnt+"2" ]
   static let pasteAllEmptyH = [ "#pasteAll# " +           hon + start + "qA,qB" + issize+"2" + iscnt+"2" + qpaste + qpaste + isqoff + iscnt+"2" ]
@@ -154,7 +156,7 @@ class QueueSims {
   
   // TODO: discovery why enabling several at a time causes coredata exceptions & crashes!
   
-  @Test("queue simulator", arguments: [ sample,
+  @Test("queue simulator", arguments: [ smoke,
                                         //paste1EmptyH, pasteAllEmptyH, paste1plusH, pasteAllplusH, paste1Hoff, pasteAllHoff,
                                         //queueAgainClearsH, queueAfterCancClearsH,
                                         //pmultAllEmptyH, pmult1EmptyH, pmultEmptyH, pmultWSepEmptyH, pmultAllplusH, pmultplusH, pmultAllHoff, pmultHoff,
@@ -227,7 +229,6 @@ class QueueSims {
                                   value: param.data(using: .utf8))
           let newclip = Clip(contents: [newcc], application: ProcessInfo.processInfo.processName)
           try queue.add(newclip)
-          coreDataStack.saveContext()
         
         case .undo: // replicates AppModel.undoLastCopy
           guard let clip = history.first else { print("kinda fishy, was this intentional? no first history item at undo-copy token '\(undo)' [\(n)]"); return }
@@ -235,7 +236,6 @@ class QueueSims {
           if !queue.isEmpty {
             try queue.remove(atIndex: 0)
           }
-          coreDataStack.saveContext()
         
         case .paste:
           // tell clipboard to paste
@@ -342,7 +342,6 @@ class QueueSims {
           } else {
             history.remove(atIndex: i)
           }
-          coreDataStack.saveContext()
         //case .qdel: had this separate op but combined them to better replicate AppModel.deleteClip
         //  guard let i = value else { print("unexpected delete-queue-item token '\(qdel)' [\(n)] non-int parameter, instead '\(param ?? "")'"); continue }
         //  #expect(queue.isOn, "at delete-queue-item token '\(qdel)' [\(n)]")
@@ -351,7 +350,6 @@ class QueueSims {
         //  guard i < queue.size else { continue }
         //  lastDeleted = history.all[i].text ?? ""
         //  try queue.remove(atIndex: i)
-        //  coreDataStack.saveContext()
         case .deleted:
           guard let param = param, !param.isEmpty else { print("unexpected match-deleted token '\(deleted)' [\(n)] parameter empty"); continue }
           guard let last = lastDeleted else { print("unexpected match-deleted token '\(deleted)' [\(n)] when no record of a delete"); continue }
@@ -360,7 +358,6 @@ class QueueSims {
         case .clear: // replicates AppModel.deleteHistoryClips
           queue.off()
           history.clear()
-          coreDataStack.saveContext()
           #expect(queue.size == 0, "at clear-history token \(clear) [\(n)]")
           #expect(history.count == 0, "at clear-history token \(clear) [\(n)]")
         
@@ -415,7 +412,6 @@ class QueueSims {
             } else {
               history.add(newclip)
             }
-            coreDataStack.saveContext()
           }
           
         } // switch op
@@ -429,7 +425,7 @@ class QueueSims {
     } // loop over str
     
     if logQueueAfterRun && !logQueueAfterEveryOp {
-      print("after run': \(queue.dump)")
+      print("after run: \(queue.dump)")
       if logClipObjPointers && history.count > 0 { print("\(history.ptrs)") }
     }
   }

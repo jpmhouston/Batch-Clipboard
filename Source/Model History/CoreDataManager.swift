@@ -33,7 +33,9 @@ class CoreDataManager {
   }
   
   func saveContext() {
+    #if DEBUG
     CoreDataManager.queuecheck()
+    #endif
     if context.hasChanges {
       do {
         try context.save()

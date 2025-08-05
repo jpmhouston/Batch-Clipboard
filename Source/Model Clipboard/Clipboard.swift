@@ -296,7 +296,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
       guard let pasteboardItem = fakePasteboard else { return }
       // make new Clip with these contents
-      let newClipContents: [ClipContent]
+      let newClipContents: Set<ClipContent>
       switch pasteboardItem {
       case .barestr(let str):
         let textContent = ClipContent(type: NSPasteboard.PasteboardType.string.rawValue,
@@ -487,7 +487,7 @@ class Clipboard: CustomDebugStringConvertible {
   var fakeryEngaged = false
   enum FakePasteboardItem {
     case barestr(String)
-    case clip([ClipContent])
+    case clip(Set<ClipContent>)
   }
   var fakePasteboard: FakePasteboardItem?
   var fakePasteboardObservationOn = false
@@ -507,7 +507,7 @@ class Clipboard: CustomDebugStringConvertible {
     default: nil
     }
   }
-  func strForContents(_ contents: [ClipContent]) -> String? {
+  func strForContents(_ contents: any Collection<ClipContent>) -> String? {
     if let textContent = contents.first(where: { $0.type == NSPasteboard.PasteboardType.string.rawValue }),
        let d = textContent.value { String(data: d, encoding: .utf8) }
     else { nil }
@@ -519,7 +519,7 @@ class Clipboard: CustomDebugStringConvertible {
     accumulatedDescriptions.append("'\(str)'")
     accumulatedTextBuffer.append(str)
   }
-  func accumulateContents(_ contents: [ClipContent]) {
+  func accumulateContents(_ contents: any Collection<ClipContent>) {
     accumulatedDescriptions.append(Clip.debugContentsDescription(contents, ofLength: 0))
     if let str = strForContents(contents) {
       accumulatedTextBuffer.append(str)
