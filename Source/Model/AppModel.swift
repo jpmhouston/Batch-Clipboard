@@ -30,6 +30,7 @@ class AppModel: NSObject {
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
   static var allowSavedBatches = false
+  static var allowLastBatch = true
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
   static var effectiveMaxClips: Int {
@@ -141,6 +142,7 @@ class AppModel: NSObject {
     ])
     
     super.init()
+    migrateUserDefaults()
     initializeStateFlags()
     
     settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
@@ -151,7 +153,6 @@ class AppModel: NSObject {
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
     clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
-    history.setupSavingLastBatch() // or stopSavingLastBatch based on defaults, or move below & based on feature flag?
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     menu.buildDynamicItems()
@@ -185,8 +186,8 @@ class AppModel: NSObject {
       } 
     }
     
-    queue.freshHistoryMode = !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
     if UserDefaults.standard.keepHistory {
+      history.loadList()
       clipboard.start()
     }
     
@@ -259,6 +260,10 @@ class AppModel: NSObject {
         }
       }
     }
+  }
+  
+  private func migrateUserDefaults() {
+    // nothing needed currently
   }
   
   // MARK: - features & purchases
@@ -399,6 +404,7 @@ class AppModel: NSObject {
     Self.allowPasteMultiple = hasPurchased
     Self.allowUndoCopy = hasPurchased
     Self.allowSavedBatches = hasPurchased
+    //Self.allowLastBatch = hasPurchased // putting this in the normal version
   }
   
   func hasAccessibilityPermissionBeenGranted() -> Bool {
@@ -426,20 +432,20 @@ class AppModel: NSObject {
   func updateSavingHistory(_ newKeepHistoryValue: Bool) {
     if newKeepHistoryValue {
       UserDefaults.standard.keepHistory = true
-      queue.freshHistoryMode = false
+      history.loadList()
       clipboard.restart()
       menu.buildDynamicItems()
     } else if history.count == 0 { // turn off history but don't need to ask about retaining data
       UserDefaults.standard.keepHistory = false
-      queue.freshHistoryMode = true
+      history.offloadList()
       clipboard.stop()
       menu.buildDynamicItems()
     } else if UserDefaults.standard.supressSaveClipsAlert {
       UserDefaults.standard.keepHistory = false
-      queue.freshHistoryMode = UserDefaults.standard.saveClipsAcrossDisabledHistory
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
         history.clear()
       }
+      history.offloadList()
       clipboard.stop()
       menu.buildDynamicItems()
     } else {
@@ -449,7 +455,6 @@ class AppModel: NSObject {
         guard let self = self else { return }
         if confirm {
           UserDefaults.standard.keepHistory = false
-          queue.freshHistoryMode = true
           
           UserDefaults.standard.saveClipsAcrossDisabledHistory = retainDB
           if dontAskAgain {
@@ -459,6 +464,7 @@ class AppModel: NSObject {
           if !retainDB {
             history.clear()
           }
+          history.offloadList()
           clipboard.stop()
           menu.buildDynamicItems()
           

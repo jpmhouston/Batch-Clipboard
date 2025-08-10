@@ -13,6 +13,7 @@ import CoreData
 
 @objc(HistoryItemContent)
 class ClipContent: NSManagedObject {
+  
   @NSManaged public var type: String!
   @NSManaged public var value: Data?
   @NSManaged public var item: Clip?
@@ -25,16 +26,14 @@ class ClipContent: NSManagedObject {
     return (lhs.type == rhs.type) && (lhs.value == rhs.value)
   }
   // swiftlint:enable nsobject_prefer_isequal
-
-  // MARK: -
   
-  convenience init(type: String, value: Data?) {
-    let entity = NSEntityDescription.entity(forEntityName: "HistoryItemContent",
-                                            in: CoreDataManager.shared.context)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
-
-    self.type = type
-    self.value = value
+  static func create(type: String, value: Data?) -> ClipContent {
+    let content = ClipContent(context: CoreDataManager.shared.context)
+    
+    content.type = type
+    content.value = value
+    
+    return content
   }
   
 }
