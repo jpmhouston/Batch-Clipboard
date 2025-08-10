@@ -10,7 +10,8 @@ import AppKit
 import Settings
 import os.log
 
-// TODO: make methods return error instead of bool
+// TODO: make methods throw or at least return error instead of bool
+// TODO: os_log caught errors
 
 // TODO: put these somewhere else
 func nop() { }
@@ -42,7 +43,7 @@ extension AppModel {
       return nil
     }
     let clip: Clip = history.all[position]
-    deleteClip(atIndex: position)
+    deleteHistoryClip(atIndex: position)
     return clip
   }
   
@@ -56,6 +57,9 @@ extension AppModel {
   func clearHistory() {
     deleteHistoryClips()
   }
+  
+  // TODO: add missing intent handlers
+  // getting item from queue and batch, deleting from queue and batch, deleting entire batch 
   
   // MARK: - clipboard features
   
@@ -109,7 +113,11 @@ extension AppModel {
     
     let count = queue.size
     
-    queue.off()
+    do {
+      try queue.off()
+    } catch {
+      os_log(.default, "ignoring error from turning off queue %@", "\(error)")
+    }
     menu.cancelledQueue(count)
     updateMenuIcon()
     updateMenuTitle()
@@ -378,7 +386,7 @@ extension AppModel {
   
   private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, withSeparator seperator: String?,
                                            then completion: @escaping (Int)->Void) {
-    guard max > 0 && count < max, let index = queue.headIndex, index < history.count else {
+    guard max > 0 && count < max else {
       // don't expect to ever be called with count>=max, exit condition is below, before recursive call
       completion(count)
       return
@@ -473,16 +481,19 @@ extension AppModel {
       return false
     }
     
-    guard !queue.isOn && index < history.count else {
+    guard history.usingHistory && !queue.isOn && index < history.count else {
       return false
     }
     
-    queue.on()
+    let clips = history.clipsFromIndex(index)
+    guard !clips.isEmpty else {
+      return false
+    }
+    
     do {
-      try queue.setHead(toIndex: index)
+      try queue.setQueueClips(to: clips)
       try queue.replaying()
     } catch {
-      queue.off()
       return false
     }
     
@@ -507,60 +518,51 @@ extension AppModel {
     clipboard.copy(clip)
   }
   
-  func deleteClip(atIndex index: Int) {
+  func deleteHistoryClip(atIndex index: Int) {
+    // index 0 is most recent clip
     guard !Self.busy else {
       return
     }
-    guard index < history.count else {
+    guard index >= 0 && index < history.count else {
       return
     }
     
-    if index < queue.size {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        // was doing just `queue.off()` here but after that the menu
-        // wouldn't be in sync, probably best to do nothing
-        return
-      }
-      
-      menu.deletedClipFromQueue(index)
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
-      
-    } else {
-      history.remove(atIndex: index)
-      
-      menu.deletedClipFromHistory(index - queue.size)
+    history.remove(atIndex: index)
+    
+    menu.deletedClipFromHistory(index - queue.size)
+  }
+  
+  func deleteQueueClip(atIndex index: Int) {
+    // index 0 is most recent clip
+    guard !Self.busy else {
+      return
     }
+    guard index >= 0 && index < queue.size else {
+      return
+    }
+    
+    do {
+      try queue.remove(atIndex: index)
+    } catch {
+      // was doing just `queue.off()` here but after that the menu
+      // wouldn't be in sync, probably best to do nothing
+      return
+    }
+    
+    menu.deletedClipFromQueue(index)
+    updateMenuIcon(.decrement)
+    updateMenuTitle()
   }
   
   @IBAction
   func deleteHighlightedClip(_ sender: AnyObject) {
-    guard !Self.busy else {
-      return // TODO: restore logging breakpoint here once solving why it fires even when guard passes
-    }
-    
-    guard let clip = menu.highlightedClipMenuItem()?.clip, let index = history.all.firstIndex(of: clip) else {
+    guard let clip = menu.highlightedClipMenuItem()?.clip else {
       return
     }
-    
-    if index < queue.size {
-      do {
-        try queue.remove(atIndex: index)
-      } catch {
-        queue.off()
-        return
-      }
-      
-      menu.deletedClipFromQueue(index)
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
-      
-    } else {
-      history.remove(clip)
-      
-      menu.deletedClipFromHistory(index)
+    if let index = history.all.firstIndex(of: clip) {
+      deleteHistoryClip(atIndex: index)
+    } else if let index = queue.clips.firstIndex(of: clip) {
+      deleteQueueClip(atIndex: index)
     }
   }
   
@@ -574,7 +576,11 @@ extension AppModel {
   }
   
   func deleteHistoryClips() {
-    queue.off()
+    do {
+      try queue.clear()
+    } catch {
+      os_log(.default, "ignoring error from turning off queue %@", "\(error)")
+    }
     history.clear()
     menu.deletedHistory()
     clipboard.clear()
@@ -603,7 +609,6 @@ extension AppModel {
       do {
         try queue.remove(atIndex: 0)
       } catch {
-        queue.off()
         return
       }
       

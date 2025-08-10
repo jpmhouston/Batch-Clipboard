@@ -299,15 +299,15 @@ class Clipboard: CustomDebugStringConvertible {
       let newClipContents: Set<ClipContent>
       switch pasteboardItem {
       case .barestr(let str):
-        let textContent = ClipContent(type: NSPasteboard.PasteboardType.string.rawValue,
-                                      value: str.data(using: .utf8))
+        let textContent = ClipContent.create(type: NSPasteboard.PasteboardType.string.rawValue,
+                                             value: str.data(using: .utf8))
         newClipContents = [textContent]
       case .clip(let contents):
         let types = contents.map { NSPasteboard.PasteboardType($0.type) }
         if shouldIgnore(Set(types)) { return }
         newClipContents = contents
       }
-      let clip = Clip(contents: newClipContents, application: "Fake.app")
+      let clip = Clip.create(withContents: newClipContents, application: "Fake.app")
       onNewCopyHooks.forEach({ $0(clip) })
       return
     }
@@ -344,7 +344,7 @@ class Clipboard: CustomDebugStringConvertible {
     guard !contents.isEmpty else {
       return
     }
-    let newPasteboardItem = Clip(contents: contents, application: sourceApp?.bundleIdentifier)
+    let newPasteboardItem = Clip.create(withContents: contents, application: sourceApp?.bundleIdentifier)
     
     // Disseminate
     onNewCopyHooks.forEach({ $0(newPasteboardItem) })
@@ -384,7 +384,7 @@ class Clipboard: CustomDebugStringConvertible {
       }
       
       types.forEach { type in
-        contents.append(ClipContent(type: type.rawValue, value: item.data(forType: type)))
+        contents.append(ClipContent.create(type: type.rawValue, value: item.data(forType: type)))
       }
     })
     

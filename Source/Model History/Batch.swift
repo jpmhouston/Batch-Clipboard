@@ -19,17 +19,24 @@ class Batch: NSManagedObject {
   @NSManaged public var title: String?
   @NSManaged public var clips: NSOrderedSet?
   
+  // like history clips are in backwards order, most recent first
+  var first: Clip? { clips?.firstObject as? Clip }
+  var last: Clip? { clips?.lastObject as? Clip }
+  var mostRecent: Clip? { first }
+  var lastToPaste: Clip? { first }
+  var leastRecent: Clip? { last }
+  var firstToPaste: Clip? { last }
+  var count: Int { clips?.count ?? 0 }
+  var isEmpty: Bool { clips?.count ?? 0 == 0 }
+  
   // MARK: -
   
-  static var all: [Batch] {
-    let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
-    fetchRequest.sortDescriptors = [Batch.sortByIndex]
-    do {
-      return try CoreDataManager.shared.context.fetch(fetchRequest)
-    } catch {
-      return []
-    }
-  }
+  static let sortByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: true,
+                                            selector: #selector(NSString.localizedStandardCompare(_:)))
+  static let sortReverseByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: false,
+                                                   selector: #selector(NSString.localizedStandardCompare(_:)))
+  
+  // TODO: are these computed properties better as a throwing load() functions?
   
   static var saved: [Batch] {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
@@ -38,11 +45,12 @@ class Batch: NSManagedObject {
     do {
       return try CoreDataManager.shared.context.fetch(fetchRequest)
     } catch {
+      os_log(.default, "unhandled error fetching named batches %@", error.localizedDescription)
       return []
     }
   }
   
-  static var last: Batch? {
+  static var current: Batch? {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
     fetchRequest.sortDescriptors = [Batch.sortByIndex]
     fetchRequest.predicate = NSPredicate(format: "title == nil")
@@ -50,18 +58,22 @@ class Batch: NSManagedObject {
     do {
       return try CoreDataManager.shared.context.fetch(fetchRequest).first
     } catch {
+      os_log(.default, "unhandled error fetching current (un-named) batch %@", error.localizedDescription)
       return nil
     }
   }
   
-  // these don't work :(
-  static let clipsInSavedBatchesPredicate = NSPredicate(format: "ALL batches.title != nil")
-  static let clipsInNoSavedBatchesPredicate = NSPredicate(format: "batches.@count == 0 || ALL batches.title = nil")
-  
-  static let sortByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: true,
-                                            selector: #selector(NSString.localizedStandardCompare(_:)))
-  static let sortReverseByIndex = NSSortDescriptor(key: #keyPath(Batch.index), ascending: false,
-                                                   selector: #selector(NSString.localizedStandardCompare(_:)))
+  static func deleteAll() {
+    let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
+    do {
+      let batches = try CoreDataManager.shared.context.fetch(fetchRequest)
+      batches.forEach {
+        CoreDataManager.shared.context.delete($0)
+      }
+    } catch {
+      os_log(.default, "unhandled error deleting batches %@", error.localizedDescription)
+    }
+  }
   
   // swiftlint:disable nsobject_prefer_isequal
   // i'm guessing we'd similarly get this error if tried having `-isEqual` instead of `==`:
@@ -71,55 +83,30 @@ class Batch: NSManagedObject {
   }
   // swiftlint:enable nsobject_prefer_isequal
   
+  static func createUnnamed(withClips clips: any Collection<Clip> = []) -> Batch {
+    let batch = Batch(context: CoreDataManager.shared.context)
+    
+    batch.addExistingClips(clips)
+    
+    CoreDataManager.shared.saveContext()
+    return batch
+  }
+  
+  static func create(withTitle title: String?, index: String? = nil, shortcut: Data? = nil,
+                     clips: any Collection<Clip> = []) -> Batch {
+    let batch = Batch(context: CoreDataManager.shared.context)
+    
+    batch.title = title ?? ""
+    batch.index = index ?? batch.nextIndex() // TODO: sanitize input index str?
+    batch.shortcut = shortcut
+    batch.addExistingClips(clips)
+    
+    CoreDataManager.shared.saveContext()
+    return batch
+  }
+  
   // MARK: -
   
-  convenience init(index: String?, title: String?, shortcut: Data?) {
-    let entity = NSEntityDescription.entity(forEntityName: "Batch", in: CoreDataManager.shared.context)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
-    
-    if title == nil {
-      self.index = index ?? "" // when no title, it and index will be replaced later, empty ok
-    } else {
-      self.index = index ?? nextIndex() // TODO: sanitize input index str
-    }
-    self.title = title
-    self.shortcut = shortcut
-    CoreDataManager.shared.saveContext()
-  }
-  
-  func migrateToNormalBatch(withIndex index: String?, title: String, shortcut: Data?) {
-    self.index = index ?? nextIndex() // TODO: sanitize input index str
-    self.title = title
-    self.shortcut = shortcut
-    CoreDataManager.shared.saveContext()
-  }
-  
-  static func createImplicitBatch() -> Batch {
-    let newBatch = Batch(index: nil, title: nil, shortcut: nil)
-    deleteImplicitBatch(except: newBatch)
-    return newBatch
-  }
-  
-  static func deleteImplicitBatch(except keep: Batch? = nil) {
-    let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
-    fetchRequest.predicate = NSPredicate(format: "title = nil")
-    do {
-      var fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
-      
-      // remove passed-in entity from the set to be deleted
-      if let keep = keep, let idx = fetched.firstIndex(of: keep) {
-        fetched.remove(at: idx)
-      }
-      
-      fetched.forEach(CoreDataManager.shared.context.delete(_:))
-    } catch {
-      os_log(.default, "unhandled error deleting implicit batch %@", error.localizedDescription)
-      return
-    }
-    CoreDataManager.shared.saveContext()
-  }
-  
-  // changed to func like in Clip.getContents(), perhaps instead vars clipSet, contentSet, batchSet & clipArray,...
   func getClips() -> Set<Clip> {
     (clips?.set as? Set<Clip>) ?? Set()
   }
@@ -128,17 +115,22 @@ class Batch: NSManagedObject {
     (clips?.array as? [Clip]) ?? []
   }
   
-  func add(_ clip: Clip) {
-    addToClips(clip)
+  func clipAtIndex(_ index: Int) -> Clip? {
+    // currently requiring caller to sanity check for index out of bounds
+    clips?.object(at: index) as? Clip
+  }
+  
+  // dont need this wrapper function after all, caller can just use `Batch.create()` 
+//  func duplicate(withTitle title: String, index: String? = nil, shortcut: Data? = nil) -> Batch {
+//    return Batch.create(withTitle: title, index: index, shortcut: shortcut, clips: getClipsArray())
+//  }
+  
+  func addClip(_ clip: Clip) {
+    insertIntoClips(clip, at: 0)
     CoreDataManager.shared.saveContext()
   }
   
-  func add(_ clips: [Clip]) {
-    addToClips(NSOrderedSet(array: clips))
-    CoreDataManager.shared.saveContext()
-  }
-  
-  func remove(_ clip: Clip) {
+  func removeClip(_ clip: Clip) {
     removeFromClips(clip)
     CoreDataManager.shared.saveContext()
   }
@@ -148,8 +140,38 @@ class Batch: NSManagedObject {
       return
     } 
     removeFromClips(clips)
-    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
+    CoreDataManager.shared.saveContext()
   }
+  
+  func copyClips(from source: Batch) {
+    guard self != source, let sourceClipSet = source.clips else {
+      return
+    }
+    clear()
+    if sourceClipSet.count == 0 {
+      return
+    }
+    // simply copy in same order, don't have to deliberately insert at index 0 because
+    // we know just emptied it of all previous clips 
+    addToClips(sourceClipSet)
+    CoreDataManager.shared.saveContext()
+  }
+  
+  func addExistingClips(_ sourceClips: any Collection<Clip>) {
+    if sourceClips.isEmpty {
+      return
+    }
+    // copy in same order but into index 0 not at the end
+    let indexes = NSIndexSet(indexesIn: NSRange(location: 0, length: sourceClips.count))
+    if let sourceClipsArray = sourceClips as? Array<Clip> { // yes lamer than polymorphism but also d.r.y.
+      insertIntoClips(sourceClipsArray, at: indexes)
+    } else {
+      insertIntoClips(Array(sourceClips), at: indexes)
+    }
+    CoreDataManager.shared.saveContext()
+  }
+  
+  // MARK: -
   
   @objc(insertObject:inClipsAtIndex:)
   @NSManaged public func insertIntoClips(_ value: Clip, at idx: Int)

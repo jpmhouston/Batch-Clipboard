@@ -958,7 +958,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     
     let expectedNumVisibleHistoryClips =
-      max((showsFullExpansion ? AppModel.effectiveMaxClips : AppModel.effectiveMaxVisibleClips) - queue.size, 0)
+      max((showsFullExpansion ? AppModel.effectiveMaxClips : AppModel.effectiveMaxVisibleClips), 0)
     let wasLastInSection = historyPosition == expectedNumVisibleHistoryClips - 1
     let wasHighlighed = clipMenuItem == highlightedClipMenuItem()
     

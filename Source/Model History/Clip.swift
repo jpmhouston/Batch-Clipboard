@@ -12,9 +12,11 @@
 import AppKit
 import CoreData
 import Sauce
+import os.log
 
 @objc(HistoryItem)
 class Clip: NSManagedObject {
+  
   @NSManaged public var application: String?
   @NSManaged public var batches: NSSet?
   @NSManaged public var contents: NSSet?
@@ -103,71 +105,107 @@ class Clip: NSManagedObject {
   
   // MARK: -
   
+  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(Clip.firstCopiedAt), ascending: false)
+  
+  // TODO: are these computed properties better as a throwing load() functions?
+  
   static var all: [Clip] {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
     do {
-      let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
-      
+      //return try CoreDataManager.shared.context.fetch(fetchRequest)
       // documentation says deleted entities not fetched but saw it happen in unit tests, leave this in until that's solved
+      let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
       return fetched.filter { !$0.isDeleted } 
     } catch {
+      os_log(.default, "unhandled error fetching all clips %@", error.localizedDescription)
       return []
     }
   }
   
-  static var first: Clip? {
+  static var anyWithinBatches: Bool {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
-    fetchRequest.fetchLimit = 1
+    fetchRequest.predicate = NSPredicate(format: "batch.@count > 0")
+    fetchRequest.fetchBatchSize = 1
     do {
-      return try CoreDataManager.shared.context.fetch(fetchRequest).first
+      return try CoreDataManager.shared.context.count(for: fetchRequest) > 0
     } catch {
-      return nil
+      os_log(.default, "unhandled error checking for presence of clips within batches %@", error.localizedDescription)
+      return false
     }
   }
   
-  static let sortByFirstCopiedAt = NSSortDescriptor(key: #keyPath(Clip.firstCopiedAt), ascending: false)
-  
-  static var count: Int {
+  static func deleteAll() {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     do {
-      return try CoreDataManager.shared.context.count(for: fetchRequest)
+      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
+      clips.forEach {
+        CoreDataManager.shared.context.delete($0)
+      }
     } catch {
-      return 0
+      os_log(.default, "unhandled error deleting clips %@", error.localizedDescription)
+    }
+  }
+  
+  static func deleteAllOutsideBatches() {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.predicate = NSPredicate(format: "batch.@count == 0")
+    do {
+      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
+      clips.forEach {
+        CoreDataManager.shared.context.delete($0)
+      }
+    } catch {
+      os_log(.default, "unhandled error deleting clips not within batches %@", error.localizedDescription)
     }
   }
   
   // swiftlint:disable nsobject_prefer_isequal
   // Class 'HistoryItem' for entity 'HistoryItem' has an illegal override of NSManagedObject -isEqual
   static func == (lhs: Clip, rhs: Clip) -> Bool {
-    return lhs.getContents().count == rhs.getContents().count && lhs.supersedes(rhs)
+    return lhs.getContents().count == rhs.getContents().count && lhs.contentsEqual(rhs)
   }
   // swiftlint:enable nsobject_prefer_isequal
   
-  // MARK: -
-  
-  convenience init(contents: any Collection<ClipContent>, application: String? = nil) {
-    let entity = NSEntityDescription.entity(forEntityName: "HistoryItem",
-                                            in: CoreDataManager.shared.context)!
-    self.init(entity: entity, insertInto: CoreDataManager.shared.context)
+  static func create(withContents contents: any Collection<ClipContent>, application: String? = nil) -> Clip {
+    let clip = Clip(context: CoreDataManager.shared.context)
     
-    self.application = application
-    self.firstCopiedAt = Date()
-    self.lastCopiedAt = firstCopiedAt
-    self.numberOfCopies = 1
-    contents.forEach(addToContents(_:))
+    clip.application = application
+    clip.firstCopiedAt = Date()
+    clip.lastCopiedAt = clip.firstCopiedAt
+    clip.numberOfCopies = 1
+    clip.addContents(contents)
     
-    title = generateTitle()
+    clip.title = clip.generateTitle()
+    
+    CoreDataManager.shared.saveContext()
+    return clip
   }
   
-//  override func validateValue(_ value: AutoreleasingUnsafeMutablePointer<AnyObject?>, forKey key: String) throws {
-//    try super.validateValue(value, forKey: key)
-//    ...
-//  }
+  // MARK: -
   
-  @objc(addContentsObject:)
-  @NSManaged public func addToContents(_ value: ClipContent)
+  #if MACCY_DUPLICATE_HANDLING
+  func supersedes(_ clip: Clip) -> Bool {
+    contentsEqual(clip)
+  }
+  #endif
+  
+  func contentsEqual(_ otherClip: Clip) -> Bool {
+    return otherClip.getContents().filter { otherContent in
+      otherContent.type.isExcluded(from: [
+        NSPasteboard.PasteboardType.modified.rawValue,
+        NSPasteboard.PasteboardType.fromMaccy.rawValue,
+        NSPasteboard.PasteboardType.fromSelf.rawValue
+      ])
+    }
+    .allSatisfy { content in
+      getContents().contains { $0 == content }
+    }
+  }
+  
+  func addContents(_ contents: any Collection<ClipContent>) {
+    contents.forEach(addToContents(_:))
+  }
   
   func getContents() -> Set<ClipContent> {
     (contents as? Set<ClipContent>) ?? Set()
@@ -185,19 +223,10 @@ class Clip: NSManagedObject {
     (batches?.allObjects as? [Batch]) ?? []
   }
   
-  func supersedes(_ clip: Clip) -> Bool {
-    return clip.getContents()
-      .filter { content in
-        ![
-          NSPasteboard.PasteboardType.modified.rawValue,
-          NSPasteboard.PasteboardType.fromMaccy.rawValue,
-          NSPasteboard.PasteboardType.fromSelf.rawValue
-        ].contains(content.type)
-      }
-      .allSatisfy { content in
-        getContents().contains { $0 == content }
-      }
-  }
+  @objc(addContentsObject:)
+  @NSManaged public func addToContents(_ value: ClipContent)
+  
+  // MARK: -
   
   func generateTitle() -> String {
     var title = ""
@@ -238,7 +267,7 @@ class Clip: NSManagedObject {
   private func contentData(_ types: [NSPasteboard.PasteboardType]) -> Data? {
     let contents = getContents()
     let content = contents.first {
-      return types.contains(NSPasteboard.PasteboardType($0.type))
+      types.contains(NSPasteboard.PasteboardType($0.type))
     }
     
     return content?.value
@@ -247,7 +276,7 @@ class Clip: NSManagedObject {
   private func hasContentData(_ types: [NSPasteboard.PasteboardType]) -> Bool {
     let contents = getContents()
     return contents.contains {
-      return types.contains(NSPasteboard.PasteboardType($0.type))
+      types.contains(NSPasteboard.PasteboardType($0.type))
     }
   }
   

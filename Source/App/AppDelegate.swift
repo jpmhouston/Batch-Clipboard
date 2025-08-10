@@ -27,9 +27,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var model: AppModel!
   
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    migrateUserDefaults()
-    clearOrphanRecords()
-    
     model = AppModel()
   }
   
@@ -77,28 +74,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     return nil
-  }
-  
-  // TODO: move model class wrangling to functions in Model History / Model Clipboard folders
-  
-  private func migrateUserDefaults() {
-  }
-  
-  private func clearOrphanRecords() {
-    #if DEBUG
-    CoreDataManager.shared.summary()
-    #endif
-    
-    let fetchRequest = NSFetchRequest<ClipContent>(entityName: "HistoryItemContent")
-    fetchRequest.predicate = NSPredicate(format: "item == nil")
-    do {
-      try CoreDataManager.shared.context
-        .fetch(fetchRequest)
-        .forEach(CoreDataManager.shared.context.delete(_:))
-      CoreDataManager.shared.saveContext()
-    } catch {
-      // Something went wrong, but it's no big deal.
-    }
   }
   
 }

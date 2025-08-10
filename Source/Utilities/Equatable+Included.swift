@@ -40,17 +40,17 @@ public extension Equatable {
     s.contains(self)
   }
   
-  func isExcluded<S: Sequence>(in s: S) -> Bool where S.Element == Self {
+  func isExcluded<S: Sequence>(from s: S) -> Bool where S.Element == Self {
     !s.contains(self)
   }
-  func isExcluded<S: Sequence>(in s: S) -> Bool where S.Element == Self? {
+  func isExcluded<S: Sequence>(from s: S) -> Bool where S.Element == Self? {
     !s.contains(self)
   }
   
-  func isExcluded(in s: Self...) -> Bool {
+  func isExcluded(from s: Self...) -> Bool {
     !s.contains(self)
   }
-  func isExcluded(in s: Self?...) -> Bool {
+  func isExcluded(from s: Self?...) -> Bool {
     !s.contains(self)
   }
   
