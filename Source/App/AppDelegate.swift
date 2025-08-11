@@ -27,7 +27,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var model: AppModel!
   
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    model = AppModel()
+    if NSEvent.modifierFlags.contains(.option) {
+      showResetAlert() { [weak self] in
+        self?.model = AppModel()
+      }
+    } else {
+      model = AppModel()
+    }
   }
   
   func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
@@ -74,6 +80,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     return nil
+  }
+  
+  func showResetAlert(_ continuation: ()->Void) {
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = NSLocalizedString("resetdata_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("resetdata_alert_comment", comment: "")
+    let deleteButton = alert.addButton(withTitle: NSLocalizedString("resetdata_alert_deleteandlaunch", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("resetdata_alert_launch", comment: ""))
+    let quitButton = alert.addButton(withTitle: NSLocalizedString("resetdata_alert_terimnate", comment: ""))
+    if #available(macOS 11.0, *) {
+      deleteButton.hasDestructiveAction = true
+    } else {
+      deleteButton.keyEquivalent = "" 
+    }
+    quitButton.keyEquivalent = "\u{1B}"
+    
+    switch alert.runModal() {
+    case .alertFirstButtonReturn:
+      if CoreDataManager.deleteDatabase() {
+        continuation()
+      } else {
+        NSApplication.shared.terminate(nil)
+      }
+    case .alertSecondButtonReturn:
+      continuation()
+    default:
+      NSApplication.shared.terminate(nil)
+    }
   }
   
 }

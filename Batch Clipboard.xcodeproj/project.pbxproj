@@ -273,6 +273,7 @@
 				"Model History/History.swift",
 				"Model History/HistoryList.swift",
 				"Model History/Storage.xcdatamodeld",
+				"Model History/TestMigration.swift",
 				"Model History/TestQueue.swift",
 				"Model/UserDefaults+Configuration.swift",
 				"Utilities/Equatable+Included.swift",

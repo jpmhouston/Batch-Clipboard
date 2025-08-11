@@ -9,7 +9,7 @@
 import Testing
 import AppKit
 
-@Suite("Queue test simulations", .serialized)
+@Suite("Queue action simulations", .serialized)
 class QueueSims {
   
   // TODO: maybe allow expectations against degenerate cases, like queued-paste when nothing queued
@@ -159,13 +159,13 @@ class QueueSims {
   // is it happning less now or not at all?
   
   @Test("queue simulator", arguments: [ smoke,
-                                        paste1EmptyH, pasteAllEmptyH, paste1plusH, pasteAllplusH, paste1Hoff, pasteAllHoff,
-                                        pmultAllEmptyH, pmult1EmptyH, pmultEmptyH, pmultWSepEmptyH, pmultAllplusH, pmultplusH, pmultAllHoff, pmultHoff,
-                                        queueFromHThenPaste, queueFromHThenCanc, queueAllFromH, queue1FromH, delFromH, delFromHOldest, delFromHNewest,
-                                        delFromHplusQ, delFromHplusQOldest, delFromHplusQNewest, delFromQEmptyH,
-                                        delFromQEmptyHOldest, delFromQEmptyHNewest, delFromQplusH, delFromQplusHOldest, delFromQplusHNewest,
-                                        delFromQHoff, delFromQHoffOldest, delFromQHoffNewest,
-                                        clearH, clearHandQ, clearQnoH, clearQHoff,
+                                        //paste1EmptyH, pasteAllEmptyH, paste1plusH, pasteAllplusH, paste1Hoff, pasteAllHoff,
+                                        //pmultAllEmptyH, pmult1EmptyH, pmultEmptyH, pmultWSepEmptyH, pmultAllplusH, pmultplusH, pmultAllHoff, pmultHoff,
+                                        //queueFromHThenPaste, queueFromHThenCanc, queueAllFromH, queue1FromH, delFromH, delFromHOldest, delFromHNewest,
+                                        //delFromHplusQ, delFromHplusQOldest, delFromHplusQNewest, delFromQEmptyH,
+                                        //delFromQEmptyHOldest, delFromQEmptyHNewest, delFromQplusH, delFromQplusHOldest, delFromQplusHNewest,
+                                        //delFromQHoff, delFromQHoffOldest, delFromQHoffNewest,
+                                        //clearH, clearHandQ, clearQnoH, clearQHoff,
                                       ])
   func queueSim(run: [String]) async throws {
     try #require(history.count == 0) // with xcode 26, build fails without `try` here

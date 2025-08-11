@@ -51,3 +51,8 @@
 "promoteextras_alert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
 "promoteextras_alert_show_settings" = "Open Settings";
 "promoteextras_alert_cancel" = "Cancel";
+"resetdata_alert_message" = "Reset data before launch?";
+"resetdata_alert_comment" = "If the app is failing to open, you may choose to erase the saved clipboard item database before continuing.";
+"resetdata_alert_deleteandlaunch" = "Reset Data and Launch";
+"resetdata_alert_launch" = "Launch Without Reset";
+"resetdata_alert_terimnate" = "Quit";
