@@ -17,7 +17,7 @@ class CoreDataManager {
   #if UNITTEST
   static var shared: CoreDataManager!
   #else
-  static var shared = CoreDataManager() // not `let` to allow `reset` func used by unit tests
+  static var shared = CoreDataManager()
   #endif
   
   @discardableResult
@@ -45,16 +45,6 @@ class CoreDataManager {
     }
   }
   
-  func teardown() {
-    saveContext() // i think should do explicity so not done automatically later and who knows where
-    let coordinator = persistentContainer.persistentStoreCoordinator
-    do {
-      try Self.removeStore(fromCoordinator: coordinator, andDirectory: customURL != nil)
-    } catch {
-      os_log(.error, "unresolved coredata error when tearing down context %@", error.localizedDescription)
-    }
-  }
-  
   // MARK: -
   // Configure the core data stack by setting following properties before first using `viewContext`
   // lots of tips for using core data from test cases in 
@@ -74,6 +64,17 @@ class CoreDataManager {
   
   var customURL: URL?
   
+  #if UNITTEST
+  func teardown() {
+    saveContext() // i think should do explicity so not done automatically later and who knows where
+    let coordinator = persistentContainer.persistentStoreCoordinator
+    do {
+      try Self.removeStore(fromCoordinator: coordinator, andDirectory: customURL != nil)
+    } catch {
+      os_log(.error, "unresolved coredata error when tearing down context %@", error.localizedDescription)
+    }
+  }
+  
   // Use this to set customURL to be within a unique temporary directory for unit tests
   // (note: name passed in doesn't have to be unique)
   func useUniqueTestDatabaseLocation(withName name: String) {
@@ -86,6 +87,7 @@ class CoreDataManager {
       customURL = nil
     }
   }
+  #endif
   
   // MARK: -
   
@@ -137,35 +139,34 @@ class CoreDataManager {
     if andDirectory, let url = persistentStore.url {
       try FileManager.default.removeItem(at: url.deletingLastPathComponent())
     }
-//    if #available(macOS 12.0, *) {
-//      try coordinator.performAndWait {
-//        
-//        guard let callingqname = String(cString: __dispatch_queue_get_label(nil), encoding: .utf8) else { return }
-//        if callingqname == "com.apple.main-thread" {
-//          print("on the main queue, is that okay?")
-//        }
-//        
-//        guard let persistentStore = coordinator.persistentStores.first else { return }
-//        try coordinator.remove(persistentStore)
-//        if andDirectory, let url = persistentStore.url {
-//          try FileManager.default.removeItem(at: url.deletingLastPathComponent())
-//        }
-//      }
-//    } else {
-//      var caughtError: (any Error)?
-//      coordinator.performAndWait {
-//        guard let persistentStore = coordinator.persistentStores.first else { return }
-//        do {
-//          try coordinator.remove(persistentStore)
-//          if andDirectory, let url = persistentStore.url {
-//            try FileManager.default.removeItem(at: url.deletingLastPathComponent())
-//          }
-//        } catch {
-//          caughtError = error
-//        }
-//      }
-//      if let err = caughtError { throw err }
-//    }
+  }
+  
+  // MARK: -
+  
+  static func deleteDatabase() -> Bool {
+    let dirUrl = NSPersistentContainer.defaultDirectoryURL()
+    let dbFilenames = ["Storage.sqlite", "Storage.sqlite-wal", "Storage.sqlite-shm"]
+    let dbFileUrls: [URL] = dbFilenames.map {
+      if #available(macOS 13.0, *) {
+        dirUrl.appending(path: $0, directoryHint: .notDirectory)
+      } else {
+        dirUrl.appendingPathComponent($0)
+      }
+    }
+    guard FileManager.default.fileExists(atPath: dbFileUrls[0].path) else {
+      os_log(.default, "failed to find and delete old database at %@", dirUrl.path)
+      return false
+    }
+    do {
+      for url in dbFileUrls {
+        try FileManager.default.removeItem(at: url)
+      }
+      os_log(.info, "delete old database at %@", dbFileUrls[0].path)
+      return true
+    } catch {
+      os_log(.default, "failed to delete old database at %@", dbFileUrls[0].path)
+      return false
+    }
   }
   
   // MARK: -
@@ -202,15 +203,3 @@ class CoreDataManager {
   #endif // DEBUG
   
 }
-
-//// see https://forums.swift.org/t/swift-testing-core-data-setup-teardown/75203/9
-//// although not seeing the failures this claims to fix, leave ommented out for now
-//extension NSManagedObject {
-//    // Override default init to ensure entities are inserted into the correct context:
-//    // https://stackoverflow.com/questions/51851485/multiple-nsentitydescriptions-claim-nsmanagedobject-subclass/
-//    convenience init(context: NSManagedObjectContext) {
-//        let name = String(describing: type(of: self))
-//        let entity = NSEntityDescription.entity(forEntityName: name, in: context)!
-//        self.init(entity: entity, insertInto: context)
-//    }
-//}

@@ -232,7 +232,7 @@ class Batch: NSManagedObject {
     }
   }
   
-  // managing the index string TODO: move these functions elsewhere maybe?
+  // managing the index string TODO: move these functions elsewhere
   
   enum IndexStringStyle { case dottedDecimal, decimalFraction }
   private let style = IndexStringStyle.decimalFraction

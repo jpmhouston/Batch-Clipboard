@@ -59,7 +59,7 @@ extension AppModel {
   }
   
   // TODO: add missing intent handlers
-  // getting item from queue and batch, deleting from queue and batch, deleting entire batch 
+  // getting item from queue and batch, deleting from queue and batch, deleting entire batch, paste all/multiple
   
   // MARK: - clipboard features
   
@@ -333,8 +333,6 @@ extension AppModel {
     
     queuedPasteMultiple(queue.size, interactive: true)
   }
-  
-  // TODO: add support for paste all/multiple from an intent
   
   @discardableResult
   private func queuedPasteMultiple(_ count: Int, seperator: String? = nil, interactive: Bool = true) -> Bool {
@@ -624,12 +622,6 @@ extension AppModel {
   
   @IBAction
   func showAbout(_ sender: AnyObject) {
-    #if DEBUG
-    if NSEvent.modifierFlags.contains(.option) {
-      print("\(history.count) clip items stored")
-      return
-    }
-    #endif
     takeFocus()
     about.openAbout()
   }
