@@ -10,6 +10,8 @@ import AppKit
 import SDWebImage
 import os.log
 
+import KeyboardShortcuts // delete this once debug code is deleted
+
 extension NSWindow.FrameAutosaveName {
   static let introWindow: NSWindow.FrameAutosaveName = "lol.bananameter.batchclip.intro.FrameAutosaveName"
 }
@@ -58,6 +60,10 @@ class IntroWindowController: PagedWindowController {
     
     window.collectionBehavior.formUnion(.moveToActiveSpace)
     window.orderFrontRegardless()
+    
+    #if DEBUG
+    addDebugButton()
+    #endif
   }
   
   private func restoreWindowPosition() {
@@ -70,6 +76,32 @@ class IntroWindowController: PagedWindowController {
     window.setFrameAutosaveName(.introWindow)
   }
   
+  #if DEBUG
+  func addDebugButton() {
+    let buttonAction = Selector(("debugButtonPressed:")) 
+    guard responds(to: buttonAction) else { return }
+    // use Selector with funny syntax to avoid a compiler warning when the action function is commented out,
+    // although it causes a warning when the function is present suggesting change to #selector syntax. oh well
+    let button = NSButton(title: "Debug", target: self, action: buttonAction)
+    let v = window!.contentView!
+    let b = v.bounds
+    button.frame = NSRect(x: NSMinX(b)+12, y: NSMinY(b)+22, width: 100, height: 16)
+    v.addSubview(button)
+  }
+  
+//  let alerts = Alerts()
+//  var toggle = false
+//  @objc func debugButtonPressed(_ sender: AnyObject) {
+//    let excludeNames = Set(["aa", "xx"])
+//    alerts.withSaveBatchAlert(forCurrentBatch: toggle, showingCount: 5,
+//                              excludingNames: excludeNames) { name, hotkey in
+//      print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
+//      if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//    }
+//    toggle = !toggle
+//  }
+  #endif
+
 }
 
 class IntroViewController: NSViewController, PagedWindowControllerDelegate {
@@ -198,7 +230,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
       if model.hasAccessibilityPermissionBeenGranted() {
         setupNeededLabel?.isHidden = true
       }
-      
+    
     case .checkAuth:
       let isAuthorized = model.hasAccessibilityPermissionBeenGranted()
       hasAuthorizationEmoji?.isHidden = !isAuthorized
@@ -209,19 +241,19 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
       openSecurityPanelButton?.isEnabled = !isAuthorized
       customDefaultButtonResult = !isAuthorized ? openSecurityPanelButton : nil
       skipSetAuthorizationPage = isAuthorized
-      
+    
     case .setAuth:
       authorizationVerifiedEmoji?.isHidden = true
       authorizationDeniedEmoji?.isHidden = true
-      
+    
     case .historyChoice:
       showHistoryChoiceViews(forUpgradeChosen: UserDefaults.standard.keepHistoryChoicePending ? nil :
                              !UserDefaults.standard.keepHistory)
       setupHistoryChoiceObservers()
-      
+    
     case .demo:
       runDemo()
-      
+    
     case .links:
       #if APP_STORE
       inAppPurchageTitle?.isHidden = false
@@ -248,7 +280,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
       setupOptionKeyObserver() { [weak self] event in
         self?.showAltCopyEmailButtons(event.modifierFlags.contains(.option))
       }
-      
+    
     default:
       break
     }

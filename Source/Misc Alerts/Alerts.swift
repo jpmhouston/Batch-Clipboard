@@ -10,13 +10,19 @@
 //
 
 import AppKit
+import KeyboardShortcuts
 import os.log
 
-class Alerts: NSObject {
+class Alerts: NSObject, NSTextFieldDelegate {
   
   @IBOutlet var pasteMultipleAccessoryView: NSView?
   @IBOutlet weak var pasteMultipleField: RangedIntegerTextField?
   @IBOutlet weak var pasteWithSeparatorPopup: NSPopUpButton? // assume items in sync with PasteMultipleSeparator
+  
+  @IBOutlet var saveBatchAccessoryView: NSView?
+  @IBOutlet weak var batchNameField: NSTextField?
+  @IBOutlet weak var batchHotkeyCheckbox: NSButton?
+  @IBOutlet weak var batchHotkeyContainerView: NSView?
   
   enum PermissionResponse { case cancel, openSettings, openIntro }
   enum BuiltInPasteSeparator: Int, CaseIterable {
@@ -41,6 +47,12 @@ class Alerts: NSObject {
   }
   
   private var addOnPasteMultipleSeparators: [String: String] = [:]
+  
+  private var hotKeyDefinition: KeyboardShortcuts.Name?
+  private var hotKeyShortcut: KeyboardShortcuts.Shortcut? 
+  private var hotKeyField: KeyboardShortcuts.RecorderCocoa?
+  private var saveBatchConfirmButton: NSButton?
+  private var prohibitedBatchNames: Set<String> = []
   
   override init() {
     super.init()
@@ -76,7 +88,7 @@ class Alerts: NSObject {
   
   // MARK: -
   
-  var bonusFeaturePromotionAlert: NSAlert {
+  private var bonusFeaturePromotionAlert: NSAlert {
     let alert = NSAlert()
     alert.alertStyle = .informational
     alert.messageText = NSLocalizedString("promoteextras_alert_message", comment: "")
@@ -86,7 +98,7 @@ class Alerts: NSObject {
     return alert
   }
   
-  func numberQueuedAlert(withQueueSize size: Int) -> NSAlert {
+  private func numberQueuedAlert(withQueueSize size: Int) -> NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("number_alert_message", comment: "")
     alert.informativeText = NSLocalizedString("number_alert_comment", comment: "")
@@ -96,7 +108,7 @@ class Alerts: NSObject {
     return alert
   }
   
-  internal var clearAlert: NSAlert {
+  private var clearAlert: NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("clear_alert_message", comment: "")
     alert.informativeText = NSLocalizedString("clear_alert_comment", comment: "")
@@ -117,7 +129,7 @@ class Alerts: NSObject {
     return alert
   }
   
-  internal var permissionNeededAlert: NSAlert {
+  private var permissionNeededAlert: NSAlert {
     let alert = NSAlert()
     alert.alertStyle = .warning
     alert.messageText = NSLocalizedString("accessibility_alert_message", comment: "")
@@ -134,6 +146,18 @@ class Alerts: NSObject {
     alert.informativeText = NSLocalizedString("accessibility_alert_comment", comment: "")
       .replacingOccurrences(of: "{settings}", with: locationName)
       .replacingOccurrences(of: "{pane}", with: paneName)
+    return alert
+  }
+  
+  private func saveBatchAlert(withCount count: Int, forCurrentBatch isCurrentBatch: Bool) -> NSAlert {
+    let alert = NSAlert()
+    alert.messageText = NSLocalizedString(isCurrentBatch ? "save_current_batch_alert_message" : "save_last_batch_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("save_batch_alert_comment", comment: "")
+      .replacingOccurrences(of: "{count}", with: "\(count)")
+    saveBatchConfirmButton = alert.addButton(withTitle: NSLocalizedString("save_batch_alert_confirm", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("save_batch_alert_cancel", comment: ""))
+    
+    saveBatchConfirmButton?.isEnabled = false
     return alert
   }
   
@@ -189,7 +213,8 @@ class Alerts: NSObject {
     }
   }
   
-  func withNumberToPasteAlert(maxValue: Int, separatorDefault: SeparatorChoice?, _ closure: @escaping (Int?, SeparatorChoice) -> Void) {
+  func withNumberToPasteAlert(maxValue: Int, separatorDefault: SeparatorChoice?,
+                              _ closure: @escaping (Int?, SeparatorChoice) -> Void) {
     let alert = numberQueuedAlert(withQueueSize: maxValue)
     
     alert.accessoryView = pasteMultipleAccessoryView
@@ -240,6 +265,108 @@ class Alerts: NSObject {
       default:
         closure(nil, .none)
       }
+    }
+  }
+  
+  func withSaveBatchAlert(forCurrentBatch isCurrentBatch: Bool, showingCount count: Int, excludingNames exclude: Set<String>,
+                          _ closure: @escaping (String?, KeyboardShortcuts.Name?) -> Void) {
+    let alert = saveBatchAlert(withCount: count, forCurrentBatch: isCurrentBatch)
+    
+    alert.accessoryView = saveBatchAccessoryView
+    batchNameField?.placeholderString = NSLocalizedString("save_batch_name_placeholder", comment: "")
+    batchNameField?.stringValue = ""
+    batchHotkeyCheckbox?.state = .off
+    batchHotkeyCheckbox?.isEnabled = false
+    prohibitedBatchNames = exclude
+    
+    batchNameField?.delegate = self
+    batchHotkeyCheckbox?.target = self
+    batchHotkeyCheckbox?.action = #selector(batchHotkeyCheckboxChanged(_:))
+    
+    alert.window.initialFirstResponder = batchNameField
+    
+    DispatchQueue.main.async {
+      switch alert.runModal() {
+      case NSApplication.ModalResponse.alertFirstButtonReturn:
+        if let name = self.batchNameField?.stringValue, !name.isEmpty {
+          closure(name, self.hotKeyDefinition)
+        } else {
+          closure(nil, nil)
+        }
+      default:
+        self.clearHotKey()
+        closure(nil, nil)
+      }
+      
+      self.hotKeyField?.removeFromSuperview()
+      self.hotKeyField = nil
+      self.hotKeyDefinition = nil
+      self.hotKeyShortcut = nil
+    }
+  }
+  
+  private func createHotKeyAndField(forName name: String) {
+    // the field needs a hotkey for it to assign, set that up with the given name first
+    guard let superview = batchHotkeyContainerView else { return }
+    let hotKey = KeyboardShortcuts.Name(name)
+    if let shortcut = hotKeyShortcut {
+      KeyboardShortcuts.setShortcut(shortcut, for: hotKey)
+    }
+    let field = KeyboardShortcuts.RecorderCocoa(for: hotKey) { [weak self] in
+      self?.hotKeyShortcut = $0 // closure called when field changed
+    }
+    superview.translatesAutoresizingMaskIntoConstraints = false
+    field.translatesAutoresizingMaskIntoConstraints = false
+    superview.addSubview(field)
+    superview.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[f]|", metrics: nil, views: ["f": field]))
+    superview.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[f]|", metrics: nil, views: ["f": field]))
+    hotKeyDefinition = hotKey
+    hotKeyField = field
+  }
+  
+  private func removeHotKeyAndField() {
+    hotKeyField?.removeFromSuperview()
+    hotKeyField = nil
+    clearHotKey()
+  }
+  
+  private func clearHotKey() {
+    if let hotKey = hotKeyDefinition {
+      KeyboardShortcuts.setShortcut(nil, for: hotKey)
+    }
+    hotKeyDefinition = nil
+  }
+  
+  private func nameProhibited(_ name: String) -> Bool {
+    return prohibitedBatchNames.contains {
+      name.caseInsensitiveCompare($0) == .orderedSame 
+    }
+  }
+  
+  func controlTextDidChange(_ notification: Notification) {
+    guard let field = batchNameField else { return }
+    removeHotKeyAndField()
+    if let fieldValue = batchNameField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines), !fieldValue.isEmpty {
+      let allowed = !nameProhibited(fieldValue)
+      batchHotkeyCheckbox?.isEnabled = allowed
+      saveBatchConfirmButton?.isEnabled = allowed
+      if allowed && batchHotkeyCheckbox?.state == .on {
+        createHotKeyAndField(forName: field.stringValue)
+      }
+    } else {
+      batchHotkeyCheckbox?.isEnabled = false
+      saveBatchConfirmButton?.isEnabled = false
+    }
+  }
+  
+  @objc func batchHotkeyCheckboxChanged(_ sender: AnyObject) {
+    if batchHotkeyCheckbox?.state == .off {
+      removeHotKeyAndField()
+      // hotKeyShortcut = nil -- to get a blank field when unchecking and rechecking
+      batchNameField?.becomeFirstResponder()
+    } else if let fieldValue = batchNameField?.stringValue, !fieldValue.isEmpty {
+      createHotKeyAndField(forName: fieldValue)
+      _ = hotKeyField?.becomeFirstResponder()
     }
   }
   

@@ -29,17 +29,25 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F93E2087-0027-448D-B532-1FFBF043512E"
+            uuid = "9E59FC31-C5E2-484A-88DB-6899390A27A8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Source/App/AppDelegate.swift"
+            continueAfterRunningActions = "Yes"
+            filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "35"
-            endingLineNumber = "35"
-            landmarkName = "applicationDidFinishLaunching(_:)"
+            startingLineNumber = "152"
+            endingLineNumber = "152"
+            landmarkName = "load(withHistory:queue:owner:)"
             landmarkType = "7">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "p queue.dump">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

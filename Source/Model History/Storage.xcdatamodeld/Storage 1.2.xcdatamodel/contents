@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24279" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Batch" representedClassName="Batch" syncable="YES">
+        <attribute name="fullname" optional="YES" attributeType="String"/>
         <attribute name="index" optional="YES" attributeType="String"/>
         <attribute name="shortcut" optional="YES" attributeType="Binary"/>
         <attribute name="title" optional="YES" attributeType="String"/>

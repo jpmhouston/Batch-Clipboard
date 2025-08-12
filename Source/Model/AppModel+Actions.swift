@@ -7,6 +7,7 @@
 //
 
 import AppKit
+import KeyboardShortcuts
 import Settings
 import os.log
 
@@ -55,11 +56,12 @@ extension AppModel {
   }
   
   func clearHistory() {
-    deleteHistoryClips()
+    deleteClips()
   }
   
   // TODO: add missing intent handlers
-  // getting item from queue and batch, deleting from queue and batch, deleting entire batch, paste all/multiple
+  // getting item from queue and batch, deleting from queue and batch, deleting entire batch,
+  // paste all/multiple, replay last batch
   
   // MARK: - clipboard features
   
@@ -148,7 +150,7 @@ extension AppModel {
   }
   
   @discardableResult
-  func queuedCopy(interactive: Bool) -> Bool {
+  func queuedCopy(interactive: Bool = false) -> Bool {
     // handler for the global keyboard shortcut and menu item via convenience functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
@@ -223,7 +225,7 @@ extension AppModel {
   }
   
   @discardableResult
-  func queuedPaste(interactive: Bool) -> Bool {
+  func queuedPaste(interactive: Bool = false) -> Bool {
     // handler for the global keyboard shortcut and menu item via convenience functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
@@ -289,49 +291,45 @@ extension AppModel {
   @IBAction
   func queuedPasteMultiple(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    guard !Self.busy else {
-      return
-    }
-    
-    guard AppModel.allowPasteMultiple else {
-      showBonusFeaturePromotionAlert()
-      return
-    }
-    
-    guard !queue.isEmpty else {
-      return
-    }
-    guard accessibilityCheck() else {
-      return
-    }
-    
-    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    
-    showNumberToPasteAlert { number, seperatorStr in
-      self.queuedPasteMultiple(number, seperator: seperatorStr, interactive: true)
-    }
+    queuedPasteMultiple(count: nil, interactive: true)
   }
   
   @IBAction
   func queuedPasteAll(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    queuedPasteMultiple(count: queue.size, interactive: true)
+  }
+  
+  @discardableResult
+  func queuedPasteMultiple(count: Int?, interactive: Bool = false) -> Bool {
     guard !Self.busy else {
-      return
+      return false
     }
     
     guard AppModel.allowPasteMultiple else {
-      showBonusFeaturePromotionAlert()
-      return
+      if interactive {
+        showBonusFeaturePromotionAlert()
+      }
+      return false
     }
     
     guard !queue.isEmpty else {
-      return
+      return false
     }
-    guard accessibilityCheck() else {
-      return
+    guard accessibilityCheck(interactive: interactive) else {
+      return false
     }
     
-    queuedPasteMultiple(queue.size, interactive: true)
+    if let count = count {
+      return queuedPasteMultiple(min(count, queue.size), interactive: interactive)
+      
+    } else {
+      showNumberToPasteAlert { number, seperatorStr in
+        self.queuedPasteMultiple(number, seperator: seperatorStr, interactive: interactive)
+      }
+      
+      return true
+    }
   }
   
   @discardableResult
@@ -469,10 +467,10 @@ extension AppModel {
   
   @discardableResult
   func replayFromHistory(atIndex index: Int, interactive: Bool = false) -> Bool {
-    guard AppModel.allowReplayFromHistory else {
+    guard !Self.busy else {
       return false
     }
-    guard !Self.busy else {
+    guard AppModel.allowReplayFromHistory else {
       return false
     }
     guard accessibilityCheck() else {
@@ -499,6 +497,100 @@ extension AppModel {
     updateMenuIcon()
     updateMenuTitle()
     commenceClipboardMonitoring()
+    
+    return true
+  }
+  
+  @IBAction
+  func replayLastBatch(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation()
+    replayBatch(history.lastBatch, interactive: true)
+  }
+  
+  func replayLastBatch() {
+    // convenience handler for the global keyboard shortcut
+    replayBatch(history.lastBatch, interactive: true)
+  }
+  
+  @IBAction
+  func replaySavedBatch(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation()
+    let batch: Batch? = nil
+    replayBatch(batch, interactive: true)
+  }
+  
+  func replaySavedBatch(_ batch: Batch) {
+    // convenience handler for the global keyboard shortcut
+    replayBatch(batch, interactive: true)
+  }
+  
+  @discardableResult
+  func replayBatch(_ batch: Batch?, interactive: Bool = false) -> Bool {
+    guard !Self.busy else {
+      return false
+    }
+    
+    guard AppModel.allowReplayLastBatch else {
+      if interactive {
+        showBonusFeaturePromotionAlert()
+      }
+      return false
+    }
+    
+    guard !queue.isOn else {
+      return false
+    }
+    guard let batch = batch, !batch.isEmpty else {
+      return false
+    }
+    
+    do {
+      try queue.replayQueue()
+    } catch {
+      return false
+    }
+    
+    menu.startedQueueFromBatch()
+    updateMenuIcon()
+    updateMenuTitle()
+    commenceClipboardMonitoring()
+    
+    return true
+  }
+  
+  @IBAction
+  func saveBatch(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    saveBatch()
+  }
+  
+  @discardableResult
+  func saveBatch() -> Bool {
+    guard !Self.busy else {
+      return false
+    }
+    
+    guard AppModel.allowSavedBatches else {
+      showBonusFeaturePromotionAlert()
+      return false
+    }
+    
+    guard let batch = history.currentBatch, !batch.isEmpty else {
+      return false
+    }
+    
+    showSaveBatchAlert(showingCount: batch.count) { [weak self] (name: String?, hotKey: KeyboardShortcuts.Name?) in
+      guard let self = self, let name = name else { return }
+      
+      let newBatch = Batch.create(withName: name, shortcut: nil, clips: history.lastBatchClips)
+      if let hotKey = hotKey {
+        addHotKey(hotKey, toBatch: newBatch)
+      } else {
+        setupBlankHotKey(forBatch: newBatch)
+      }
+      
+      menu.addedBatch(newBatch)
+    }
     
     return true
   }
@@ -570,16 +662,16 @@ extension AppModel {
       return
     }
     
-    clearHistory(suppressClearAlert: false) // calls back to deleteHistoryClips()
+    clearHistory(suppressClearAlert: false) // calls back to deleteClips()
   }
   
-  func deleteHistoryClips() {
+  func deleteClips() {
     do {
       try queue.clear()
     } catch {
       os_log(.default, "ignoring error from turning off queue %@", "\(error)")
     }
-    history.clear()
+    history.clearHistory()
     menu.deletedHistory()
     clipboard.clear()
     updateMenuIcon()
@@ -720,13 +812,13 @@ extension AppModel {
   
   func clearHistory(suppressClearAlert: Bool) {
     if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
-      deleteHistoryClips()
+      deleteClips()
     } else {
       takeFocus()
       
       alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
         if confirm {
-          self?.deleteHistoryClips()
+          self?.deleteClips()
           
           if dontAskAgain {
             UserDefaults.standard.suppressClearAlert = true
@@ -745,6 +837,20 @@ extension AppModel {
       guard let self = self else { return }
       if confirm {
         showSettings(selectingPane: .purchase)
+      }
+      
+      returnFocus()
+    }
+  }
+  
+  private func showSaveBatchAlert(showingCount count: Int, _ completion: @escaping (String, KeyboardShortcuts.Name?)->Void) {
+    takeFocus()
+    
+    alerts.withSaveBatchAlert(forCurrentBatch: queue.isOn, showingCount: count,
+                              excludingNames: currentHotKeyNames()) { [weak self] name, hotKey in
+      guard let self = self else { return }
+      if let name = name {
+        completion(name, hotKey)
       }
       
       returnFocus()
@@ -800,7 +906,7 @@ extension AppModel {
     if !UserDefaults.standard.keepHistory && !queue.isOn {
       clipboard.stop()
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
-        history.clear()
+        history.clearHistory()
         menu.deletedHistory()
       }
     }

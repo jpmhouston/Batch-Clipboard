@@ -21,7 +21,8 @@ class ClipboardQueue {
   var clearBatchPending = false
   
   var batch: Batch? { history.currentBatch }
-  var clips: [Clip] { history.currentBatch?.getClipsArray() ?? [] }
+  var batchClips: [Clip] { history.currentBatch?.getClipsArray() ?? [] }
+  var clips: [Clip] { Array(batchClips.prefix(size)) }
   var size = 0
   var notEmpty: Bool { isOn && size > 0 }
   var isEmpty: Bool { !isOn || size == 0 }
@@ -57,7 +58,7 @@ class ClipboardQueue {
     size = 0
     
     // erase the previous "last batch" once starting build a new one
-    batch?.clear()
+    history.clearCurrentBatch()
   }
   
   func off() throws {
@@ -82,7 +83,7 @@ class ClipboardQueue {
   func clear() throws {
     isOn = false
     size = 0
-    batch?.clear()
+    history.clearCurrentBatch()
   }
   
   func replaying() throws {
@@ -112,7 +113,7 @@ class ClipboardQueue {
     // batch at it's previous state rather than empty. This is because the current batch is used
     // as the "last batch" in the menu so the user can replay it.
     if size == 0 && clearBatchPending {
-      batch.clear()
+      history.clearCurrentBatch()
       clearBatchPending = false
     }
     
@@ -227,7 +228,7 @@ class ClipboardQueue {
       throw QueueError.missingQueueBatch
     }
     
-    batch.clear()
+    history.clearCurrentBatch()
     batch.addExistingClips(clips)
     
     isOn = true
@@ -376,7 +377,7 @@ class ClipboardQueue {
     }
     
     if !batch.isEmpty {
-      clips.reversed().forEach(history.add(_:))
+      batchClips.reversed().forEach(history.add(_:))
     }
   }
   
@@ -401,7 +402,7 @@ class ClipboardQueue {
     guard !(batch?.clips == nil && size > 0) else {
       return "error: queue batch nil when size is \(size)"
     }
-    let clips = self.clips
+    let clips = self.batchClips
     guard clips.count >= size else {
       return "error: queue clips count \(clips.count) when size is \(size)"
     }

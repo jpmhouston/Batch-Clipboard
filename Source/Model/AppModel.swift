@@ -27,6 +27,7 @@ class AppModel: NSObject {
   static var allowFullyExpandedHistory = false
   static var allowHistorySearch = false
   static var allowReplayFromHistory = false
+  static var allowReplayLastBatch = true
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
   static var allowSavedBatches = false
@@ -65,9 +66,11 @@ class AppModel: NSObject {
   internal var menu: AppMenu!
   internal var menuController: MenuController!
   
-  private var startHotKey: StartKeyboardShortcutHandler!
   private var copyHotKey: CopyKeyboardShortcutHandler!
   private var pasteHotKey: PasteKeyboardShortcutHandler!
+  private var startHotKey: StartKeyboardShortcutHandler!
+  private var replayLastHotKey: ReplayLastKeyboardShortcutHandler!
+  private var savedBatchHotKeys: Set<ReplaySavedKeyboardShortcutHandler> = []
   
   #if APP_STORE
   private let purchases = AppStorePurchases()
@@ -147,15 +150,18 @@ class AppModel: NSObject {
     
     settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
     
-    startHotKey = StartKeyboardShortcutHandler(startQueueMode)
     copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
     pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
+    startHotKey = StartKeyboardShortcutHandler(startQueueMode)
+    replayLastHotKey = ReplayLastKeyboardShortcutHandler(replayLastBatch)
+    restoreSavedBatchHotKeys()
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
     clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     menu.buildDynamicItems()
+    updateMenuShortcuts()
     // prepareForPopup() can take a while the first time so do it early
     // instead of the first time the menu is clicked on, and in case the
     // intro needs to be shown, delay this call a bit to let that open
@@ -263,7 +269,85 @@ class AppModel: NSObject {
   }
   
   private func migrateUserDefaults() {
-    // nothing needed currently
+    // perhaps some code regarding keepHistory could be moved here
+  }
+  
+  // MARK: - dynamic hotkeys for saved batches
+  
+  private func restoreSavedBatchHotKeys() {
+    savedBatchHotKeys = []
+    for batch in Batch.saved {
+      saveNewHotKey(withShortcut: batch.keyShortcut, forBatch: batch)
+    }
+  }
+  
+  private func updateMenuShortcuts() {
+    var mapping: [String: KeyboardShortcuts.Name] = [:]
+    for hotKeyHandler in savedBatchHotKeys {
+      mapping[hotKeyHandler.nameString] = hotKeyHandler.hotKey
+    }
+    //menu.something = mapping // TODO: pass this dict to the menu for adorning menu items
+  }
+  
+  private func saveHotKey(_ hotKey: KeyboardShortcuts.Name, forBatch batch: Batch) {
+    let handler = ReplaySavedKeyboardShortcutHandler(for: hotKey, batch: batch, replaySavedBatch)
+    savedBatchHotKeys.insert(handler)
+  }
+  
+  private func saveNewHotKey(withShortcut shortcut: KeyboardShortcuts.Shortcut?, forBatch batch: Batch) {
+    guard let nameString = batch.fullname, !nameString.isEmpty else {
+      return
+    }
+    let hotKey = KeyboardShortcuts.Name(nameString)
+    KeyboardShortcuts.setShortcut(shortcut, for: hotKey)
+    saveHotKey(hotKey, forBatch: batch)
+  }
+  
+  // use when hotkey field has created a new name & shortcut for a batch, saves it in the batch and sets up the handler   
+  internal func addHotKey(_ hotKey: KeyboardShortcuts.Name, toBatch batch: Batch) {
+    batch.keyShortcut = KeyboardShortcuts.getShortcut(for: hotKey)
+    saveHotKey(hotKey, forBatch: batch)
+  }
+  
+  // use to setup a potential shortcut handler for batch   
+  internal func setupBlankHotKey(forBatch batch: Batch) {
+    if batch.keyShortcut != nil {
+      batch.keyShortcut = nil
+    }
+    saveNewHotKey(withShortcut: nil, forBatch: batch)
+  }
+  
+  // use when the name of a batch has changed, reset the shortcut name and the handler
+  internal func updateName(_ newName: String, forBatch batch: Batch) -> Bool {
+    let duplicate = savedBatchHotKeys.first { $0.nameString == newName }
+    let existing = savedBatchHotKeys.first { $0.batch === batch }
+    guard duplicate == nil else {
+      return duplicate == existing // ie. okay if the name for a batch hassn't really changed  
+    }
+    
+    // shortcut names are meant to be static, some hoops to jump through to remove the old one dynamically
+    var shortcut: KeyboardShortcuts.Shortcut? = nil
+    if let existingHandler = existing { // TODO: otherwise log something here
+      shortcut = KeyboardShortcuts.getShortcut(for: existingHandler.hotKey)
+      KeyboardShortcuts.setShortcut(nil, for: existingHandler.hotKey) // removes entry from UserDefaults
+      savedBatchHotKeys.remove(existingHandler)
+      
+      // TODO: replace with `KeyboardShortcuts.removeHandler(for: existing.name)` when next version of KeyboardShortcuts available 
+      KeyboardShortcuts.removeAllHandlers()
+      savedBatchHotKeys.forEach {
+        $0.installHandler()
+      }
+    }
+    
+    saveNewHotKey(withShortcut: shortcut, forBatch: batch)
+    
+    return true
+  }
+  
+  internal func currentHotKeyNames() -> Set<String> {
+    var savedBatchNames = savedBatchHotKeys.map { $0.name }
+    savedBatchNames.append(contentsOf: [.queueStart, .queuedCopy, .queuedPaste, .queueReplay])
+    return Set(savedBatchNames.map { $0.rawValue })
   }
   
   // MARK: - features & purchases
@@ -443,7 +527,7 @@ class AppModel: NSObject {
     } else if UserDefaults.standard.supressSaveClipsAlert {
       UserDefaults.standard.keepHistory = false
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
-        history.clear()
+        history.clearHistory()
       }
       history.offloadList()
       clipboard.stop()
@@ -462,7 +546,7 @@ class AppModel: NSObject {
           }
           
           if !retainDB {
-            history.clear()
+            history.clearHistory()
           }
           history.offloadList()
           clipboard.stop()

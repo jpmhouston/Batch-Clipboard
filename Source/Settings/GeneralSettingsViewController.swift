@@ -26,9 +26,10 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   override var nibName: NSNib.Name? { "GeneralSettingsViewController" }
   
-  private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
   private let copyHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedCopy)
   private let pasteHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedPaste)
+  private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
+  private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
   
   #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
@@ -37,9 +38,10 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
   
-  @IBOutlet weak var startHotkeyContainerView: NSView!
   @IBOutlet weak var copyHotkeyContainerView: NSView!
   @IBOutlet weak var pasteHotkeyContainerView: NSView!
+  @IBOutlet weak var startHotkeyContainerView: NSView!
+  @IBOutlet weak var replayHotkeyContainerView: NSView!
   @IBOutlet weak var launchAtLoginButton: NSButton!
   @IBOutlet weak var launchAtLoginRow: NSGridRow!
   @IBOutlet weak var openLoginItemsPanelButton: NSButton!
@@ -77,9 +79,10 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
       par.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[s]|", metrics: nil, views: ["s": sub]))
     }
     // using the above func instead of addSubview fixed layout issues with the KeyboardShortcuts.RecorderCocoa views
-    addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
     addSubviewWithManualLayout(copyHotkeyContainerView, copyHotkeyRecorder)
     addSubviewWithManualLayout(pasteHotkeyContainerView, pasteHotkeyRecorder)
+    addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
+    addSubviewWithManualLayout(replayHotkeyContainerView, replayHotkeyRecorder)
     
     #if SPARKLE_UPDATES
     showSparkleUpdateRows(true)

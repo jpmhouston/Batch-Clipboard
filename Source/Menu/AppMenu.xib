@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -38,12 +38,12 @@
                 <outlet property="horizontalRightPadding" destination="9iL-Y8-VWA" id="Kbl-Wd-50R"/>
                 <outlet property="queryField" destination="MmW-Nx-C7z" id="blP-46-55K"/>
             </connections>
-            <point key="canvasLocation" x="0" y="243"/>
+            <point key="canvasLocation" x="0.0" y="353"/>
         </customView>
         <customView id="9fv-At-xQC" userLabel="Placeholder Anchor Item View">
             <rect key="frame" x="0.0" y="0.0" width="100" height="0.0"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <point key="canvasLocation" x="0" y="373"/>
+            <point key="canvasLocation" x="0.0" y="244"/>
         </customView>
         <menu title="Batch Clipboard" id="dqg-kI-Klz" customClass="AppMenu" customModule="Batch_Clipboard" customModuleProvider="target">
             <items>
@@ -53,7 +53,7 @@
                         <action selector="showAbout:" target="-2" id="A4A-Di-5u1"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Show Intro..." alternate="YES" id="1Eb-11-wVB">
+                <menuItem title="Show Intro…" alternate="YES" id="1Eb-11-wVB">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
                     <connections>
                         <action selector="showIntro:" target="-2" id="uTE-rv-v5K"/>
@@ -108,14 +108,20 @@
                         <action selector="queuedPasteMultiple:" target="-2" id="iSw-Vb-ZeW"/>
                     </connections>
                 </menuItem>
-                <menuItem id="f7O-Xw-4yJ" title="note">
+                <menuItem title="Replay Last Batch" id="fuN-bD-8p7">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <outlet property="view" destination="XAP-KR-RlP" id="gJN-xE-3BH"/>
+                        <action selector="replayLastBatch:" target="-2" id="dRQ-xk-ysb"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Save Last Batch…" id="mW6-UJ-rBZ">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                </menuItem>
+                <menuItem title="Save Batch…" hidden="YES" id="83L-SB-PRJ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="k7r-jZ-eci"/>
-                <menuItem id="a7s-Cu-BAT" title="current batch heading">
+                <menuItem title="current batch heading" id="a7s-Cu-BAT">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="SvR-Jd-hf3" id="U9F-Aa-N2W"/>
@@ -141,7 +147,7 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Qdr-dc-0KU"/>
-                <menuItem id="K6h-Sv-HIS" title="history heading item">
+                <menuItem title="history heading item" id="K6h-Sv-HIS">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="QzL-83-ay4" id="j4P-zX-e7Y"/>
@@ -160,13 +166,19 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="rXg-Ma-ibC"/>
-                <menuItem id="f2x-Sv-BAT" title="saved batches heading">
+                <menuItem title="saved batches heading" id="f2x-Sv-BAT">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="kVS-Vi-MVF" id="P3r-5T-c0l"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="5yx-82-0Qq"/>
+                <menuItem title="note" id="f7O-Xw-4yJ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="XAP-KR-RlP" id="gJN-xE-3BH"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Delete History Item" id="vGj-r1-rIx">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -202,15 +214,14 @@ CA
                 </menuItem>
             </items>
             <connections>
+                <outlet property="batchesHeadingItem" destination="f2x-Sv-BAT" id="y8o-vZ-G4X"/>
                 <outlet property="clearItem" destination="u3d-qz-ihN" id="aak-jk-gan"/>
                 <outlet property="deleteItem" destination="vGj-r1-rIx" id="wrK-G3-cEq"/>
                 <outlet property="filterFieldItem" destination="MMa-qd-9PO" id="Isx-BV-gjX"/>
+                <outlet property="historyHeadingItem" destination="K6h-Sv-HIS" id="b3m-K6-E7t"/>
                 <outlet property="keyDetectorItem" destination="90h-qR-Mlh" id="qED-tN-70Q"/>
                 <outlet property="leadingSeparatorItem" destination="k7r-jZ-eci" id="EeR-v3-0xV"/>
                 <outlet property="noteItem" destination="f7O-Xw-4yJ" id="MEb-0U-qJb"/>
-                <outlet property="queueHeadingItem" destination="a7s-Cu-BAT" id="N1I-j5-C4Q"/>
-                <outlet property="historyHeadingItem" destination="K6h-Sv-HIS" id="b3m-K6-E7t"/>
-                <outlet property="batchesHeadingItem" destination="f2x-Sv-BAT" id="y8o-vZ-G4X"/>
                 <outlet property="postBatchesSeparatorItem" destination="5yx-82-0Qq" id="7jE-RB-GZd"/>
                 <outlet property="postHistorySeparatorItem" destination="rXg-Ma-ibC" id="l1r-rC-cAk"/>
                 <outlet property="postQueueSeparatorItem" destination="Qdr-dc-0KU" id="Ngt-xV-kDh"/>
@@ -218,6 +229,7 @@ CA
                 <outlet property="prototypeCopyItem" destination="1hg-yO-AD0" id="BFx-GW-cTS"/>
                 <outlet property="prototypeReplayItem" destination="u5y-6g-IID" id="BiY-9N-axa"/>
                 <outlet property="queueAdvanceItem" destination="TLY-ku-V0E" id="od9-PM-WWa"/>
+                <outlet property="queueHeadingItem" destination="a7s-Cu-BAT" id="N1I-j5-C4Q"/>
                 <outlet property="queueReplayItem" destination="xpH-S9-QDS" id="SV5-iZ-vcs"/>
                 <outlet property="queueStartItem" destination="Y5o-n6-NCS" id="j9S-hc-MQx"/>
                 <outlet property="queueStopItem" destination="TKZ-UP-Ggw" id="2PD-gl-875"/>
@@ -225,9 +237,12 @@ CA
                 <outlet property="queuedPasteAllItem" destination="mK7-my-GpM" id="1fB-7e-6og"/>
                 <outlet property="queuedPasteItem" destination="WZ5-r7-f8t" id="nfN-UU-R2i"/>
                 <outlet property="queuedPasteMultipleItem" destination="4b4-xr-zN6" id="tAs-Yl-Dbs"/>
+                <outlet property="replayLastBatchItem" destination="fuN-bD-8p7" id="TuM-0x-2mh"/>
+                <outlet property="saveCurrentBatchItem" destination="83L-SB-PRJ" id="Eun-bQ-Yyi"/>
+                <outlet property="saveLastBatchItem" destination="mW6-UJ-rBZ" id="XbX-Zo-vcZ"/>
                 <outlet property="undoCopyItem" destination="FT3-WA-g9c" id="VA5-67-hoL"/>
             </connections>
-            <point key="canvasLocation" x="0" y="-81"/>
+            <point key="canvasLocation" x="1" y="-145"/>
         </menu>
         <customView id="XAP-KR-RlP" userLabel="Note Item View">
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
@@ -237,7 +252,7 @@ CA
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
-                        <string key="title">The above shortcuts work in any application.
+                        <string key="title">Keyboard shortcuts above work in any application.
 Shortcuts below only work while this menu is open.</string>
                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -250,24 +265,24 @@ Shortcuts below only work while this menu is open.</string>
                 <constraint firstAttribute="trailing" secondItem="uIb-jp-yTA" secondAttribute="trailing" constant="4" id="OzH-Ah-gqy"/>
                 <constraint firstItem="uIb-jp-yTA" firstAttribute="leading" secondItem="XAP-KR-RlP" secondAttribute="leading" constant="13" id="kTC-Bh-igb"/>
             </constraints>
-            <point key="canvasLocation" x="0" y="309"/>
+            <point key="canvasLocation" x="0.0" y="432"/>
         </customView>
         <customView id="11V-7Q-FUf" customClass="KeyDetectorView" customModule="Batch_Clipboard" customModuleProvider="target">
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <connections>
                 <outlet property="menuItem" destination="vGj-r1-rIx" id="3Gr-6X-14n"/>
             </connections>
-            <point key="canvasLocation" x="0" y="284"/>
+            <point key="canvasLocation" x="0.0" y="284"/>
         </customView>
         <customView id="SvR-Jd-hf3" userLabel="Current Batch Heading View">
-            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
-                    <rect key="frame" x="11" y="2" width="177" height="14"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="CURRENT BATCH" id="r5c-9f-aE2">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                    <rect key="frame" x="11" y="2" width="177" height="11"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="ACTIVE BATCH" id="r5c-9f-aE2">
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -278,17 +293,17 @@ Shortcuts below only work while this menu is open.</string>
                 <constraint firstAttribute="trailing" secondItem="TeN-Rn-iTn" secondAttribute="trailing" constant="4" id="oiX-ZF-i8p"/>
                 <constraint firstAttribute="bottom" secondItem="TeN-Rn-iTn" secondAttribute="bottom" constant="2" id="ySh-K1-Y7W"/>
             </constraints>
-            <point key="canvasLocation" x="0" y="537"/>
+            <point key="canvasLocation" x="0.0" y="537"/>
         </customView>
         <customView id="QzL-83-ay4" userLabel="History Heading View">
-            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
-                    <rect key="frame" x="11" y="2" width="177" height="14"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                    <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -299,17 +314,17 @@ Shortcuts below only work while this menu is open.</string>
                 <constraint firstItem="Gcz-05-y5o" firstAttribute="leading" secondItem="QzL-83-ay4" secondAttribute="leading" constant="13" id="lhi-JM-nvE"/>
                 <constraint firstItem="Gcz-05-y5o" firstAttribute="top" secondItem="QzL-83-ay4" secondAttribute="top" constant="2" id="s5Q-G2-fZC"/>
             </constraints>
-            <point key="canvasLocation" x="0" y="599"/>
+            <point key="canvasLocation" x="0.0" y="599"/>
         </customView>
         <customView id="kVS-Vi-MVF" userLabel="Saved Batches Heading View">
-            <rect key="frame" x="0.0" y="0.0" width="190" height="18"/>
+            <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
-                    <rect key="frame" x="11" y="2" width="177" height="14"/>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                    <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
-                        <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -320,7 +335,7 @@ Shortcuts below only work while this menu is open.</string>
                 <constraint firstAttribute="bottom" secondItem="sMM-dv-zr0" secondAttribute="bottom" constant="2" id="PIa-VL-jiS"/>
                 <constraint firstAttribute="trailing" secondItem="sMM-dv-zr0" secondAttribute="trailing" constant="4" id="pw8-pp-4oU"/>
             </constraints>
-            <point key="canvasLocation" x="0" y="660"/>
+            <point key="canvasLocation" x="0.0" y="660"/>
         </customView>
     </objects>
 </document>
