@@ -56,3 +56,9 @@
 "resetdata_alert_deleteandlaunch" = "Reset Data and Launch";
 "resetdata_alert_launch" = "Launch Without Reset";
 "resetdata_alert_terimnate" = "Quit";
+"save_current_batch_alert_message" = "Save this batch?";
+"save_last_batch_alert_message" = "Save the last batch?";
+"save_batch_alert_comment" = "This batch containing {count} clip(s) will be saved to the menu to be replayed anytime later. Provide a name and optional keyboard shortcut. The name must not be blank or already used by an existing saved batch.";
+"save_batch_alert_confirm" = "Save";
+"save_batch_alert_cancel" = "Cancel";
+"save_batch_name_placeholder" = "Name required";

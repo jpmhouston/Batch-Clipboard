@@ -9,7 +9,7 @@
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
-import Cocoa
+import AppKit
 
 //extension NSAttributedString.Key {
 //  static let headIndicator: Self = .init("batchclipqueuehead")
@@ -73,6 +73,8 @@ class ClipMenuItem: NSMenuItem {
 
     return NSFont(descriptor: italicFontDescriptor, size: 0) ?? systemFont
   }()
+  
+  // TODO: i think ok to renmove clipboard property
   
   internal var clipboard: Clipboard!
   

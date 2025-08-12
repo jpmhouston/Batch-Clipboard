@@ -8,6 +8,7 @@
 
 import AppKit
 import CoreData
+import KeyboardShortcuts
 import Sauce
 import os.log
 
@@ -16,6 +17,7 @@ class Batch: NSManagedObject {
   
   @NSManaged public var index: String?
   @NSManaged public var shortcut: Data?
+  @NSManaged public var fullname: String?
   @NSManaged public var title: String?
   @NSManaged public var clips: NSOrderedSet?
   
@@ -41,7 +43,7 @@ class Batch: NSManagedObject {
   static var saved: [Batch] {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
     fetchRequest.sortDescriptors = [Batch.sortByIndex]
-    fetchRequest.predicate = NSPredicate(format: "title != nil")
+    fetchRequest.predicate = NSPredicate(format: "fullname != nil")
     do {
       return try CoreDataManager.shared.context.fetch(fetchRequest)
     } catch {
@@ -53,7 +55,7 @@ class Batch: NSManagedObject {
   static var current: Batch? {
     let fetchRequest = NSFetchRequest<Batch>(entityName: "Batch")
     fetchRequest.sortDescriptors = [Batch.sortByIndex]
-    fetchRequest.predicate = NSPredicate(format: "title == nil")
+    fetchRequest.predicate = NSPredicate(format: "fullname == nil")
     fetchRequest.fetchBatchSize = 1
     do {
       return try CoreDataManager.shared.context.fetch(fetchRequest).first
@@ -92,20 +94,65 @@ class Batch: NSManagedObject {
     return batch
   }
   
-  static func create(withTitle title: String?, index: String? = nil, shortcut: Data? = nil,
+  static func create(withName name: String?, index: String? = nil, shortcut: KeyboardShortcuts.Shortcut,
+                     clips: any Collection<Clip> = []) -> Batch {
+    return create(withName: name, index: index, shortcut: shortcutData(forKeyShortcut: shortcut), clips: clips)
+  }
+  
+  static func create(withName name: String?, index: String? = nil, shortcut: Data? = nil,
                      clips: any Collection<Clip> = []) -> Batch {
     let batch = Batch(context: CoreDataManager.shared.context)
     
-    batch.title = title ?? ""
+    batch.fullname = name
     batch.index = index ?? batch.nextIndex() // TODO: sanitize input index str?
     batch.shortcut = shortcut
     batch.addExistingClips(clips)
+    
+    batch.makeTruncatedTitle()
     
     CoreDataManager.shared.saveContext()
     return batch
   }
   
+  @discardableResult
+  func makeTruncatedTitle() -> String {
+    var newTitle = ""
+    if let fullname = fullname {
+      newTitle = fullname.shortened(to: UserDefaults.standard.maxTitleLength)
+    }
+    title = newTitle
+    return newTitle
+  }
+  
   // MARK: -
+  
+  var keyShortcut: KeyboardShortcuts.Shortcut? {
+    get { Self.keyShortcut(forData: shortcut) }
+    set { shortcut = Self.shortcutData(forKeyShortcut: newValue) }
+  }
+  
+  private static func keyShortcut(forData shortcutData: Data?) -> KeyboardShortcuts.Shortcut? {
+    if let shortcutData = shortcutData {
+      try? JSONDecoder().decode(KeyboardShortcuts.Shortcut.self, from: shortcutData)
+    } else {
+      nil
+    }
+  }
+  
+  private static func shortcutData(forKeyShortcut keyShortcut: KeyboardShortcuts.Shortcut?) -> Data? {
+    if let keyShortcut = keyShortcut {
+      try? JSONEncoder().encode(keyShortcut)
+    } else {
+      nil
+    }
+  }
+  
+  func setName(to newName: String) {
+    // note, doesn't check for uniqueness among all Batch entities
+    fullname = newName
+    makeTruncatedTitle()
+    CoreDataManager.shared.saveContext()
+  }
   
   func getClips() -> Set<Clip> {
     (clips?.set as? Set<Clip>) ?? Set()

@@ -352,9 +352,9 @@ class QueueSims {
           guard let last = lastDeleted else { print("unexpected match-deleted token (\(deletedTokenname) \(deleted)) [\(n)] when no record of a delete"); continue }
           #expect(param == last)
         
-        case .clear: // replicates AppModel.deleteHistoryClips
+        case .clear: // replicates AppModel.deleteClips
           try queue.clear()
-          history.clear()
+          history.clearHistory()
           #expect(queue.size == 0, "at clear-history token \(clear) [\(n)]")
           #expect(history.count == 0, "at clear-history token \(clear) [\(n)]")
         
@@ -422,7 +422,7 @@ class QueueSims {
           } else if let i = queueMatchIndex {
             #expect(queue.size > 0, "expected queue non-empty and '\(str)' next [\(n)]")
             #expect(i >= 0, "expected more queue items with '\(str)' next  [\(n)]")
-            guard i >= 0, queue.size > 0 else { continue } // don't decrement index past -1
+            guard i >= 0, i < queue.size else { continue } // don't decrement index past -1
             let clip = queue.clips[i]
             #expect(clip.isText, "at queue index \(i) [\(n)]")
             if let cliptxt = clip.text {

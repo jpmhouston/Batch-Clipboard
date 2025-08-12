@@ -22,6 +22,9 @@ class History {
   var currentBatch: Batch?
   
   var usingHistory: Bool { currentList != nil }
+  var lastBatch: Batch? { currentBatch }
+  var lastBatchClips: [Clip] { currentBatch?.getClipsArray() ?? [] }
+  var isLastBatchEmpty: Bool { currentBatch?.isEmpty ?? true }
   var all: [Clip] { currentList?.getClipsArray() ?? [] }
   var clips: [Clip] { currentList?.getClipsArray() ?? [] }
   var first: Clip? { all.first }
@@ -135,14 +138,19 @@ class History {
     
     let overflowItems = all.suffix(from: maxItems)
     overflowItems.forEach(deleteClipFromCurrent(_:))
-    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
+    CoreDataManager.shared.saveContext()
   }
   
-  func clear() {
+  func clearHistory() {
     if let list = currentList, let clips = list.clips {
       list.removeFromClips(clips)
     }
-    CoreDataManager.shared.saveContext() // added this, was it really missing or is it redundant here?
+    CoreDataManager.shared.saveContext()
+  }
+  
+  func clearCurrentBatch() {
+    currentBatch?.clear()
+    CoreDataManager.shared.saveContext()
   }
   
   func resetAllData() {
