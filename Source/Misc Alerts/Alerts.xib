@@ -99,8 +99,8 @@
                     </textFieldCell>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ilx-QS-tta">
-                    <rect key="frame" x="20" y="37" width="181" height="18"/>
-                    <buttonCell key="cell" type="check" title="Assign keyboard shortcut" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="eTe-EK-TQn">
+                    <rect key="frame" x="14" y="37" width="192" height="18"/>
+                    <buttonCell key="cell" type="check" title="Assign a keyboard shortcut" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="eTe-EK-TQn">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>

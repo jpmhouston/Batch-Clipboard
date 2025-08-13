@@ -36,6 +36,7 @@ extension UserDefaults {
     static let showSpecialSymbols = "showSpecialSymbols"
     static let historySize = "historySize"
     static let suppressClearAlert = "suppressClearAlert"
+    static let suppressDeleteBatchAlert = "suppressDeleteBatchAlert" 
     static let ignoreRegexp = "ignoreRegexp"
     static let highlightMatch = "highlightMatch"
     static let completedIntro = "completedIntro"
@@ -202,6 +203,11 @@ extension UserDefaults {
   public var suppressClearAlert: Bool {
     get { bool(forKey: Keys.suppressClearAlert) }
     set { set(newValue, forKey: Keys.suppressClearAlert) }
+  }
+  
+  public var suppressDeleteBatchAlert: Bool {
+    get { bool(forKey: Keys.suppressDeleteBatchAlert) }
+    set { set(newValue, forKey: Keys.suppressDeleteBatchAlert) }
   }
   
   public var highlightMatches: String {

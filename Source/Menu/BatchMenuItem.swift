@@ -7,28 +7,30 @@
 //
 
 import AppKit
+import KeyboardShortcuts
 
 class BatchMenuItem: NSMenuItem {
   
   var batch: Batch?
   var name: String { batch?.fullname ?? "" }
+  var hotKey: KeyboardShortcuts.Name?
   
-  required init(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+  // outlets to the prototype submenu are connected  
+  private var replaySubmenuItem: NSMenuItem? { submenu?.itemsWithMinCount(3)?[0] }
+  private var renameSubmenuItem: NSMenuItem? { submenu?.itemsWithMinCount(3)?[1] }
+  private var clipItemSeparator: NSMenuItem? { submenu?.itemsWithMinCount(3)?[2] }
+  
+  static func parentBatchMenuItem(for potentialSubmenuItem: AnyObject) -> BatchMenuItem? {
+    (potentialSubmenuItem as? NSMenuItem)?.parent as? BatchMenuItem
   }
   
-  // define this to avoid a mysterious runtime failure:
-  // Fatal error: Use of unimplemented initializer 'init(title:action:keyEquivalent:)' for class 'Batch_Clipboard.ClipMenuItem'
-  override init(title: String, action: Selector?, keyEquivalent: String) {
-    super.init(title: title, action: action, keyEquivalent: keyEquivalent)
-  }
+  // MARK: -
   
-  func configured(withBatch batch: Batch) -> Self {
+  func configured(withBatch batch: Batch, hotKey: KeyboardShortcuts.Name?) -> Self {
     self.batch = batch
-    self.title = batch.title ?? ""
-    
-    // set shortcut?
-    
+    self.title = batch.makeTruncatedTitle()
+    self.hotKey = hotKey
+    updateShortcut()
     return self
   }
   
@@ -39,7 +41,24 @@ class BatchMenuItem: NSMenuItem {
     title = batch.makeTruncatedTitle()
   }
   
-//  func updateShortcut() {
-//  }
+  func updateShortcut() {
+    guard let subitem = replaySubmenuItem else {
+      return
+    }
+    if let hotKey = hotKey {
+      MainActor.assumeIsolated {
+        subitem.setShortcut(for: hotKey)
+      }
+    } else {
+      subitem.keyEquivalent = ""
+      subitem.keyEquivalentModifierMask = []
+    }
+  }
   
+}
+
+extension NSMenu {
+  func itemsWithMinCount(_ n: Int) -> [NSMenuItem]? {
+    items.count >= n ? items : nil
+  }
 }

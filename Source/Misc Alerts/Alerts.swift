@@ -52,6 +52,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
   private var hotKeyShortcut: KeyboardShortcuts.Shortcut? 
   private var hotKeyField: KeyboardShortcuts.RecorderCocoa?
   private var saveBatchConfirmButton: NSButton?
+  private var saveBatchOriginalName: String?
   private var prohibitedBatchNames: Set<String> = []
   
   override init() {
@@ -149,16 +150,38 @@ class Alerts: NSObject, NSTextFieldDelegate {
     return alert
   }
   
-  private func saveBatchAlert(withCount count: Int, forCurrentBatch isCurrentBatch: Bool) -> NSAlert {
+  private func deleteBatchConfirmationAlert(withTitle title: String) -> NSAlert {
+    let alert = NSAlert()
+    alert.messageText = NSLocalizedString("delete_batch_message", comment: "")
+    if title.isEmpty {
+      alert.informativeText = NSLocalizedString("delete_batch_alt_comment", comment: "")
+    } else {
+      alert.informativeText = NSLocalizedString("delete_batch_comment", comment: "")
+        .replacingOccurrences(of: "{title}", with: title)
+    }
+    alert.addButton(withTitle: NSLocalizedString("delete_batch_confirm", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("delete_batch_cancel", comment: ""))
+    alert.showsSuppressionButton = true
+    return alert
+  }
+  
+  private func saveBatchAlert(withCount count: Int, forCurrentBatch isCurrentBatch: Bool) -> (NSAlert, NSButton) {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString(isCurrentBatch ? "save_current_batch_alert_message" : "save_last_batch_alert_message", comment: "")
     alert.informativeText = NSLocalizedString("save_batch_alert_comment", comment: "")
       .replacingOccurrences(of: "{count}", with: "\(count)")
-    saveBatchConfirmButton = alert.addButton(withTitle: NSLocalizedString("save_batch_alert_confirm", comment: ""))
+    let button = alert.addButton(withTitle: NSLocalizedString("save_batch_alert_confirm", comment: ""))
     alert.addButton(withTitle: NSLocalizedString("save_batch_alert_cancel", comment: ""))
-    
-    saveBatchConfirmButton?.isEnabled = false
-    return alert
+    return (alert, button)
+  }
+  
+  private func renameBatchAlert() -> (NSAlert, NSButton) {
+    let alert = NSAlert()
+    alert.messageText = NSLocalizedString("rename_batch_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("rename_batch_alert_comment", comment: "")
+    let button = alert.addButton(withTitle: NSLocalizedString("rename_batch_alert_confirm", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("rename_batch_alert_cancel", comment: ""))
+    return (alert, button)
   }
   
   // MARK: -
@@ -268,9 +291,26 @@ class Alerts: NSObject, NSTextFieldDelegate {
     }
   }
   
+  func withDeleteBatchAlert(withTitle title: String, _ closure: @escaping (Bool, Bool) -> Void) {
+    let alert = deleteBatchConfirmationAlert(withTitle: title)
+    DispatchQueue.main.async {
+      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
+        closure(true, alert.suppressionButton?.state == .on)
+      } else {
+        closure(false, false)
+      }
+    }
+  }
+  
   func withSaveBatchAlert(forCurrentBatch isCurrentBatch: Bool, showingCount count: Int, excludingNames exclude: Set<String>,
                           _ closure: @escaping (String?, KeyboardShortcuts.Name?) -> Void) {
-    let alert = saveBatchAlert(withCount: count, forCurrentBatch: isCurrentBatch)
+    let (alert, button) = saveBatchAlert(withCount: count, forCurrentBatch: isCurrentBatch)
+    button.isEnabled = false
+    saveBatchConfirmButton = button
+    batchNameField?.delegate = self
+    batchHotkeyCheckbox?.target = self
+    batchHotkeyCheckbox?.action = #selector(batchHotkeyCheckboxChanged(_:))
+    alert.window.initialFirstResponder = batchNameField
     
     alert.accessoryView = saveBatchAccessoryView
     batchNameField?.placeholderString = NSLocalizedString("save_batch_name_placeholder", comment: "")
@@ -278,12 +318,55 @@ class Alerts: NSObject, NSTextFieldDelegate {
     batchHotkeyCheckbox?.state = .off
     batchHotkeyCheckbox?.isEnabled = false
     prohibitedBatchNames = exclude
+    saveBatchOriginalName = nil
     
+    DispatchQueue.main.async {
+      switch alert.runModal() {
+      case NSApplication.ModalResponse.alertFirstButtonReturn:
+        guard let name = self.batchNameField?.stringValue, !name.isEmpty else {
+          fallthrough
+        }
+        closure(name, self.hotKeyDefinition)
+      default:
+        self.clearHotKey()
+        closure(nil, nil)
+      }
+      
+      self.hotKeyField?.removeFromSuperview()
+      self.hotKeyField = nil
+      self.hotKeyDefinition = nil
+      self.hotKeyShortcut = nil
+      self.saveBatchConfirmButton = nil
+    }
+  }
+  
+  func withRenameBatchAlert(withCurrentName currentName: String, shortcut currentHotKey: KeyboardShortcuts.Name?,
+                            excludingNames exclude: Set<String>,
+                            _ closure: @escaping (String?, KeyboardShortcuts.Name?) -> Void) {
+    let (alert, button) = renameBatchAlert()
+    button.isEnabled = false
+    saveBatchConfirmButton = button
     batchNameField?.delegate = self
     batchHotkeyCheckbox?.target = self
     batchHotkeyCheckbox?.action = #selector(batchHotkeyCheckboxChanged(_:))
-    
     alert.window.initialFirstResponder = batchNameField
+    
+    alert.accessoryView = saveBatchAccessoryView
+    batchNameField?.placeholderString = !currentName.isEmpty ? currentName : NSLocalizedString("save_batch_name_placeholder", comment: "") 
+    batchNameField?.stringValue = ""
+    prohibitedBatchNames = exclude
+    saveBatchOriginalName = currentName
+    
+    hotKeyDefinition = currentHotKey
+    batchHotkeyCheckbox?.isEnabled = true
+    if let hotKey = currentHotKey, let shortcut = KeyboardShortcuts.getShortcut(for: hotKey) {
+      hotKeyShortcut = shortcut
+      batchHotkeyCheckbox?.state = .on
+      createHotKeyField()
+    } else {
+      hotKeyShortcut = nil
+      batchHotkeyCheckbox?.state = .off
+    }
     
     DispatchQueue.main.async {
       switch alert.runModal() {
@@ -291,7 +374,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
         if let name = self.batchNameField?.stringValue, !name.isEmpty {
           closure(name, self.hotKeyDefinition)
         } else {
-          closure(nil, nil)
+          closure(nil, self.hotKeyDefinition)
         }
       default:
         self.clearHotKey()
@@ -302,32 +385,39 @@ class Alerts: NSObject, NSTextFieldDelegate {
       self.hotKeyField = nil
       self.hotKeyDefinition = nil
       self.hotKeyShortcut = nil
+      self.saveBatchConfirmButton = nil
     }
   }
   
-  private func createHotKeyAndField(forName name: String) {
-    // the field needs a hotkey for it to assign, set that up with the given name first
-    guard let superview = batchHotkeyContainerView else { return }
+  private func createHotKey(forName name: String) {
     let hotKey = KeyboardShortcuts.Name(name)
+    hotKeyDefinition = hotKey
     if let shortcut = hotKeyShortcut {
       KeyboardShortcuts.setShortcut(shortcut, for: hotKey)
     }
+  }
+  
+  private func createHotKeyField() {
+    guard let superview = batchHotkeyContainerView, let hotKey = hotKeyDefinition else { return }
+    hotKeyField?.removeFromSuperview()
     let field = KeyboardShortcuts.RecorderCocoa(for: hotKey) { [weak self] in
-      self?.hotKeyShortcut = $0 // closure called when field changed
+      self?.hotKeyShortcut = $0 // this closure called when the key field changed
     }
     superview.translatesAutoresizingMaskIntoConstraints = false
     field.translatesAutoresizingMaskIntoConstraints = false
     superview.addSubview(field)
     superview.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[f]|", metrics: nil, views: ["f": field]))
     superview.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[f]|", metrics: nil, views: ["f": field]))
-    hotKeyDefinition = hotKey
     hotKeyField = field
+    
+    field.window?.recalculateKeyViewLoop() // doesn't seem to work on macOS 15.5
   }
   
-  private func removeHotKeyAndField() {
+  private func removeHotKeyField() {
     hotKeyField?.removeFromSuperview()
     hotKeyField = nil
-    clearHotKey()
+    
+    batchNameField?.window?.recalculateKeyViewLoop() // doesn't seem to work on macOS 15.5
   }
   
   private func clearHotKey() {
@@ -344,29 +434,56 @@ class Alerts: NSObject, NSTextFieldDelegate {
   }
   
   func controlTextDidChange(_ notification: Notification) {
-    guard let field = batchNameField else { return }
-    removeHotKeyAndField()
-    if let fieldValue = batchNameField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines), !fieldValue.isEmpty {
-      let allowed = !nameProhibited(fieldValue)
-      batchHotkeyCheckbox?.isEnabled = allowed
-      saveBatchConfirmButton?.isEnabled = allowed
-      if allowed && batchHotkeyCheckbox?.state == .on {
-        createHotKeyAndField(forName: field.stringValue)
-      }
+    updateHotKeyControls()
+  }
+  
+  func updateHotKeyControls() {
+    guard let fieldContents = batchNameField?.stringValue else { return }
+    let fieldValue = fieldContents.trimmingCharacters(in: .whitespacesAndNewlines)
+    
+    let validName: String? = if let originalName = saveBatchOriginalName, fieldValue.isEmpty || fieldValue == originalName {
+      originalName
+    } else if !fieldValue.isEmpty && !nameProhibited(fieldValue) {
+      fieldValue
     } else {
+      nil
+    }
+    
+    if let name = validName {
+      saveBatchConfirmButton?.isEnabled = true
+      batchHotkeyCheckbox?.isEnabled = true
+      
+      if let hotKey = hotKeyDefinition, hotKey.rawValue == name {
+        // don't need to regenerate the hotkey
+        // short-circuit updaing the key field if we want it showing and it's already there
+        if batchHotkeyCheckbox?.state == .on && hotKeyField != nil {
+          return
+        }
+      } else {
+        clearHotKey()
+        createHotKey(forName: name)
+      }
+      if batchHotkeyCheckbox?.state == .on {
+        createHotKeyField()
+      } else {
+        removeHotKeyField()
+      }
+      
+    } else {
+      // name is invalid
       batchHotkeyCheckbox?.isEnabled = false
       saveBatchConfirmButton?.isEnabled = false
+      removeHotKeyField()
     }
   }
   
   @objc func batchHotkeyCheckboxChanged(_ sender: AnyObject) {
-    if batchHotkeyCheckbox?.state == .off {
-      removeHotKeyAndField()
-      // hotKeyShortcut = nil -- to get a blank field when unchecking and rechecking
-      batchNameField?.becomeFirstResponder()
-    } else if let fieldValue = batchNameField?.stringValue, !fieldValue.isEmpty {
-      createHotKeyAndField(forName: fieldValue)
+    if batchHotkeyCheckbox?.state == .on {
+      updateHotKeyControls()
       _ = hotKeyField?.becomeFirstResponder()
+    } else {
+      removeHotKeyField()
+      batchNameField?.becomeFirstResponder()
     }
   }
   

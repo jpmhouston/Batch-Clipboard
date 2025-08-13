@@ -89,16 +89,26 @@ class IntroWindowController: PagedWindowController {
     v.addSubview(button)
   }
   
+  // Originally to exercise the batch name alerts. The above code will add its button in debug builds
+  // whenever this function is defined: `@objc func debugButtonPressed(_ sender: AnyObject)`
 //  let alerts = Alerts()
-//  var toggle = false
+//  let excludeNames = Set(["aa", "xx"])
+//  var count = 0
 //  @objc func debugButtonPressed(_ sender: AnyObject) {
-//    let excludeNames = Set(["aa", "xx"])
-//    alerts.withSaveBatchAlert(forCurrentBatch: toggle, showingCount: 5,
-//                              excludingNames: excludeNames) { name, hotkey in
-//      print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
-//      if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//    if count % 3 == 0 {
+//      alerts.withRenameBatchAlert(withCurrentName: "fred", shortcut: nil, excludingNames: excludeNames) { name, hotkey in
+//        print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
+//        if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//      }
+//    } else {
+//      let current = (count % 3 == 1) 
+//      alerts.withSaveBatchAlert(forCurrentBatch: current, showingCount: 5,
+//                                excludingNames: excludeNames) { name, hotkey in
+//        print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
+//        if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//      }
 //    }
-//    toggle = !toggle
+//    count += 1
 //  }
   #endif
 

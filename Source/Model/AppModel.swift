@@ -161,12 +161,12 @@ class AppModel: NSObject {
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     menu.buildDynamicItems()
-    updateMenuShortcuts()
-    // prepareForPopup() can take a while the first time so do it early
+    configureMenuShortcuts()
+    // `menu.prepareToOpen()` can take a while the first time so do it early
     // instead of the first time the menu is clicked on, and in case the
     // intro needs to be shown, delay this call a bit to let that open
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-      self.menu.prepareForPopup()
+      self.menu.prepareToOpen()
     }
     
     menuIcon.enableRemoval(true)
@@ -196,6 +196,9 @@ class AppModel: NSObject {
       history.loadList()
       clipboard.start()
     }
+    #if DEBUG
+    debugDataState()
+    #endif
     
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
@@ -272,6 +275,12 @@ class AppModel: NSObject {
     // perhaps some code regarding keepHistory could be moved here
   }
   
+  #if DEBUG
+  func debugDataState() {
+    nop() // put breakpoint here, maybe doing "p history.summary", and/or "p history.dump"
+  }
+  #endif
+  
   // MARK: - dynamic hotkeys for saved batches
   
   private func restoreSavedBatchHotKeys() {
@@ -281,12 +290,12 @@ class AppModel: NSObject {
     }
   }
   
-  private func updateMenuShortcuts() {
+  private func configureMenuShortcuts() {
     var mapping: [String: KeyboardShortcuts.Name] = [:]
     for hotKeyHandler in savedBatchHotKeys {
       mapping[hotKeyHandler.nameString] = hotKeyHandler.hotKey
     }
-    //menu.something = mapping // TODO: pass this dict to the menu for adorning menu items
+    menu.defineDynamicBatchHotKeys(usingMapping: mapping)
   }
   
   private func saveHotKey(_ hotKey: KeyboardShortcuts.Name, forBatch batch: Batch) {
@@ -309,6 +318,12 @@ class AppModel: NSObject {
     saveHotKey(hotKey, forBatch: batch)
   }
   
+  // use when adding a known shortcut as the new hotkey for a batch (not used rn as renameing always provides new hotkey)
+  internal func addNewHotKey(withShortcut shortcut: KeyboardShortcuts.Shortcut?, toBatch batch: Batch) {
+    batch.keyShortcut = shortcut
+    saveNewHotKey(withShortcut: shortcut, forBatch: batch)
+  }
+  
   // use to setup a potential shortcut handler for batch   
   internal func setupBlankHotKey(forBatch batch: Batch) {
     if batch.keyShortcut != nil {
@@ -317,8 +332,13 @@ class AppModel: NSObject {
     saveNewHotKey(withShortcut: nil, forBatch: batch)
   }
   
-  // use when the name of a batch has changed, reset the shortcut name and the handler
-  internal func updateName(_ newName: String, forBatch batch: Batch) -> Bool {
+  // use when wanting to rename a batch, returns false if cannot rename because there's a duplicate,
+  // resets the shortcut name and the handler
+  internal func renameBatch(_ batch: Batch, to newName: String, withNewHotKey newHotKey: KeyboardShortcuts.Name?) -> Bool {
+    guard !newName.isEmpty else {
+      return false
+    }
+    
     let duplicate = savedBatchHotKeys.first { $0.nameString == newName }
     let existing = savedBatchHotKeys.first { $0.batch === batch }
     guard duplicate == nil else {
@@ -339,9 +359,18 @@ class AppModel: NSObject {
       }
     }
     
-    saveNewHotKey(withShortcut: shortcut, forBatch: batch)
+    batch.fullname = newName
+    if let newHotKey = newHotKey {
+      addHotKey(newHotKey, toBatch: batch) // setup with new hotkey and save its new shortcut into the batch  
+    } else {
+      addNewHotKey(withShortcut: shortcut, toBatch: batch) // remake as new name and same shortcut  
+    }
     
     return true
+  }
+  
+  internal func currentHotKey(forBatch batch: Batch) -> KeyboardShortcuts.Name? {
+    savedBatchHotKeys.first(where: { $0.batch === batch })?.hotKey
   }
   
   internal func currentHotKeyNames() -> Set<String> {
@@ -599,6 +628,7 @@ class AppModel: NSObject {
       if let newValue = change.newValue, newValue == UserDefaults.standard.maxMenuItems { return }
       if queue.isEmpty { // don't trylu trim when using queue, possible for there to be more than the max items queued
         history.trim(to: Self.effectiveMaxClips)
+        menu.buildDynamicItems()
         CoreDataManager.shared.saveContext()
       }
       menu.buildDynamicItems()
@@ -647,3 +677,6 @@ class AppModel: NSObject {
   
 }
 // swiftlint:enable type_body_length
+
+func nop() { }
+func dontWarnUnused(_ x: Any) { }

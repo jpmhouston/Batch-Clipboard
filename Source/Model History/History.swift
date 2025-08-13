@@ -153,6 +153,14 @@ class History {
     CoreDataManager.shared.saveContext()
   }
   
+  func removeSavedBatch(atIndex index: Int) {
+    guard index < batches.count else {
+      return
+    }
+    CoreDataManager.shared.context.delete(batches[index])
+    CoreDataManager.shared.saveContext()
+  }
+  
   func resetAllData() {
     currentList = nil
     currentBatch = nil
@@ -198,6 +206,7 @@ class History {
   }
 #endif
   
+  //index
   // MARK: -
   
   #if DEBUG

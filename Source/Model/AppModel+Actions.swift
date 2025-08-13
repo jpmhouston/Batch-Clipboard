@@ -12,11 +12,7 @@ import Settings
 import os.log
 
 // TODO: make methods throw or at least return error instead of bool
-// TODO: os_log caught errors
-
-// TODO: put these somewhere else
-func nop() { }
-func dontWarnUnused(_ x: Any) { }
+// TODO: os_log more caught errors
 
 extension AppModel {
   
@@ -206,7 +202,7 @@ extension AppModel {
       updateMenuIcon(.increment)
       updateMenuTitle()
       
-    } else {
+    } else if history.usingHistory {
       history.add(clip)
       menu.addedClipToHistory(clip)
     }
@@ -515,7 +511,10 @@ extension AppModel {
   @IBAction
   func replaySavedBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation()
-    let batch: Batch? = nil
+    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+      return
+    }
+    
     replayBatch(batch, interactive: true)
   }
   
@@ -559,6 +558,27 @@ extension AppModel {
   }
   
   @IBAction
+  func renameSavedBatch(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation()
+    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+      return
+    }
+    
+    guard let intialName = batch.fullname else {
+      return
+    }
+    let initialHotKey = currentHotKey(forBatch: batch)
+    
+    showRenameBatchAlert(withCurrentName: intialName, hotKey: initialHotKey) { [weak self] name, hotKey in
+      guard let self = self else { return }
+      
+      if renameBatch(batch, to: name, withNewHotKey: hotKey) {
+        menu.renamedBatch(batch, withNewHotKeyDefinition: hotKey)
+      }
+    } 
+  }
+  
+  @IBAction
   func saveBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     saveBatch()
@@ -589,7 +609,7 @@ extension AppModel {
         setupBlankHotKey(forBatch: newBatch)
       }
       
-      menu.addedBatch(newBatch)
+      menu.addedBatch(newBatch, withHotKeyDefinition: hotKey)
     }
     
     return true
@@ -619,7 +639,7 @@ extension AppModel {
     
     history.remove(atIndex: index)
     
-    menu.deletedClipFromHistory(index - queue.size)
+    menu.deletedClipFromHistory(index)
   }
   
   func deleteQueueClip(atIndex index: Int) {
@@ -644,15 +664,35 @@ extension AppModel {
     updateMenuTitle()
   }
   
-  @IBAction
-  func deleteHighlightedClip(_ sender: AnyObject) {
-    guard let clip = menu.highlightedClipMenuItem()?.clip else {
+  func deleteBatch(atIndex index: Int) {
+    guard !Self.busy else {
       return
     }
-    if let index = history.all.firstIndex(of: clip) {
-      deleteHistoryClip(atIndex: index)
-    } else if let index = queue.clips.firstIndex(of: clip) {
-      deleteQueueClip(atIndex: index)
+    guard index >= 0 && index < history.batches.count else {
+      return
+    }
+    
+    showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in
+      guard let self = self else { return }
+      
+      history.removeSavedBatch(atIndex: index)
+      
+      menu.deletedBatch(index)
+    }
+  }
+  
+  @IBAction
+  func deleteHighlightedItem(_ sender: AnyObject) {
+    if let batch = menu.highlightedBatchMenuItem()?.batch {
+      if let index = history.batches.firstIndex(of: batch) {
+        deleteBatch(atIndex: index)
+      }
+    } else if let clip = menu.highlightedClipMenuItem()?.clip {
+      if let index = history.all.firstIndex(of: clip) {
+        deleteHistoryClip(atIndex: index)
+      } else if let index = queue.clips.firstIndex(of: clip) {
+        deleteQueueClip(atIndex: index)
+      }
     }
   }
   
@@ -662,7 +702,17 @@ extension AppModel {
       return
     }
     
-    clearHistory(suppressClearAlert: false) // calls back to deleteClips()
+    clearHistory(suppressClearAlert: false)
+  }
+  
+  func clearHistory(suppressClearAlert: Bool) {
+    if suppressClearAlert {
+      deleteClips()
+    } else {
+      showClearHistoryAlert() { [weak self] in
+        self?.deleteClips()
+      }
+    }
   }
   
   func deleteClips() {
@@ -810,22 +860,24 @@ extension AppModel {
     } 
   }
   
-  func clearHistory(suppressClearAlert: Bool) {
-    if suppressClearAlert || UserDefaults.standard.suppressClearAlert {
-      deleteClips()
+  private func showClearHistoryAlert(_ completion: @escaping ()->Void) {
+    if UserDefaults.standard.suppressClearAlert {
+      completion()
+      
     } else {
       takeFocus()
       
       alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
+        guard let self = self else { return }
         if confirm {
-          self?.deleteClips()
+          completion()
           
           if dontAskAgain {
             UserDefaults.standard.suppressClearAlert = true
           }
         }
         
-        self?.returnFocus()
+        returnFocus()
       }
     }
   }
@@ -854,6 +906,43 @@ extension AppModel {
       }
       
       returnFocus()
+    }
+  }
+  
+  private func showRenameBatchAlert(withCurrentName currentName: String, hotKey: KeyboardShortcuts.Name?,
+                                    _ completion: @escaping (String, KeyboardShortcuts.Name?)->Void) {
+    takeFocus()
+    
+    alerts.withRenameBatchAlert(withCurrentName: currentName, shortcut: hotKey,
+                                excludingNames: currentHotKeyNames()) { [weak self]  name, hotKey in
+      guard let self = self else { return }
+      if let name = name {
+        completion(name, hotKey)
+        
+        returnFocus()
+      }
+    }    
+  }
+  
+  private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping ()->Void) {
+    if true { // UserDefaults.standard.suppressDeleteBatchAlert {
+      completion()
+      
+    } else {
+      takeFocus()
+      
+      alerts.withDeleteBatchAlert(withTitle: title) { [weak self] confirm, dontAskAgain in
+        guard let self = self else { return }
+        if confirm {
+          completion()
+          
+          if dontAskAgain {
+            UserDefaults.standard.suppressDeleteBatchAlert = true
+          }
+        }
+        
+        returnFocus()
+      }
     }
   }
   

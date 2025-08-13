@@ -96,16 +96,16 @@
                         <action selector="advanceReplay:" target="-2" id="Bb4-sn-Nnk"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Paste All" id="mK7-my-GpM">
+                <menuItem title="Paste Multiple…" id="4b4-xr-zN6">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="queuedPasteAll:" target="-2" id="fHI-ld-axH"/>
+                        <action selector="queuedPasteMultiple:" target="-2" id="iSw-Vb-ZeW"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Paste Multiple…" hidden="YES" alternate="YES" id="4b4-xr-zN6">
+                <menuItem title="Paste All" alternate="YES" id="mK7-my-GpM">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
-                        <action selector="queuedPasteMultiple:" target="-2" id="iSw-Vb-ZeW"/>
+                        <action selector="queuedPasteAll:" target="-2" id="fHI-ld-axH"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Replay Last Batch" id="fuN-bD-8p7">
@@ -114,17 +114,42 @@
                         <action selector="replayLastBatch:" target="-2" id="dRQ-xk-ysb"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Save Last Batch…" id="mW6-UJ-rBZ">
+                <menuItem title="Save Last Batch…" alternate="YES" id="mW6-UJ-rBZ">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="saveBatch:" target="-2" id="8uL-Tk-sjH"/>
+                    </connections>
                 </menuItem>
                 <menuItem title="Save Batch…" hidden="YES" id="83L-SB-PRJ">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="saveBatch:" target="-2" id="Yiq-HS-BBu"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="⌘-⌫ key detector item" enabled="NO" id="90h-qR-Mlh">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="11V-7Q-FUf" id="zGF-Tm-171"/>
+                    </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="k7r-jZ-eci"/>
-                <menuItem title="current batch heading" id="a7s-Cu-BAT">
+                <menuItem title="queue heading item" hidden="YES" id="a7s-Cu-BAT">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="SvR-Jd-hf3" id="U9F-Aa-N2W"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="Qdr-dc-0KU"/>
+                <menuItem title="history heading item" hidden="YES" id="K6h-Sv-HIS">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="QzL-83-ay4" id="j4P-zX-e7Y"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="filter field item" hidden="YES" id="MMa-qd-9PO">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <outlet property="view" destination="Hz6-mo-xeY" id="qea-wg-GoD"/>
                     </connections>
                 </menuItem>
                 <menuItem title="prototype copy clip item" id="1hg-yO-AD0" customClass="ClipMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
@@ -146,30 +171,34 @@
                         <outlet property="view" destination="9fv-At-xQC" id="1Dr-Z4-0vJ"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="Qdr-dc-0KU"/>
-                <menuItem title="history heading item" id="K6h-Sv-HIS">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <outlet property="view" destination="QzL-83-ay4" id="j4P-zX-e7Y"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="filter field item" hidden="YES" id="MMa-qd-9PO">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <outlet property="view" destination="Hz6-mo-xeY" id="qea-wg-GoD"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="⌘-⌫ key detector item" enabled="NO" id="90h-qR-Mlh">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <outlet property="view" destination="11V-7Q-FUf" id="zGF-Tm-171"/>
-                    </connections>
-                </menuItem>
                 <menuItem isSeparatorItem="YES" id="rXg-Ma-ibC"/>
-                <menuItem title="saved batches heading" id="f2x-Sv-BAT">
+                <menuItem title="saved batches heading item" hidden="YES" id="f2x-Sv-BAT">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <outlet property="view" destination="kVS-Vi-MVF" id="P3r-5T-c0l"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="prototype batch item" id="Npt-pA-z5i" customClass="BatchMenuItem" customModule="Batch_Clipboard" customModuleProvider="target">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" id="kp3-oD-t3p">
+                        <items>
+                            <menuItem title="Paste Again" id="wJ6-Z2-RAm">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="replaySavedBatch:" target="-2" id="ZUb-Qr-TWq"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Rename, Change Shortcut…" id="sEA-9J-9oP">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="renameSavedBatch:" target="-2" id="frg-cH-0Qh"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="oet-xG-lPc"/>
+                        </items>
+                    </menu>
+                    <connections>
+                        <action selector="replaySavedBatch:" target="-2" id="OcU-Gv-kEg"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="5yx-82-0Qq"/>
@@ -179,12 +208,12 @@
                         <outlet property="view" destination="XAP-KR-RlP" id="gJN-xE-3BH"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Delete History Item" id="vGj-r1-rIx">
+                <menuItem title="Delete Clipboard Item" id="vGj-r1-rIx">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
                     <connections>
-                        <action selector="deleteHighlightedClip:" target="-2" id="NuH-2A-vmC"/>
+                        <action selector="deleteHighlightedItem:" target="-2" id="NuH-2A-vmC"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Clear History…" tag="105" id="u3d-qz-ihN">
@@ -226,6 +255,7 @@ CA
                 <outlet property="postHistorySeparatorItem" destination="rXg-Ma-ibC" id="l1r-rC-cAk"/>
                 <outlet property="postQueueSeparatorItem" destination="Qdr-dc-0KU" id="Ngt-xV-kDh"/>
                 <outlet property="prototypeAnchorItem" destination="pms-CA-OfJ" id="SCX-Hb-a2C"/>
+                <outlet property="prototypeBatchItem" destination="Npt-pA-z5i" id="xml-t9-OHM"/>
                 <outlet property="prototypeCopyItem" destination="1hg-yO-AD0" id="BFx-GW-cTS"/>
                 <outlet property="prototypeReplayItem" destination="u5y-6g-IID" id="BiY-9N-axa"/>
                 <outlet property="queueAdvanceItem" destination="TLY-ku-V0E" id="od9-PM-WWa"/>
@@ -248,7 +278,7 @@ CA
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
@@ -278,11 +308,11 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="ACTIVE BATCH" id="r5c-9f-aE2">
                         <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -299,11 +329,11 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
                         <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
@@ -320,11 +350,11 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
                         <font key="font" metaFont="miniSystem"/>
-                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
