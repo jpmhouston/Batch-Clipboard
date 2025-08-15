@@ -11,6 +11,10 @@
 //  Maybe makes more sense with this named HistoryManager or something like that,
 //  and then HistoryList just be named History.
 //
+//  TODO: make a BatchList containing ordered set of batches list HistoryList
+//  rather than having batch entities be "loose" with sort index to maintain order
+//  something to do when adding a saved batch settings panel
+//
 
 import AppKit
 import os.log
@@ -31,14 +35,11 @@ class History {
   var count: Int { currentList?.clips?.count ?? 0 }
   var batches: [Batch] { return Batch.saved }
   
-#if MACCY_DUPLICATE_HANDLING
+  #if MACCY_DUPLICATE_HANDLING
   private var sessionLog: [Int: Clip] = [:]
-#endif
+  #endif
   
   init() {
-    if ProcessInfo.processInfo.arguments.contains("ui-testing") {
-      resetAllData()
-    }
     loadCurrentBatch()
     // loadList needs to be called explicitly later, if user doesn't want the clipboard history
     // feature on then currentList remains nil
@@ -54,16 +55,16 @@ class History {
   
   func loadList() {
     #if DEBUG
-    //let haveClipsInBatches = Clip.anyWithinBatches // !!! remove once tested
-    //print("have clips in batches? \(haveClipsInBatches)")
+    let haveClipsInBatches = Clip.anyWithinBatches // !!! remove once tested
+    print("have clips in batches? \(haveClipsInBatches)")
     #endif
     
     currentList = HistoryList.current
     
     if currentList == nil {
       if !Clip.anyWithinBatches {
-        // There was no history list and no clips in batchs, seems likely user has upgraded
-        // and the history list needs to populated with all the stored clips. Add them in order
+        // There was no history list and no clips in batchs, seems likely user has upgraded and
+        // the history list needs to populated with all the stored clips. Add them in the order
         // `Clip.all` sorts them in, most recent first and oldest last.
         currentList = HistoryList.create(withClips: Clip.all)
       } else {
@@ -90,7 +91,7 @@ class History {
   }
   
   func add(_ clip: Clip) {
-#if MACCY_DUPLICATE_HANDLING
+    #if MACCY_DUPLICATE_HANDLING
     // don't want ot completely remove this until i understand it
     if let existingHistoryItem = findSimilarItem(clip) {
       if isModified(clip) == nil {
@@ -107,7 +108,7 @@ class History {
     }
     
     sessionLog[Clipboard.shared.changeCount] = clip
-#endif
+    #endif
     
     currentList?.addNewClip(clip)
     CoreDataManager.shared.saveContext()
@@ -118,7 +119,7 @@ class History {
   }
   
   func remove(_ clip: Clip) {
-    deleteClipFromCurrent(clip)
+    deleteClip(clip)
     CoreDataManager.shared.saveContext()
   }
   
@@ -126,7 +127,7 @@ class History {
     guard index < count else {
       return
     }
-    deleteClipFromCurrent(all[index])
+    deleteClip(all[index])
     CoreDataManager.shared.saveContext()
   }
   
@@ -137,14 +138,12 @@ class History {
     }
     
     let overflowItems = all.suffix(from: maxItems)
-    overflowItems.forEach(deleteClipFromCurrent(_:))
+    overflowItems.forEach(deleteClip(_:))
     CoreDataManager.shared.saveContext()
   }
   
   func clearHistory() {
-    if let list = currentList, let clips = list.clips {
-      list.removeFromClips(clips)
-    }
+    clips.forEach(deleteClip(_:))
     CoreDataManager.shared.saveContext()
   }
   
@@ -157,11 +156,16 @@ class History {
     guard index < batches.count else {
       return
     }
-    CoreDataManager.shared.context.delete(batches[index])
+    deleteBatch(batches[index])
     CoreDataManager.shared.saveContext()
   }
   
-  func resetAllData() {
+  func removeSavedBatch(_ batch: Batch) {
+    deleteBatch(batch)
+    CoreDataManager.shared.saveContext()
+  }
+  
+  func deleteAllData() {
     currentList = nil
     currentBatch = nil
     let fetchRequest = NSFetchRequest<HistoryList>(entityName: "HistoryList")
@@ -179,15 +183,22 @@ class History {
   
   // MARK: -
   
-  private func deleteClipFromCurrent(_ clip: Clip) {
+  private func deleteClip(_ clip: Clip) {
+    // coredata has some relationshipdelete rules, it seems none of them are like reference counting
+    // to do this automatically: if the clips no longer belongs to any batch then fully delete it
     currentList?.removeFromClips(clip)
-    // rely on delete rules to prevent deletion when clip is also in another batch,
-    // and if it's indeed deleted, to delete its contents as well
-    CoreDataManager.shared.context.delete(clip)
+    if clip.parentConnectionsEmpty {
+      clip.clearContents()
+      CoreDataManager.shared.context.delete(clip)
+    }
   }
   
+  private func deleteBatch(_ batch: Batch) {
+    batch.clear()
+    CoreDataManager.shared.context.delete(batch)
+  }
   
-#if MACCY_DUPLICATE_HANDLING
+  #if MACCY_DUPLICATE_HANDLING
   private func findSimilarItem(_ clip: Clip) -> Clip? {
     let duplicates = all.filter({ $0 == clip || $0.supersedes(clip) })
     if duplicates.count > 1 {
@@ -204,7 +215,7 @@ class History {
     
     return nil
   }
-#endif
+  #endif
   
   //index
   // MARK: -
@@ -243,7 +254,7 @@ class History {
       nplanned = max(self.count, 8)
       cntcommas = max(nplanned - 1, 0) * cntcomma
     }
-    cntper = max((len - cntcommas) / nplanned, minper)
+    cntper = nplanned == 0 ? minper : max((len - cntcommas) / nplanned, minper)
     
     for (i, clip) in self.clips.enumerated() {
       remainlen = len - desc.count
@@ -289,7 +300,7 @@ class History {
         batchplanned = 1 // maybe pick this better?
       }
       let cntcommas = max(batchplanned - 1, 0) * cntcomma
-      cntper = (remainlen - cntcommas) / batchplanned
+      cntper = (remainlen - cntcommas) / batchplanned // batchclips.isEmpty test above means batchplanned > 0
       
       for (i, clip) in batchclips.enumerated() {
         remainlen = len - desc.count

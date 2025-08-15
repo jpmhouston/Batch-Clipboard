@@ -92,10 +92,10 @@ class Alerts: NSObject, NSTextFieldDelegate {
   private var bonusFeaturePromotionAlert: NSAlert {
     let alert = NSAlert()
     alert.alertStyle = .informational
-    alert.messageText = NSLocalizedString("promoteextras_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("promoteextras_alert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_show_settings", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("promoteextras_alert_cancel", comment: ""))
+    alert.messageText = NSLocalizedString("promote_extrasalert_message", comment: "")
+    alert.informativeText = NSLocalizedString("promote_extrasalert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("promote_extrasalert_show_settings", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("promote_extrasalert_cancel", comment: ""))
     return alert
   }
   

@@ -97,12 +97,6 @@ class HistoryList: NSManagedObject {
     CoreDataManager.shared.saveContext()
   }
   
-  func trimClipsToNewCount(_ newCount: Int) {
-    // TODO: likely will need this
-    // ...
-    //CoreDataManager.shared.saveContext()
-  }
-  
   // MARK: -
   
   @objc(insertObject:inClipsAtIndex:)

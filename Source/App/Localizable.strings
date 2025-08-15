@@ -46,11 +46,11 @@
 "erase_history_alert_cancel" = "Cancel";
 "erase_history_alert_confirm" = "Turn Off & Clear";
 "erase_history_alert_deny" = "Turn Off & Keep";
-"promoteextras_menu_badge" = "PERK";
-"promoteextras_alert_message" = "Support the app's continuing development to unlock this feature?";
-"promoteextras_alert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
-"promoteextras_alert_show_settings" = "Open Settings";
-"promoteextras_alert_cancel" = "Cancel";
+"promote_extrasmenu_badge" = "PERK";
+"promote_extrasalert_message" = "Support the app's continuing development to unlock this feature?";
+"promote_extrasalert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
+"promote_extrasalert_show_settings" = "Open Settings";
+"promote_extrasalert_cancel" = "Cancel";
 "resetdata_alert_message" = "Reset data before launch?";
 "resetdata_alert_comment" = "If the app is failing to open, you may choose to erase the saved clipboard item database before continuing.";
 "resetdata_alert_deleteandlaunch" = "Reset Data and Launch";

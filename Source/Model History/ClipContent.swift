@@ -16,7 +16,9 @@ class ClipContent: NSManagedObject {
   
   @NSManaged public var type: String!
   @NSManaged public var value: Data?
-  @NSManaged public var item: Clip?
+  @NSManaged public var items: NSSet?
+  
+  var parentConnectionsEmpty: Bool { items == nil || items!.count == 0 }
   
   // MARK: -
   
@@ -35,5 +37,17 @@ class ClipContent: NSManagedObject {
     
     return content
   }
+  
+  @objc(addItemsObject:)
+  @NSManaged public func addToItems(_ value: Clip)
+
+  @objc(removeItemsObject:)
+  @NSManaged public func removeFromItems(_ value: Clip)
+
+  @objc(addItems:)
+  @NSManaged public func addToItems(_ values: NSSet)
+
+  @objc(removeItems:)
+  @NSManaged public func removeFromItems(_ values: NSSet)
   
 }

@@ -16,8 +16,16 @@ extension NSApplication {
   var menuWindow: NSWindow? {
     windows.first { window in
       window.className == "NSPopupMenuWindow" // macOS 14 and later
-        || window.className == "NSMenuWindowManagerWindow" // macOS 13 - 14
-        || window.className == "NSCarbonMenuWindow" // macOS 12 and earlier
+      || window.className == "NSMenuWindowManagerWindow" // macOS 13 - 14
+      || window.className == "NSCarbonMenuWindow" // macOS 12 and earlier
+    }
+  }
+  func menuWindow(containing rect: NSRect) -> NSWindow? {
+    windows.first { window in
+      (window.className == "NSPopupMenuWindow" // macOS 14 and later
+       || window.className == "NSMenuWindowManagerWindow" // macOS 13 - 14
+       || window.className == "NSCarbonMenuWindow") // macOS 12 and earlier
+      && NSContainsRect(window.frame, rect)
     }
   }
   var statusBarWindow: NSWindow? { windows.first { $0.className == "NSStatusBarWindow" } }

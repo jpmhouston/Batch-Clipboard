@@ -450,7 +450,7 @@ class ClipboardQueue {
       totalplanned = batchclips.count + historyplanned
       cntcommas = max(totalplanned - commasomitted, 0) * cntcomma
     }
-    cntper = max((len - cntcommas) / totalplanned, minper)
+    cntper = totalplanned == 0 ? minper : max((len - cntcommas) / totalplanned, minper)
     
     for (i, clip) in batchclips.enumerated() {
       let ntogo = batchclips.count - i // how many left to include, including this one

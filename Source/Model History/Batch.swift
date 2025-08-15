@@ -167,26 +167,26 @@ class Batch: NSManagedObject {
     clips?.object(at: index) as? Clip
   }
   
-  // dont need this wrapper function after all, caller can just use `Batch.create()` 
-//  func duplicate(withTitle title: String, index: String? = nil, shortcut: Data? = nil) -> Batch {
-//    return Batch.create(withTitle: title, index: index, shortcut: shortcut, clips: getClipsArray())
-//  }
-  
   func addClip(_ clip: Clip) {
     insertIntoClips(clip, at: 0)
     CoreDataManager.shared.saveContext()
   }
   
   func removeClip(_ clip: Clip) {
-    removeFromClips(clip)
+    deleteClip(clip)
+    CoreDataManager.shared.saveContext()
+  }
+  
+  func removeClip(atIndex index: Int) {
+    guard index < count, let clip = clips?.object(at: index) as? Clip else {
+      return
+    }
+    deleteClip(clip)
     CoreDataManager.shared.saveContext()
   }
   
   func clear() {
-    guard let clips = clips else {
-      return
-    } 
-    removeFromClips(clips)
+    getClips().forEach(deleteClip(_:))
     CoreDataManager.shared.saveContext()
   }
   
@@ -217,6 +217,16 @@ class Batch: NSManagedObject {
     }
     CoreDataManager.shared.saveContext()
   }
+  
+  //func reloadedClips() -> [Clip] {
+  //  let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+  //  fetchRequest.predicate = NSPredicate(format: "batches CONTAINS $@", self)
+  //  if let fetchedClips = try? CoreDataManager.shared.context.fetch(fetchRequest) {
+  //    return fetchedClips
+  //  } else {
+  //    return []
+  //  }
+  //}
   
   // MARK: -
   
@@ -251,6 +261,16 @@ class Batch: NSManagedObject {
   @NSManaged public func removeFromClips(_ values: NSOrderedSet)
   
   // MARK: -
+  
+  private func deleteClip(_ clip: Clip) {
+    // coredata has some relationshipdelete rules, it seems none of them are like reference counting
+    // to do this automatically: if the clips no longer belongs to any batch then fully delete it
+    removeFromClips(clip)
+    if clip.parentConnectionsEmpty {
+      clip.clearContents()
+      CoreDataManager.shared.context.delete(clip)
+    }
+  }
   
   private func nextIndex() -> String {
     guard let last = lastIndex(), let lastNum = Int(last) else {

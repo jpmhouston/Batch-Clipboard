@@ -28,6 +28,7 @@
 		8FC194A02E3BB54E002589CF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC1949F2E3BB54D002589CF /* CoreData.framework */; };
 		8FCDFC172BC7E92400A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC162BC7E92400A16FBE /* SDWebImage */; };
 		8FCDFC192BC7E96C00A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC182BC7E96C00A16FBE /* SDWebImage */; };
+		8FD2EE022E505FE6004558F5 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 8FD2EE012E505FE6004558F5 /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -329,6 +330,7 @@
 			files = (
 				8FC194A02E3BB54E002589CF /* CoreData.framework in Frameworks */,
 				8FC1949E2E3B78EC002589CF /* Sauce in Frameworks */,
+				8FD2EE022E505FE6004558F5 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +447,7 @@
 			name = "Unit Tests";
 			packageProductDependencies = (
 				8FC1949D2E3B78EC002589CF /* Sauce */,
+				8FD2EE012E505FE6004558F5 /* KeyboardShortcuts */,
 			);
 			productName = "Unit Tests";
 			productReference = 8FC194782E3A3B86002589CF /* Unit Tests.xctest */;
@@ -1209,6 +1212,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */;
 			productName = SDWebImage;
+		};
+		8FD2EE012E505FE6004558F5 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DA009953256414E60030E697 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

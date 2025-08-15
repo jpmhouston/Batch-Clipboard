@@ -235,7 +235,7 @@ class AppModel: NSObject {
   }
 
   func terminate() {
-    if UserDefaults.standard.clearOnQuit || !UserDefaults.standard.keepHistory {
+    if UserDefaults.standard.clearOnQuit {
       clearHistory(suppressClearAlert: true)
     }
   }
@@ -330,6 +330,15 @@ class AppModel: NSObject {
       batch.keyShortcut = nil
     }
     saveNewHotKey(withShortcut: nil, forBatch: batch)
+  }
+  
+  // use when deleting a batch
+  func removeHotKey(forBatch batch: Batch) {
+    guard let savedHandler = savedBatchHotKeys.first(where: { $0.batch === batch }) else {
+      return
+    }
+    KeyboardShortcuts.setShortcut(nil, for: savedHandler.hotKey)
+    savedBatchHotKeys.remove(savedHandler)
   }
   
   // use when wanting to rename a batch, returns false if cannot rename because there's a duplicate,

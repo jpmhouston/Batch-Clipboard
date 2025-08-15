@@ -35,8 +35,13 @@ class PreviewPopoverController {
       popover.behavior = .semitransient
       popover.contentViewController = Preview(item: menuItem.clip)
       
-      guard let window = NSApp.menuWindow,
-            let windowContentView = window.contentView,
+      let window: NSWindow?
+      if menuItem.parent != nil, let rect = screenFrameForMenuItem(menuItem, orAnchors:anchors) {
+        window = NSApp.menuWindow(containing: rect)
+      } else {
+        window = NSApp.menuWindow
+      }
+      guard let window = window, let windowContentView = window.contentView,
             let boundsOfVisibleMenuItem = boundsOfMenuItem(menuItem, windowContentView, anchors) else {
         return
       }
@@ -65,11 +70,19 @@ class PreviewPopoverController {
     }
   }
   
-  private func boundsOfMenuItem(
-    _ menuItem: ClipMenuItem,
-    _ windowContentView: NSView,
-    _ anchors: (NSView, NSView)?
-  ) -> NSRect? {
+  private func screenFrameForMenuItem(_ menuItem: ClipMenuItem,
+                                      orAnchors anchors: (NSView, NSView)?) -> NSRect? {
+    if #available(macOS 14, *) {
+      return menuItem.accessibilityFrame()
+    }
+    if let (view, _) = anchors {
+      return view.convert(view.bounds, to: nil)
+    }
+    return nil
+  }
+  
+  private func boundsOfMenuItem(_ menuItem: ClipMenuItem, _ windowContentView: NSView,
+                                _ anchors: (NSView, NSView)?) -> NSRect? {
     if #available(macOS 14, *) {
       let windowRectInScreenCoordinates = windowContentView.accessibilityFrame()
       let menuItemRectInScreenCoordinates = menuItem.accessibilityFrame()

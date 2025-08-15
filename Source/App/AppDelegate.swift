@@ -27,10 +27,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var model: AppModel!
   
   func applicationDidFinishLaunching(_ aNotification: Notification) {
-    if NSEvent.modifierFlags.contains(.option) {
+    if ProcessInfo.processInfo.arguments.contains("ui-testing") {
+      if CoreDataManager.deleteDatabase() {
+        model = AppModel()
+      } else {
+        NSApplication.shared.terminate(nil)
+      }
+      
+    } else if NSEvent.modifierFlags.contains(.option) {
       showResetAlert() { [weak self] in
         self?.model = AppModel()
       }
+      
     } else {
       model = AppModel()
     }
@@ -42,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   }
   
   func application(_ application: NSApplication, open urls: [URL]) {
-    // get the first of the url,s ignore the rest
+    // get the first of the url's, ignore the rest
     guard let url = urls.first else {
       return
     }

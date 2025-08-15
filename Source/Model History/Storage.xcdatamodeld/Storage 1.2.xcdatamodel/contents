@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24279" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24279" systemVersion="24G84" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Batch" representedClassName="Batch" syncable="YES">
         <attribute name="fullname" optional="YES" attributeType="String"/>
         <attribute name="index" optional="YES" attributeType="String"/>
@@ -12,16 +12,15 @@
         <attribute name="firstCopiedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="lastCopiedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="numberOfCopies" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="pin" optional="YES" attributeType="String" regularExpressionString="^[abcdefghijklmnorstuvwxyz]*$"/>
         <attribute name="title" optional="YES" attributeType="String" maxValueString="203"/>
         <relationship name="batches" optional="YES" toMany="YES" deletionRule="Deny" destinationEntity="Batch" inverseName="clips" inverseEntity="Batch"/>
-        <relationship name="contents" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="HistoryItemContent" inverseName="item" inverseEntity="HistoryItemContent"/>
+        <relationship name="contents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HistoryItemContent" inverseName="items" inverseEntity="HistoryItemContent"/>
         <relationship name="history" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="HistoryList" inverseName="clips" inverseEntity="HistoryList"/>
     </entity>
     <entity name="HistoryItemContent" representedClassName="HistoryItemContent" syncable="YES">
         <attribute name="type" optional="YES" attributeType="String"/>
         <attribute name="value" optional="YES" attributeType="Binary"/>
-        <relationship name="item" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="HistoryItem" inverseName="contents" inverseEntity="HistoryItem"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HistoryItem" inverseName="contents" inverseEntity="HistoryItem" elementID="item"/>
     </entity>
     <entity name="HistoryList" representedClassName="HistoryList" syncable="YES">
         <relationship name="clips" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="HistoryItem" inverseName="history" inverseEntity="HistoryItem"/>

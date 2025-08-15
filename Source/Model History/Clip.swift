@@ -18,13 +18,13 @@ import os.log
 class Clip: NSManagedObject {
   
   @NSManaged public var application: String?
-  @NSManaged public var batches: NSSet?
-  @NSManaged public var contents: NSSet?
   @NSManaged public var firstCopiedAt: Date!
   @NSManaged public var lastCopiedAt: Date!
   @NSManaged public var numberOfCopies: Int
-  @NSManaged public var pin: String? // unused, but keep in the model to avoid migration
   @NSManaged public var title: String?
+  @NSManaged public var contents: NSSet?
+  @NSManaged public var batches: NSSet?
+  @NSManaged public var history: HistoryList?
   
   var fileURLs: [URL] {
     guard !universalClipboardText else {
@@ -88,6 +88,8 @@ class Clip: NSManagedObject {
     return calculateValue()
   }
   
+  var parentConnectionsEmpty: Bool { history == nil && (batches == nil || batches!.count == 0) }
+  
   var fromSelf: Bool { hasContentData([.fromSelf]) || hasContentData([.fromMaccy]) }
   var universalClipboard: Bool { hasContentData([.universalClipboard]) }
   
@@ -139,8 +141,9 @@ class Clip: NSManagedObject {
     let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
     do {
       let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
-      clips.forEach {
-        CoreDataManager.shared.context.delete($0)
+      clips.forEach { clip in
+        clip.clearContents()
+        CoreDataManager.shared.context.delete(clip)
       }
     } catch {
       os_log(.default, "unhandled error deleting clips %@", error.localizedDescription)
@@ -152,8 +155,9 @@ class Clip: NSManagedObject {
     fetchRequest.predicate = NSPredicate(format: "batch.@count == 0")
     do {
       let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
-      clips.forEach {
-        CoreDataManager.shared.context.delete($0)
+      clips.forEach { clip in
+        clip.clearContents()
+        CoreDataManager.shared.context.delete(clip)
       }
     } catch {
       os_log(.default, "unhandled error deleting clips not within batches %@", error.localizedDescription)
@@ -223,8 +227,15 @@ class Clip: NSManagedObject {
     (batches?.allObjects as? [Batch]) ?? []
   }
   
+  func clearContents() {
+    getContents().forEach(deleteContentItem(_:))
+  }
+  
   @objc(addContentsObject:)
   @NSManaged public func addToContents(_ value: ClipContent)
+  
+  @objc(removeContentsObject:)
+  @NSManaged public func removeFromContents(_ value: ClipContent)
   
   // MARK: -
   
@@ -313,6 +324,15 @@ class Clip: NSManagedObject {
       return html?.string ?? ""
     }
     return ""
+  }
+  
+  private func deleteContentItem(_ content: ClipContent) {
+    // coredata has some relationshipdelete rules, it seems none of them are like reference counting
+    // to do this automatically: members of contents that belong to only this clip get deleted too
+    removeFromContents(content)
+    if content.parentConnectionsEmpty {
+      CoreDataManager.shared.context.delete(content)
+    } 
   }
   
   // MARK: -

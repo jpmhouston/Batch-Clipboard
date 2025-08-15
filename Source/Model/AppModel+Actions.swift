@@ -671,21 +671,47 @@ extension AppModel {
     guard index >= 0 && index < history.batches.count else {
       return
     }
+    let batch = history.batches[index]
     
     showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in
       guard let self = self else { return }
       
+      removeHotKey(forBatch: batch)
       history.removeSavedBatch(atIndex: index)
-      
+      menu.deletedBatch(index)
+    }
+  }
+  
+  func deleteBatchClip(atIndex subindex: Int, forBatchAtIndex index: Int) {
+    guard !Self.busy else {
+      return
+    }
+    guard index >= 0 && index < history.batches.count else {
+      return
+    }
+    let batch = history.batches[index]
+    
+    batch.removeClip(atIndex: subindex)
+    menu.deletedClip(subindex, fromBatch: index)
+    
+    if batch.isEmpty {
+      removeHotKey(forBatch: batch)
+      history.removeSavedBatch(atIndex: index)
       menu.deletedBatch(index)
     }
   }
   
   @IBAction
   func deleteHighlightedItem(_ sender: AnyObject) {
-    if let batch = menu.highlightedBatchMenuItem()?.batch {
-      if let index = history.batches.firstIndex(of: batch) {
-        deleteBatch(atIndex: index)
+    if let batchItem = menu.highlightedBatchMenuItem(), let batch = batchItem.batch {
+      if let index = history.batches.firstIndex(of: batch) { // do nothing if cannot find the batch
+        if let highlightedSubitem = batchItem.submenu?.highlightedItem { // only delete the batch itself if no submenu selection
+          if let clip = (highlightedSubitem as? ClipMenuItem)?.clip, let subindex = batch.getClipsArray().firstIndex(of: clip) {
+            deleteBatchClip(atIndex: subindex, forBatchAtIndex: index)
+          }
+        } else {
+          deleteBatch(atIndex: index)
+        }
       }
     } else if let clip = menu.highlightedClipMenuItem()?.clip {
       if let index = history.all.firstIndex(of: clip) {

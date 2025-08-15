@@ -15,10 +15,24 @@ class BatchMenuItem: NSMenuItem {
   var name: String { batch?.fullname ?? "" }
   var hotKey: KeyboardShortcuts.Name?
   
-  // outlets to the prototype submenu are connected  
+  // Tried outlets to the submenu item but they don't work. They're connected in the
+  // prototype menu item when first instantiated by the app, but when that's copied
+  // to make a dynamic batch item those outlet of course end up nil. 
+  // Instead the menu position are hardcoded here, keep in sync with any changes to
+  // the batch item prototype's submenu.
   private var replaySubmenuItem: NSMenuItem? { submenu?.itemsWithMinCount(3)?[0] }
   private var renameSubmenuItem: NSMenuItem? { submenu?.itemsWithMinCount(3)?[1] }
   private var clipItemSeparator: NSMenuItem? { submenu?.itemsWithMinCount(3)?[2] }
+  
+  static var itemGroupCount: Int = 1
+  
+  var firstClipItemIndex: Int? { (submenu?.numberOfItems ?? 0) > 3 ? 3 : nil }
+  var postClipItemIndex: Int? { submenu?.numberOfItems }
+  var clipCount: Int { clipItemCount / Self.itemGroupCount }
+  var clipItemCount: Int {
+    guard let firstIndex = firstClipItemIndex, let postIndex = postClipItemIndex else { return 0 }
+    return postIndex - firstIndex 
+  }
   
   static func parentBatchMenuItem(for potentialSubmenuItem: AnyObject) -> BatchMenuItem? {
     (potentialSubmenuItem as? NSMenuItem)?.parent as? BatchMenuItem
