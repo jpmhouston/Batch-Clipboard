@@ -126,9 +126,11 @@ class AppModel: NSObject {
   // MARK: -
   
   override init() {
+    super.init()
+    
+    // many things that follow must happen in a particular order
+    
     UserDefaults.standard.register(defaults: [
-      // unlike maccy, app doesn't populate these in its app delegates's migration method,
-      // maybe should go in Clipboard.init instead though
       UserDefaults.Keys.enabledPasteboardTypes: UserDefaults.Values.enabledPasteboardTypes,
       UserDefaults.Keys.ignoredPasteboardTypes: UserDefaults.Values.ignoredPasteboardTypes,
       
@@ -144,61 +146,60 @@ class AppModel: NSObject {
       UserDefaults.Keys.highlightMatch: UserDefaults.Values.highlightMatch
     ])
     
-    super.init()
     migrateUserDefaults()
-    initializeStateFlags()
     
-    settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
-    
-    copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
-    pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
-    startHotKey = StartKeyboardShortcutHandler(startQueueMode)
-    replayLastHotKey = ReplayLastKeyboardShortcutHandler(replayLastBatch)
-    restoreSavedBatchHotKeys()
+    // history, queue, menu, statusicon
+    if UserDefaults.standard.keepHistory {
+      history.loadList()
+      clipboard.start()
+    }
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
-    clipboard.onNewCopy(clipboardChanged)       // main callback setup here 
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
-    menu.buildDynamicItems()
-    configureMenuShortcuts()
-    // `menu.prepareToOpen()` can take a while the first time so do it early
-    // instead of the first time the menu is clicked on, and in case the
-    // intro needs to be shown, delay this call a bit to let that open
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-      self.menu.prepareToOpen()
-    }
     
     menuIcon.enableRemoval(true)
     menuIcon.isVisible = true
     updateMenuIconEnabledness()
-    
     if UserDefaults.standard.legacyFocusTechnique {
       menuController = MenuController(menu, menuIcon.statusItem)
     } else {
       menuIcon.setDirectOpen(toMenu: menu, menu.menuBarShouldOpen)
     }
     
-    if UserDefaults.standard.object(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
-      if Self.firstLaunch {
-        UserDefaults.standard.keepHistory = false // deliberately omitted from registered defaults above
-        UserDefaults.standard.keepHistoryChoicePending = false
-      } else {
-        // this 1.1 flag unset even though not first launch must mean migrating from 1.0
-        // offer to upgrade to new history-less default, but until they do, keep history on
-        UserDefaults.standard.keepHistory = true
-        UserDefaults.standard.keepHistoryChoicePending = true
-        os_log(.info, "user must confirm history remaining on, or migrate to history off")
-      } 
-    }
+    // hotkey and clipboard callbacks
+    copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
+    pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
+    startHotKey = StartKeyboardShortcutHandler(startQueueMode)
+    replayLastHotKey = ReplayLastKeyboardShortcutHandler(replayLastBatch)
+    restoreSavedBatchHotKeys()
     
-    if UserDefaults.standard.keepHistory {
-      history.loadList()
-      clipboard.start()
-    }
+    initializeObservers()
+    
+    clipboard.onNewCopy(clipboardChanged) 
+    
+    // Bonus features may get toggled from off to on after a delay to access the app-store receipt,
+    // at that point `menu.buildDynamicItems()` gets automatically called again. If that were to
+    // happen immediately instead then the one below is redundant, but no harm. 
+    loadFeatureFlags()
+    
+    // This potential debug code to inspect or log whatever currently called after almost everything
+    // is setup, except maybe bonus feature flags after receipt access completes. However, where this
+    // is called can be moved up to run earlier.
     #if DEBUG
-    debugDataState()
+    debugLaunchState()
     #endif
+    
+    // launch initial user interface
+    menu.buildDynamicItems()
+    configureMenuShortcuts()
+    // The first `menu.prepareToOpen()` can take a while so do it early instead of when the menu
+    // is first clicked on. To not delay the intro window from opening, delay this call.
+    // Also by making this delay not super-short, hopefully loading the app store receipt has
+    // happened and the re-do `buildDynamicItems()` has already occurred as well.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      self.menu.prepareToOpen()
+    }
     
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
@@ -209,9 +210,8 @@ class AppModel: NSObject {
       showIntroAtHistoryUpdatePage()
     }
     
-    // important to setup observers after potential early changes to observees above
-    // (for example UserDefaults.standard.keepHistory)
-    initializeObservers()
+    // this instantiates the settings window, but it's not not initially visible
+    settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
   }
   
   deinit {
@@ -272,12 +272,35 @@ class AppModel: NSObject {
   }
   
   private func migrateUserDefaults() {
-    // perhaps some code regarding keepHistory could be moved here
+    let userDefaults = UserDefaults.standard
+    
+    Self.firstLaunch = userDefaults.dictionaryRepresentation().isEmpty
+    if Self.firstLaunch {
+      // set something in userdefaults to know on next launch it's not the first
+      userDefaults.completedIntro = false
+    }
+    
+    if userDefaults.object(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
+      if Self.firstLaunch {
+        userDefaults.keepHistory = false // deliberately omitted from registered defaults above
+        userDefaults.keepHistoryChoicePending = false
+      } else {
+        // this 1.1 flag unset even though not first launch must mean migrating from 1.0
+        // offer to upgrade to new history-less default, but until they do, keep history on
+        userDefaults.keepHistory = true
+        userDefaults.keepHistoryChoicePending = true
+        os_log(.info, "user must confirm history remaining on, or migrate to history off")
+      } 
+    }
+    
+    #if APP_STORE
+    migrateUserDefaultsForAppStore()
+    #endif
   }
   
   #if DEBUG
-  func debugDataState() {
-    nop() // put breakpoint here, maybe doing "p history.summary", and/or "p history.dump"
+  func debugLaunchState() {
+    print(history.summary) // or put breakpoint here maybe doing "p queue.dump"
   }
   #endif
   
@@ -390,14 +413,7 @@ class AppModel: NSObject {
   
   // MARK: - features & purchases
   
-  private func initializeStateFlags() {
-    let userDefaults = UserDefaults.standard
-    Self.firstLaunch = userDefaults.dictionaryRepresentation().isEmpty
-    if Self.firstLaunch {
-      // set something in userdefaults to know on next launch it's not the first
-      userDefaults.completedIntro = false
-    }
-    
+  private func loadFeatureFlags() {
     #if BONUS_FEATUES_ON
     setFeatureFlags(givenPurchase: true)
     #endif
@@ -409,8 +425,28 @@ class AppModel: NSObject {
       self?.purchasesUpdated(update)
     }
     #endif
-    
-    #if APP_STORE && !BONUS_FEATUES_ON
+  }
+  
+  private func setFeatureFlags(givenPurchase hasPurchased: Bool) {
+    Self.allowFullyExpandedHistory = hasPurchased
+    Self.allowHistorySearch = hasPurchased
+    Self.allowReplayFromHistory = hasPurchased
+    Self.allowPasteMultiple = hasPurchased
+    Self.allowUndoCopy = hasPurchased
+    Self.allowSavedBatches = hasPurchased
+    //Self.allowLastBatch = hasPurchased // putting this in the normal version
+  }
+  
+  func hasAccessibilityPermissionBeenGranted() -> Bool {
+    AXIsProcessTrustedWithOptions(nil)
+  }
+  
+  #if APP_STORE
+  
+  private func migrateUserDefaultsForAppStore() {
+    #if !BONUS_FEATUES_ON
+    let userDefaults = UserDefaults.standard
+
     if Self.firstLaunch {
       // defaults defined here in code are to promote extras temporarily
       userDefaults.promoteExtras = true
@@ -423,8 +459,8 @@ class AppModel: NSObject {
         // cannot set the timer, don't promote the bonus features after all
         userDefaults.promoteExtras = false
       }
-    }
-    else if userDefaults.promoteExtras && userDefaults.promoteExtrasExpires {
+      
+    } else if userDefaults.promoteExtras && userDefaults.promoteExtrasExpires {
       if let restoredExpiration = userDefaults.promoteExtrasExpiration,
          let restoredDate = restoredExpiration.date, restoredDate.timeIntervalSinceNow > 0 // ie. date is in the future
       {
@@ -437,7 +473,6 @@ class AppModel: NSObject {
     #endif
   }
   
-  #if APP_STORE
   func setPromoteExtrasExpirationTimer(on: Bool) {
     if on {
       // first try re-using an existing expiration date, only picking a
@@ -500,7 +535,7 @@ class AppModel: NSObject {
   
   private func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
     #if !BONUS_FEATUES_ON
-    let alreadtHadExtras = Self.hasBoughtExtras
+    let alreadyHadExtras = Self.hasBoughtExtras
     
     setFeatureFlags(givenPurchase: purchases.hasBoughtExtras)
     Self.hasBoughtExtras = purchases.hasBoughtExtras
@@ -511,27 +546,14 @@ class AppModel: NSObject {
       UserDefaults.standard.promoteExtrasExpiration = nil
     }
     
-    if Self.hasBoughtExtras != alreadtHadExtras { // in most cases unnecessary, but just be sure
+    if Self.hasBoughtExtras != alreadyHadExtras { // in most cases unnecessary, but just be sure
       self.history.trim()
       self.menu.buildDynamicItems()
     }
     #endif
   }
+  
   #endif // APP_STORE
-  
-  private func setFeatureFlags(givenPurchase hasPurchased: Bool) {
-    Self.allowFullyExpandedHistory = hasPurchased
-    Self.allowHistorySearch = hasPurchased
-    Self.allowReplayFromHistory = hasPurchased
-    Self.allowPasteMultiple = hasPurchased
-    Self.allowUndoCopy = hasPurchased
-    Self.allowSavedBatches = hasPurchased
-    //Self.allowLastBatch = hasPurchased // putting this in the normal version
-  }
-  
-  func hasAccessibilityPermissionBeenGranted() -> Bool {
-    AXIsProcessTrustedWithOptions(nil)
-  }
   
   // MARK: - observations
   
