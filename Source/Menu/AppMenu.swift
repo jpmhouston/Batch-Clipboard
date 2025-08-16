@@ -31,11 +31,6 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var historyItemGroupCount: Int { usePopoverAnchors ? 3 : 2 } // an optional anchor, keep in sync with buildHistoryItemAndAlternates
   private var batchItemGroupCount: Int { usePopoverAnchors ? 2 : 1 } // an optional anchor, keep in sync with buildHistoryItemAndAlternates
   
-  private var maxClipMenuItems: Int { max(AppModel.effectiveMaxClips, queue.size) }
-  private var maxVisibleHistoryClips: Int {
-    showsExpandedMenu && showsFullExpansion ? maxClipMenuItems - queue.size : max(AppModel.effectiveMaxVisibleClips  - queue.size, 0)
-  }
-  
   private var usePopoverAnchors: Bool {
     // note: hardcoding false to exercise using anchors on >=sonoma won't work currently
     // would require changes in PreviewPopoverController
@@ -292,7 +287,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func prepareToOpen() {
-    // useHistory and useNaturalOrder already set in buildDynamicItems
+    // flags useHistory & useNaturalOrder are less ephemeral than flags set below, set in buildDynamicItems
+    // other flags showsExpandedMenu & showsFullExpansion are already set in menuBarShouldOpen
     
     if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch,
        let field = filterFieldView?.queryField
@@ -856,7 +852,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func updateHistoryClipItemVisibility() {
-    let showHistorySection = !useHistory && showsExpandedMenu
+    let showHistorySection = useHistory && showsExpandedMenu
     
     historyHeadingItem?.isVisible = showHistorySection
     topHistoryAnchorItem?.isVisible = showHistorySection
@@ -915,10 +911,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return
     }
     let clips = history.all
-    if clips.count >= queueClipsCount + historyClipsCount {
+    if historyClipsCount <= clips.count {
       return
     }
-    let lastClip = clips.last
+    let newBottommostClip = clips.last // will remove off end of the menu until the limit or item matching this clip
     
     guard var historyVisitIndex = postHistoryItemIndex, let firstHistoryIndex = firstHistoryItemIndex else {
       fatalError("can't locate the history menu items section")
@@ -928,7 +924,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       guard let menuItemClip = (safeItem(at: historyVisitIndex) as? ClipMenuItem)?.clip else {
         fatalError("menu item at \(historyVisitIndex) is invalid or not a clip menu item: \(String(describing: item(at: historyVisitIndex)))")
       }
-      if menuItemClip === lastClip {
+      if menuItemClip === newBottommostClip {
         return
       }
       // these history menu items don't match the last clip, remove 'em
@@ -1065,7 +1061,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func startedQueueFromHistory(_ headHistoryPosition: Int) {
-    guard !useHistory else {
+    guard useHistory else {
       os_log(.debug, "didn't expect to start queue from history menu items when history disabled")
       return
     }

@@ -20,7 +20,6 @@ import AppKit
 import os.log
 
 class History {
-  var maxItemsOverride = 0
   
   var currentList: HistoryList?
   var currentBatch: Batch?
@@ -54,25 +53,29 @@ class History {
   }
   
   func loadList() {
-    #if DEBUG
-    let haveClipsInBatches = Clip.anyWithinBatches // !!! remove once tested
-    print("have clips in batches? \(haveClipsInBatches)")
-    #endif
-    
     currentList = HistoryList.current
     
-    if currentList == nil {
-      if !Clip.anyWithinBatches {
-        // There was no history list and no clips in batchs, seems likely user has upgraded and
-        // the history list needs to populated with all the stored clips. Add them in the order
-        // `Clip.all` sorts them in, most recent first and oldest last.
-        currentList = HistoryList.create(withClips: Clip.all)
-      } else {
-        // Cannot trust the history. Need to clear all except those that are within batches
-        Clip.deleteAllOutsideBatches()
-        currentList = HistoryList.create()
-      }
+    if currentList != nil {
+      currentList = HistoryList.create(withClips: Clip.all)
+      
+      // Was doing this, but decided not to care that the history might start out with clips that
+      // were originally in batches and not intended to be in the history. 
+      //if !Clip.anyWithinBatches {
+      //  // There was no history list and no clips in batchs, seems likely user has upgraded and
+      //  // the history list needs to populated with all the stored clips. Add them in the order
+      //  // `Clip.all` sorts them in, most recent first and oldest last.
+      //  currentList = HistoryList.create(withClips: Clip.all)
+      //} else {
+      //  // Cannot trust the history. Need to clear all except those that are within batches
+      //  Clip.deleteAllOutsideBatches()
+      //  currentList = HistoryList.create()
+      //}
     }
+    
+    //else {
+    //  // found hisory clips to be faulted after just loading the list, does this fix it?
+    //  Clip.loadAll()
+    //}
   }
   
   func offloadList() {

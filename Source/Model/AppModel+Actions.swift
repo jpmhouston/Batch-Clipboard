@@ -116,6 +116,12 @@ extension AppModel {
     } catch {
       os_log(.default, "ignoring error from turning off queue %@", "\(error)")
     }
+    
+    if history.usingHistory {
+      // after canceling the queue its contents may have been added to the history
+      history.trim(to: Self.effectiveMaxClips)
+    }
+    
     menu.cancelledQueue(count)
     updateMenuIcon()
     updateMenuTitle()
@@ -204,6 +210,8 @@ extension AppModel {
       
     } else if history.usingHistory {
       history.add(clip)
+      history.trim(to: Self.effectiveMaxClips)
+      
       menu.addedClipToHistory(clip)
     }
   }
@@ -258,6 +266,11 @@ extension AppModel {
         try self.queue.dequeue()
       } catch {
         return
+      }
+      
+      if !queue.isOn && history.usingHistory {
+        // dequeuing has turned off the queue and its contents may have been added to the history
+        history.trim(to: Self.effectiveMaxClips)
       }
       
       menu.poppedClipOffQueue()
@@ -357,6 +370,11 @@ extension AppModel {
           // should be the most correct thing
         }
         
+        if !queue.isOn && history.usingHistory {
+          // dequeuing has turned off the queue and its contents may have been added to the history
+          history.trim(to: Self.effectiveMaxClips)
+        }
+        
         // final update to these and including icon not updated since the start
         self.menu.poppedClipsOffQueue(count)
         self.updateMenuIcon()
@@ -444,6 +462,11 @@ extension AppModel {
       try self.queue.dequeue()
     } catch {
       return
+    }
+    
+    if !queue.isOn && history.usingHistory {
+      // dequeuing has turned off the queue and its contents may have been added to the history
+      history.trim(to: Self.effectiveMaxClips)
     }
     
     menu.poppedClipOffQueue()
@@ -657,6 +680,11 @@ extension AppModel {
       return
     }
     
+    if !queue.isOn && history.usingHistory {
+      // removing has turned off the queue and its contents may have been added to the history
+      history.trim(to: Self.effectiveMaxClips)
+    }
+    
     menu.deletedClipFromQueue(index)
     updateMenuIcon(.decrement)
     updateMenuTitle()
@@ -775,6 +803,11 @@ extension AppModel {
         try queue.remove(atIndex: 0)
       } catch {
         return
+      }
+      
+      if !queue.isOn && history.usingHistory {
+        // removing has turned off the queue and contents may have been added to the history
+        history.trim(to: Self.effectiveMaxClips)
       }
       
       menu.deletedClipFromQueue(0)

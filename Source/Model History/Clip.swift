@@ -111,58 +111,33 @@ class Clip: NSManagedObject {
   
   // TODO: are these computed properties better as a throwing load() functions?
   
-  static var all: [Clip] {
-    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
-    do {
-      //return try CoreDataManager.shared.context.fetch(fetchRequest)
-      // documentation says deleted entities not fetched but saw it happen in unit tests, leave this in until that's solved
-      let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
-      return fetched.filter { !$0.isDeleted } 
-    } catch {
-      os_log(.default, "unhandled error fetching all clips %@", error.localizedDescription)
-      return []
-    }
-  }
+  static var all: [Clip] { loadAll() }
   
-  static var anyWithinBatches: Bool {
-    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    fetchRequest.predicate = NSPredicate(format: "batch.@count > 0")
-    fetchRequest.fetchBatchSize = 1
-    do {
-      return try CoreDataManager.shared.context.count(for: fetchRequest) > 0
-    } catch {
-      os_log(.default, "unhandled error checking for presence of clips within batches %@", error.localizedDescription)
-      return false
-    }
-  }
-  
-  static func deleteAll() {
-    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    do {
-      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
-      clips.forEach { clip in
-        clip.clearContents()
-        CoreDataManager.shared.context.delete(clip)
-      }
-    } catch {
-      os_log(.default, "unhandled error deleting clips %@", error.localizedDescription)
-    }
-  }
-  
-  static func deleteAllOutsideBatches() {
-    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-    fetchRequest.predicate = NSPredicate(format: "batch.@count == 0")
-    do {
-      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
-      clips.forEach { clip in
-        clip.clearContents()
-        CoreDataManager.shared.context.delete(clip)
-      }
-    } catch {
-      os_log(.default, "unhandled error deleting clips not within batches %@", error.localizedDescription)
-    }
-  }
+//  static var anyWithinBatches: Bool {
+//    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+//    fetchRequest.predicate = NSPredicate(format: "batches.@count > 0")
+//    fetchRequest.fetchBatchSize = 1
+//    do {
+//      return try CoreDataManager.shared.context.count(for: fetchRequest) > 0
+//    } catch {
+//      os_log(.default, "unhandled error checking for presence of clips within batches %@", error.localizedDescription)
+//      return false
+//    }
+//  }
+//  
+//  static func deleteAllOutsideBatches() {
+//    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+//    fetchRequest.predicate = NSPredicate(format: "batches.@count == 0")
+//    do {
+//      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
+//      clips.forEach { clip in
+//        clip.clearContents()
+//        CoreDataManager.shared.context.delete(clip)
+//      }
+//    } catch {
+//      os_log(.default, "unhandled error deleting clips not within batches %@", error.localizedDescription)
+//    }
+//  }
   
   // swiftlint:disable nsobject_prefer_isequal
   // Class 'HistoryItem' for entity 'HistoryItem' has an illegal override of NSManagedObject -isEqual
@@ -184,6 +159,36 @@ class Clip: NSManagedObject {
     
     CoreDataManager.shared.saveContext()
     return clip
+  }
+  
+  // MARK: -
+  
+  @discardableResult
+  static func loadAll() -> [Clip] {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    fetchRequest.sortDescriptors = [Clip.sortByFirstCopiedAt]
+    do {
+      //return try CoreDataManager.shared.context.fetch(fetchRequest)
+      // documentation says deleted entities not fetched but saw it happen in unit tests, leave this in until that's solved
+      let fetched = try CoreDataManager.shared.context.fetch(fetchRequest)
+      return fetched.filter { !$0.isDeleted } 
+    } catch {
+      os_log(.default, "unhandled error fetching all clips %@", error.localizedDescription)
+      return []
+    }
+  }
+  
+  static func deleteAll() {
+    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
+    do {
+      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
+      clips.forEach { clip in
+        clip.clearContents()
+        CoreDataManager.shared.context.delete(clip)
+      }
+    } catch {
+      os_log(.default, "unhandled error deleting clips %@", error.localizedDescription)
+    }
   }
   
   // MARK: -
