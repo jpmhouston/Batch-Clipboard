@@ -389,12 +389,6 @@ class AppMenu: NSMenu, NSMenuDelegate {
     rebuildBatchItems()
   }
   
-  func defineDynamicBatchHotKeys(usingMapping dict: [String: KeyboardShortcuts.Name]) {
-    iterateOverBatchParentItems { item in
-      item.hotKey = dict[item.name]
-    }
-  }
-  
   private func insertTopAnchorItems() {
     // Anchor items are used in older versions of the OS as nearly empty items containing views
     // who's view frames are used to as bounds for mouse tracking to open the preview popups.
@@ -552,12 +546,12 @@ class AppMenu: NSMenu, NSMenuDelegate {
     return menuItems
   }
   
-  private func buildBatchParentItem(forBatch batch: Batch, hotKey: KeyboardShortcuts.Name? = nil) -> NSMenuItem? {
+  private func buildBatchParentItem(forBatch batch: Batch) -> NSMenuItem? {
     guard let protoParentItem = protoBatchItem else {
       return nil
     }
     
-    let batchParentItem = (protoParentItem.copy() as! BatchMenuItem).configured(withBatch: batch, hotKey: hotKey)
+    let batchParentItem = (protoParentItem.copy() as! BatchMenuItem).configured(withBatch: batch)
     
     return batchParentItem
   }
@@ -736,7 +730,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func updateBatchShortcuts() {
     iterateOverBatchParentItems {
-      $0.updateShortcut()
+      $0.refreshShortcut()
     }
   }
   
@@ -1215,7 +1209,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     sanityCheckClipMenuItems()
   }
   
-  func addedBatch(_ batch: Batch, withHotKeyDefinition hotKey: KeyboardShortcuts.Name?) {
+  func addedBatch(_ batch: Batch) {
     guard let firstMenuIndex = firstBatchItemIndex else {
       fatalError("can't find the place to insert batch menu items")
     }
@@ -1224,7 +1218,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return
     }
     
-    guard let menuItem = buildBatchParentItem(forBatch: batch, hotKey: hotKey) else {
+    guard let menuItem = buildBatchParentItem(forBatch: batch) else {
       return
     }
     
@@ -1234,11 +1228,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     sanityCheckBatchMenuItems()
   }
   
-  func renamedBatch(_ batch: Batch, withNewHotKeyDefinition hotKey: KeyboardShortcuts.Name?) {
+  func renamedBatch(_ batch: Batch) {
     iterateOverBatchParentItems { item in
       if item.batch === batch {
-        item.hotKey = hotKey
-        item.updateShortcut()
+        item.refreshShortcut()
         item.regenerateTitle()
         return false // to abort iterating
       }

@@ -12,8 +12,6 @@ import KeyboardShortcuts
 class BatchMenuItem: NSMenuItem {
   
   var batch: Batch?
-  var name: String { batch?.fullname ?? "" }
-  var hotKey: KeyboardShortcuts.Name?
   
   // Tried outlets to the submenu item but they don't work. They're connected in the
   // prototype menu item when first instantiated by the app, but when that's copied
@@ -40,11 +38,10 @@ class BatchMenuItem: NSMenuItem {
   
   // MARK: -
   
-  func configured(withBatch batch: Batch, hotKey: KeyboardShortcuts.Name?) -> Self {
+  func configured(withBatch batch: Batch) -> Self {
     self.batch = batch
     self.title = batch.makeTruncatedTitle()
-    self.hotKey = hotKey
-    updateShortcut()
+    refreshShortcut()
     return self
   }
   
@@ -55,13 +52,14 @@ class BatchMenuItem: NSMenuItem {
     title = batch.makeTruncatedTitle()
   }
   
-  func updateShortcut() {
+  func refreshShortcut() {
     guard let subitem = replaySubmenuItem else {
       return
     }
-    if let hotKey = hotKey {
+    if let name = batch?.fullname, !name.isEmpty {
+      let hotKeyDefinition = KeyboardShortcuts.Name(name)
       MainActor.assumeIsolated {
-        subitem.setShortcut(for: hotKey)
+        subitem.setShortcut(for: hotKeyDefinition)
       }
     } else {
       subitem.keyEquivalent = ""

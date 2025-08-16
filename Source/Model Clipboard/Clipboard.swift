@@ -128,11 +128,13 @@ class Clipboard: CustomDebugStringConvertible {
     #endif
     
     pasteboard.clearContents()
-    pasteboard.setString(string, forType: .string)
     
     if excludeFromHistory {
+      pasteboard.prepareForNewContents(with: .currentHostOnly)
+      pasteboard.setString(string, forType: .string)
       changeCount = pasteboard.changeCount
     } else {
+      pasteboard.setString(string, forType: .string)
       checkForChangesInPasteboard()
     }
   }
@@ -157,6 +159,10 @@ class Clipboard: CustomDebugStringConvertible {
     #endif
     
     pasteboard.clearContents()
+    if excludeFromHistory {
+      pasteboard.prepareForNewContents(with: .currentHostOnly)
+    }
+    
     var contents = item.getContents()
     
     if removeFormatting {

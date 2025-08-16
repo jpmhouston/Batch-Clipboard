@@ -56,6 +56,7 @@
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                         </menuItem>
                                         <menuItem title="Newline" id="APQ-WJ-orG"/>
+                                        <menuItem title="Double Newline" id="B6z-hv-pf9"/>
                                         <menuItem title="Space" id="MY7-BU-Dyi"/>
                                         <menuItem title="Comma + Space" id="rH5-Yh-SIb"/>
                                     </items>

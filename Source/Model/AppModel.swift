@@ -123,6 +123,20 @@ class AppModel: NSObject {
   private var statusItemConfigurationObserver: NSKeyValueObservation?
   private var statusItemVisibilityObserver: NSKeyValueObservation?
   
+  enum PasteSeparator: Int, CaseIterable {
+    // the popup menu in Alerts.nib must be kept in symc with these enum cases 
+    case newline, doubleNewline, space, commaSpace
+    var string: String {
+      switch self {
+      case .newline: "\n"
+      case .doubleNewline: "\n\n"
+      case .space: " "
+      case .commaSpace: ", "
+      }
+    }
+    static var validRawValue = 0 ..< allCases.count
+  }
+  
   // MARK: -
   
   override init() {
@@ -192,7 +206,8 @@ class AppModel: NSObject {
     
     // launch initial user interface
     menu.buildDynamicItems()
-    configureMenuShortcuts()
+    //configureMenuShortcuts()
+    
     // The first `menu.prepareToOpen()` can take a while so do it early instead of when the menu
     // is first clicked on. To not delay the intro window from opening, delay this call.
     // Also by making this delay not super-short, hopefully loading the app store receipt has
@@ -300,115 +315,107 @@ class AppModel: NSObject {
   
   #if DEBUG
   func debugLaunchState() {
-    print(history.summary) // or put breakpoint here maybe doing "p queue.dump"
+    nop() // put breakpoint here maybe doing "p queue.dump"
   }
   #endif
   
-  // MARK: - dynamic hotkeys for saved batches
+  // MARK: - dynamic keyboard shortcuts for saved batches
+  
+  // Called hotkeys here to avoid confusion with the tpye KeyboardShortcuts.Shortcut
+  // which is only a representation of the key combonation unassociated with the
+  // associated name str and setup hander, as in a statically defined KeyboardShortcuts.Name
+  // We also pass around name strings, so refer to KeyboardShortcuts.Name instead as
+  // a "hotkey definition" or "shortcut definition".
+  // We setup this association even when the shortcut is nil to reserver its unique
+  // name string and prepare for the user adding a key combination at any time.  
+  typealias HotKeyShortcut = KeyboardShortcuts.Shortcut
+  typealias HotKeyDefinition = KeyboardShortcuts.Name
   
   private func restoreSavedBatchHotKeys() {
     savedBatchHotKeys = []
     for batch in Batch.saved {
-      saveNewHotKey(withShortcut: batch.keyShortcut, forBatch: batch)
+      guard let name = batch.fullname, !name.isEmpty else {
+        continue
+      }
+      let hotKeyDefinition = defineHotKey(named: name, withShortcut: batch.keyShortcut)
+      registerHotKeyHandler(to: hotKeyDefinition, forBatch: batch)
     }
   }
   
-  private func configureMenuShortcuts() {
-    var mapping: [String: KeyboardShortcuts.Name] = [:]
-    for hotKeyHandler in savedBatchHotKeys {
-      mapping[hotKeyHandler.nameString] = hotKeyHandler.hotKey
-    }
-    menu.defineDynamicBatchHotKeys(usingMapping: mapping)
+  private func defineHotKey(named name: String, withShortcut shortcut: HotKeyShortcut?) -> HotKeyDefinition {
+    let hotKeyDefinition = HotKeyDefinition(name)
+    KeyboardShortcuts.setShortcut(shortcut, for: hotKeyDefinition)
+    return hotKeyDefinition
   }
   
-  private func saveHotKey(_ hotKey: KeyboardShortcuts.Name, forBatch batch: Batch) {
-    let handler = ReplaySavedKeyboardShortcutHandler(for: hotKey, batch: batch, replaySavedBatch)
+  private func registerHotKeyHandler(to hotKeyDefinition: HotKeyDefinition, forBatch batch: Batch) {
+    if savedBatchHotKeys.contains(where: { $0.name == hotKeyDefinition }) {
+      return
+    }
+    let handler = ReplaySavedKeyboardShortcutHandler(for: hotKeyDefinition, batch: batch, replaySavedBatch)
     savedBatchHotKeys.insert(handler)
   }
   
-  private func saveNewHotKey(withShortcut shortcut: KeyboardShortcuts.Shortcut?, forBatch batch: Batch) {
-    guard let nameString = batch.fullname, !nameString.isEmpty else {
+  private func unregisterHotKeyDefinition(_ oldDefinition: HotKeyDefinition) {
+    KeyboardShortcuts.setShortcut(nil, for: oldDefinition)
+    if let oldHandler = savedBatchHotKeys.first(where: { $0.name == oldDefinition }) {
+      savedBatchHotKeys.remove(oldHandler)
+    }
+  }
+  
+  // these funtions available to call from elsewhere in AppModel
+  
+  internal func registerHotKeyHandler(forBatch batch: Batch) {
+    guard let name = batch.fullname, !name.isEmpty else {
       return
     }
-    let hotKey = KeyboardShortcuts.Name(nameString)
-    KeyboardShortcuts.setShortcut(shortcut, for: hotKey)
-    saveHotKey(hotKey, forBatch: batch)
+    registerHotKeyHandler(to: HotKeyDefinition(name), forBatch: batch)
   }
   
-  // use when hotkey field has created a new name & shortcut for a batch, saves it in the batch and sets up the handler   
-  internal func addHotKey(_ hotKey: KeyboardShortcuts.Name, toBatch batch: Batch) {
-    batch.keyShortcut = KeyboardShortcuts.getShortcut(for: hotKey)
-    saveHotKey(hotKey, forBatch: batch)
-  }
-  
-  // use when adding a known shortcut as the new hotkey for a batch (not used rn as renameing always provides new hotkey)
-  internal func addNewHotKey(withShortcut shortcut: KeyboardShortcuts.Shortcut?, toBatch batch: Batch) {
-    batch.keyShortcut = shortcut
-    saveNewHotKey(withShortcut: shortcut, forBatch: batch)
-  }
-  
-  // use to setup a potential shortcut handler for batch   
-  internal func setupBlankHotKey(forBatch batch: Batch) {
-    if batch.keyShortcut != nil {
-      batch.keyShortcut = nil
-    }
-    saveNewHotKey(withShortcut: nil, forBatch: batch)
-  }
-  
-  // use when deleting a batch
-  func removeHotKey(forBatch batch: Batch) {
-    guard let savedHandler = savedBatchHotKeys.first(where: { $0.batch === batch }) else {
+  internal func unregisterHotKeyDefinition(forBatch batch: Batch) {
+    guard let name = batch.fullname, !name.isEmpty else {
       return
     }
-    KeyboardShortcuts.setShortcut(nil, for: savedHandler.hotKey)
-    savedBatchHotKeys.remove(savedHandler)
+    unregisterHotKeyDefinition(HotKeyDefinition(name))
   }
   
-  // use when wanting to rename a batch, returns false if cannot rename because there's a duplicate,
-  // resets the shortcut name and the handler
-  internal func renameBatch(_ batch: Batch, to newName: String, withNewHotKey newHotKey: KeyboardShortcuts.Name?) -> Bool {
-    guard !newName.isEmpty else {
+  internal func prohibitedNewBatchNames() -> Set<String> {
+    // hotkeys defs must be unique, since using batch name directly as hotkey defs they must be unique too
+    // empty strings shouldn't be allowed either fyi
+    var savedBatchNames = savedBatchHotKeys.map { $0.name }
+    savedBatchNames.append(contentsOf: [.queueStart, .queuedCopy, .queuedPaste, .queueReplay ])
+    return Set(savedBatchNames.map { $0.rawValue })
+  }
+  
+  @discardableResult
+  internal func replaceRegisteredHotKey(forRenamedBatch batch: Batch) -> Bool {
+    guard let newName = batch.fullname, !newName.isEmpty else {
+      return false
+    }
+    guard savedBatchHotKeys.contains(where: { $0.nameString == newName }) == false else {
       return false
     }
     
-    let duplicate = savedBatchHotKeys.first { $0.nameString == newName }
-    let existing = savedBatchHotKeys.first { $0.batch === batch }
-    guard duplicate == nil else {
-      return duplicate == existing // ie. okay if the name for a batch hassn't really changed  
-    }
+    // shortcut definitions aren't meant to be static, so some hoops to jump through
+    // to remove the old one dynamically
+    var reuseShortcut: HotKeyShortcut? = nil
     
-    // shortcut names are meant to be static, some hoops to jump through to remove the old one dynamically
-    var shortcut: KeyboardShortcuts.Shortcut? = nil
-    if let existingHandler = existing { // TODO: otherwise log something here
-      shortcut = KeyboardShortcuts.getShortcut(for: existingHandler.hotKey)
-      KeyboardShortcuts.setShortcut(nil, for: existingHandler.hotKey) // removes entry from UserDefaults
-      savedBatchHotKeys.remove(existingHandler)
+    if let oldHandler = savedBatchHotKeys.first(where: { $0.batch === batch }) {
+      reuseShortcut = KeyboardShortcuts.getShortcut(for: oldHandler.name)
+      KeyboardShortcuts.setShortcut(nil, for: oldHandler.name) // removes entry from UserDefaults
+      savedBatchHotKeys.remove(oldHandler)
       
-      // TODO: replace with `KeyboardShortcuts.removeHandler(for: existing.name)` when next version of KeyboardShortcuts available 
+      // TODO: replace with `KeyboardShortcuts.removeHandler(for: oldHandler.name)`
+      // when the next version of KeyboardShortcuts available
       KeyboardShortcuts.removeAllHandlers()
       savedBatchHotKeys.forEach {
         $0.installHandler()
       }
     }
     
-    batch.fullname = newName
-    if let newHotKey = newHotKey {
-      addHotKey(newHotKey, toBatch: batch) // setup with new hotkey and save its new shortcut into the batch  
-    } else {
-      addNewHotKey(withShortcut: shortcut, toBatch: batch) // remake as new name and same shortcut  
-    }
-    
+    let newDefinition = defineHotKey(named: newName, withShortcut: reuseShortcut)
+    registerHotKeyHandler(to: newDefinition, forBatch: batch)
     return true
-  }
-  
-  internal func currentHotKey(forBatch batch: Batch) -> KeyboardShortcuts.Name? {
-    savedBatchHotKeys.first(where: { $0.batch === batch })?.hotKey
-  }
-  
-  internal func currentHotKeyNames() -> Set<String> {
-    var savedBatchNames = savedBatchHotKeys.map { $0.name }
-    savedBatchNames.append(contentsOf: [.queueStart, .queuedCopy, .queuedPaste, .queueReplay])
-    return Set(savedBatchNames.map { $0.rawValue })
   }
   
   // MARK: - features & purchases

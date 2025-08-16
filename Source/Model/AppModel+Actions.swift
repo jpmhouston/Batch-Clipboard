@@ -419,7 +419,7 @@ extension AppModel {
         }
         
         updateMenuTitle()
-        queuedPasteMultipleIterator(increment: nextCount, to: max, withSeparator: nil, then: completion)
+        queuedPasteMultipleIterator(increment: nextCount, to: max, withSeparator: seperator, then: completion)
       }
     }
   }
@@ -567,14 +567,16 @@ extension AppModel {
     guard let intialName = batch.fullname else {
       return
     }
-    let initialHotKey = currentHotKey(forBatch: batch)
     
-    showRenameBatchAlert(withCurrentName: intialName, hotKey: initialHotKey) { [weak self] name, hotKey in
+    showRenameBatchAlert(withCurrentName: intialName, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
       guard let self = self else { return }
       
-      if renameBatch(batch, to: name, withNewHotKey: hotKey) {
-        menu.renamedBatch(batch, withNewHotKeyDefinition: hotKey)
-      }
+      batch.fullname = name
+      batch.keyShortcut = shortcut
+      CoreDataManager.shared.saveContext()
+      
+      replaceRegisteredHotKey(forRenamedBatch: batch)
+      menu.renamedBatch(batch)
     } 
   }
   
@@ -599,17 +601,13 @@ extension AppModel {
       return false
     }
     
-    showSaveBatchAlert(showingCount: batch.count) { [weak self] (name: String?, hotKey: KeyboardShortcuts.Name?) in
-      guard let self = self, let name = name else { return }
+    showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
+      guard let self = self else { return }
       
-      let newBatch = Batch.create(withName: name, shortcut: nil, clips: history.lastBatchClips)
-      if let hotKey = hotKey {
-        addHotKey(hotKey, toBatch: newBatch)
-      } else {
-        setupBlankHotKey(forBatch: newBatch)
-      }
+      let newBatch = Batch.create(withName: name, shortcut: shortcut, clips: history.lastBatchClips)
       
-      menu.addedBatch(newBatch, withHotKeyDefinition: hotKey)
+      registerHotKeyHandler(forBatch: newBatch)
+      menu.addedBatch(newBatch)
     }
     
     return true
@@ -676,7 +674,7 @@ extension AppModel {
     showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in
       guard let self = self else { return }
       
-      removeHotKey(forBatch: batch)
+      unregisterHotKeyDefinition(forBatch: batch)
       history.removeSavedBatch(atIndex: index)
       menu.deletedBatch(index)
     }
@@ -694,8 +692,9 @@ extension AppModel {
     batch.removeClip(atIndex: subindex)
     menu.deletedClip(subindex, fromBatch: index)
     
+    // whan last clip is deleted then delete the whole batch, decided againt a confirmation alert 
     if batch.isEmpty {
-      removeHotKey(forBatch: batch)
+      unregisterHotKeyDefinition(forBatch: batch)
       history.removeSavedBatch(atIndex: index)
       menu.deletedBatch(index)
     }
@@ -859,27 +858,31 @@ extension AppModel {
     var lastSeparator = Alerts.SeparatorChoice.none
     if UserDefaults.standard.object(forKey: "lastPasteSeparatorIndex") != nil {
       let index = UserDefaults.standard.integer(forKey: "lastPasteSeparatorIndex")
-      if let value = Alerts.BuiltInPasteSeparator(rawValue: index) {
+      if let value = PasteSeparator(rawValue: index) {
         lastSeparator = .builtIn(value)
       }
     } else if let title = UserDefaults.standard.string(forKey: "lastPasteSeparatorTitle") {
       lastSeparator = .addOn(title)
     }
-    alerts.withNumberToPasteAlert(maxValue: queue.size, separatorDefault: lastSeparator) { [weak self] num, seperator in
+    alerts.withNumberToPasteAlert(maxValue: queue.size, separatorDefault: lastSeparator) { [weak self] num, choise in
       guard let self = self else { return }
       if let num = num {
-        switch seperator {
-        case .builtIn(let value):
-          UserDefaults.standard.set(value.rawValue, forKey: "lastPasteSeparatorIndex")
+        var seperator: String?
+        switch choise {
+        case .builtIn(let selection):
+          seperator = selection.string
+          UserDefaults.standard.set(selection.rawValue, forKey: "lastPasteSeparatorIndex")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
         case .addOn(let title):
+          seperator = title
           UserDefaults.standard.set(title, forKey: "lastPasteSeparatorTitle")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
         default:
+          seperator = nil
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
         }
-        completion(num, seperator.string)
+        completion(num, seperator)
       }
       
       returnFocus()
@@ -921,33 +924,34 @@ extension AppModel {
     }
   }
   
-  private func showSaveBatchAlert(showingCount count: Int, _ completion: @escaping (String, KeyboardShortcuts.Name?)->Void) {
+  private func showSaveBatchAlert(showingCount count: Int, prohobitedNames: Set<String>,
+                                  _ completion: @escaping (String, HotKeyShortcut?)->Void) {
     takeFocus()
     
     alerts.withSaveBatchAlert(forCurrentBatch: queue.isOn, showingCount: count,
-                              excludingNames: currentHotKeyNames()) { [weak self] name, hotKey in
+                              excludingNames: prohobitedNames) { [weak self] name, shortcut in
       guard let self = self else { return }
       if let name = name {
-        completion(name, hotKey)
+        completion(name, shortcut)
       }
       
       returnFocus()
     }
   }
   
-  private func showRenameBatchAlert(withCurrentName currentName: String, hotKey: KeyboardShortcuts.Name?,
-                                    _ completion: @escaping (String, KeyboardShortcuts.Name?)->Void) {
+  private func showRenameBatchAlert(withCurrentName currentName: String, prohobitedNames: Set<String>,
+                                    _ completion: @escaping (String, HotKeyShortcut?)->Void) {
     takeFocus()
     
-    alerts.withRenameBatchAlert(withCurrentName: currentName, shortcut: hotKey,
-                                excludingNames: currentHotKeyNames()) { [weak self]  name, hotKey in
+    alerts.withRenameBatchAlert(withCurrentName: currentName,
+                                excludingNames: prohobitedNames) { [weak self]  name, shortcut in
       guard let self = self else { return }
-      if let name = name {
-        completion(name, hotKey)
-        
-        returnFocus()
+      if name != nil || shortcut != nil {
+        completion(name ?? currentName, shortcut)
       }
-    }    
+      
+      returnFocus()
+    }
   }
   
   private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping ()->Void) {

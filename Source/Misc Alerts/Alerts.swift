@@ -25,28 +25,37 @@ class Alerts: NSObject, NSTextFieldDelegate {
   @IBOutlet weak var batchHotkeyContainerView: NSView?
   
   enum PermissionResponse { case cancel, openSettings, openIntro }
-  enum BuiltInPasteSeparator: Int, CaseIterable {
-    case newline, space, commaSpace
-    // complications because this enum doesn't include none, that's within the enum below
-    var menuIndex: Int { rawValue + 1 }
-    init?(withMenuItem i: Int) { if i == 0 { return nil } ; self.init(rawValue: i - 1) }
-    static var noneMenuIndex: Int { 0 }
-    static var numMenuItems: Int { BuiltInPasteSeparator.allCases.count + 1 }
-  }
   enum SeparatorChoice {
-    case none, builtIn(BuiltInPasteSeparator), addOn(String)
-    var string: String? {
+    case none, builtIn(AppModel.PasteSeparator), addOn(String)
+    static var numMenuItems: Int { 1 + AppModel.PasteSeparator.allCases.count + addOnPasteMultipleSeparators.count }
+    static var numBuiltInMenuItems: Int { 1 + AppModel.PasteSeparator.allCases.count }
+    static var noneMenuIndex = 0
+    var menuIndex: Int? {
       switch self {
-      case .addOn(let s): s
-      case .builtIn(.newline): "\n"  
-      case .builtIn(.space): " "
-      case .builtIn(.commaSpace): ", "
-      default: nil
+      case .none: 0
+      case .builtIn(let b): 1 + b.rawValue
+      case .addOn(_): nil
+      }
+    }
+    init?(withMenuIndex i: Int) {
+      switch i {
+      case 0: self = .none
+      case 1 ..< Self.numBuiltInMenuItems where AppModel.PasteSeparator.validRawValue.contains(i - 1):
+        let separator = AppModel.PasteSeparator(rawValue: i - 1)!
+        self = .builtIn(separator)
+      default: return nil
+      }
+    }
+    init?(withMenuTitle t: String) {
+      if let s = addOnPasteMultipleSeparators[t] {
+        self = .addOn(s)
+      } else {
+        return nil
       }
     }
   }
   
-  private var addOnPasteMultipleSeparators: [String: String] = [:]
+  private static var addOnPasteMultipleSeparators: [String: String] = [:]
   
   private var hotKeyDefinition: KeyboardShortcuts.Name?
   private var hotKeyShortcut: KeyboardShortcuts.Shortcut? 
@@ -62,7 +71,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
       fatalError("alerts resources missing")
     }
     
-    if let dict = UserDefaults.standard.dictionary(forKey: "pasteSseparators") as? [String: String],
+    if let dict = UserDefaults.standard.dictionary(forKey: "pasteSeparators") as? [String: String],
        let popup = pasteWithSeparatorPopup
     {
       // pre-flight the dict, throw out empty strings and duplicates
@@ -70,7 +79,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
         guard !title.isEmpty && !str.isEmpty else {
           continue
         }
-        guard addOnPasteMultipleSeparators[title] == nil else {
+        guard Self.addOnPasteMultipleSeparators[title] == nil else {
           os_log(.info, "add-on paste separator cannot be added because of duplicate title: %@", title)
           continue
         }
@@ -78,11 +87,11 @@ class Alerts: NSObject, NSTextFieldDelegate {
           os_log(.info, "add-on paste separator cannot be added because of duplicate title: %@", title)
           continue
         }
-        addOnPasteMultipleSeparators[title] = str
+        Self.addOnPasteMultipleSeparators[title] = str
       }
     }
     // add the titles to the menu as well as to our dictionary 
-    for (title, _) in addOnPasteMultipleSeparators {
+    for (title, _) in Self.addOnPasteMultipleSeparators {
       pasteWithSeparatorPopup?.addItem(withTitle: title)
     }
   }
@@ -244,19 +253,14 @@ class Alerts: NSObject, NSTextFieldDelegate {
     pasteMultipleField?.configure(acceptingRange: 1 ..< maxValue, permittingEmpty: true)
     pasteMultipleField?.placeholderString = String(maxValue)
     
-    switch separatorDefault {
-    case .builtIn(let separator):
-      pasteWithSeparatorPopup?.selectItem(at: separator.menuIndex)
-    case .addOn(let separatorName):
-      // rely on pre-fligting to know matching menu item isn't a built-in, or None 
-      guard let menuIndex = pasteWithSeparatorPopup?.indexOfItem(withTitle: separatorName),
-            menuIndex >= 0 && addOnPasteMultipleSeparators[separatorName] != nil else {
-        pasteWithSeparatorPopup?.selectItem(at: BuiltInPasteSeparator.noneMenuIndex)
-        break
-      }
+    if let menuIndex = separatorDefault?.menuIndex {
       pasteWithSeparatorPopup?.selectItem(at: menuIndex)
-    default:
-      pasteWithSeparatorPopup?.selectItem(at: BuiltInPasteSeparator.noneMenuIndex)
+    } else if case .addOn(let separatorName) = separatorDefault,
+              let menuIndex = pasteWithSeparatorPopup?.indexOfItem(withTitle: separatorName),
+              menuIndex >= 0 && Self.addOnPasteMultipleSeparators[separatorName] != nil {
+      pasteWithSeparatorPopup?.selectItem(at: menuIndex)
+    } else {
+      pasteWithSeparatorPopup?.selectItem(at: SeparatorChoice.noneMenuIndex)
     }
     alert.window.initialFirstResponder = pasteMultipleField
     
@@ -265,24 +269,20 @@ class Alerts: NSObject, NSTextFieldDelegate {
       case NSApplication.ModalResponse.alertFirstButtonReturn:
         alert.window.orderOut(nil) // i think others above should call this too
         
-        let number: Int
-        if let s = self.pasteMultipleField?.stringValue, let entry = Int(s) {
-          number = entry
-        } else { 
-          number = maxValue
-        } 
-        
-        var separator = SeparatorChoice.none
-        if let menuIndex = self.pasteWithSeparatorPopup?.indexOfSelectedItem, menuIndex != BuiltInPasteSeparator.noneMenuIndex {
-          if menuIndex >= BuiltInPasteSeparator.numMenuItems {
-            if let title = self.pasteWithSeparatorPopup?.titleOfSelectedItem, let s = self.addOnPasteMultipleSeparators[title] {
-              separator = .addOn(s)
-            }
-          } else if let b = BuiltInPasteSeparator(withMenuItem: menuIndex) {
-            separator = .builtIn(b)
+        let number: Int =
+          if let s = self.pasteMultipleField?.stringValue, let entry = Int(s) {
+            entry
+          } else { 
+            maxValue
+          } 
+        let separator: SeparatorChoice =
+          if let i = self.pasteWithSeparatorPopup?.indexOfSelectedItem, let indexMatch = SeparatorChoice(withMenuIndex: i) {
+            indexMatch
+          } else if let t = self.pasteWithSeparatorPopup?.titleOfSelectedItem, let titleMatch = SeparatorChoice(withMenuTitle: t) {
+            titleMatch
+          } else {
+            .none
           }
-        }
-        
         closure(number, separator)
         
       default:
@@ -303,7 +303,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
   }
   
   func withSaveBatchAlert(forCurrentBatch isCurrentBatch: Bool, showingCount count: Int, excludingNames exclude: Set<String>,
-                          _ closure: @escaping (String?, KeyboardShortcuts.Name?) -> Void) {
+                          _ closure: @escaping (String?, KeyboardShortcuts.Shortcut?) -> Void) {
     let (alert, button) = saveBatchAlert(withCount: count, forCurrentBatch: isCurrentBatch)
     button.isEnabled = false
     saveBatchConfirmButton = button
@@ -326,7 +326,7 @@ class Alerts: NSObject, NSTextFieldDelegate {
         guard let name = self.batchNameField?.stringValue, !name.isEmpty else {
           fallthrough
         }
-        closure(name, self.hotKeyDefinition)
+        closure(name, self.hotKeyShortcut)
       default:
         self.clearHotKey()
         closure(nil, nil)
@@ -340,9 +340,8 @@ class Alerts: NSObject, NSTextFieldDelegate {
     }
   }
   
-  func withRenameBatchAlert(withCurrentName currentName: String, shortcut currentHotKey: KeyboardShortcuts.Name?,
-                            excludingNames exclude: Set<String>,
-                            _ closure: @escaping (String?, KeyboardShortcuts.Name?) -> Void) {
+  func withRenameBatchAlert(withCurrentName currentName: String, excludingNames exclude: Set<String>,
+                            _ closure: @escaping (String?, KeyboardShortcuts.Shortcut?) -> Void) {
     let (alert, button) = renameBatchAlert()
     button.isEnabled = false
     saveBatchConfirmButton = button
@@ -357,9 +356,9 @@ class Alerts: NSObject, NSTextFieldDelegate {
     prohibitedBatchNames = exclude
     saveBatchOriginalName = currentName
     
-    hotKeyDefinition = currentHotKey
+    hotKeyDefinition = currentName.isEmpty ? nil : KeyboardShortcuts.Name(currentName)
     batchHotkeyCheckbox?.isEnabled = true
-    if let hotKey = currentHotKey, let shortcut = KeyboardShortcuts.getShortcut(for: hotKey) {
+    if let hotKey = hotKeyDefinition, let shortcut = KeyboardShortcuts.getShortcut(for: hotKey) {
       hotKeyShortcut = shortcut
       batchHotkeyCheckbox?.state = .on
       createHotKeyField()
@@ -372,9 +371,9 @@ class Alerts: NSObject, NSTextFieldDelegate {
       switch alert.runModal() {
       case NSApplication.ModalResponse.alertFirstButtonReturn:
         if let name = self.batchNameField?.stringValue, !name.isEmpty {
-          closure(name, self.hotKeyDefinition)
+          closure(name, self.hotKeyShortcut)
         } else {
-          closure(nil, self.hotKeyDefinition)
+          closure(nil, self.hotKeyShortcut)
         }
       default:
         self.clearHotKey()

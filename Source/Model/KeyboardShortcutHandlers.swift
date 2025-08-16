@@ -96,7 +96,7 @@ class ReplaySavedKeyboardShortcutHandler: Hashable {
   var batch: Batch
   private var handler: Handler
   
-  var hotKey: KeyboardShortcuts.Name { name } // other code calls it this, or hotKey definition  
+  //var hotKey: KeyboardShortcuts.Name { name } // other code calls it this, or hotKey definition  
   var nameString: String { name.rawValue }
   
   init(for name: KeyboardShortcuts.Name, batch: Batch, _ handler: @escaping Handler) {

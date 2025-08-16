@@ -94,18 +94,18 @@ class Batch: NSManagedObject {
     return batch
   }
   
-  static func create(withName name: String?, index: String? = nil, shortcut: KeyboardShortcuts.Shortcut,
+  static func create(withName name: String?, index: String? = nil, shortcut: KeyboardShortcuts.Shortcut?,
                      clips: any Collection<Clip> = []) -> Batch {
-    return create(withName: name, index: index, shortcut: shortcutData(forKeyShortcut: shortcut), clips: clips)
+    return create(withName: name, index: index, shortcutData: shortcutData(forKeyShortcut: shortcut), clips: clips)
   }
   
-  static func create(withName name: String?, index: String? = nil, shortcut: Data? = nil,
+  static func create(withName name: String?, index: String? = nil, shortcutData: Data? = nil,
                      clips: any Collection<Clip> = []) -> Batch {
     let batch = Batch(context: CoreDataManager.shared.context)
     
     batch.fullname = name
     batch.index = index ?? batch.nextIndex() // TODO: sanitize input index str?
-    batch.shortcut = shortcut
+    batch.shortcut = shortcutData
     batch.addExistingClips(clips)
     
     batch.makeTruncatedTitle()
