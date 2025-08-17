@@ -75,7 +75,7 @@ class ClipboardQueue {
     size = 0
     
     // Cancelling the queue is one of the triggers to move clips into the history.
-    if clipsAreNew && history.usingHistory {
+    if clipsAreNew && history.isListActive {
       try copyQueueToHistory()
     }
   }
@@ -143,7 +143,7 @@ class ClipboardQueue {
     if isEmpty {
       // Emptying queue naturally (by pasting all the clips) is one of the triggers to move clips
       // into the history.
-      if clipsAreNew && history.usingHistory {
+      if clipsAreNew && history.isListActive {
         try copyQueueToHistory()
       }
       
@@ -155,7 +155,7 @@ class ClipboardQueue {
       // when down to the last clip then this one on the clipboard was indeed the last item copied.
       // But if the queue came from replaying a batch then only if history is on can we restore
       // the clip the user most recently copied.
-      if !clipsAreNew && history.usingHistory && history.count > 0, let clip = history.clipAtIndex(0) {
+      if !clipsAreNew && history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
         clipboard.copy(clip)
       }
       
@@ -189,7 +189,7 @@ class ClipboardQueue {
     if isEmpty {
       // Emptying queue by deleting the last clip is one of the triggers to move clips
       // into the history
-      if clipsAreNew && history.usingHistory {
+      if clipsAreNew && history.isListActive {
         try copyQueueToHistory()
       }
       
@@ -201,7 +201,7 @@ class ClipboardQueue {
       // when down to the last clip then this one on the clipboard was indeed the last item copied
       // (that hasn't been deleted). But if the queue came from replaying a batch then only if
       // history is on can we restore the clip the user most recently copied.
-      if !clipsAreNew && history.usingHistory && history.count > 0, let clip = history.clipAtIndex(0) {
+      if !clipsAreNew && history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
         clipboard.copy(clip)
       }
       
@@ -295,7 +295,7 @@ class ClipboardQueue {
     if isEmpty {
       // Emptying queue naturally (by pasting all the clips) is one of the triggers to move clips
       // into the history
-      if clipsAreNew && history.usingHistory {
+      if clipsAreNew && history.isListActive {
         try copyQueueToHistory()
       }
       
@@ -307,7 +307,7 @@ class ClipboardQueue {
       // when down to the last clip then this one on the clipboard was indeed the last item copied.
       // But if the queue came from replaying a batch then only if history is on can we restore
       // the clip the user most recently copied.
-      if !clipsAreNew && history.usingHistory && history.count > 0, let clip = history.clipAtIndex(0) {
+      if !clipsAreNew && history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
         clipboard.copy(clip)
       }
       
@@ -327,7 +327,7 @@ class ClipboardQueue {
       // this abstraction, but the app always goes into replaying mode on the first paste)
       // Here however the queue came from replaying a batch then only if history is on can we
       // restore the clip the user most recently copied.
-      if history.usingHistory && history.count > 0, let clip = history.clipAtIndex(0) {
+      if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
         clipboard.copy(clip)
       }
     }

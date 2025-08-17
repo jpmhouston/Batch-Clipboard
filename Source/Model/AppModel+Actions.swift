@@ -117,7 +117,7 @@ extension AppModel {
       os_log(.default, "ignoring error from turning off queue %@", "\(error)")
     }
     
-    if history.usingHistory {
+    if history.isListActive {
       // after canceling the queue its contents may have been added to the history
       history.trim(to: Self.effectiveMaxClips)
     }
@@ -208,7 +208,7 @@ extension AppModel {
       updateMenuIcon(.increment)
       updateMenuTitle()
       
-    } else if history.usingHistory {
+    } else if history.isListActive {
       history.add(clip)
       history.trim(to: Self.effectiveMaxClips)
       
@@ -268,7 +268,7 @@ extension AppModel {
         return
       }
       
-      if !queue.isOn && history.usingHistory {
+      if !queue.isOn && history.isListActive {
         // dequeuing has turned off the queue and its contents may have been added to the history
         history.trim(to: Self.effectiveMaxClips)
       }
@@ -370,7 +370,7 @@ extension AppModel {
           // should be the most correct thing
         }
         
-        if !queue.isOn && history.usingHistory {
+        if !queue.isOn && history.isListActive {
           // dequeuing has turned off the queue and its contents may have been added to the history
           history.trim(to: Self.effectiveMaxClips)
         }
@@ -464,7 +464,7 @@ extension AppModel {
       return
     }
     
-    if !queue.isOn && history.usingHistory {
+    if !queue.isOn && history.isListActive {
       // dequeuing has turned off the queue and its contents may have been added to the history
       history.trim(to: Self.effectiveMaxClips)
     }
@@ -496,7 +496,7 @@ extension AppModel {
       return false
     }
     
-    guard history.usingHistory && !queue.isOn && index < history.count else {
+    guard history.isListActive && !queue.isOn && index < history.count else {
       return false
     }
     
@@ -680,7 +680,7 @@ extension AppModel {
       return
     }
     
-    if !queue.isOn && history.usingHistory {
+    if !queue.isOn && history.isListActive {
       // removing has turned off the queue and its contents may have been added to the history
       history.trim(to: Self.effectiveMaxClips)
     }
@@ -758,17 +758,17 @@ extension AppModel {
     clearHistory(suppressClearAlert: false)
   }
   
-  func clearHistory(suppressClearAlert: Bool) {
+  func clearHistory(suppressClearAlert: Bool, clipboardIncluded: Bool = false) {
     if suppressClearAlert {
-      deleteClips()
+      deleteClips(clipboardIncluded: clipboardIncluded)
     } else {
       showClearHistoryAlert() { [weak self] in
-        self?.deleteClips()
+        self?.deleteClips(clipboardIncluded: clipboardIncluded)
       }
     }
   }
   
-  func deleteClips() {
+  private func deleteClips(clipboardIncluded: Bool = false) {
     do {
       try queue.clear()
     } catch {
@@ -776,7 +776,9 @@ extension AppModel {
     }
     history.clearHistory()
     menu.deletedHistory()
-    clipboard.clear()
+    if clipboardIncluded {
+      clipboard.clear()
+    }
     updateMenuIcon()
     updateMenuTitle()
   }
@@ -805,7 +807,7 @@ extension AppModel {
         return
       }
       
-      if !queue.isOn && history.usingHistory {
+      if !queue.isOn && history.isListActive {
         // removing has turned off the queue and contents may have been added to the history
         history.trim(to: Self.effectiveMaxClips)
       }
@@ -875,7 +877,7 @@ extension AppModel {
     NSApp.terminate(sender)
   }
   
-  func sanityCheckStatusItem() {
+  private func sanityCheckStatusItem() {
     #if false // DEBUG
     os_log(.debug, "NSStatusItem = %@, isVisible = %d, UserDefaults showInStatusBar = %d, AppModel = %@, ProxyMenu = %@",
            menuIcon.statusItem, menuIcon.statusItem.isVisible, UserDefaults.standard.showInStatusBar,

@@ -269,10 +269,6 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func clear() {
-    guard UserDefaults.standard.clearSystemClipboard else {
-      return
-    }
-    
     #if DEBUG || UNITTEST
     if fakeryEngaged {
       fakePasteboard = nil

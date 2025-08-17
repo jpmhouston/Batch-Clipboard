@@ -24,7 +24,7 @@ class History {
   var currentList: HistoryList?
   var currentBatch: Batch?
   
-  var usingHistory: Bool { currentList != nil }
+  var isListActive: Bool { currentList != nil }
   var lastBatch: Batch? { currentBatch }
   var lastBatchClips: [Clip] { currentBatch?.getClipsArray() ?? [] }
   var isLastBatchEmpty: Bool { currentBatch?.isEmpty ?? true }
@@ -55,7 +55,7 @@ class History {
   func loadList() {
     currentList = HistoryList.current
     
-    if currentList != nil {
+    if currentList == nil {
       currentList = HistoryList.create(withClips: Clip.all)
       
       // Was doing this, but decided not to care that the history might start out with clips that
@@ -71,11 +71,6 @@ class History {
       //  currentList = HistoryList.create()
       //}
     }
-    
-    //else {
-    //  // found hisory clips to be faulted after just loading the list, does this fix it?
-    //  Clip.loadAll()
-    //}
   }
   
   func offloadList() {

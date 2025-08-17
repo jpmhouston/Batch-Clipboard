@@ -28,9 +28,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
   static let menuWidth = 300
   static let popoverGap = 5.0
   static let minNumMenuItems = 5 // things get weird if the effective menu size is 0
+  static let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
+  
   private var historyItemGroupCount: Int { usePopoverAnchors ? 3 : 2 } // an optional anchor, keep in sync with buildHistoryItemAndAlternates
   private var batchItemGroupCount: Int { usePopoverAnchors ? 2 : 1 } // an optional anchor, keep in sync with buildHistoryItemAndAlternates
-  
   private var usePopoverAnchors: Bool {
     // note: hardcoding false to exercise using anchors on >=sonoma won't work currently
     // would require changes in PreviewPopoverController
@@ -50,6 +51,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var queueItemsNeedsRebuild = false
   private var historyItemsNeedsRebuild = false
   
+  private var cacheReplayBatchItemShortcut = ""
+  private var cachePasteMultipleItemShortcut = ""
   private var cacheUndoCopyItemShortcut = ""
   private var filterFieldView: FilterFieldView? { filterFieldItem?.view as? FilterFieldView }
   private var filterFieldViewCache: FilterFieldView?
@@ -299,7 +302,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       showsFilterField = false
     }
     
-    if !showsExpandedMenu && AppModel.allowSavedBatches && queue.isEmpty {
+    if AppModel.allowSavedBatches && queue.isEmpty {
       showsSavedBatches = true
     } else {
       showsSavedBatches = false
@@ -737,18 +740,21 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func updateDisabledStaticItems() {
     let notBusy = !AppModel.busy
-    queueStartItem?.isEnabled = notBusy && !queue.isOn // although expect to get hidden if invalid
-    queueReplayItem?.isEnabled = notBusy && queue.isOn && !queue.isReplaying
-    queueStopItem?.isEnabled = notBusy && queue.isOn
+    let queueOn = queue.isOn
+    let queueEmpty = queue.isEmpty
+    let batchEmpty = history.isLastBatchEmpty
+    
+    queueStartItem?.isEnabled = notBusy && !queueOn // although expect to get hidden if invalid
+    queueReplayItem?.isEnabled = notBusy && queueOn && !queue.isReplaying
+    queueStopItem?.isEnabled = notBusy && queueOn
     queuedCopyItem?.isEnabled = notBusy
-    queuedPasteItem?.isEnabled = notBusy && !queue.isEmpty
-    queuedPasteMultipleItem?.isEnabled = notBusy && !queue.isEmpty
-    queuedPasteAllItem?.isEnabled = notBusy && !queue.isEmpty
-    queueAdvanceItem?.isEnabled = notBusy && !queue.isEmpty
-    let batchFilled = !history.isLastBatchEmpty
-    replayLastBatchItem?.isEnabled = notBusy && batchFilled && !queue.isOn // although expect to get hidden if queue on
-    saveLastBatchItem?.isEnabled = notBusy && batchFilled && !queue.isOn // this also hidden if not allowed
-    saveCurrentBatchItem?.isEnabled = notBusy && batchFilled && queue.isOn // expect to get hidden ^similarly
+    queuedPasteItem?.isEnabled = notBusy && !queueEmpty
+    queuedPasteMultipleItem?.isEnabled = notBusy && !queueEmpty
+    queuedPasteAllItem?.isEnabled = notBusy && !queueEmpty
+    queueAdvanceItem?.isEnabled = notBusy && !queueEmpty
+    replayLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // although expect to get hidden if queue on
+    saveLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // and expect these two save items to get
+    saveCurrentBatchItem?.isEnabled = notBusy && !batchEmpty && queueOn // ...hidden if not allowed
     
     clearItem?.isEnabled = notBusy
     undoCopyItem?.isEnabled = notBusy
@@ -757,65 +763,73 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func updateStaticItemVisibility() {
-    let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
-    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
-    let haveQueueItems = !queue.isEmpty
+    let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && Self.badgedMenuItemsSupported
+    let queueOn = queue.isOn
+    let queueEmpty = queue.isEmpty
+    let queueReplaying = queue.isReplaying
+    let haveQueueItems = !queueEmpty
     let haveHistoryItems = showsExpandedMenu // never set when historyItemCount == 0 or keepHistory false
     let haveBatchItems = showsSavedBatches && batchItemCount > 0 
     
     // Switch visibility of start vs replay menu item, and cancel, advance
     if UserDefaults.standard.showAdvancedPasteMenuItems {
-      queueStartItem?.isVisible = queue.isEmpty || queue.isReplaying // when no queue or replaying, show although expect it to be disabled
-      queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying // inverse of the start menu item
+      queueStartItem?.isVisible = queueEmpty || queueReplaying // when no queue or replaying, show although expect it to be disabled
+      queueReplayItem?.isVisible = !queueEmpty && !queueReplaying // inverse of the start menu item
       queueAdvanceItem?.isVisible = true
       queueStopItem?.isVisible = true
     } else {
-      queueStartItem?.isVisible = !queue.isOn
+      queueStartItem?.isVisible = !queueOn
       queueReplayItem?.isVisible = false
       queueAdvanceItem?.isVisible = false
-      queueStopItem?.isVisible = queue.isOn // instead this is the inverse of the start menu item
+      queueStopItem?.isVisible = queueOn // instead this is the inverse of the start menu item
     }
     
     // Show cancel & advance menu items only when allowed?
-    //queueStopItem?.isVisible = queue.isOn
-    //queueAdvanceItem?.isVisible = !queue.isEmpty
+    //queueStopItem?.isVisible = queueOn
+    //queueAdvanceItem?.isVisible = !queueEmpty
     
-    if !AppModel.allowLastBatch { // last batch off but saved batches on not supported atm
-      replayLastBatchItem?.isVisible = false
+    if (AppModel.allowLastBatch && AppModel.allowSavedBatches) || promoteExtras {
+      replayLastBatchItem?.isVisible = !queueOn
+      saveLastBatchItem?.isVisibleAlternate = !queueOn
+      saveCurrentBatchItem?.isVisible = queueOn
+    } else {
+      replayLastBatchItem?.isVisible = AppModel.allowLastBatch || promoteExtras
       saveLastBatchItem?.isVisibleAlternate = false
       saveCurrentBatchItem?.isVisible = false
+    }
+    if !AppModel.allowLastBatch && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+      replayLastBatchItem?.badge = bedge
+      swapKeyEquivalent(for: replayLastBatchItem, to: &cacheReplayBatchItemShortcut)
     } else {
-      replayLastBatchItem?.isVisible = !queue.isOn
-      saveLastBatchItem?.isVisibleAlternate = !queue.isOn && (AppModel.allowSavedBatches || promoteExtras)
-      saveCurrentBatchItem?.isVisible = queue.isOn && (AppModel.allowSavedBatches || promoteExtras)
-      if !AppModel.allowSavedBatches && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
-        saveLastBatchItem?.badge = bedge
-        saveCurrentBatchItem?.badge = bedge
-      }
+      swapBackKeyEquivalent(for: replayLastBatchItem, from: &cacheReplayBatchItemShortcut)
+    }
+    if !AppModel.allowSavedBatches && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
+      saveLastBatchItem?.badge = bedge
+      saveCurrentBatchItem?.badge = bedge
     }
     
-    // Bonus features to hide when not purchased
+    // More extra features to hide when not purchased
     queuedPasteMultipleItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
     queuedPasteAllItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
     if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       queuedPasteMultipleItem?.badge = bedge
       queuedPasteAllItem?.badge = bedge
-      // important: if we add key equivalents to these items, must save those here
-      // and clear the shortcut when adding badge, like the undo item below
+      swapKeyEquivalent(for: queuedPasteMultipleItem, to: &cachePasteMultipleItemShortcut)
+    } else {
+      swapBackKeyEquivalent(for: queuedPasteMultipleItem, from: &cachePasteMultipleItemShortcut)
     }
+    
     undoCopyItem?.isVisible = useHistory && (AppModel.allowUndoCopy || promoteExtras)
     if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       undoCopyItem?.badge = bedge
-      cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
-      undoCopyItem?.keyEquivalent = ""
-    } else if (undoCopyItem?.keyEquivalent.isEmpty ?? false) && !cacheUndoCopyItemShortcut.isEmpty {
-      undoCopyItem?.keyEquivalent = cacheUndoCopyItemShortcut
-      cacheUndoCopyItemShortcut = ""
+      swapKeyEquivalent(for: undoCopyItem, to: &cacheUndoCopyItemShortcut)
+    } else {
+      swapBackKeyEquivalent(for: undoCopyItem, from: &cacheUndoCopyItemShortcut)
     }
     
     // Delete & clear item visibility
     deleteItem?.isVisible = haveQueueItems || haveHistoryItems || haveBatchItems
-    clearItem?.isVisible = useHistory && (haveQueueItems || haveHistoryItems) // always hide if history off, even if a queue
+    clearItem?.isVisible = haveQueueItems || history.isLastBatchEmpty || (useHistory && haveHistoryItems)
     
     // after deleting all queue items, deleteItem is explicitly hidden, noteItem left visible,
     // yet the menu draws with note blurb missing and "Delete Clipboard Item" showing. an OS bug?
@@ -1513,6 +1527,22 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   // MARK: - utility functions
   // In these functions `index` means menu item index
+  
+  private func swapKeyEquivalent(for menuItem: NSMenuItem?, to cache: inout String) {
+    guard let menuItem = menuItem else {
+      return
+    }
+    cache = menuItem.keyEquivalent
+    menuItem.keyEquivalent = ""
+  }
+  
+  private func swapBackKeyEquivalent(for menuItem: NSMenuItem?, from cache: inout String) {
+    guard !cache.isEmpty, let menuItem = menuItem else {
+      return
+    }
+    menuItem.keyEquivalent = cache
+    cache = ""
+  }
   
   private func setClipItemVisibility(at index: Int, visible: Bool, badgeless: Bool = false) {
     guard let menuItem = safeItem(at: index) as? ClipMenuItem else {

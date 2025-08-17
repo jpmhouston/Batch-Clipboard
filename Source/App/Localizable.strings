@@ -35,8 +35,9 @@
 
 "preferences_purchase" = "Support Us";
 "accessibility_alert_show_intro" = "Reopen Intro Window";
-"first_replay_item_badge" = "next to paste";
 "menu_accessibility_description" = "Batch Clipboard Menu";
+"first_replay_item_badge" = "next to paste";
+"promote_extras_menu_badge" = "EXTRA";
 "number_alert_message" = "Paste how many items?";
 "number_alert_comment" = "You have {number} clipboard items ready to replay, paste how many of them at once now?";
 "number_alert_cancel" = "Cancel";
@@ -46,7 +47,6 @@
 "erase_history_alert_cancel" = "Cancel";
 "erase_history_alert_confirm" = "Turn Off & Clear";
 "erase_history_alert_deny" = "Turn Off & Keep";
-"promote_extrasmenu_badge" = "PERK";
 "promote_extrasalert_message" = "Support the app's continuing development to unlock this feature?";
 "promote_extrasalert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
 "promote_extrasalert_show_settings" = "Open Settings";

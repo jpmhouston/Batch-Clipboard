@@ -251,7 +251,7 @@ class AppModel: NSObject {
 
   func terminate() {
     if UserDefaults.standard.clearOnQuit {
-      clearHistory(suppressClearAlert: true)
+      clearHistory(suppressClearAlert: true, clipboardIncluded: UserDefaults.standard.clearSystemClipboard)
     }
   }
   
@@ -289,7 +289,7 @@ class AppModel: NSObject {
   private func migrateUserDefaults() {
     let userDefaults = UserDefaults.standard
     
-    Self.firstLaunch = userDefaults.dictionaryRepresentation().isEmpty
+    Self.firstLaunch = userDefaults.object(forKey: UserDefaults.Keys.completedIntro) == nil
     if Self.firstLaunch {
       // set something in userdefaults to know on next launch it's not the first
       userDefaults.completedIntro = false
@@ -459,11 +459,13 @@ class AppModel: NSObject {
       userDefaults.promoteExtras = true
       userDefaults.promoteExtrasExpires = true
       
-      if let expiration = promoteExtrasExpirationDate(), let date = expiration.date {
+      if AppModel.allowPurchases && AppMenu.badgedMenuItemsSupported,
+         let expiration = promoteExtrasExpirationDate(), let date = expiration.date
+      {
         setPromoteExtrasExpirationTimer(to: date)
         userDefaults.promoteExtrasExpiration = expiration
       } else {
-        // cannot set the timer, don't promote the bonus features after all
+        // purchases or menu badges not supported or cannot set the timer, don't promote the bonus features after all
         userDefaults.promoteExtras = false
       }
       
@@ -481,6 +483,7 @@ class AppModel: NSObject {
   }
   
   func setPromoteExtrasExpirationTimer(on: Bool) {
+    // called when ui toggles expriation off and on
     if on {
       // first try re-using an existing expiration date, only picking a
       // new date if the existing one is in the past
@@ -522,7 +525,7 @@ class AppModel: NSObject {
   private func promoteExtrasExpirationDate() -> DateComponents? {
     let calendar = Calendar(identifier: .gregorian)
     #if DEBUG
-    guard let minuteFromNow = calendar.date(byAdding: .minute, value: 1, to: Date()) else {
+    guard let minuteFromNow = calendar.date(byAdding: .minute, value: 3, to: Date()) else {
       return nil
     }
     return calendar.dateComponents([.year, .month, .day, .hour, .minute, .calendar], from: minuteFromNow)
@@ -554,7 +557,6 @@ class AppModel: NSObject {
     }
     
     if Self.hasBoughtExtras != alreadyHadExtras { // in most cases unnecessary, but just be sure
-      self.history.trim()
       self.menu.buildDynamicItems()
     }
     #endif
