@@ -26,47 +26,57 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView autoresizesSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe">
-            <rect key="frame" x="0.0" y="0.0" width="660" height="514"/>
+            <rect key="frame" x="0.0" y="0.0" width="660" height="568"/>
             <subviews>
                 <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="14" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cu2-7f-3AT">
-                    <rect key="frame" x="33" y="10" width="594" height="484"/>
+                    <rect key="frame" x="33" y="10" width="594" height="538"/>
                     <subviews>
-                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="aYU-VL-gLu">
-                            <rect key="frame" x="-2" y="467" width="850" height="17"/>
-                            <textFieldCell key="cell" title="Please consider purchasing the bonus features described below. You'll be supporting the development of this app and more ☕️🙏." id="Ikd-Tx-b2j">
+                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="aYU-VL-gLu">
+                            <rect key="frame" x="-2" y="504" width="598" height="34"/>
+                            <textFieldCell key="cell" id="Ikd-Tx-b2j">
                                 <font key="font" metaFont="system" size="14"/>
+                                <string key="title">Please consider making an in-app purchase to support development of this app &amp; more. 🙏 As a thank you there's a few extra features that will be unlocked.</string>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="b3j-CV-4u9">
-                            <rect key="frame" x="-2" y="450" width="598" height="34"/>
+                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="b3j-CV-4u9">
+                            <rect key="frame" x="-2" y="521" width="1162" height="17"/>
                             <textFieldCell key="cell" id="dVn-4s-8Kq">
                                 <font key="font" metaFont="system" size="14"/>
-                                <string key="title">You've purchased the app's bonus features. Thank you very much, you're the best! 💫💯 Your purchase is supporting the development of this app and more.</string>
+                                <string key="title">You've made a purchase to support the ongoing development of this app &amp; more. Thanks very much, you're the best! 💫💯 Hopefully you'll find the unlocked extra features useful.</string>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Luy-DC-cyK">
+                            <rect key="frame" x="-2" y="521" width="1164" height="17"/>
+                            <textFieldCell key="cell" id="RPp-YN-JI3">
+                                <font key="font" metaFont="system" size="14"/>
+                                <string key="title">You've redeeded a promo code to unlock all the extra features of this app. Kudos to you! 👍 Hopefully you're finding the app useful, please let us know via the link in the About box.</string>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
                         <box horizontalCompressionResistancePriority="250" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="34e-Wp-deh">
-                            <rect key="frame" x="-3" y="145" width="600" height="293"/>
+                            <rect key="frame" x="-3" y="190" width="600" height="302"/>
                             <view key="contentView" id="7X0-fP-ILM">
-                                <rect key="frame" x="4" y="5" width="592" height="285"/>
+                                <rect key="frame" x="4" y="5" width="592" height="294"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <stackView distribution="fillEqually" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gd0-NT-vWw">
-                                        <rect key="frame" x="10" y="12" width="572" height="267"/>
+                                        <rect key="frame" x="10" y="12" width="572" height="276"/>
                                         <subviews>
                                             <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gtb-Zj-QBr">
-                                                <rect key="frame" x="-2" y="250" width="298" height="17"/>
-                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Bonus features enabled by your purchase: " id="qtP-xz-4vw">
+                                                <rect key="frame" x="-2" y="259" width="196" height="17"/>
+                                                <textFieldCell key="cell" lineBreakMode="clipping" title="Unlocked by your purchase:" id="qtP-xz-4vw">
                                                     <font key="font" metaFont="systemBold" size="14"/>
                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                 </textFieldCell>
                                             </textField>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Msv-Cv-kor">
-                                                <rect key="frame" x="0.0" y="192" width="572" height="48"/>
+                                                <rect key="frame" x="0.0" y="201" width="572" height="48"/>
                                                 <subviews>
                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uHK-0d-TvV">
                                                         <rect key="frame" x="-2" y="32" width="11" height="16"/>
@@ -96,10 +106,10 @@
                                                 </customSpacing>
                                             </stackView>
                                             <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V1v-8a-G5M">
-                                                <rect key="frame" x="0.0" y="143" width="572" height="39"/>
+                                                <rect key="frame" x="0.0" y="143" width="572" height="48"/>
                                                 <subviews>
                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Wzn-aV-cv8">
-                                                        <rect key="frame" x="-2" y="23" width="11" height="16"/>
+                                                        <rect key="frame" x="-2" y="32" width="11" height="16"/>
                                                         <textFieldCell key="cell" lineBreakMode="clipping" title="•" id="8Kr-gi-ajP">
                                                             <font key="font" metaFont="system"/>
                                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -107,7 +117,7 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Eot-fj-3MD">
-                                                        <rect key="frame" x="13" y="7" width="561" height="32"/>
+                                                        <rect key="frame" x="13" y="16" width="561" height="32"/>
                                                         <textFieldCell key="cell" id="f2g-Ny-xGd">
                                                             <font key="font" metaFont="system"/>
                                                             <string key="title">A “Paste Multiple” menu item. _Lets you paste the items in a batch all at once._ Now also with an option to insert a space, newline, or commas between each.</string>
@@ -221,7 +231,7 @@
                             </view>
                         </box>
                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gkr-4P-IOb">
-                            <rect key="frame" x="-2" y="107" width="598" height="28"/>
+                            <rect key="frame" x="-2" y="152" width="598" height="28"/>
                             <textFieldCell key="cell" id="LVb-mS-Qse">
                                 <font key="font" metaFont="smallSystem"/>
                                 <string key="title">If using this app for work in a for–profit business of greater than 20 employees then we ask you to use the purchase button below and choose a corporate subscription.</string>
@@ -230,7 +240,7 @@
                             </textFieldCell>
                         </textField>
                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="tFI-rf-aIM">
-                            <rect key="frame" x="-2" y="65" width="598" height="28"/>
+                            <rect key="frame" x="-2" y="110" width="598" height="28"/>
                             <textFieldCell key="cell" id="wil-jv-Bmn">
                                 <font key="font" metaFont="smallSystem"/>
                                 <string key="title">Restore Purchases means to recover a purchase previously made in this app on your Mac App Store account, perhaps on another Mac.</string>
@@ -239,10 +249,10 @@
                             </textFieldCell>
                         </textField>
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PPk-dG-L8Z">
-                            <rect key="frame" x="0.0" y="0.0" width="594" height="51"/>
+                            <rect key="frame" x="0.0" y="0.0" width="594" height="96"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="801" translatesAutoresizingMaskIntoConstraints="NO" id="jnZ-Qh-5c6">
-                                    <rect key="frame" x="-7" y="22" width="137" height="32"/>
+                                    <rect key="frame" x="-7" y="67" width="137" height="32"/>
                                     <buttonCell key="cell" type="push" title="Make Purchase…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jf3-8K-QTi">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -252,7 +262,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="801" translatesAutoresizingMaskIntoConstraints="NO" id="7Vu-uC-k8q">
-                                    <rect key="frame" x="126" y="22" width="128" height="32"/>
+                                    <rect key="frame" x="126" y="67" width="128" height="32"/>
                                     <buttonCell key="cell" type="push" title="See Purchase…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J8D-aO-ScO">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -262,7 +272,7 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="V1h-hV-aKU">
-                                    <rect key="frame" x="250" y="22" width="148" height="32"/>
+                                    <rect key="frame" x="250" y="67" width="148" height="32"/>
                                     <buttonCell key="cell" type="push" title="Restore Purchases" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hpi-6Z-0cV">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -272,10 +282,10 @@
                                     </connections>
                                 </button>
                                 <progressIndicator horizontalCompressionResistancePriority="1000" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="NDF-Mx-c0w">
-                                    <rect key="frame" x="401" y="27" width="16" height="24"/>
+                                    <rect key="frame" x="401" y="72" width="16" height="24"/>
                                 </progressIndicator>
                                 <textField focusRingType="none" horizontalHuggingPriority="100" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="cS0-7r-tvX">
-                                    <rect key="frame" x="425" y="32" width="160" height="16"/>
+                                    <rect key="frame" x="425" y="77" width="160" height="16"/>
                                     <textFieldCell key="cell" title="Message" id="67P-t7-Vlk">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
@@ -283,7 +293,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BOO-7a-uAH" userLabel="Multi-line label spacer">
-                                    <rect key="frame" x="591" y="0.0" width="5" height="48"/>
+                                    <rect key="frame" x="591" y="45" width="5" height="48"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="1" id="QdT-F2-G48"/>
                                     </constraints>
@@ -328,8 +338,10 @@ Cgo
                         <integer value="1000"/>
                         <integer value="1000"/>
                         <integer value="1000"/>
+                        <integer value="1000"/>
                     </visibilityPriorities>
                     <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
                         <real value="3.4028234663852886e+38"/>
