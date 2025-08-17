@@ -50,6 +50,7 @@ extension UserDefaults {
     static let supressUseHistoryAlert = "supressUseHistoryAlert"
     static let showInStatusBar = "showInStatusBar"
     static let legacyFocusTechnique = "legacyFocus"
+    static let showAdvancedPasteMenuItems = "showAdvancedPasteMenuItems"
     
     // maccy had a few like this, perhaps something to continue doing?
 //    static var showInStatusBar: String {
@@ -282,5 +283,10 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.legacyFocusTechnique) }
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfLegacyFocusTechnique() -> Bool { false }
+  
+  public var showAdvancedPasteMenuItems: Bool {
+    get { bool(forKey: Keys.showAdvancedPasteMenuItems) }
+    set { set(newValue, forKey: Keys.showAdvancedPasteMenuItems) }
+  }
   
 }

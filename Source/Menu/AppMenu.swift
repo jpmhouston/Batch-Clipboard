@@ -45,7 +45,6 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var showsSavedBatches = false
   private var useHistory = true
   private var useNaturalOrder = false
-  private var useDirectMenu = false
   private var isFiltered = false
   private var isVisible = false
   private var queueItemsNeedsRebuild = false
@@ -760,14 +759,22 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private func updateStaticItemVisibility() {
     let badgedMenuItemsSupported = if #available(macOS 14, *) { true } else { false }
     let promoteExtras = AppModel.allowPurchases && UserDefaults.standard.promoteExtras && badgedMenuItemsSupported
-    let useHistory = UserDefaults.standard.keepHistory
     let haveQueueItems = !queue.isEmpty
     let haveHistoryItems = showsExpandedMenu // never set when historyItemCount == 0 or keepHistory false
     let haveBatchItems = showsSavedBatches && batchItemCount > 0 
     
-    // Switch visibility of start vs replay menu item
-    queueStartItem?.isVisible = !queue.isOn || queue.isReplaying // when on and replaying, show this though expect it will be disabled
-    queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying
+    // Switch visibility of start vs replay menu item, and cancel, advance
+    if UserDefaults.standard.showAdvancedPasteMenuItems {
+      queueStartItem?.isVisible = queue.isEmpty || queue.isReplaying // when no queue or replaying, show although expect it to be disabled
+      queueReplayItem?.isVisible = !queue.isEmpty && !queue.isReplaying // inverse of the start menu item
+      queueAdvanceItem?.isVisible = true
+      queueStopItem?.isVisible = true
+    } else {
+      queueStartItem?.isVisible = !queue.isOn
+      queueReplayItem?.isVisible = false
+      queueAdvanceItem?.isVisible = false
+      queueStopItem?.isVisible = queue.isOn // instead this is the inverse of the start menu item
+    }
     
     // Show cancel & advance menu items only when allowed?
     //queueStopItem?.isVisible = queue.isOn

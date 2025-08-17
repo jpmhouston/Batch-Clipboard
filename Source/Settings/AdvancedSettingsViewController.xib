@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="AdvancedSettingsViewController" customModule="Batch_Clipboard" customModuleProvider="target">
             <connections>
+                <outlet property="advancedPasteButton" destination="MKU-CC-W4r" id="6Yj-BK-1mE"/>
                 <outlet property="avoidTakingFocusButton" destination="4MH-H4-Ce2" id="iHM-Ux-GrT"/>
                 <outlet property="clearOnQuitButton" destination="O2y-qd-u6c" id="awd-Ep-Rex"/>
                 <outlet property="clearSystemClipboardButton" destination="lGE-3K-m2Y" id="yUd-O9-5tm"/>
@@ -16,17 +17,17 @@
                 <outlet property="initialHistoryOffDescriptionField" destination="PGC-0Y-l3G" id="IM3-fX-r0y"/>
                 <outlet property="legacyFocusButton" destination="pMu-3Y-w4N" id="tZG-yc-bsO"/>
                 <outlet property="subsequentHistoryOnDescriptionField" destination="ahJ-Lm-rjm" id="vSr-7E-gK2"/>
-                <outlet property="turnOffButton" destination="RTY-w8-2Wt" id="xy5-W3-yjD"/>
+                <outlet property="turnOffMonitoringButton" destination="RTY-w8-2Wt" id="xy5-W3-yjD"/>
                 <outlet property="view" destination="vfL-pB-YIa" id="gmn-hk-Nsm"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="vfL-pB-YIa">
-            <rect key="frame" x="0.0" y="0.0" width="472" height="535"/>
+            <rect key="frame" x="0.0" y="0.0" width="472" height="627"/>
             <subviews>
                 <button toolTip="Automatically remove all unpinned items before quitting the application." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O2y-qd-u6c">
-                    <rect key="frame" x="26" y="498" width="149" height="18"/>
+                    <rect key="frame" x="26" y="590" width="149" height="18"/>
                     <buttonCell key="cell" type="check" title="Clear history on quit" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JvB-ng-8vt">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -36,7 +37,7 @@
                     </connections>
                 </button>
                 <button toolTip="When enabled, clearing the history would also clear the current system clipboard." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lGE-3K-m2Y">
-                    <rect key="frame" x="42" y="474" width="216" height="18"/>
+                    <rect key="frame" x="42" y="566" width="216" height="18"/>
                     <buttonCell key="cell" type="check" title="Also clear the system clipboard" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WSh-1o-SG8">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -45,17 +46,36 @@
                         <action selector="clearSystemClipboardChanged:" target="-2" id="1Lb-Tj-REC"/>
                     </connections>
                 </button>
-                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="uoQ-aq-GS3">
-                    <rect key="frame" x="22" y="456" width="428" height="5"/>
-                </box>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-w8-2Wt">
-                    <rect key="frame" x="26" y="425" width="273" height="18"/>
-                    <buttonCell key="cell" type="check" title="Temporarily disable clipboard monitoring" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="RA0-eh-Udt">
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MKU-CC-W4r">
+                    <rect key="frame" x="26" y="534" width="233" height="18"/>
+                    <buttonCell key="cell" type="check" title="Show advanced paste menu items" bezelStyle="regularSquare" imagePosition="left" inset="2" id="gWI-FN-u6v">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="turnOffChanged:" target="-2" id="Kk2-0S-Xoz"/>
+                        <action selector="advancedPasteChanged:" target="-2" id="u1a-UW-y3J"/>
+                    </connections>
+                </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YWG-jx-Abt">
+                    <rect key="frame" x="26" y="471" width="424" height="56"/>
+                    <textFieldCell key="cell" id="FZ5-RX-jF6">
+                        <font key="font" metaFont="smallSystem"/>
+                        <string key="title">Turn this on to show in the menu “Start Replaying Items” and “Advance to Next Batch Item”. These give you better control over pasting from you collected batch, latting you use your application's paste command when needed, like “Paste and Match Style”</string>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="uoQ-aq-GS3">
+                    <rect key="frame" x="22" y="452" width="428" height="5"/>
+                </box>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="RTY-w8-2Wt">
+                    <rect key="frame" x="26" y="421" width="273" height="18"/>
+                    <buttonCell key="cell" type="check" title="Temporarily disable clipboard monitoring" bezelStyle="regularSquare" imagePosition="left" inset="2" id="RA0-eh-Udt">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="turnOffMonitoringChanged:" target="-2" id="Kk2-0S-Xoz"/>
                     </connections>
                 </button>
                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="PGC-0Y-l3G">
@@ -152,7 +172,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pMu-3Y-w4N">
                     <rect key="frame" x="41" y="39" width="274" height="18"/>
-                    <buttonCell key="cell" type="check" title="Legacy application focus implementation" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="cNH-bS-j4O">
+                    <buttonCell key="cell" type="check" title="Legacy application focus implementation" bezelStyle="regularSquare" imagePosition="left" inset="2" id="cNH-bS-j4O">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -173,8 +193,11 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 <constraint firstItem="O2y-qd-u6c" firstAttribute="top" secondItem="vfL-pB-YIa" secondAttribute="top" constant="20" id="10g-JJ-LYe"/>
                 <constraint firstAttribute="bottom" secondItem="dRG-hi-pNI" secondAttribute="bottom" constant="20" id="3b8-17-XnI"/>
                 <constraint firstItem="t0P-wy-4AO" firstAttribute="top" secondItem="4MH-H4-Ce2" secondAttribute="bottom" constant="8" symbolic="YES" id="42e-BZ-i0Z"/>
+                <constraint firstAttribute="trailing" secondItem="YWG-jx-Abt" secondAttribute="trailing" constant="24" id="6RO-ej-hmr"/>
                 <constraint firstItem="pMu-3Y-w4N" firstAttribute="leading" secondItem="4MH-H4-Ce2" secondAttribute="leading" constant="15" id="6fb-Xy-7bx"/>
                 <constraint firstItem="4MH-H4-Ce2" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="6xL-m7-nfD"/>
+                <constraint firstItem="YWG-jx-Abt" firstAttribute="top" secondItem="MKU-CC-W4r" secondAttribute="bottom" constant="8" symbolic="YES" id="74m-py-vPT"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="MKU-CC-W4r" secondAttribute="trailing" constant="24" id="8QW-15-Nar"/>
                 <constraint firstAttribute="trailing" secondItem="pW7-e8-4Mf" secondAttribute="trailing" constant="24" id="AEY-5g-ff1"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dRG-hi-pNI" secondAttribute="trailing" constant="24" id="AjD-eh-USZ"/>
                 <constraint firstItem="b73-sw-gL3" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Czx-hr-QSQ"/>
@@ -182,12 +205,14 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 <constraint firstItem="Sb1-dZ-Kuf" firstAttribute="top" secondItem="Z0r-EQ-N1g" secondAttribute="bottom" constant="10" id="EtG-TW-w2r"/>
                 <constraint firstItem="lGE-3K-m2Y" firstAttribute="leading" secondItem="O2y-qd-u6c" secondAttribute="leading" constant="16" id="FUN-2S-Vs1"/>
                 <constraint firstItem="Z0r-EQ-N1g" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="LnO-Xr-Aa4"/>
+                <constraint firstItem="MKU-CC-W4r" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" constant="16" id="MEM-Fp-bfP"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="pMu-3Y-w4N" secondAttribute="trailing" constant="24" id="MLx-Ml-0Nu"/>
                 <constraint firstItem="pW7-e8-4Mf" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="MlS-4C-uld"/>
                 <constraint firstAttribute="trailing" secondItem="PGC-0Y-l3G" secondAttribute="trailing" constant="24" id="MmF-1a-4V7"/>
                 <constraint firstItem="4MH-H4-Ce2" firstAttribute="top" secondItem="oBX-KF-KmM" secondAttribute="bottom" constant="16" id="NO6-H7-z0c"/>
                 <constraint firstAttribute="trailing" secondItem="ahJ-Lm-rjm" secondAttribute="trailing" constant="24" id="P5Z-GX-Qhs"/>
                 <constraint firstItem="ahJ-Lm-rjm" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Psr-Oe-onZ"/>
+                <constraint firstItem="MKU-CC-W4r" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Q1c-dI-g1O"/>
                 <constraint firstItem="oBX-KF-KmM" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="22" id="R3M-RK-6xe"/>
                 <constraint firstItem="Z0r-EQ-N1g" firstAttribute="top" secondItem="b73-sw-gL3" secondAttribute="bottom" constant="6" id="RWW-nz-fCr"/>
                 <constraint firstItem="pW7-e8-4Mf" firstAttribute="top" secondItem="ahJ-Lm-rjm" secondAttribute="bottom" constant="6" id="Rdc-P2-u4k"/>
@@ -204,6 +229,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="4MH-H4-Ce2" secondAttribute="trailing" constant="24" id="clz-nQ-wEc"/>
                 <constraint firstAttribute="trailing" secondItem="tCt-i9-YKv" secondAttribute="trailing" constant="24" id="d6P-yn-zOJ"/>
                 <constraint firstItem="Fpb-AC-gT0" firstAttribute="top" secondItem="tCt-i9-YKv" secondAttribute="bottom" constant="10" id="dkC-dc-kqk"/>
+                <constraint firstItem="uoQ-aq-GS3" firstAttribute="top" secondItem="YWG-jx-Abt" secondAttribute="bottom" constant="16" id="eNR-tY-TS7"/>
                 <constraint firstItem="ahJ-Lm-rjm" firstAttribute="top" secondItem="PGC-0Y-l3G" secondAttribute="bottom" constant="6" id="eT9-zi-r8M"/>
                 <constraint firstAttribute="trailing" secondItem="Z0r-EQ-N1g" secondAttribute="trailing" constant="24" id="fGY-9U-ChO"/>
                 <constraint firstItem="pMu-3Y-w4N" firstAttribute="top" secondItem="t0P-wy-4AO" secondAttribute="bottom" constant="10" id="hu0-y9-gx2"/>
@@ -211,16 +237,16 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 <constraint firstAttribute="trailing" secondItem="Fpb-AC-gT0" secondAttribute="trailing" constant="24" id="jB9-qL-bcJ"/>
                 <constraint firstAttribute="trailing" secondItem="Sb1-dZ-Kuf" secondAttribute="trailing" constant="24" id="jCg-WK-dKz"/>
                 <constraint firstItem="RTY-w8-2Wt" firstAttribute="top" secondItem="uoQ-aq-GS3" secondAttribute="bottom" constant="16" id="jHQ-6p-Glq"/>
-                <constraint firstItem="PGC-0Y-l3G" firstAttribute="top" secondItem="RTY-w8-2Wt" secondAttribute="bottom" constant="12" id="kuV-yu-4CT"/>
+                <constraint firstItem="PGC-0Y-l3G" firstAttribute="top" secondItem="RTY-w8-2Wt" secondAttribute="bottom" constant="8" symbolic="YES" id="kuV-yu-4CT"/>
                 <constraint firstItem="dRG-hi-pNI" firstAttribute="leading" secondItem="pMu-3Y-w4N" secondAttribute="leading" id="ltF-GW-osG"/>
                 <constraint firstItem="t0P-wy-4AO" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="luC-i8-quA"/>
                 <constraint firstItem="uoQ-aq-GS3" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="22" id="mQq-tr-G2X"/>
                 <constraint firstItem="lGE-3K-m2Y" firstAttribute="top" secondItem="O2y-qd-u6c" secondAttribute="bottom" constant="8" id="n09-54-egH"/>
                 <constraint firstItem="Sb1-dZ-Kuf" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="36" id="nlB-IY-pnL"/>
-                <constraint firstItem="uoQ-aq-GS3" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" constant="16" id="oHa-fF-dqb"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RTY-w8-2Wt" secondAttribute="trailing" constant="24" id="p1N-sZ-7gu"/>
                 <constraint firstItem="PGC-0Y-l3G" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="ugI-qm-AOX"/>
                 <constraint firstItem="oBX-KF-KmM" firstAttribute="top" secondItem="Sb1-dZ-Kuf" secondAttribute="bottom" constant="16" id="vhR-9u-Zdy"/>
+                <constraint firstItem="YWG-jx-Abt" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="wxr-An-gH6"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="O2y-qd-u6c" secondAttribute="trailing" constant="24" id="xJF-uf-eRx"/>
                 <constraint firstAttribute="bottom" secondItem="pMu-3Y-w4N" secondAttribute="bottom" constant="40" id="yNx-W0-gJs"/>
                 <constraint firstItem="tCt-i9-YKv" firstAttribute="top" secondItem="pW7-e8-4Mf" secondAttribute="bottom" constant="6" id="ybu-si-QwG"/>
