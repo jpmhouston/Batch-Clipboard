@@ -96,16 +96,15 @@ class IntroWindowController: PagedWindowController {
 //  var count = 0
 //  @objc func debugButtonPressed(_ sender: AnyObject) {
 //    if count % 3 == 0 {
-//      alerts.withRenameBatchAlert(withCurrentName: "fred", shortcut: nil, excludingNames: excludeNames) { name, hotkey in
-//        print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
-//        if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//      alerts.withRenameBatchAlert(withCurrentName: "fred", shortcut: nil, excludingNames: excludeNames) { name, shortcut in
+//        print("\(name ?? "no name"), \(shortcut != nil ? String(describing: shortcut!) : "no shortcut")")
+//        if let shortcut = shortcut { KeyboardShortcuts.setShortcut(nil, for: KeyboardShortcuts.Name("fred")) } // needed to clean up UserDefaults
 //      }
 //    } else {
-//      let current = (count % 3 == 1) 
-//      alerts.withSaveBatchAlert(forCurrentBatch: current, showingCount: 5,
-//                                excludingNames: excludeNames) { name, hotkey in
-//        print("\(name ?? "no name"), \(hotkey != nil ? String(describing: KeyboardShortcuts.getShortcut(for: hotkey!)!) : "no shortcut")")
-//        if let hotkey = hotkey { KeyboardShortcuts.setShortcut(nil, for: hotkey) } // needed to clean up UserDefaults
+//      let isCurrent = (count % 3 == 1) 
+//      alerts.withSaveBatchAlert(forCurrentBatch: isCurrent, showingCount: 5, excludingNames: excludeNames) { name, shortcut in
+//        print("\(name ?? "no name"), \(shortcut != nil ? String(describing: shortcut!) : "no shortcut")")
+//        if let name = name, let shortcut = shortcut { KeyboardShortcuts.setShortcut(nil, for: KeyboardShortcuts.Name(name)) } // needed to clean up UserDefaults
 //      }
 //    }
 //    count += 1

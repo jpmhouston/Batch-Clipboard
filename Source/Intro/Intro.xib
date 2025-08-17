@@ -492,37 +492,37 @@ DQ
                                 <action selector="historyOnChosen:" target="o5X-kK-gzk" id="bzn-B3-r7s"/>
                             </connections>
                         </button>
-                        <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
-                            <rect key="frame" x="176" y="23" width="252" height="277"/>
+                        <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
+                            <rect key="frame" x="176" y="13" width="252" height="298"/>
                             <subviews>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1E-a5-ph9">
-                                    <rect key="frame" x="-2" y="243" width="256" height="34"/>
+                                    <rect key="frame" x="-2" y="260" width="256" height="38"/>
                                     <textFieldCell key="cell" alignment="center" title="It appears that you're upgrading from version 1.0 of Batch Clipboard." id="sli-fr-ZY7">
-                                        <font key="font" metaFont="system" size="14"/>
+                                        <font key="font" metaFont="system" size="15"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wIb-UL-fdx">
-                                    <rect key="frame" x="-2" y="160" width="256" height="75"/>
+                                    <rect key="frame" x="-2" y="174" width="256" height="80"/>
                                     <textFieldCell key="cell" alignment="center" id="CzH-Ug-w4O">
-                                        <font key="font" metaFont="system" size="12.5"/>
-                                        <string key="title">The new default behavior no longer maintains a global clipboard history. This removes the expanded menu (opened with ⌥. held) that displays recent clips, letting you select one to re-paste it.</string>
+                                        <font key="font" metaFont="system"/>
+                                        <string key="title">The new default behavior no longer maintains a global clipboard history. This removes the expanded menu (opened with ⌥. held, displays recent clips, lets you select one to re-paste it).</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
-                                    <rect key="frame" x="-2" y="92" width="256" height="60"/>
+                                    <rect key="frame" x="-2" y="88" width="256" height="80"/>
                                     <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
-                                        <font key="font" metaFont="system" size="12.5"/>
-                                        <string key="title">With this change, performance of your OS is improved, the menu is simplified, and menu items displaying the current batch are displayed in a natural, top-down order.</string>
+                                        <font key="font" metaFont="system"/>
+                                        <string key="title">With this change, performance of your OS is improved, the menu is simplified, and menu items displaying the current batch are displayed in a more natural, top-down order.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-u0-aIy">
-                                    <rect key="frame" x="-2" y="36" width="256" height="48"/>
+                                    <rect key="frame" x="-2" y="34" width="256" height="48"/>
                                     <textFieldCell key="cell" alignment="center" title="Please choose now to adopt the new behavior, or confirm you prefer to keep using the clipboard history features." id="vmd-9Q-SJu">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -530,7 +530,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfI-Cy-XwZ">
-                                    <rect key="frame" x="-2" y="260" width="671" height="17"/>
+                                    <rect key="frame" x="-2" y="281" width="671" height="17"/>
                                     <textFieldCell key="cell" alignment="center" title="You've choosen to continue using the clipboard history features. Great that you're making use of them!" id="RPu-G4-0l5">
                                         <font key="font" metaFont="system" size="14"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -538,7 +538,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uzd-uG-7Kf">
-                                    <rect key="frame" x="-2" y="260" width="694" height="17"/>
+                                    <rect key="frame" x="-2" y="281" width="694" height="17"/>
                                     <textFieldCell key="cell" alignment="center" title="You've choosen the new default that turns off the clipboard history. I hope you like the improved simplicity." id="LRW-UU-tmL">
                                         <font key="font" metaFont="system" size="14"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -609,8 +609,9 @@ DQ
                         </button>
                     </subviews>
                     <constraints>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" id="15n-ce-HgM"/>
                         <constraint firstItem="mPM-1H-u4B" firstAttribute="centerX" secondItem="Ssk-Li-zU9" secondAttribute="centerX" id="2we-ib-BbJ"/>
-                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" constant="24" id="DHo-uh-Non"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="10" id="DHo-uh-Non"/>
                         <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" secondItem="IXd-5W-gVN" secondAttribute="trailing" id="EYm-F4-kWH"/>
                         <constraint firstItem="IXd-5W-gVN" firstAttribute="leading" secondItem="KsF-0O-kYb" secondAttribute="leading" id="G3q-hs-G8K"/>
                         <constraint firstItem="mPM-1H-u4B" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="12" id="GAV-qg-UNE"/>
@@ -633,6 +634,7 @@ DQ
                         <constraint firstAttribute="bottom" secondItem="j0M-DH-c5a" secondAttribute="bottom" constant="28" id="m17-cK-9SD"/>
                         <constraint firstItem="2gU-aX-COh" firstAttribute="centerX" secondItem="mLU-4D-eX7" secondAttribute="centerX" id="vQq-pk-fDh"/>
                         <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="mLU-4D-eX7" secondAttribute="trailing" constant="5" id="whj-D1-6vq"/>
+                        <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cuh-Dc-5pF" secondAttribute="bottom" constant="10" id="xXu-Hb-XAG"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Lc8-1d-FJl" userLabel="five">
