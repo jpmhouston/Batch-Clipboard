@@ -803,7 +803,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       // important: if we add key equivalents to these items, must save those here
       // and clear the shortcut when adding badge, like the undo item below
     }
-    undoCopyItem?.isVisible = AppModel.allowUndoCopy || promoteExtras
+    undoCopyItem?.isVisible = useHistory && (AppModel.allowUndoCopy || promoteExtras)
     if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       undoCopyItem?.badge = bedge
       cacheUndoCopyItemShortcut = undoCopyItem?.keyEquivalent ?? ""
