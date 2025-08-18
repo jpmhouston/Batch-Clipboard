@@ -21,6 +21,7 @@ extension UserDefaults {
     static let clipboardCheckInterval = "clipboardCheckInterval"
     static let enabledPasteboardTypes = "enabledPasteboardTypes"
     static let hideSearch = "hideSearch"
+    static let showHistoryFilter = "showHistoryFilter"
     static let ignoreEvents = "ignoreEvents"
     static let ignoreOnlyNextEvent = "ignoreOnlyNextEvent"
     static let ignoreAllAppsExceptListed = "ignoreAllAppsExceptListed"
@@ -105,11 +106,21 @@ extension UserDefaults {
   // these functions prevent duplicate observations, not exactly sure how it works 
   @objc dynamic public class func automaticallyNotifiesObserversOfEnabledPasteboardTypes() -> Bool { false }
   
-  @objc dynamic public var hideSearch: Bool {
+  public var hideSearch: Bool {
     get { bool(forKey: Keys.hideSearch) }
     set { set(newValue, forKey: Keys.hideSearch) }
   }
-  @objc dynamic public class func automaticallyNotifiesObserversOfHideSearch() -> Bool { false }
+  
+  @objc dynamic public var showHistoryFilter: Bool {
+    get { bool(forKey: Keys.showHistoryFilter) }
+    set {
+      set(newValue, forKey: Keys.showHistoryFilter)
+      if object(forKey: Keys.hideSearch) != nil {   // if user upgraded and had a preference in the old flag
+        set(!newValue, forKey: Keys.hideSearch)     // keep on maintaining that old flag in perpetuity
+      }
+    }
+  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowHistoryFilter() -> Bool { false }
   
   @objc dynamic public var ignoreEvents: Bool {
     get { bool(forKey: Keys.ignoreEvents) }

@@ -295,13 +295,24 @@ class AppModel: NSObject {
       userDefaults.completedIntro = false
     }
     
+    // reversed the sense of the history filter flag so for frash install unset now means hidden
+    // but if upgrading then observe the previous flag
+    if userDefaults.object(forKey: UserDefaults.Keys.hideSearch) != nil {
+      userDefaults.showHistoryFilter = !userDefaults.hideSearch
+    }
+    
+    // keepHistory false is the new default but deliberately omitted from registered defaults
+    // b/c when upgrading from 1.0 this sometimes should instead be on
+    // keepHistoryChoicePending is meant to be set the first time running 1.1+, ie. anytime its
+    // not set already, and at that time decide what both it and keepHistory should be
     if userDefaults.object(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
       if Self.firstLaunch {
-        userDefaults.keepHistory = false // deliberately omitted from registered defaults above
+        userDefaults.keepHistory = false
         userDefaults.keepHistoryChoicePending = false
       } else {
         // this 1.1 flag unset even though not first launch must mean migrating from 1.0
         // offer to upgrade to new history-less default, but until they do, keep history on
+        // (unfortunately if user wipes userdefaults from the cmd line they get this again)
         userDefaults.keepHistory = true
         userDefaults.keepHistoryChoicePending = true
         os_log(.info, "user must confirm history remaining on, or migrate to history off")

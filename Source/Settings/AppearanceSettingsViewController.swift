@@ -104,7 +104,7 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   }
   
   @IBAction func filterFieldVisiblityChanged(_ sender: NSButton) {
-    UserDefaults.standard.hideSearch = (sender.state == .off)
+    UserDefaults.standard.showHistoryFilter = (sender.state == .on)
     updateFilterModeEnabled()
   }
   
@@ -180,11 +180,11 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   }
   
   private func populateFilterFieldVisibility() {
-    filterFieldVisibleCheckbox.state = UserDefaults.standard.hideSearch ? .off : .on
+    filterFieldVisibleCheckbox.state = UserDefaults.standard.showHistoryFilter ? .on : .off
   }
   
   private func updateFilterModeEnabled() {
-    filterModeButton.isEnabled = !UserDefaults.standard.hideSearch
+    filterModeButton.isEnabled = UserDefaults.standard.showHistoryFilter
   } 
   
   private func populateFilterMode() {

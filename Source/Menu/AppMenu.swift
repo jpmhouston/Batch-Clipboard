@@ -292,7 +292,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     // flags useHistory & useNaturalOrder are less ephemeral than flags set below, set in buildDynamicItems
     // other flags showsExpandedMenu & showsFullExpansion are already set in menuBarShouldOpen
     
-    if showsExpandedMenu && AppModel.allowHistorySearch && !UserDefaults.standard.hideSearch,
+    if showsExpandedMenu && AppModel.allowHistorySearch && UserDefaults.standard.showHistoryFilter,
        let field = filterFieldView?.queryField
     {
       field.refusesFirstResponder = false
