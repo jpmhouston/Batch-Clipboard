@@ -6,6 +6,7 @@
 //  Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import AppKit
 import SDWebImage
 import os.log
@@ -85,7 +86,7 @@ class IntroWindowController: PagedWindowController {
     let button = NSButton(title: "Debug", target: self, action: buttonAction)
     let v = window!.contentView!
     let b = v.bounds
-    button.frame = NSRect(x: NSMinX(b)+12, y: NSMinY(b)+22, width: 100, height: 16)
+    button.frame = NSRect(x: b.minX+12, y: b.minY+22, width: 100, height: 16)
     v.addSubview(button)
   }
   
@@ -479,7 +480,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     // Need to obsevre `keepHistory` in defaults because we set it only indirectly,
     // by first setting our var `keepHistoryChange` which the app model itself observes
     // and potentially opens a confirmation alert before finally setting `keepHistory`.
-    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: [.old, .new]) { [weak self] _, change in
+    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: []) { [weak self] _, _ in
       guard self != nil else { return }
       self?.keepHistoryChange = UserDefaults.standard.keepHistory
       UserDefaults.standard.keepHistoryChoicePending = false
@@ -504,6 +505,8 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     highlightChangeObserver = nil
   }
   
+  // swiftlint:disable nesting
+  // swiftlint:disable colon
   private func runDemo() {
     let startInterval: Double = 2.5
     let normalFrameInterval: Double = 2.0
@@ -514,7 +517,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     let postPasteBalloonTime: Double = 0.5
     let endHoldInterval: Double = 5.0
     let repeatTransitionInterval: Double = 1.0
-
+    
     enum Frame {
       case img(_ name: String?, keepBubble: Bool = false, _ interval: Double)
       case copybubble(show: Bool = true, _ interval: Double)
@@ -584,6 +587,8 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     demoCanceled = false
     showFrame(0)
   }
+  // swiftlint:enable nesting
+  // swiftlint:enable colon
   
   private func cancelDemo() {
     // If this func is called from the main thread, the runDemo sequence must be now blocked by the timer.
@@ -760,3 +765,4 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   }
   
 }
+// swiftlint:enable file_length

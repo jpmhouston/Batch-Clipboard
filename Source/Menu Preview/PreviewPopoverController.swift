@@ -36,7 +36,7 @@ class PreviewPopoverController {
       popover.contentViewController = Preview(item: menuItem.clip)
       
       let window: NSWindow?
-      if menuItem.parent != nil, let rect = screenFrameForMenuItem(menuItem, orAnchors:anchors) {
+      if menuItem.parent != nil, let rect = screenFrameForMenuItem(menuItem, orAnchors: anchors) {
         window = NSApp.menuWindow(containing: rect)
       } else {
         window = NSApp.menuWindow

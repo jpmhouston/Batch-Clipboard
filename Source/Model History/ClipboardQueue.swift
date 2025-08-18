@@ -479,8 +479,7 @@ class ClipboardQueue {
         // trust that historyplanned was set well to avoid "[history remaining 2] 2 more..."
         desc += "\(ntogo) more"
         break
-      }
-      else if nplannedtogo == 0 {
+      } else if nplannedtogo == 0 {
         // this iteration is the first past the # planned, whatever items will fit is bonus,
         // re-adjust characters per item
         if remainlen > (minper + cntcomma) * (ntogo - 1) + minper {

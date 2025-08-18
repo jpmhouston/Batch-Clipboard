@@ -94,7 +94,7 @@ class CoreDataManager {
   private init() {}
   
   lazy private var persistentContainer: NSPersistentContainer = {
-    let container:NSPersistentContainer
+    let container: NSPersistentContainer
     if let model = model {
       container = NSPersistentContainer(name: "Storage", managedObjectModel: model)
     } else {

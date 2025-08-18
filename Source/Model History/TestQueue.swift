@@ -6,6 +6,9 @@
 //  Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+// swiftlint:disable cyclomatic_complexity
 import Testing
 import AppKit
 
@@ -605,3 +608,7 @@ extension QueueSims {
 
 // support `nop()` lins allowing breakpoint at what would be the end of a block
 func nop() { }
+
+// swiftlint:enable function_body_length
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

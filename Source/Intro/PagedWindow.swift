@@ -341,9 +341,8 @@ public class PagedWindowController: NSWindowController, NSWindowDelegate {
 
 // MARK: -
 
-public class UnresponsiveScrollView : NSScrollView {
+public class UnresponsiveScrollView: NSScrollView {
   override public func scrollWheel(with event: NSEvent) {
     // do nothing so as to prevent scrolling by swipe gesture
   }
 }
-

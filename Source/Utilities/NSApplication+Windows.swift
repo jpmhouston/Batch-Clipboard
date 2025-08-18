@@ -25,7 +25,7 @@ extension NSApplication {
       (window.className == "NSPopupMenuWindow" // macOS 14 and later
        || window.className == "NSMenuWindowManagerWindow" // macOS 13 - 14
        || window.className == "NSCarbonMenuWindow") // macOS 12 and earlier
-      && NSContainsRect(window.frame, rect)
+      && window.frame.contains(rect)
     }
   }
   var statusBarWindow: NSWindow? { windows.first { $0.className == "NSStatusBarWindow" } }

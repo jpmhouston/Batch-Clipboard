@@ -96,7 +96,9 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     // and potentially opens a confirmation alert before finally setting `keepHistory`.
     historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: [.old, .new]) { [weak self] _, change in
       guard let self = self else { return }
-      //print("keepHistory observer, old = \(change.oldValue == nil ? "nil" : String(describing: change.oldValue!)),, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), old=new: \(change.newValue == change.oldValue)")
+      // swiftlint:disable line_length
+      //print("keepHistory observer, old = \(change.oldValue == nil ? "nil" : String(describing: change.oldValue!)), new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), old=new: \(change.newValue == change.oldValue)")
+      // swiftlint:enable line_length
       keepHistoryChange = UserDefaults.standard.keepHistory
       
       // always set the switch to match `keepHistory`, and the observable flag

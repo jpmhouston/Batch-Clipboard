@@ -10,7 +10,7 @@ import AppKit
 
 class RangedIntegerTextField: NSTextField {
   
-  typealias ChangeValidationAction = (Bool)->Void
+  typealias ChangeValidationAction = (Bool) -> Void
   
   var allowEmpty = false
   var validationAction: ChangeValidationAction?

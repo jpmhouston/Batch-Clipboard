@@ -89,7 +89,7 @@ class HistoryList: NSManagedObject {
     }
     // copy in same order but into index 0 not at the end
     let indexes = NSIndexSet(indexesIn: NSRange(location: 0, length: sourceClips.count))
-    if let sourceClipsArray = sourceClips as? Array<Clip> { // yes lamer than polymorphism but also d.r.y.
+    if let sourceClipsArray = sourceClips as? [Clip] { // yes lamer than polymorphism but also d.r.y.
       insertIntoClips(sourceClipsArray, at: indexes)
     } else {
       insertIntoClips(Array(sourceClips), at: indexes)

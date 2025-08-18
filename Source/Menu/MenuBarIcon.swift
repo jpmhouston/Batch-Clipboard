@@ -53,7 +53,7 @@ class MenuBarIcon {
   private var visibilityObserver: NSKeyValueObservation?
   private var iconBlinkTimer: DispatchSourceTimer?
   private var iconBlinkIntervalSeconds: Double { 0.75 }
-  private var shouldOpenCallback: (()->Bool)?
+  private var shouldOpenCallback: (() -> Bool)?
   
   private enum SymbolTransition {
     case replace
@@ -81,7 +81,7 @@ class MenuBarIcon {
     statusItem.button?.performClick(nil)
   }
   
-  func setDirectOpen(toMenu menu: NSMenu?, _ callback: (()->Bool)? = nil) {
+  func setDirectOpen(toMenu menu: NSMenu?, _ callback: (() -> Bool)? = nil) {
     if let menu = menu, let callback = callback {
       self.menu = menu
       shouldOpenCallback = callback
@@ -120,7 +120,7 @@ class MenuBarIcon {
     }
   }
   
-  func enableRemoval(_ enable: Bool, wasRemoved: (()->Void)? = nil) {
+  func enableRemoval(_ enable: Bool, wasRemoved: (() -> Void)? = nil) {
     if !enable {
       statusItem.behavior = []
       visibilityObserver?.invalidate()

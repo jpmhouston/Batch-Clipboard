@@ -77,13 +77,9 @@ class Batch: NSManagedObject {
     }
   }
   
-  // swiftlint:disable nsobject_prefer_isequal
-  // i'm guessing we'd similarly get this error if tried having `-isEqual` instead of `==`:
-  //   Class 'Batch' for entity 'Batch' has an illegal override of NSManagedObject -isEqual
   static func == (lhs: Batch, rhs: Batch) -> Bool {
     return lhs.index == rhs.index && lhs.title == rhs.title
   }
-  // swiftlint:enable nsobject_prefer_isequal
   
   static func createUnnamed(withClips clips: any Collection<Clip> = []) -> Batch {
     let batch = Batch(context: CoreDataManager.shared.context)
@@ -210,7 +206,7 @@ class Batch: NSManagedObject {
     }
     // copy in same order but into index 0 not at the end
     let indexes = NSIndexSet(indexesIn: NSRange(location: 0, length: sourceClips.count))
-    if let sourceClipsArray = sourceClips as? Array<Clip> { // yes lamer than polymorphism but also d.r.y.
+    if let sourceClipsArray = sourceClips as? [Clip] { // yes lamer than polymorphism but also d.r.y.
       insertIntoClips(sourceClipsArray, at: indexes)
     } else {
       insertIntoClips(Array(sourceClips), at: indexes)
@@ -319,39 +315,44 @@ class Batch: NSManagedObject {
   }
   
   private func parseComponentValues(from indexStr: String?) -> [Int] {
+    // swiftlint:disable switch_case_alignment
     guard let indexStr = indexStr, !indexStr.isEmpty else {
       return []
     }
     if let div = indexStr.firstIndex(of: ".") {
-        let majorstr = indexStr[..<div] 
-        let major = Int(majorstr) ?? 0
-        let minorstr = indexStr[indexStr.index(after: div)...]
-        var minorcomponents = switch style {
-        case .dottedDecimal: minorstr.components(separatedBy: ".").map { Int($0) }
-        case .decimalFraction: minorstr.map { $0.wholeNumberValue }
-        }
-        if let badidx = minorcomponents.firstIndex(where: { $0 == nil }) {
-            minorcomponents.removeSubrange(badidx...)
-        }
-        return [major] + minorcomponents.map { $0! }
+      let majorstr = indexStr[..<div] 
+      let major = Int(majorstr) ?? 0
+      let minorstr = indexStr[indexStr.index(after: div)...]
+      var minorcomponents = switch style {
+      case .dottedDecimal: minorstr.components(separatedBy: ".").map { Int($0) }
+      case .decimalFraction: minorstr.map { $0.wholeNumberValue }
+      }
+      if let badidx = minorcomponents.firstIndex(where: { $0 == nil }) {
+        minorcomponents.removeSubrange(badidx...)
+      }
+      return [major] + minorcomponents.map { $0! }
     } else if let major = Int(indexStr) {
-        return [major]
+      return [major]
     } else {
-        return []
+      return []
     }
+    // swiftlint:enable switch_case_alignment
   }
 
   private func buildIndexString(fromComponentValues components: [Int]) -> String {
-      switch style {
-      case .dottedDecimal:
-          return components.map { String($0)}.joined(separator: ".")
-      case .decimalFraction:
-          guard let first = components.first else { return "" }
-          guard components.count > 1 else { return String(first) }
-          return String(first) + "." + components[1...].map { String($0)}.joined()
-      }
+    switch style {
+    case .dottedDecimal:
+      return components.map { String($0)}.joined(separator: ".")
+    case .decimalFraction:
+      guard let first = components.first else { return "" }
+      guard components.count > 1 else { return String(first) }
+      return String(first) + "." + components[1...].map { String($0)}.joined()
+    }
   }
   
+  // swiftlint:disable nesting
+  // swiftlint:disable colon
+  // swiftlint:disable comma
   private func indexStringInbetween(_ indexStrA: String?, and indexStrB: String?) -> String {
     let aValues = parseComponentValues(from: indexStrA)
     let bValues = parseComponentValues(from: indexStrB)
@@ -447,6 +448,9 @@ class Batch: NSManagedObject {
     }
     return newValues.map { String($0)}.joined(separator: ".")
   }
+  // swiftlint:enable nesting
+  // swiftlint:enable colon
+  // swiftlint:enable comma
   
   // MARK: -
   

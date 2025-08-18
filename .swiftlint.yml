@@ -1,0 +1,19 @@
+disabled_rules:
+  - no_space_in_method_call
+  - opening_brace
+  - redundant_optional_initialization
+  - todo
+  - trailing_comma
+  - trailing_whitespace
+
+cyclomatic_complexity: 25
+large_tuple: 6
+function_body_length: 75
+identifier_name:
+  min_length: 1
+  max_length: 60
+line_length: 200
+type_body_length: 500
+file_length: 525
+
+reporter: "xcode"

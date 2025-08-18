@@ -1,6 +1,6 @@
 <img src="https://batchclipboard.bananameter.lol/img/banner.png" alt="Logo"/>
 
-<!-- [![Build Status](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml/badge.svg)](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml) -->
+[![Build Status](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml/badge.svg)](https://github.com/jpmhouston/Batch-Clipboard/actions/workflows/build.yml)
 [![Downloads](https://img.shields.io/github/downloads/jpmhouston/Batch-Clipboard/total.svg)](https://github.com/jpmhouston/Batch-Clipboard/releases/latest)
 [![Donate](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/bananameterlabs)
 

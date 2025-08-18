@@ -113,38 +113,9 @@ class Clip: NSManagedObject {
   
   static var all: [Clip] { loadAll() }
   
-//  static var anyWithinBatches: Bool {
-//    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-//    fetchRequest.predicate = NSPredicate(format: "batches.@count > 0")
-//    fetchRequest.fetchBatchSize = 1
-//    do {
-//      return try CoreDataManager.shared.context.count(for: fetchRequest) > 0
-//    } catch {
-//      os_log(.default, "unhandled error checking for presence of clips within batches %@", error.localizedDescription)
-//      return false
-//    }
-//  }
-//  
-//  static func deleteAllOutsideBatches() {
-//    let fetchRequest = NSFetchRequest<Clip>(entityName: "HistoryItem")
-//    fetchRequest.predicate = NSPredicate(format: "batches.@count == 0")
-//    do {
-//      let clips = try CoreDataManager.shared.context.fetch(fetchRequest)
-//      clips.forEach { clip in
-//        clip.clearContents()
-//        CoreDataManager.shared.context.delete(clip)
-//      }
-//    } catch {
-//      os_log(.default, "unhandled error deleting clips not within batches %@", error.localizedDescription)
-//    }
-//  }
-  
-  // swiftlint:disable nsobject_prefer_isequal
-  // Class 'HistoryItem' for entity 'HistoryItem' has an illegal override of NSManagedObject -isEqual
   static func == (lhs: Clip, rhs: Clip) -> Bool {
     return lhs.getContents().count == rhs.getContents().count && lhs.contentsEqual(rhs)
   }
-  // swiftlint:enable nsobject_prefer_isequal
   
   static func create(withContents contents: any Collection<ClipContent>, application: String? = nil) -> Clip {
     let clip = Clip(context: CoreDataManager.shared.context)
@@ -358,7 +329,7 @@ class Clip: NSManagedObject {
   
   static func debugContentsDescription(_ contents: any Collection<ClipContent>, ofLength length: Int? = nil) -> String {
     let pairs = contents.compactMap {
-      if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t),v) } else { nil }
+      if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t), v) } else { nil }
     }
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
@@ -373,24 +344,25 @@ class Clip: NSManagedObject {
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
   
+  // swiftlint:disable comma
   static func debugContentsDescription(forKeys keys: [NSPasteboard.PasteboardType], values: [Data], ofLength length: Int? = nil) -> String {
     let len = length ?? 16 // length <= 0 means unlimited length string, length nil means pick this default length
     var desc: String
     if keys.count != values.count {
       desc = "(bad)"
     } else if keys.isEmpty {
-      desc = len.isInside(range: 1 ..< 7) ? "_" : "(empty)"
+      desc = len.isWithin(range: 1 ..< 7) ? "_" : "(empty)"
     } else if keys.includes([.tiff, .png, .jpeg]) {
-      desc = len.isInside(range: 1 ..< 5) ? "img" : "image"
+      desc = len.isWithin(range: 1 ..< 5) ? "img" : "image"
     } else if keys.contains(.fileURL) {
       let n = keys.filter({$0 == .fileURL}).count
-      desc = len.isInside(range: 1 ..< 6) ? "f\(n)" : "\(n) files"
+      desc = len.isWithin(range: 1 ..< 6) ? "f\(n)" : "\(n) files"
     } else if let i = keys.firstIndex(of: .rtf) {
       let s = NSAttributedString(rtf: values[i], documentAttributes: nil)?.string
       if let s = s {
         let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        desc = len.isInside(range: 1 ..< 5) ? "r" + String(t.prefix(len)) :
-          "rtf " + (len.isInside(range: 5 ..< max(5, t.count)) ? String(t.prefix(len)) : t)
+        desc = len.isWithin(range: 1 ..< 5) ? "r" + String(t.prefix(len)) :
+          "rtf " + (len.isWithin(range: 5 ..< max(5, t.count)) ? String(t.prefix(len)) : t)
       } else {
         desc = "rtf?"
       }
@@ -398,15 +370,15 @@ class Clip: NSManagedObject {
       let s = NSAttributedString(html: values[i], documentAttributes: nil)?.string
       if let s = s {
         let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
-        desc = len.isInside(range: 1 ..< 6) ? "h" + String(t.prefix(len)) :
-          "html " + (len.isInside(range: 6 ..< max(6,t.count)) ? String(t.prefix(len)) : t)
+        desc = len.isWithin(range: 1 ..< 6) ? "h" + String(t.prefix(len)) :
+          "html " + (len.isWithin(range: 6 ..< max(6,t.count)) ? String(t.prefix(len)) : t)
       } else {
         desc = "html?"
       }
     } else if let i = keys.firstIndex(of: .string) {
       let s = String(data: values[i], encoding: .utf8)
       if let s = s { // s?..trimmingCharacters(in: .whitespacesAndNewlines)
-        desc = len.isInside(range: 1 ..< max(1,s.count)) ? String(s.prefix(len)) : s
+        desc = len.isWithin(range: 1 ..< max(1,s.count)) ? String(s.prefix(len)) : s
       } else {
         desc = "str?"
       }
@@ -418,5 +390,6 @@ class Clip: NSManagedObject {
     }
     return desc
   }
+  // swiftlint:enable comma
   
 }

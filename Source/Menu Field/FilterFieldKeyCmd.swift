@@ -50,7 +50,6 @@ enum FilterFieldKeyCmd: CaseIterable {
   case ignored
   case unknown
   
-  // swiftlint:disable cyclomatic_complexity
   init(_ key: Key, _ modifierFlags: NSEvent.ModifierFlags) {
     switch (key, modifierFlags) {
     case (.escape, []), (.u, [.control]):
@@ -77,7 +76,6 @@ enum FilterFieldKeyCmd: CaseIterable {
       self = .unknown
     }
   }
-  // swiftlint:enable cyclomatic_complexity
   
   private static let keysToSkip = [
     Key.home,

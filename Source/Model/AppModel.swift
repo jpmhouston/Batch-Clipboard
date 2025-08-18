@@ -9,6 +9,7 @@
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import AppKit
 import KeyboardShortcuts
 import Settings
@@ -17,7 +18,6 @@ import os.log
 import Sparkle
 #endif
 
-// swiftlint:disable type_body_length
 class AppModel: NSObject {
   
   static var returnFocusToPreviousApp = true
@@ -501,8 +501,8 @@ class AppModel: NSObject {
       if let reusedExpiration = UserDefaults.standard.promoteExtrasExpiration,
          let reusedDate = reusedExpiration.date, reusedDate.timeIntervalSinceNow > 0 {// ie. date is in the future
         setPromoteExtrasExpirationTimer(to: reusedDate)
-      }
-      else if let newExpiration = promoteExtrasExpirationDate(), let date = newExpiration.date {
+        
+      } else if let newExpiration = promoteExtrasExpirationDate(), let date = newExpiration.date {
         setPromoteExtrasExpirationTimer(to: date)
         UserDefaults.standard.promoteExtrasExpiration = newExpiration
       }
@@ -642,6 +642,7 @@ class AppModel: NSObject {
     }
   }
   
+  // swiftlint:disable cyclomatic_complexity
   private func initializeObservers() {
     clipboardCheckIntervalObserver = UserDefaults.standard.observe(\.clipboardCheckInterval, options: .old) { [weak self] _, change in
       guard let self = self else { return }
@@ -725,9 +726,11 @@ class AppModel: NSObject {
     }
     #endif
   }
+  // swiftlint:enable cyclomatic_complexity
   
 }
-// swiftlint:enable type_body_length
 
 func nop() { }
 func dontWarnUnused(_ x: Any) { }
+
+// swiftlint:enable file_length

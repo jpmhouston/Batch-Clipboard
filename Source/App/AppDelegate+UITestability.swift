@@ -84,7 +84,7 @@ extension AppDelegate {
     set {
       guard let self = (NSApp.delegate as? Self) else { return }
       self.fakedPasteDescriptions.append(newValue)
-      self.fakedPasteBuffer = self.fakedPasteBuffer + newValue
+      self.fakedPasteBuffer += newValue
     }
   }
   
@@ -131,8 +131,12 @@ extension AppDelegate {
   }
   
   func makeTestWindow() {
-    let window = NSPanel(contentRect: NSRect(x: 20, y: 20, width: 300, height: 150), styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel, .fullSizeContentView], backing: .buffered, defer: false)
-    //let window = NSWindow(contentRect: NSRect(x: 20, y: 20, width: 300, height: 150), styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel, .fullSizeContentView], backing: .buffered, defer: false)
+    let window = NSPanel(contentRect: NSRect(x: 20, y: 20, width: 300, height: 150),
+                         styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel, .fullSizeContentView],
+                         backing: .buffered, defer: false)
+    //let window = NSWindow(contentRect: NSRect(x: 20, y: 20, width: 300, height: 150),
+    //                      styleMask:[.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel, .fullSizeContentView],
+    //                      backing: .buffered, defer: false)
     window.titlebarAppearsTransparent = true
     window.hidesOnDeactivate = false
     window.isReleasedWhenClosed = true

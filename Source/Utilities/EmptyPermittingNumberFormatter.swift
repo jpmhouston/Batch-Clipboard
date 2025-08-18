@@ -8,7 +8,7 @@
 
 import AppKit
 
-class EmptyPermittingNumberFormatter : NumberFormatter, @unchecked Sendable {
+class EmptyPermittingNumberFormatter: NumberFormatter, @unchecked Sendable {
   
   var emptyPermitted = false
   

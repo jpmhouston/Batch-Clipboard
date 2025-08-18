@@ -6,6 +6,7 @@
 //  Copyright © 2025 Bananameter Labs. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import AppKit
 import KeyboardShortcuts
 import Settings
@@ -13,6 +14,7 @@ import os.log
 
 // TODO: make methods throw or at least return error instead of bool
 // TODO: os_log more caught errors
+// TODO: restore the saved breakpoints that got made invalid
 
 extension AppModel {
   
@@ -360,7 +362,7 @@ extension AppModel {
       // menu icon will show "-" for the duration
       updateMenuIcon(.persistentDecrement)
       
-      queuedPasteMultipleIterator(to: count, withSeparator: seperator) { [weak self] num in
+      queuedPasteMultipleIterator(to: count, withSeparator: seperator) { [weak self] _ in
         guard let self = self else { return }
         
         do {
@@ -395,7 +397,7 @@ extension AppModel {
   }
   
   private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, withSeparator seperator: String?,
-                                           then completion: @escaping (Int)->Void) {
+                                           then completion: @escaping (Int) -> Void) {
     guard max > 0 && count < max else {
       // don't expect to ever be called with count>=max, exit condition is below, before recursive call
       completion(count)
@@ -879,15 +881,17 @@ extension AppModel {
   
   private func sanityCheckStatusItem() {
     #if false // DEBUG
+    // swiftlint:disable force_cast
     os_log(.debug, "NSStatusItem = %@, isVisible = %d, UserDefaults showInStatusBar = %d, AppModel = %@, ProxyMenu = %@",
            menuIcon.statusItem, menuIcon.statusItem.isVisible, UserDefaults.standard.showInStatusBar,
            (NSApp.delegate as! AppDelegate).model!, (NSApp.delegate as! AppDelegate).model!.menuController!.proxyMenu)
+    // swiftlint:enable force_cast
     #endif
   }
   
   // MARK: - alert details
   
-  func showNumberToPasteAlert(_ completion: @escaping (Int, String?)->Void) {
+  func showNumberToPasteAlert(_ completion: @escaping (Int, String?) -> Void) {
     takeFocus()
     
     var lastSeparator = Alerts.SeparatorChoice.none
@@ -924,7 +928,7 @@ extension AppModel {
     } 
   }
   
-  private func showClearHistoryAlert(_ completion: @escaping ()->Void) {
+  private func showClearHistoryAlert(_ completion: @escaping () -> Void) {
     if UserDefaults.standard.suppressClearAlert {
       completion()
       
@@ -960,7 +964,7 @@ extension AppModel {
   }
   
   private func showSaveBatchAlert(showingCount count: Int, prohobitedNames: Set<String>,
-                                  _ completion: @escaping (String, HotKeyShortcut?)->Void) {
+                                  _ completion: @escaping (String, HotKeyShortcut?) -> Void) {
     takeFocus()
     
     alerts.withSaveBatchAlert(forCurrentBatch: queue.isOn, showingCount: count,
@@ -975,7 +979,7 @@ extension AppModel {
   }
   
   private func showRenameBatchAlert(withCurrentName currentName: String, prohobitedNames: Set<String>,
-                                    _ completion: @escaping (String, HotKeyShortcut?)->Void) {
+                                    _ completion: @escaping (String, HotKeyShortcut?) -> Void) {
     takeFocus()
     
     alerts.withRenameBatchAlert(withCurrentName: currentName,
@@ -989,7 +993,7 @@ extension AppModel {
     }
   }
   
-  private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping ()->Void) {
+  private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping () -> Void) {
     if true { // UserDefaults.standard.suppressDeleteBatchAlert {
       completion()
       
@@ -1085,3 +1089,4 @@ extension AppModel {
   }
   
 }
+// swiftlint:enable file_length

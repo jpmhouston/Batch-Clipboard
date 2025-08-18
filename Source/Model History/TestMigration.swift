@@ -70,8 +70,10 @@ class CoreDataMigrations {
       throw StackErr.migratingStore("migrateStore call \(srcStoreURL.path) to \(dstStoreURL.path)", error)
     }
     
+    // swiftlint:disable force_try
     try! FileManager.default.removeItem(at: srcStoreURL)
     try! FileManager.default.removeItem(at: dstStoreURL)
+    // swiftlint:enable force_try
   }
   
   private func createObjectModel(forVersionNumber versionNum: String) throws -> NSManagedObjectModel {

@@ -58,7 +58,7 @@ class BatchMenuItem: NSMenuItem {
     }
     if let name = batch?.fullname, !name.isEmpty {
       let hotKeyDefinition = KeyboardShortcuts.Name(name)
-      MainActor.assumeIsolated {
+      MainActor.assumeIsolated() {
         subitem.setShortcut(for: hotKeyDefinition)
       }
     } else {

@@ -105,23 +105,23 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
       clearMessage()
       showConfirmationSheet(withProducts: products)
       return
-    case (.success(.products(_)), _):
+    case (.success(.products), _):
       return
       
-    case (.success(.purchases(_)), .purchasing):
+    case (.success(.purchases), .purchasing):
       displayMessage("Thank you!")
-    case (.success(.purchases(_)), .showingProducts):
+    case (.success(.purchases), .showingProducts):
       cancelConfirmationSheet()
       fallthrough
-    case (.success(.purchases(_)), _):
+    case (.success(.purchases), _):
       displayMessage("Delayed purchase has completed, thank you!")
       
-    case (.success(.restorations(_)), .restoring):
+    case (.success(.restorations), .restoring):
       displayMessage("Purchase restored and you've got the bonus features, thank you!")
-    case (.success(.restorations(_)), .showingProducts):
+    case (.success(.restorations), .showingProducts):
       cancelConfirmationSheet()
       fallthrough
-    case (.success(.restorations(_)), _):
+    case (.success(.restorations), _):
       displayMessage("Delayed purchase restoration has completed and you've got the bonus features, thank you!")
       
     case (.failure(.cancelled), let s) where s != .idle:
@@ -133,11 +133,11 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
       displayError("Failed to reach network and complete the purchase")
     case (.failure(.unreachable), .restoring):
       displayError("Failed to reach network and complete the restore")
-    case (.failure(_), .fetchingProducts):
+    case (.failure, .fetchingProducts):
       displayError("Failed to fetch the purchase details")
-    case (.failure(_), .purchasing):
+    case (.failure, .purchasing):
       displayError("Failed to complete the purchase")
-    case (.failure(_), .restoring):
+    case (.failure, .restoring):
       displayError("Failed to complete the restore")
       
     default:

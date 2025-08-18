@@ -19,7 +19,7 @@ class About {
   private var blurb: NSAttributedString {
     return NSAttributedString(
       string: "Batch Clipboard adds the ability to\ncopy and paste many items together.",
-      attributes: [.foregroundColor: NSColor.labelColor]);
+      attributes: [.foregroundColor: NSColor.labelColor])
   }
   
   private var links: NSAttributedString {

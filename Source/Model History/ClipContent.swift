@@ -22,12 +22,9 @@ class ClipContent: NSManagedObject {
   
   // MARK: -
   
-  // swiftlint:disable nsobject_prefer_isequal
-  // Class 'HistoryItemContent' for entity 'HistoryItemContent' has an illegal override of NSManagedObject -isEqual
   static func == (lhs: ClipContent, rhs: ClipContent) -> Bool {
     return (lhs.type == rhs.type) && (lhs.value == rhs.value)
   }
-  // swiftlint:enable nsobject_prefer_isequal
   
   static func create(type: String, value: Data?) -> ClipContent {
     let content = ClipContent(context: CoreDataManager.shared.context)

@@ -74,10 +74,6 @@ class ClipMenuItem: NSMenuItem {
     return NSFont(descriptor: italicFontDescriptor, size: 0) ?? systemFont
   }()
   
-  // TODO: i think ok to renmove clipboard property
-  
-  internal var clipboard: Clipboard!
-  
   required init(coder: NSCoder) {
     super.init(coder: coder)
   }

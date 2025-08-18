@@ -497,6 +497,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
+  // swiftlint:disable force_cast
   private func buildHistoryItemAndAlternates(forClip clip: Clip) -> [NSMenuItem] {
     guard let protoCopyItem = protoCopyItem, let protoReplayItem = protoReplayItem,
           let protoAnchorItem = protoAnchorItem else {
@@ -553,6 +554,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     return batchParentItem
   }
+  // swiftlint:enable force_cast
   
   private func addBatchSubmenuItems(forParentItem parentBatchItem: NSMenuItem, fromClips clips: [Clip]) {
     guard let batchMenuItem = parentBatchItem as? BatchMenuItem, let submenu = batchMenuItem.submenu else {
@@ -629,13 +631,13 @@ class AppMenu: NSMenu, NSMenuDelegate {
     safeRemoveBatchItems(at: firstBatchIndex ..< postBatchesIndex) // note: these items are roots of submenus
   }
 
-  func iterateOverClipMenuItems(_ closure: (ClipMenuItem)->Void) {
+  func iterateOverClipMenuItems(_ closure: (ClipMenuItem) -> Void) {
     iterateOverQueueClipMenuItems(closure)
     iterateOverHistoryClipMenuItems(closure)
     iterateOverBatchClipMenuItems(closure)
   }
   
-  func iterateOverQueueClipMenuItems<T>(_ closure: (ClipMenuItem)->T) {
+  func iterateOverQueueClipMenuItems<T>(_ closure: (ClipMenuItem) -> T) {
     guard let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex,
           firstQueueIndex <= postQueueIndex else {
       fatalError("can't locate the queue menu items section")
@@ -650,7 +652,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func iterateOverHistoryClipMenuItems<T>(_ closure: (ClipMenuItem)->T) {
+  func iterateOverHistoryClipMenuItems<T>(_ closure: (ClipMenuItem) -> T) {
     guard let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex,
         firstHistoryIndex <= postHistoryIndex else { 
       fatalError("can't locate the history menu items section")
@@ -665,7 +667,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func iterateOverBatchClipMenuItems<T>(_ closure: (ClipMenuItem)->T) {
+  func iterateOverBatchClipMenuItems<T>(_ closure: (ClipMenuItem) -> T) {
     guard let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex,
         firstHistoryIndex <= postHistoryIndex else { 
       fatalError("can't locate the history menu items section")
@@ -686,7 +688,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func iterateOverBatchParentItems<T>(_ closure: (BatchMenuItem)->T) {
+  func iterateOverBatchParentItems<T>(_ closure: (BatchMenuItem) -> T) {
     guard let firstBatchIndex = firstBatchItemIndex, let postBatchesIndex = postBatchesItemIndex,
           firstBatchIndex <= postBatchesIndex else {
       fatalError("can't locate the batch menu items section")
@@ -1039,7 +1041,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     
     let menuItems = buildHistoryItemAndAlternates(forClip: clip)
-    safeInsertClipItems(menuItems, at:index)
+    safeInsertClipItems(menuItems, at: index)
     
     trimHistoryClipMenuItems()
     
@@ -1139,10 +1141,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
       if wasHighlighed && !wasLastInSection, let nextItem = safeItem(at: index) { 
         // after deleting the selected batch item, as normal highlight the next item
         highlightItem(nextItem)
-      }
-      else if wasHighlighed && menuOrderPosition > 0 && wasLastInSection,
-              let newLastItem = safeItem(at: firstQueueIndex + (menuOrderPosition - 1) * batchItemGroupCount)
-      {
+        
+      } else if wasHighlighed && menuOrderPosition > 0 && wasLastInSection,
+              let newLastItem = safeItem(at: firstQueueIndex + (menuOrderPosition - 1) * batchItemGroupCount) {
         // after deleting the selected last queued item, highlight the previous item,
         // the new last one in the queue
         highlightItem(newLastItem)
@@ -1338,10 +1339,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
       if wasHighlighed && !wasLastInMenu && subindex < submenu.numberOfItems, let nextItem = submenu.item(at: subindex) {
         // after deleting the selected batch item, as normal highlight the next item
         highlightSubmenuItem(nextItem, in: submenu)
-      }
-      else if wasHighlighed && wasLastInMenu && postClipIndex - batchItemGroupCount < submenu.numberOfItems,
-              let newLastItem = submenu.item(at: postClipIndex - batchItemGroupCount)
-      {
+        
+      } else if wasHighlighed && wasLastInMenu && postClipIndex - batchItemGroupCount < submenu.numberOfItems,
+              let newLastItem = submenu.item(at: postClipIndex - batchItemGroupCount) {
         // after deleting the selected last clip item, next highlight the previous item,
         // the new last one in the menu 
         highlightSubmenuItem(newLastItem, in: submenu)
@@ -1370,7 +1370,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     // may be larger than user's desired maximum because always includes everything queued
     let maximumMenuClips = max(AppModel.effectiveMaxClips, queue.size)
     
-    let clips = Array<Clip>(history.all.prefix(maximumMenuClips).suffix(from: queue.size))
+    let clips = Array(history.all.prefix(maximumMenuClips).suffix(from: queue.size))
     guard !clips.isEmpty, let firstMenuIndex = firstHistoryItemIndex else {
       return
     }
@@ -1802,7 +1802,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       sanityCheckClipMenuItem(at: index, forSectionStartingAt: firstQueueIndex)
     }
     for index in firstHistoryIndex ..< postHistoryIndex {
-      sanityCheckClipMenuItem(at: index, forSectionStartingAt: firstQueueIndex)
+      sanityCheckClipMenuItem(at: index, forSectionStartingAt: firstHistoryIndex)
     }
   }
   
@@ -1810,15 +1810,16 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let suggestedCommandMap = #"map{($0.isHidden ?"H ":"  ") + ($0.isSeparatorItem ?"---":$0.title+($0 is ClipMenuItem ?"  VS  "+(($0 as! ClipMenuItem).clip?.title ?? "?"):""))}"#
     let suggestedCommand = "p items[\(from)...\(index)].\(suggestedCommandMap)"
     guard let item = item(at: index) as? ClipMenuItem else {
-      fatalError("menu item at \(index) not a ClipMenuItem, try: \(suggestedCommand)")
+      if let maybeAnchorItem = item(at: index), maybeAnchorItem.view != nil { return }
+      fatalError("menu item at \(index) is not a ClipMenuItem, try: \(suggestedCommand)")
     }
     guard let clip = item.clip else {
       fatalError("menu item at \(index) has a nil clip property")
     }
-    guard !clip.isFault else {
-      os_log(.debug, "menu item at %d has clip with isFault set, not sure its a problem? %@", index, item.title)
-      return
-    }
+    //guard !clip.isFault else {
+    //  os_log(.debug, "menu item at %d has clip with isFault set, not sure its a problem? %@", index, item.title)
+    //  return
+    //}
     guard let clipTitle = clip.title else {
       fatalError("menu item at \(index) has clip with a nil title")
     }
@@ -1834,7 +1835,16 @@ class AppMenu: NSMenu, NSMenuDelegate {
     for index in firstBatchIndex ..< postBatchIndex {
       sanityCheckBatchParentMenuItem(at: index, forSectionStartingAt: firstBatchIndex)
       
-      // TODO: verify batch's aubmwnu items also
+      guard let parentBatchItem = item(at: index) as? BatchMenuItem else { continue }
+      guard let submenu = parentBatchItem.submenu else {
+        fatalError("batch menu item at \(index) has no submenu")
+      }
+      guard let firstClipIndex = parentBatchItem.firstClipItemIndex, let postClipIndex = parentBatchItem.postClipItemIndex else {
+        fatalError("for batch menu item at \(index) cannot locate its submenu clip menu items")
+      }
+      for subindex in firstClipIndex ..< postClipIndex {
+        sanityCheckBatchClipMenuItem(at: subindex, ofSubmenu: submenu, withParentIndex: index)
+      }
     }
   }
   
@@ -1842,7 +1852,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let suggestedCommandMap = #"map{$0.title + ($0 is BatchMenuItem ?"  VS  "+(($0 as! BatchMenuItem).title) : "")}"#
     let suggestedCommand = "p items[\(from)...\(index)].\(suggestedCommandMap)"
     guard let item = item(at: index) as? BatchMenuItem else {
-      fatalError("menu item at \(index) not a BatchMenuItem, try: \(suggestedCommand)")
+      fatalError("menu item at \(index) is not a BatchMenuItem, try: \(suggestedCommand)")
     }
     guard let batch = item.batch else {
       fatalError("menu item at \(index) has a nil batch property")
@@ -1856,6 +1866,26 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     guard batchTitle == item.title || (batchTitle == "" && item.title == " ") else {
       fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
+    }
+  }
+  
+  func sanityCheckBatchClipMenuItem(at index: Int, ofSubmenu submenu: NSMenu, withParentIndex parentIndex: Int) {
+    guard let item = submenu.item(at: index) as? ClipMenuItem else {
+      if let maybeAnchorItem = item(at: index), maybeAnchorItem.view != nil { return }
+      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) is not a ClipMenuItem")
+    }
+    guard let clip = item.clip else {
+      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has a nil clip property")
+    }
+    //guard !clip.isFault else {
+    //  os_log(.debug, "for batch menu item at %d submenu item at %d has clip with isFault set, not sure its a problem? %@", parentIndex, index, item.title)
+    //  return
+    //}
+    guard let clipTitle = clip.title else {
+      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has clip with a nil title")
+    }
+    guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
+      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has the wrong title")
     }
   }
   

@@ -90,7 +90,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     return nil
   }
   
-  func showResetAlert(_ continuation: ()->Void) {
+  func showResetAlert(_ continuation: () -> Void) {
     let alert = NSAlert()
     alert.alertStyle = .informational
     alert.messageText = NSLocalizedString("resetdata_alert_message", comment: "")

@@ -9,6 +9,7 @@
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import AppKit
 import Sauce
 
@@ -484,6 +485,7 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   #if DEBUG || UNITTEST
+  // swiftlint:disable statement_position
   static var fakeryNeeded = ProcessInfo.processInfo.processName == "xctest" ||
                             CommandLine.arguments.contains("ui-testing")
   var fakeryEngaged = false
@@ -536,6 +538,8 @@ class Clipboard: CustomDebugStringConvertible {
     cannedCopyCount += 1 
     return r
   }
+  // swiftlint:enable statement_position
   #endif
   
 }
+// swiftlint:enable file_length

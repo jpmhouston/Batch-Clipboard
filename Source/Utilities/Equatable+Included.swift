@@ -167,10 +167,10 @@ public extension Sequence where Element: Equatable {
 //}
 
 public extension Comparable {
-  func isInside(range r: Range<Self>) -> Bool {
+  func isWithin(range r: Range<Self>) -> Bool {
     r.contains(self)
   }
-  func isInside(range r: ClosedRange<Self>) -> Bool {
+  func isWithin(range r: ClosedRange<Self>) -> Bool {
     r.contains(self)
   }
   
@@ -181,10 +181,10 @@ public extension Comparable {
     !r.contains(self)
   }
   
-  func inside(range r: Range<Self>) -> Self? {
+  func within(range r: Range<Self>) -> Self? {
     r.contains(self) ? self : nil
   }
-  func inside(range r: ClosedRange<Self>) -> Self? {
+  func within(range r: ClosedRange<Self>) -> Self? {
     r.contains(self) ? self : nil
   }
   
@@ -197,10 +197,10 @@ public extension Comparable {
 }
 
 public extension Sequence where Element: Comparable {
-  func thoseInside(range r: Range<Element>) -> [Element] {
+  func thoseWithin(range r: Range<Element>) -> [Element] {
     filter { r.contains($0) }
   }
-  func thoseInside(range r: ClosedRange<Element>) -> [Element] {
+  func thoseWithin(range r: ClosedRange<Element>) -> [Element] {
     filter { r.contains($0) }
   }
   
