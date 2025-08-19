@@ -246,7 +246,7 @@ jobs:
           fi
           
           echo "- Make duplicate of app bundle \"${{ env.buildbundlename }}\" with final name"
-          ditto "${{ env.builddir }}/${{ env.buildbundlename }}" "${{ env.builddir }}/${{ env.finalbundlename }}""
+          ditto "${{ env.builddir }}/${{ env.buildbundlename }}" "${{ env.builddir }}/${{ env.finalbundlename }}"
           
           echo "version=$bundleVersion" >> $GITHUB_OUTPUT
           echo "originalappbundle=${{ env.builddir }}/${{ env.buildbundlename }}" >> $GITHUB_OUTPUT

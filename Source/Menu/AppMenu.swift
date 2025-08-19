@@ -345,7 +345,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       
       previewController.showPopover(for: clipItem, anchors: clipItemAnchors(for: clipItem))
       
-    } else if let clipItem = item as? BatchMenuItem {
+    } else if item is BatchMenuItem {
       deleteItem?.isEnabled = !AppModel.busy
       
     } else {
