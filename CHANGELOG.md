@@ -1,9 +1,31 @@
 Batch Clipboard Changelog
 
-## version 1.1a1 (2025-07-11 🌭)
+## version 2.0a1 (2025-08-19 🌭🏖️)
 
+A substantially new version with a lot of changes. TL;DR:
+
+- a repeat last batch feature, and in the app store version, saved batches
+- a more efficient history-off mode
+- improved menu simplicity and descriptiveness for options in the settings window
+
+What's listed below somewhat exhaustively includes the many changes both visible and under the hood. The version notes in the release version will instead be less complete, and a list more like what's below will be posted on the documentation website batchclipboard.bananameter.lol.
+
+- Implemented major feature: ability to turn history off for simplicity and system effeciency, now the default.
+- When history off and without need to stay consistent with its bottom-up order, ie. most recent at the top, the current batch is now shown in top-down order, ie. first to paste at the top.
+- Migrating from 1.0.x to 2.0 shows a Intro page offering to switch to the new history-off default or keep using history, the default for those users is to keep using the history features unless they choose to switch then or later in the Settings window Storage panel.
+- Implemented major feature: replaying previous batch again, and support giving the menu item a keyboard shortcut (empty by default).
+- Implemented major feature for app store version users who've made an in-app purchase: saving current or previous batches, each can have an optional keyboard shortcut. They appear in a new section of the menu when there's no current batch active, each with their clips in a submenu and items to replay, rename. A saved batch or individual clips within can be deleted with the same command-delete shortcut when the menu is open.
+- Improved feature for app store version users who've made an in-app purchase: in-between pasting multiple clips at a time from the current batch, a new option to insert a space, newline, or comma.
+- By necessity, the Undo Last Paste feature for app store version users who've made an in-app purchase is now removed in the new default history-off mode.
+- Menu simplification: in new default history-off mode, no complication of a different form of the menu when its opened with the option key pressed.
+- Menu simplification: the Start Replaying and Advance menu items are now hidden by default. They can be restore with an option in the Settings window Advanced panel.
+- Menu simplification: the type-in filter history field, the one that's available in the expanded menu when history on for app store version users who've made an in-app purchase, this is hidden by default unless turned on in the Settings window Appearance panel.
+- Minor improvements to the menu: when deleting items from the menu with command-delete the menu no longer closes, new title labels over Current Batch, Saved History, Saved Batch sections.
+- Improved simplicity of how the menu is opened in reaction to clicks in hopes of addressing possible failures, stripping some unused feature of the old behavior inherited from Maccy. Added an option to the Settings window Advanced panel for reverting to the old behavior in case of incompatibilities.
+- Improved layout and location of options in Settings window panels: new history switch and related menu size fields together in the Storage panel, new or improved descriptive labels in the General, Appearance, and Advanced panels.
+- Improved layout and language in the Intro window, including descriptions of IAP-unlocked features in the app store version.
+- Unit tests to verify correct queue, history behavior, and also general backing store correctness including migration from older versions. Improved menu reliability with sanity checking and logging of unexpected conditions.
 - Migrated source to new GitHub repository that isn't a fork of Maccy.
-- Large amounts of refactoring but no net user-facing changes, other than where some links point to in the About and Intro windows.
 
 ## version 1.0.3 (2025-07-11 🥤)
 
@@ -223,7 +245,7 @@ The app still needs to be opened the first time by right clicking the app icon a
 - Copying support email address by option-clicking the Intro window button was getting the mailto part also, fixed that.
 - Using the Purchase or Restore buttons of the purchase settings panel now progresses through simulated states of the forthcoming purchase process.
 - The purchase settings panel panel now has a link to web page about the bonus features.
-- Fixed something causing settings window to frequently open with the wrong size.
+- Fixed something causing the settings window to frequently open with the wrong size.
 
 Important: Found these builds I've been making myself have all been ARM-only, though the last two simplified variants done by GitHub actions perhaps were universal. Was finally able to test on an Intel MacBook Air and there's a timing issues with the first paste from the queue. These should be fixed in 0.9.3.
 

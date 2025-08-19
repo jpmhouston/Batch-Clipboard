@@ -303,14 +303,14 @@ class AppModel: NSObject {
     
     // keepHistory false is the new default but deliberately omitted from registered defaults
     // b/c when upgrading from 1.0 this sometimes should instead be on
-    // keepHistoryChoicePending is meant to be set the first time running 1.1+, ie. anytime its
+    // keepHistoryChoicePending is meant to be set the first time running v2.0+, ie. anytime its
     // not set already, and at that time decide what both it and keepHistory should be
     if userDefaults.object(forKey: UserDefaults.Keys.keepHistoryChoicePending) == nil {
       if Self.firstLaunch {
         userDefaults.keepHistory = false
         userDefaults.keepHistoryChoicePending = false
       } else {
-        // this 1.1 flag unset even though not first launch must mean migrating from 1.0
+        // this v2.0 flag unset even though not first launch must mean migrating from 1.0
         // offer to upgrade to new history-less default, but until they do, keep history on
         // (unfortunately if user wipes userdefaults from the cmd line they get this again)
         userDefaults.keepHistory = true
@@ -584,7 +584,7 @@ class AppModel: NSObject {
   // queueing feature.
   
   func historySettingsInconsistent() -> Bool {
-    // this is when there are items in history even though the v1.1 keep-history settings
+    // this is when there are items in history even though the v2.0 keep-history settings
     // are at their defaults that indicate it should be empty
     return history.count > 0 && !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
   }
