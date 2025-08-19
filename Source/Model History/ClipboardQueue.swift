@@ -22,6 +22,7 @@ class ClipboardQueue {
   
   var batch: Batch? { history.currentBatch }
   var batchClips: [Clip] { history.currentBatch?.getClipsArray() ?? [] }
+  var isBatchEmpty: Bool { history.currentBatch?.isEmpty == true }
   var clips: [Clip] { Array(batchClips.prefix(size)) }
   var size = 0
   var notEmpty: Bool { isOn && size > 0 }
@@ -218,7 +219,7 @@ class ClipboardQueue {
     }
   }
   
-  func setQueueClips(to clips: [Clip]) throws {
+  func replayClips(_ clips: [Clip]) throws {
     // fill batch with clips from history
     if clips.isEmpty {
       return

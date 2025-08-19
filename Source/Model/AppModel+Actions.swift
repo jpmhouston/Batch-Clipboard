@@ -445,7 +445,7 @@ extension AppModel {
   }
   
   @IBAction
-  func advanceReplay(_ sender: AnyObject) {
+  func advanceQueue(_ sender: AnyObject) {
     guard !Self.busy else {
       return
     }
@@ -508,7 +508,7 @@ extension AppModel {
     }
     
     do {
-      try queue.setQueueClips(to: clips)
+      try queue.replayClips(clips)
       try queue.replaying()
     } catch {
       return false
@@ -525,12 +525,12 @@ extension AppModel {
   @IBAction
   func replayLastBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation()
-    replayBatch(history.lastBatch, interactive: true)
+    replayBatch(nil, interactive: true)
   }
   
   func replayLastBatch() {
     // convenience handler for the global keyboard shortcut
-    replayBatch(history.lastBatch, interactive: true)
+    replayBatch(nil, interactive: true)
   }
   
   @IBAction
@@ -564,12 +564,23 @@ extension AppModel {
     guard !queue.isOn else {
       return false
     }
-    guard let batch = batch, !batch.isEmpty else {
-      return false
+    if let batch = batch {
+      guard !batch.isEmpty else {
+        return false
+      }
+    } else {
+      guard !queue.isBatchEmpty else {
+        return false
+      }
     }
     
     do {
-      try queue.replayQueue()
+      if let batch = batch {
+        try queue.replayClips(batch.getClipsArray())
+      } else {
+        try queue.replayQueue()
+      }
+      try queue.replaying()
     } catch {
       return false
     }

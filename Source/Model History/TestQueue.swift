@@ -23,13 +23,14 @@ class QueueSims {
     case begdq = "/r"       // start dequeueing (replaying) 
     case qcopy = "/k:"      // queued copy that implicitly starts queueing 
     case undo = "/u"        // undo most recent copy
+    case qagain = "/br"     // replay last queue batch
     case qfromh = "/f:"     // start queue from a history index (counting from most recent)
     case paste = "/po"      // paste only without advancing
     case qpaste = "/p>"     // paste and advance
     case adv = "/>"         // advance
     case qpall = "/pa"      // paste all
     case qpmul = "/p:"      // paste multiple
-    case qpmuls = "/b:"     // separtor between paste multiple (avoid: sp tab newln comma slash v.bar hash)
+    case qpmuls = "/i:"     // separtor inbetween paste multiple (avoid: sp tab newln comma slash v.bar hash)
     case autoron = "/a+"    // auto-replay mode on (default) 
     case autoroff = "/a-"   // auto-replay mode off (even though this mode no longer used by app)
     case del = "/dh:"       // delete with history index (counting from most recent)
@@ -203,12 +204,16 @@ class QueueSims {
           guard queue.size > 0 else { print("unexpected queue non-empty at start-dequeueing token (\(begdqTokenname) \(begdq)) [\(n)]"); continue }
           try queue.replaying()
         
+        case .qagain: // replicates AppModel.replayBatch(nil)
+          #expect(!queue.isOn, "at replay-last-queue token (\(qagainTokenname) \(qagain)) [\(n)]")
+          #expect(!queue.isBatchEmpty, "at replay-last-queue token (\(qagainTokenname) \(qagain)) [\(n)]")
+          try queue.replayQueue()
+          try queue.replaying()
         case .qfromh: // replicates AppModel.replayFromHistory
-          guard let i = value, i >= 0 else { print("unexpected start-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)] non-+ve-int parameter, instead '\(param ?? "")'"); continue }
-          #expect(!queue.isOn, "at start-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)]")
-          #expect(i < history.count, "at start-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)]")
-          queue.on()
-          try queue.setQueueClips(to: history.clipsFromIndex(i))
+          guard let i = value, i >= 0 else { print("unexpected replay-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)] non-+ve-int parameter, instead '\(param ?? "")'"); continue }
+          #expect(!queue.isOn, "at replay-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)]")
+          #expect(i < history.count, "at replay-from-history token (\(qfromhTokenname) \(qfromh)) [\(n)]")
+          try queue.replayClips(history.clipsFromIndex(i))
           try queue.replaying()
         
         case .isqon:
@@ -261,7 +266,7 @@ class QueueSims {
             //print("pasted '\(clipboard.currentText ?? "?")'")
           }
           try queue.dequeue()
-        case .adv: // replicates AppModel.advanceReplay
+        case .adv: // replicates AppModel.advanceQueue
           #expect(queue.isOn, "at advance-in-queue token (\(advTokenname) \(adv)) [\(n)]")
           guard queue.isOn else { continue }
           #expect(queue.size > 0, "at advance-in-queue token (\(advTokenname) \(adv)) [\(n)]")
@@ -470,6 +475,7 @@ var canc =      QueueSims.Token.canc.rawValue
 var begdq =     QueueSims.Token.begdq.rawValue
 var qcopy =     QueueSims.Token.qcopy.rawValue
 var undo =      QueueSims.Token.undo.rawValue
+var qagain =    QueueSims.Token.qagain.rawValue
 var qfromh =    QueueSims.Token.qfromh.rawValue
 var paste =     QueueSims.Token.paste.rawValue
 var qpaste =    QueueSims.Token.qpaste.rawValue
@@ -505,6 +511,7 @@ var cancTokenname =       "canc"
 var begdqTokenname =      "begdq"
 var qcopyTokenname =      "qcopy"
 var undoTokenname =       "undo"
+var qagainTokenname =     "qagain"
 var qfromhTokenname =     "qfromh"
 var pasteTokenname =      "paste"
 var qpasteTokenname =     "qpaste"
