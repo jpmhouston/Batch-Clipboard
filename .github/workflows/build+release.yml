@@ -634,12 +634,19 @@ jobs:
           echo "appcastGenerated=true" >> $GITHUB_OUTPUT
       
       - name: Commit appcast.xml
-        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
+        if: false && ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Automated Change to appcast.xml
           file_pattern: "appcast.xml"
           status_options: "--untracked-files=no"
+      
+      - name: Save appcast.xml as Artifact
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "appcast.xml"
+          path: ./appcast.xml
       
       - name: Draft Tagged Release
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.tag }}
