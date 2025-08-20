@@ -564,7 +564,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "git branch --show-current >/dev/null || exit 0\ngitbranch=$(git branch --show-current)\ngitcommitcount=$(git rev-list --count HEAD)\necho \"Patching CFBundleVersion to be $gitcommitcount based on count of commits to branch $gitbranch\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $gitcommitcount\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
+			shellScript = "git branch --show-current >/dev/null || exit 0\ngitbranch=$(git branch --show-current)\ngitcommitcount=$(git rev-list --count HEAD)\nbundleversion=$(bc -e \"$gitcommitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $gitbranch (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8F8C48AB2BAD51B000C3A219 /* Patch CFBundleVersion Script */ = {
@@ -585,7 +585,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "git branch --show-current >/dev/null || exit 0\ngitbranch=$(git branch --show-current)\ngitcommitcount=$(git rev-list --count HEAD)\necho \"Patching CFBundleVersion to be $gitcommitcount based on count of commits to branch $gitbranch\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $gitcommitcount\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
+			shellScript = "git branch --show-current >/dev/null || exit 0\ngitbranch=$(git branch --show-current)\ngitcommitcount=$(git rev-list --count HEAD)\nbundleversion=$(bc -e \"$gitcommitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $gitbranch (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
