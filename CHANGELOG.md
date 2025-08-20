@@ -1,6 +1,6 @@
 Batch Clipboard Changelog
 
-## version 2.0b1 (2025-08-19 🌭🏖️)
+## version 2.0b1 (2025-08-20 🌭🏖️)
 
 A substantially new version with a lot of changes. TL;DR:
 

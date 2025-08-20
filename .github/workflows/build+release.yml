@@ -40,6 +40,8 @@ jobs:
   build:
     name: Build and Release Non-AppStore Variant
     runs-on: macos-15
+    permissions:
+      contents: write # action-gh-release needs this https://github.com/softprops/action-gh-release
     
     steps:
       - name: Checkout
