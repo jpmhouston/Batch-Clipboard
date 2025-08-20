@@ -45,11 +45,12 @@ jobs:
           fetch-depth: 0 # required for 'git show-ref --tags' to work
           ref: "${{ env.branch }}"
       
-      - name: Install tools
+      - name: Install Tools
         # pandoc is used by sparkle step and by one of the xcode project's build rules
         # create-dmg is to define dmg entirely from script below instead of using a tempplate
         run: |
-          :
+          # Install Tools step bash script
+          
           brew update
           brew install pandoc create-dmg xmlstarlet
           
@@ -76,7 +77,8 @@ jobs:
       - name: Get Script Inputs
         id: inputs
         run: |
-          :
+          # Get Script Inputs step bash script
+          
           echo "- Check some script inputs and use defaults if unset"
           if [[ -z "${{ inputs.uploadToStore }}" ]] ; then
             echo "- Use default value for uploadToStore: ${{ env.uploadDefault }}"
@@ -100,7 +102,8 @@ jobs:
       - name: Validate
         id: version
         run: |
-          :
+          # Validate step bash script
+          
           echo "- Extract version and bundle id from the project"
           xcodebuild -scheme "${{ env.buildscheme }}" -configuration Release \
             -project "${{ env.projectfile }}" -showBuildSettings 2>/dev/null > buildsettings.txt
@@ -175,7 +178,8 @@ jobs:
       
       - name: Patch Entitlements
         run: |
-          :
+          # Patch Entitlements step bash script
+          
           if [[ -z "${{ secrets.STORE_MACOS_TEAMID }}" ]] ; then
             echo "::error::Secret STORE_MACOS_TEAMID not defined"
             exit 1
@@ -200,7 +204,8 @@ jobs:
       - name: Build
         id: build
         run: |
-          :
+          # Build step bash script
+          
           buildlogfile=xcodebuild-out.txt
           
           if [ -n "${{ steps.version.outputs.bareversion }}" ] ; then
@@ -267,7 +272,8 @@ jobs:
         # needed because a .dSYM is a directory, and directories fed to actions/upload-artifact
         # don't seem unzip with the original directory name
         run: |
-          :
+          # Zip Symbol FIle step bash script
+          
           echo "- Create symbol file archive"
           zipfilename="${{steps.version.outputs.releasename}} Symbols.zip"
           ditto -c -k --keepParent "${{ steps.build.outputs.symbolfile }}" "$zipfilename"
@@ -290,7 +296,8 @@ jobs:
       
       - name: Add Provisioning Profile
         run: |
-          :
+          # Add Provisioning Profile step bash script
+          
           if [[ -z "${{ secrets.STORE_MACOS_PROFILE }}" ]] ; then
             echo "::error::Secret STORE_MACOS_PROFILE not defined"
             exit 1
@@ -303,7 +310,8 @@ jobs:
       
       - name: Setup Keychain
         run: |
-          :
+          # Setup Keychain step bash script
+          
           if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
             echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
             exit 1
@@ -361,7 +369,8 @@ jobs:
       
       - name: Codesign App Bundle
         run: |
-          :
+          # Codesign App Bundle step bash script
+          
           if [[ -z "${{ secrets.STORE_MACOS_CERTIFICATE_NAME }}" ]] ; then
             echo "::error::Secret STORE_MACOS_CERTIFICATE_NAME not defined"
             exit 1
@@ -448,7 +457,8 @@ jobs:
       - name: Release Notes
         id: notes
         run: |
-          :
+          # Release Notes step bash script
+          
           echo "- Collect release notes"
           changeLogFilename=CHANGELOG.md
           tempNotesFilename="${{ steps.version.outputs.releasename }}.temp.md"
@@ -507,7 +517,8 @@ jobs:
       - name: Package App
         id: package
         run: |
-          :
+          # Package App step bash script
+          
           if [[ -z "${{ secrets.PKG_MACOS_CERTIFICATE_NAME }}" ]] ; then
             echo "::error::Secret PKG_MACOS_CERTIFICATE_NAME not defined"
             exit 1
@@ -534,7 +545,8 @@ jobs:
       - name: Verify Package and AppStore Connect Acceess
         id: connect
         run: |
-          :
+          # Verify Package and AppStore Connect Acceess step bash script
+          
           if [[ -z "${{ secrets.APPSTORECONNECT_APIKEY }}" ]] ; then
             echo "::error::Secret APPSTORECONNECT_APIKEY not defined"
             exit 1
@@ -579,7 +591,8 @@ jobs:
       - name: Deploy
         if: ${{ success() && steps.inputs.outputs.upload == 'true' && steps.version.outputs.tag }}
         run: |
-          :
+          # Deploy step bash script
+          
           if [[ -z "${{ secrets.APPSTORECONNECT_APPID }}" ]] ; then
             echo "::error::Secret APPSTORECONNECT_APPID not defined"
             exit 1
@@ -597,9 +610,10 @@ jobs:
             --bundle-version "$bundleversion" --bundle-short-version-string "$versionstr" \
             --bundle-id "$bundleid" --apiKey "$keyid" --apiIssuer "$issuerid"
       
-      - name: Fin
+      - name: Finish
         run: |
-          :
+          # Finish step bash script
+          
           if [[ "${{ steps.inputs.outputs.upload }}" == 'true' && steps.version.outputs.tag ]] ; then
             echo "::notice::Deployed \"${{ env.finalbundlename }}\" to app store, saved it and \"${{ steps.notes.outputs.filename }}\" as artifacts"
           else

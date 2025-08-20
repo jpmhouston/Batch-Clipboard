@@ -60,7 +60,8 @@ jobs:
         # pandoc is used by sparkle step and by one of the xcode project's build rules
         # create-dmg is to define dmg entirely from script below instead of using a tempplate
         run: |
-          :
+          # Install Tools step bash script
+          
           brew update
           brew install pandoc create-dmg # needed coreutils at one point but no longer IIRC
           
@@ -85,7 +86,8 @@ jobs:
       - name: Get Script Inputs
         id: inputs
         run: |
-          :
+          # Get Script Inputs step bash script
+          
           echo "- Check some script inputs and use defaults if unset"
           if [[ -z "${{ inputs.isPrerelease }}" ]] ; then
             echo "- Use default value for isPrerelease: ${{ env.isPrereleaseDefault }}"
@@ -118,7 +120,8 @@ jobs:
       - name: Validate
         id: version
         run: |
-          :
+          # Validate step bash script
+          
           echo "- Extract version and bundle id from the project"
           xcodebuild -scheme "${{ env.buildscheme }}" -configuration Release \
             -project "${{ env.projectfile }}" -showBuildSettings 2>/dev/null > buildsettings.txt
@@ -188,7 +191,8 @@ jobs:
       - name: Build
         id: build
         run: |
-          :
+          # Build step bash script
+          
           buildlogfile=xcodebuild-out.txt
           
           echo "- Build with xcodebuild from $(xcodebuild -version)"
@@ -244,7 +248,8 @@ jobs:
         # needed because a .dSYM is a directory, and directories fed to actions/upload-artifact
         # don't seem unzip with the original directory name
         run: |
-          :
+          # Zip Symbol FIle step bash script
+          
           echo "- Create symbol file archive"
           zipfilename="${{steps.version.outputs.releasename}} Symbols.zip"
           ditto -c -k --keepParent "${{ steps.build.outputs.symbolfile }}" "$zipfilename"
@@ -259,7 +264,8 @@ jobs:
       
       - name: Setup Keychain
         run: |
-          :
+          # Setup Keychain step bash script
+          
           if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
             echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
             exit 1
@@ -299,7 +305,8 @@ jobs:
       
       - name: Codesign App Bundle
         run: |
-          :
+          # Codesign App Bundle step bash script
+          
           if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" ]] ; then
             echo "::error::Secret PROD_MACOS_CERTIFICATE_NAME not defined"
             exit 1
@@ -385,7 +392,8 @@ jobs:
       
       - name: Notarize App Bundle
         run: |
-          :
+          # Notarize App Bundle step bash script
+          
           if [[ -z "${{ secrets.PROD_MACOS_NOTARIZATION_APPLE_ID }}" ]] ; then
             echo "::error::Secret PROD_MACOS_NOTARIZATION_APPLE_ID not defined"
             exit 1
@@ -439,7 +447,8 @@ jobs:
       - name: Release Notes
         id: notes
         run: |
-          :
+          # Release Notes step bash script
+          
           echo "- Collect release notes"
           changeLogFilename=CHANGELOG.md
           tempNotesFilename="${{ steps.version.outputs.releasename }}.temp.md"
@@ -495,36 +504,11 @@ jobs:
             ${{ steps.build.outputs.appbundle }}
             ${{ steps.notes.outputs.file }}
       
-      - name: Build Zip File
-        id: zip
-        run: |
-          :
-          archiveDir="${{ env.builddir }}/Sparkle"
-          archiveFileName="${{ steps.version.outputs.archivename }}.zip"
-          
-          echo "- Compress built app to \"$(basename $archiveDir)/$archiveFileName\""
-          mkdir "$archiveDir"
-          ditto -c -k --sequesterRsrc --keepParent "${{ steps.build.outputs.appbundle }}" \
-            "$archiveDir/$archiveFileName"
-          
-          echo "file=$archiveDir/$archiveFileName" >> $GITHUB_OUTPUT
-          echo "directory=$archiveDir" >> $GITHUB_OUTPUT
-      
-      - name: Generate Zip File Hash
-        id: sha256
-        run: |
-          :
-          hashout=$(shasum -a 256 "${{ steps.zip.outputs.file }}")
-          echo "::notice::SHA256 hash: $hashout"
-          # this not working, is shasum output different on this system?
-          #hash=${shasum -a 256 "${{ steps.zip.outputs.file }}" | cut -d " " -f 1}
-          #echo "::notice::SHA256 hash of \"${{ steps.zip.outputs.name }}\" is $hash"
-          #echo "hash=$hash" >> $GITHUB_OUTPUT # might use in future step that updates the homebrew cask
-      
       - name: Disk Image
         id: dmg
         run: |
-          :
+          # Disk Image step bash script
+          
           if ! command -v create-dmg >/dev/null 2>&1 ; then
             echo "::warning::Required helper script not found: create-dmg. Skipping dmg creation"
             # not sure if need to do `echo "file=whatever" >> $GITHUB_OUTPUT`
@@ -557,7 +541,8 @@ jobs:
           
       - name: Sign and Notarize Disk Image
         run: |
-          :
+          # Sign and Notarize Disk Image step bash script
+          
           echo "- Notarize disk image"
           xcrun notarytool submit "${{ steps.dmg.outputs.file }}" --keychain-profile "notarytool-profile" --wait \
             2>&1 | tee notarytool-out.txt
@@ -578,17 +563,41 @@ jobs:
           name: "${{ steps.version.outputs.archivename }} (non-app store) Disk Image"
           path: ${{ steps.dmg.outputs.file }}
       
+      - name: Zip File
+        id: zip
+        run: |
+          # Zip File step bash script
+          
+          # Redundant to save as an artifact too, but its included in the github release and used by Sparkle
+          zippedAppFile="${{ steps.version.outputs.archivename }}.zip"
+          
+          echo "- Compress built app to \"$zippedAppFile\""
+          ditto -c -k --sequesterRsrc --keepParent "${{ steps.build.outputs.appbundle }}" \
+            "$zippedAppFile"
+          
+          echo "- Logging hash of zip file"
+          hashout=$(shasum -a 256 "$zippedAppFile")
+          echo "::notice::SHA256 hash: $hashout"
+          echo "$(shasum -a 256 "$zippedAppFile" | cut -d " " -f 1)"
+          # wanted this but couldn't get it working, is shasum output different on this system?
+          # hash=$(shasum -a 256 "$zippedAppFile" | cut -d " " -f 1)
+          # echo "::notice::SHA256 hash of \"$zippedAppFile\" is $hash"
+          # echo "hash=$hash" >> $GITHUB_OUTPUT # might use in future step that updates the homebrew cask
+          
+          echo "file=$zippedAppFile" >> $GITHUB_OUTPUT
+      
       - name: Setup Sparkle
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
         uses: jozefizso/setup-sparkle@v1
         with:
           version: 2.6.0
       
-      - name: Generate Sparkle appcast.xml
+      - name: Generate Sparkle Appcast File
         id: sparkle
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
         run: |
-          :
+          # Generate Sparkle Appcast File step bash script
+          
           echo "::add-mask::${{ secrets.SPARKLE_PRIVATE_KEY }}"
           if [[ -z "${{ secrets.SPARKLE_PRIVATE_KEY }}" ]] ; then
             echo "::warning::Secret SPARKLE_PRIVATE_KEY not defined. Skipping Sparkle step"
@@ -599,54 +608,64 @@ jobs:
             exit 0
           fi
           
+          sparkleStuffDir="${{ env.builddir }}/Sparkle"
+          zippedAppFilename="$(basename "${{ steps.zip.outputs.file }}")"
           htmlNotesFilename="$(basename -s .zip "${{ steps.zip.outputs.file }}")".html
           htmlTemplateFilename=htmlnotestemplate.html
           releasesURL="https://github.com/${{ github.repository }}/releases"
           downloadURLPrefix="https://github.com/${{ github.repository }}/releases/download/v${{ steps.version.outputs.version }}/"
           
-          echo "- Convert release notes to html"
+          echo "- Create directory for Sparkle components"
+          mkdir "$sparkleStuffDir"
+          
+          echo "- Copy in zip file"
+          cp "${{ steps.zip.outputs.file }}" "$sparkleStuffDir/$zippedAppFilename"
+          
+          echo "- Copy in release notes converted to html"
           echo '$body$' > "$htmlTemplateFilename"
           if ! pandoc --standalone --template "$htmlTemplateFilename" --metadata title="Release Notes" \
             "${{ steps.notes.outputs.file }}" \
-            > "${{ steps.zip.outputs.directory }}/$htmlNotesFilename"
+            > "$sparkleStuffDir/$htmlNotesFilename"
           then
             echo "::warning::pandoc failed, no new appcast.xml file generated"
             exit 0
           fi
           
-          echo "- Update appcast"
-          cp ./appcast.xml "${{ steps.zip.outputs.directory }}/appcast.xml" # dir needs current xml file
+          echo "- Copy in current appcast.xml"
+          cp ./appcast.xml "$sparkleStuffDir/appcast.xml"
+          
+          echo "- Update appcast.xml"
           if ! echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | generate_appcast --ed-key-file - \
             --link "$releasesURL" --download-url-prefix "$downloadURLPrefix" \
-            --embed-release-notes -o ./appcast.xml "${{ steps.zip.outputs.directory }}"
+            --embed-release-notes -o ./appcast.xml "$sparkleStuffDir"
           then
             echo "::warning::generate_appcast failed, no new appcast.xml file generated"
             echo
-            echo "ls -alF \"${{ steps.zip.outputs.directory }}\""
-            ls -alF "${{ steps.zip.outputs.directory }}"
+            echo "ls -alF \"$sparkleStuffDir\""
+            ls -alF "$sparkleStuffDir"
             echo
-            echo "cat \"${{ steps.zip.outputs.directory }}/$htmlNotesFilename\""
-            cat "${{ steps.zip.outputs.directory }}/$htmlNotesFilename"
+            echo "cat \"$sparkleStuffDir/$htmlNotesFilename\""
+            cat "$sparkleStuffDir/$htmlNotesFilename"
             echo
             exit 0
           fi
           
           echo "appcastGenerated=true" >> $GITHUB_OUTPUT
       
-      - name: Commit appcast.xml
-        if: false && ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Automated Change to appcast.xml
-          file_pattern: "appcast.xml"
-          status_options: "--untracked-files=no"
+      # - name: Commit Appcast File
+      #   if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
+      #   uses: stefanzweifel/git-auto-commit-action@v5
+      #   with:
+      #     commit_message: Automated Change to appcast.xml
+      #     file_pattern: "appcast.xml"
+      #     status_options: "--untracked-files=no"
       
-      - name: Save appcast.xml as Artifact
+      - name: Save Appcast File as Artifact
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
         uses: actions/upload-artifact@v4
         with:
-          name: "appcast.xml"
-          path: ./appcast.xml
+          name: appcast.xml
+          path: appcast.xml
       
       - name: Draft Tagged Release
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.tag }}
@@ -662,9 +681,10 @@ jobs:
             ${{ steps.dmg.outputs.file }}
           fail_on_unmatched_files: false
       
-      - name: Fin
+      - name: Finish
         run: |
-          :
+          # Finish step bash script
+          
           if [[ ${{ steps.inputs.outputs.githubRelease }} == 'true' && -n "${{ steps.version.outputs.tag }}" ]] ; then
             echo "::notice::Release \"${{ steps.version.outputs.releasename }}\" draft created continaing \"${{ steps.dmg.outputs.filename }}\""
           else
