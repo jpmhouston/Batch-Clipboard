@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "8F8C484D2BAD51B000C3A219"
-               BuildableName = "Batch Clipboard MAS.app"
+               BuildableName = "Batch Clipboard (MAS).app"
                BlueprintName = "Batch Clipboard (MAS)"
                ReferencedContainer = "container:Batch Clipboard.xcodeproj">
             </BuildableReference>
@@ -50,7 +50,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8F8C484D2BAD51B000C3A219"
-            BuildableName = "Batch Clipboard MAS.app"
+            BuildableName = "Batch Clipboard (MAS).app"
             BlueprintName = "Batch Clipboard (MAS)"
             ReferencedContainer = "container:Batch Clipboard.xcodeproj">
          </BuildableReference>
@@ -67,7 +67,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "8F8C484D2BAD51B000C3A219"
-            BuildableName = "Batch Clipboard MAS.app"
+            BuildableName = "Batch Clipboard (MAS).app"
             BlueprintName = "Batch Clipboard (MAS)"
             ReferencedContainer = "container:Batch Clipboard.xcodeproj">
          </BuildableReference>

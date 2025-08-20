@@ -84,7 +84,6 @@
 				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
-				App/AppIcon.icon,
 				App/Application.xib,
 				App/Assets.xcassets,
 				App/Localizable.strings,
@@ -175,7 +174,6 @@
 				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
-				App/AppIcon.icon,
 				App/Application.xib,
 				App/Assets.xcassets,
 				App/Localizable.strings,
@@ -413,7 +411,6 @@
 				8F8C48952BAD51B000C3A219 /* Frameworks */,
 				8F8C489D2BAD51B000C3A219 /* Resources */,
 				8F8C48AB2BAD51B000C3A219 /* Patch CFBundleVersion Script */,
-				8FCC93A92E553C44002BDB51 /* Fixup pre-Tahoe icon */,
 			);
 			buildRules = (
 				8FB88D7A2BCCE6C7006D48E6 /* PBXBuildRule */,
@@ -589,31 +586,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "git branch --show-current >/dev/null || exit 0\ngitbranch=$(git branch --show-current)\ngitcommitcount=$(git rev-list --count HEAD)\necho \"Patching CFBundleVersion to be $gitcommitcount based on count of commits to branch $gitbranch\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $gitcommitcount\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8FCC93A92E553C44002BDB51 /* Fixup pre-Tahoe icon */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Source/App/AppIcon.icon",
-				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/Assets.car",
-			);
-			name = "Fixup pre-Tahoe icon";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/fixup-done.$(FULL_PRODUCT_NAME)",
-				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
-				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/Assets.car",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nactool ${SRCROOT}/Source/App/Assets.xcassets ${SRCROOT}/Source/App/AppIcon.icon --compile ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH} --app-icon AppIcon --enable-on-demand-resources NO --development-region en --target-device mac --minimum-deployment-target ${MACOSX_DEPLOYMENT_TARGET} --platform macosx --output-partial-info-plist /dev/null --enable-icon-stack-fallback-generation=disabled --include-all-app-icons\n/usr/libexec/PlistBuddy -c \"Set :CFBundleIconFile AppIconGood\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\ntouch \"${DERIVED_FILE_DIR}/fixup-done.${FULL_PRODUCT_NAME}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

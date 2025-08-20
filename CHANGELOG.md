@@ -1,12 +1,13 @@
 Batch Clipboard Changelog
 
-## version 2.0a1 (2025-08-19 🌭🏖️)
+## version 2.0b1 (2025-08-19 🌭🏖️)
 
 A substantially new version with a lot of changes. TL;DR:
 
-- a repeat last batch feature, and in the app store version, saved batches
-- a more efficient history-off mode
-- improved menu simplicity and descriptiveness for options in the settings window
+- a simpler and more efficient history-off mode is the new default
+- a repeat last batch feature
+- in the app store version: saved batches
+- improved simplicity for the menu and settings window
 
 What's listed below somewhat exhaustively includes the many changes both visible and under the hood. The version notes in the release version will instead be less complete, and a list more like what's below will be posted on the documentation website batchclipboard.bananameter.lol.
 
