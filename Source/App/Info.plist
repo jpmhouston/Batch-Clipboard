@@ -67,7 +67,7 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/jpmhouston/Batch-Clipboard/forkmain/appcast.xml</string>
+	<string>https://github.com/jpmhouston/Batch-Clipboard/raw/refs/heads/main/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>v+syb2eSsDiT0B52v/p9VEn2K3AYaKE1qDHeyvTE07Y=</string>
 </dict>

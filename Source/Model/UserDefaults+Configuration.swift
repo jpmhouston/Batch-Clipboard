@@ -52,6 +52,8 @@ extension UserDefaults {
     static let showInStatusBar = "showInStatusBar"
     static let legacyFocusTechnique = "legacyFocus"
     static let showAdvancedPasteMenuItems = "showAdvancedPasteMenuItems"
+    static let sparkleUsesBetaFeed = "sparkleUsesBetaFeed"
+    static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
     
     // maccy had a few like this, perhaps something to continue doing?
 //    static var showInStatusBar: String {
@@ -299,5 +301,16 @@ extension UserDefaults {
     get { bool(forKey: Keys.showAdvancedPasteMenuItems) }
     set { set(newValue, forKey: Keys.showAdvancedPasteMenuItems) }
   }
+  
+  public var sparkleUsesBetaFeed: Bool {
+    get { bool(forKey: Keys.sparkleUsesBetaFeed) }
+    set { set(newValue, forKey: Keys.sparkleUsesBetaFeed) }
+  }
+  
+  @objc public var menuHiddenWhenInactive: Bool {
+    get { bool(forKey: Keys.menuHiddenWhenInactive) }
+    set { set(newValue, forKey: Keys.menuHiddenWhenInactive) }
+  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfMenuHiddenWhenInactive() -> Bool { false }
   
 }

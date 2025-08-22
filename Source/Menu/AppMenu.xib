@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24123.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -59,25 +59,31 @@
                         <action selector="showIntro:" target="-2" id="uTE-rv-v5K"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Update Available…" image="icloud.and.arrow.down" catalog="system" hidden="YES" id="rv6-UC-fPh">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="installUpdate:" target="-2" id="Vs4-5v-heB"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="Fbk-9b-5n2"/>
                 <menuItem title="Start Batch" tag="101" id="Y5o-n6-NCS">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="startQueueMode:" target="-2" id="MbC-Ui-kST"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Start Replaying Items" hidden="YES" id="xpH-S9-QDS">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="startReplay:" target="-2" id="meN-9w-5Wi"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Cancel Batch" tag="102" enabled="NO" id="TKZ-UP-Ggw">
+                <menuItem title="Cancel Batch" tag="102" hidden="YES" id="TKZ-UP-Ggw">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="cancelQueueMode:" target="-2" id="sql-E4-fEM"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="1dD-HH-ufE"/>
+                <menuItem title="Start Pasting From Batch" hidden="YES" id="xpH-S9-QDS">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="startReplay:" target="-2" id="meN-9w-5Wi"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Copy to Batch" tag="103" id="ieX-in-c9O">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -90,7 +96,7 @@
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Advance to Next Batch Item" enabled="NO" id="TLY-ku-V0E">
+                <menuItem title="Advance to Next Batch Item" hidden="YES" id="TLY-ku-V0E">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
                     <connections>
                         <action selector="advanceQueue:" target="-2" id="Bb4-sn-Nnk"/>
@@ -114,8 +120,8 @@
                         <action selector="replayLastBatch:" target="-2" id="dRQ-xk-ysb"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Save Last Batch…" alternate="YES" id="mW6-UJ-rBZ">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                <menuItem title="Save Last Batch…" id="mW6-UJ-rBZ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="saveBatch:" target="-2" id="8uL-Tk-sjH"/>
                     </connections>
@@ -271,6 +277,7 @@ CA
                 <outlet property="saveCurrentBatchItem" destination="83L-SB-PRJ" id="Eun-bQ-Yyi"/>
                 <outlet property="saveLastBatchItem" destination="mW6-UJ-rBZ" id="XbX-Zo-vcZ"/>
                 <outlet property="undoCopyItem" destination="FT3-WA-g9c" id="VA5-67-hoL"/>
+                <outlet property="updateAvailableItem" destination="rv6-UC-fPh" id="fNX-q6-Van"/>
             </connections>
             <point key="canvasLocation" x="1" y="-145"/>
         </menu>
@@ -368,4 +375,7 @@ Shortcuts below only work while this menu is open.</string>
             <point key="canvasLocation" x="0.0" y="660"/>
         </customView>
     </objects>
+    <resources>
+        <image name="icloud.and.arrow.down" catalog="system" width="18" height="18"/>
+    </resources>
 </document>

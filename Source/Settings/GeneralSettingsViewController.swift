@@ -31,9 +31,9 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
   private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
   
-  #if SPARKLE_UPDATES
+#if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
-  #endif
+#endif
   private lazy var loginItemsURL = URL(
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
@@ -42,18 +42,19 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var pasteHotkeyContainerView: NSView!
   @IBOutlet weak var startHotkeyContainerView: NSView!
   @IBOutlet weak var replayHotkeyContainerView: NSView!
-  @IBOutlet weak var launchAtLoginButton: NSButton!
+  @IBOutlet weak var launchAtLoginCheckbox: NSButton!
   @IBOutlet weak var launchAtLoginRow: NSGridRow!
   @IBOutlet weak var openLoginItemsPanelButton: NSButton!
   @IBOutlet weak var openLoginItemsPanelRow: NSGridRow!
-  @IBOutlet weak var automaticUpdatesButton: NSButton!
+  @IBOutlet weak var automaticUpdatesCheckbox: NSButton!
+  @IBOutlet weak var betaFeedUpdatesCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
   @IBOutlet weak var checkForUpdatesItemsRow: NSGridRow!
   @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
   @IBOutlet weak var promoteExtrasItemsRow: NSGridRow!
-
-  #if SPARKLE_UPDATES
+  
+#if SPARKLE_UPDATES
   init(updater: SPUUpdater) {
     sparkleUpdater = updater
     super.init(nibName: nil, bundle: nil)
@@ -66,7 +67,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  #endif
+#endif
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -84,26 +85,26 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
     addSubviewWithManualLayout(replayHotkeyContainerView, replayHotkeyRecorder)
     
-    #if SPARKLE_UPDATES
-    showSparkleUpdateRows(true)
-    #else
-    showSparkleUpdateRows(false)
-    #endif
+#if SPARKLE_UPDATES
+    showSparkleUpdateOptions(true)
+#else
+    showSparkleUpdateOptions(false)
+#endif
     
-    #if APP_STORE
+#if APP_STORE
     if #available(macOS 14, *) { // badged menu items first available in macOS 14
-      showPromoteExtrasRow(true)
+      showPromoteExtrasOptions(true)
     } else {
-      showPromoteExtrasRow(false)
+      showPromoteExtrasOptions(false)
     }
-    #else
-    showPromoteExtrasRow(false)
-    #endif
+#else
+    showPromoteExtrasOptions(false)
+#endif
     
     if #available(macOS 13.0, *) {
-      showLaunchAtLoginRow(true)
+      showLaunchAtLoginOptions(true)
     } else {
-      showLaunchAtLoginRow(false) // show instead the open login items button 
+      showLaunchAtLoginOptions(false) // show instead the open login items button 
     }
   }
   
@@ -111,60 +112,69 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     super.viewWillAppear()
     populateLaunchAtLogin()
     populateSparkleAutomaticUpdates()
-    #if APP_STORE
+    populateSparkleBetaFeed()
     populatePromoteExtrasOptions()
-    #endif
   }
   
   // MARK: -
   
   public func promoteExtrasStateChanged() {
-    #if APP_STORE
     populatePromoteExtrasOptions()
-    #endif
-  }
-  
-  @IBAction func sparkleAutomaticUpdatesChanged(_ sender: NSButton) {
-    #if SPARKLE_UPDATES
-    sparkleUpdater.automaticallyChecksForUpdates = (sender.state == .on)
-    #endif
-  }
-  
-  private func populateSparkleAutomaticUpdates() {
-    #if SPARKLE_UPDATES
-    let automatic = sparkleUpdater.automaticallyChecksForUpdates
-    automaticUpdatesButton.state = automatic ? .on : .off
-    #endif
   }
   
   private func populateLaunchAtLogin() {
     guard #available(macOS 13.0, *) else {
       return
     }
-    launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
+    launchAtLoginCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
   }
   
-  #if APP_STORE
+  private func populateSparkleAutomaticUpdates() {
+    #if SPARKLE_UPDATES
+    let automatic = sparkleUpdater.automaticallyChecksForUpdates
+    automaticUpdatesCheckbox.state = automatic ? .on : .off
+    enableSparkleBetaFeed(automatic)
+    #endif
+  }
+  
+  private func enableSparkleBetaFeed(_ enable: Bool = true) {
+    #if SPARKLE_UPDATES
+    betaFeedUpdatesCheckbox.isEnabled = enable
+    #endif
+  }
+  
+  private func populateSparkleBetaFeed() {
+    #if SPARKLE_UPDATES
+    let useBetaFeed = UserDefaults.standard.sparkleUsesBetaFeed
+    betaFeedUpdatesCheckbox.state = useBetaFeed ? .on : .off
+    #endif
+  }
+  
   private func populatePromoteExtrasOptions() {
+    #if APP_STORE
     promoteExtrasCheckbox.state = UserDefaults.standard.promoteExtras ? .on : .off
     promoteExtrasExpiresCheckbox.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
     promoteExtrasCheckbox.isEnabled = !AppModel.hasBoughtExtras
     promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+    #endif
   }
-
-  private func updatePromoteExtrasExpirationOption() {
-    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
-  }
-
-  private func updatePromoteExtrasExpirationTimer() {
-    guard let model = (NSApp.delegate as? AppDelegate)?.model else {
-      return
-    }
-    model.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
-  }
-  #endif
-
+  
   // MARK: -
+  
+  @IBAction func sparkleAutomaticUpdatesChanged(_ sender: NSButton) {
+    #if SPARKLE_UPDATES
+    let automatic = (sender.state == .on)
+    sparkleUpdater.automaticallyChecksForUpdates = automatic
+    enableSparkleBetaFeed(automatic)
+    #endif
+  }
+  
+  @IBAction func sparkleBetaFeedChanged(_ sender: NSButton) {
+    #if SPARKLE_UPDATES
+    let useBetaFeed = (sender.state == .on)
+    UserDefaults.standard.sparkleUsesBetaFeed = useBetaFeed
+    #endif
+  }
   
   @IBAction func sparkleUpdateCheck(_ sender: NSButton) {
     #if SPARKLE_UPDATES
@@ -221,20 +231,33 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     #endif
   }
   
+  #if APP_STORE
+  private func updatePromoteExtrasExpirationOption() {
+    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+  }
+
+  private func updatePromoteExtrasExpirationTimer() {
+    guard let model = (NSApp.delegate as? AppDelegate)?.model else {
+      return
+    }
+    model.setPromoteExtrasExpirationTimer(on: UserDefaults.standard.promoteExtras && UserDefaults.standard.promoteExtrasExpires)
+  }
+  #endif
+  
   // MARK: -
   
-  private func showSparkleUpdateRows(_ show: Bool) {
+  private func showSparkleUpdateOptions(_ show: Bool) {
     checkForUpdatesItemsRow.isHidden = !show
   }
   
-  private func showPromoteExtrasRow(_ show: Bool) {
-    promoteExtrasSeparatorRow.isHidden = !show
-    promoteExtrasItemsRow.isHidden = !show
-  }
-  
-  private func showLaunchAtLoginRow(_ show: Bool) {
+  private func showLaunchAtLoginOptions(_ show: Bool) {
     launchAtLoginRow.isHidden = !show
     openLoginItemsPanelRow.isHidden = show
+  }
+  
+  private func showPromoteExtrasOptions(_ show: Bool) {
+    promoteExtrasItemsRow.isHidden = !show
+    promoteExtrasSeparatorRow.isHidden = !show
   }
   
 }
