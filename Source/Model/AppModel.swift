@@ -23,7 +23,6 @@ class AppModel: NSObject {
   static var returnFocusToPreviousApp = true
   static var busy = false
   
-  static var allowExpandedHistory = true
   static var allowFullyExpandedHistory = false
   static var allowHistorySearch = false
   static var allowReplayFromHistory = false
@@ -31,6 +30,9 @@ class AppModel: NSObject {
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
   static var allowSavedBatches = false
+  static var allowMenuHiding = false
+  // always include these features:
+  static var allowExpandedHistory = true
   static var allowLastBatch = true
   
   static var allowDictinctStorageSize: Bool { Self.allowFullyExpandedHistory || Self.allowHistorySearch }
@@ -48,6 +50,7 @@ class AppModel: NSObject {
   static var hasBoughtExtras = false
   static let allowPurchases = true
   #else
+  static let hasBoughtExtras = false
   static let allowPurchases = false
   #endif
   
@@ -74,16 +77,19 @@ class AppModel: NSObject {
   
   #if APP_STORE
   private let purchases = AppStorePurchases()
-  private var promotionExpirationTimer: Timer?
+  private var promotionExpirationTimer: DispatchSourceTimer?
   #endif
   #if SPARKLE_UPDATES
-  private let updaterController = SPUStandardUpdaterController(updaterDelegate: nil, userDriverDelegate: nil)
+  lazy var sparkleDelegate = SparkleDelegate(self)
+  lazy var updaterController = SPUStandardUpdaterController(updaterDelegate: self.sparkleDelegate,
+                                                            userDriverDelegate: self.sparkleDelegate)
   #endif
   internal var introWindowController = IntroWindowController()
   internal var licensesWindowController = LicensesWindowController()
   
   internal var queue: ClipboardQueue!
   internal var copyTimeoutTimer: DispatchSourceTimer?
+  internal var hideMenuPollingTimer: DispatchSourceTimer?
   
   internal lazy var storageSettingsPaneViewController = StorageSettingsViewController()
   #if APP_STORE
@@ -120,8 +126,7 @@ class AppModel: NSObject {
   private var storageSizeObserver: NSKeyValueObservation?
   private var keepHistoryObserver: NSKeyValueObservation?
   private var keepHistoryObserver2: NSKeyValueObservation?
-  private var statusItemConfigurationObserver: NSKeyValueObservation?
-  private var statusItemVisibilityObserver: NSKeyValueObservation?
+  private var menuHidingObserver: NSKeyValueObservation?
   
   enum PasteSeparator: Int, CaseIterable {
     // the popup menu in Alerts.nib must be kept in symc with these enum cases 
@@ -154,7 +159,6 @@ class AppModel: NSObject {
       UserDefaults.Keys.maxTitleLength: UserDefaults.Values.maxTitleLength,
       UserDefaults.Keys.previewDelay: UserDefaults.Values.previewDelay,
       UserDefaults.Keys.searchMode: UserDefaults.Values.searchMode,
-      UserDefaults.Keys.showInStatusBar: UserDefaults.Values.showInStatusBar,
       UserDefaults.Keys.showSpecialSymbols: UserDefaults.Values.showSpecialSymbols,
       UserDefaults.Keys.historySize: UserDefaults.Values.historySize,
       UserDefaults.Keys.highlightMatch: UserDefaults.Values.highlightMatch
@@ -172,8 +176,8 @@ class AppModel: NSObject {
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     
-    menuIcon.enableRemoval(true)
     menuIcon.isVisible = true
+    menuIcon.enableRemoval(true, wasRemoved: menuIconWasRemoved)
     updateMenuIconEnabledness()
     if UserDefaults.standard.legacyFocusTechnique {
       menuController = MenuController(menu, menuIcon.statusItem)
@@ -206,7 +210,7 @@ class AppModel: NSObject {
     
     // launch initial user interface
     menu.buildDynamicItems()
-    //configureMenuShortcuts()
+    letMenuIconAutoHide()
     
     // The first `menu.prepareToOpen()` can take a while so do it early instead of when the menu
     // is first clicked on. To not delay the intro window from opening, delay this call.
@@ -218,11 +222,14 @@ class AppModel: NSObject {
     
     if !UserDefaults.standard.completedIntro {
       showIntro(self)
+      ensureMenuIconVisible(pollingForWindowsToClose: true)
     } else if !hasAccessibilityPermissionBeenGranted() {
       showIntroAtPermissionPage()
+      ensureMenuIconVisible(pollingForWindowsToClose: true)
     } else if UserDefaults.standard.keepHistoryChoicePending {
       // expect user migrating from 1.0 won't fall into cases above, get here & really see this page   
       showIntroAtHistoryUpdatePage()
+      ensureMenuIconVisible(pollingForWindowsToClose: true)
     }
     
     // this instantiates the settings window, but it's not not initially visible
@@ -240,15 +247,14 @@ class AppModel: NSObject {
     storageSizeObserver?.invalidate()
     keepHistoryObserver?.invalidate()
     keepHistoryObserver2?.invalidate()
-    statusItemConfigurationObserver?.invalidate()
-    statusItemVisibilityObserver?.invalidate()
+    menuHidingObserver?.invalidate()
     
     menuIcon.cancelBlinkTimer()
     #if APP_STORE
     purchases.finish()
     #endif
   }
-
+  
   func terminate() {
     if UserDefaults.standard.clearOnQuit {
       clearHistory(suppressClearAlert: true, clipboardIncluded: UserDefaults.standard.clearSystemClipboard)
@@ -256,10 +262,13 @@ class AppModel: NSObject {
   }
   
   func wasReopened() {
-    // if the user has chosen to hide the menu bar icon when not in batch mode then
-    // open the Settings window whenever the application icon is double clicked again
-    if !UserDefaults.standard.showInStatusBar {
-      showSettings(selectingPane: .general)
+    // When the app icon is dbl-clicked open settings and ensure the idon is showing.
+    // If the user has chosen to hide the menu bar icon when not in batch mode then
+    // start pollng ro auto-hide it again when all windows close
+    showSettings(selectingPane: .general)
+    menuIcon.isVisible = true
+    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive {
+      startPollingToRehideMenuIcon()
     }
   }
   
@@ -283,6 +292,25 @@ class AppModel: NSObject {
           NSApp.hide(self)
         }
       }
+    }
+  }
+  
+  internal func ensureMenuIconVisible(pollingForWindowsToClose poll: Bool = false) {
+    if !menuIcon.isVisible {
+      menuIcon.isVisible = true
+    }
+    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive {
+      if poll {
+        startPollingToRehideMenuIcon()
+      } else {
+        stopPollingToRehideMenuIcon()
+      }
+    }
+  }
+  
+  internal func letMenuIconAutoHide() {
+    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && !queue.isOn {
+      startPollingToRehideMenuIcon()
     }
   }
   
@@ -318,6 +346,11 @@ class AppModel: NSObject {
         os_log(.info, "user must confirm history remaining on, or migrate to history off")
       } 
     }
+    
+    // showInStatusBar was previously unused, though the app was setting it to true as
+    // a registered default, its now replaced by another key, don't leave this around for
+    // inquisitive users poking around with `defaults read` to get confused by
+    userDefaults.removeObject(forKey: UserDefaults.Keys.showInStatusBar)
     
     #if APP_STORE
     migrateUserDefaultsForAppStore()
@@ -452,7 +485,7 @@ class AppModel: NSObject {
     Self.allowPasteMultiple = hasPurchased
     Self.allowUndoCopy = hasPurchased
     Self.allowSavedBatches = hasPurchased
-    //Self.allowLastBatch = hasPurchased // putting this in the normal version
+    Self.allowMenuHiding = hasPurchased
   }
   
   func hasAccessibilityPermissionBeenGranted() -> Bool {
@@ -519,18 +552,23 @@ class AppModel: NSObject {
     }
     // useful, tricky breakpoint here: setting exipiry timer to @LocalShortDateFormatter().string(from:date)@
     
-    promotionExpirationTimer = Timer.scheduledTimer(withTimeInterval: date.timeIntervalSinceNow, repeats: false) { [weak self] _ in
-      self?.promotionExpirationTimer = nil
+    promotionExpirationTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay:
+                                                date.timeIntervalSinceNow) { [weak self] in
+      guard let self = self else { return }
+      promotionExpirationTimer = nil
       UserDefaults.standard.promoteExtras = false
-      DispatchQueue.main.async {
-        self?.generalSettingsPaneViewController.promoteExtrasStateChanged()
-      }
+      generalSettingsPaneViewController.promoteExtrasStateChanged()
     }
   }
   
   private func clearPromoteExtrasExpirationTimer() {
-    promotionExpirationTimer?.invalidate()
+    promotionExpirationTimer?.cancel()
     promotionExpirationTimer = nil
+  }
+  
+  class LocalShortDateFormatter: DateFormatter, @unchecked Sendable { // used by logging breakpoint in setPromoteExtrasExpirationTimer
+    override init() { super.init(); dateStyle = .short; timeStyle = .short }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   }
   
   private func promoteExtrasExpirationDate() -> DateComponents? {
@@ -547,11 +585,6 @@ class AppModel: NSObject {
     let midnightNextWeek = calendar.startOfDay(for: nextWeek)
     return calendar.dateComponents([.year, .month, .day, .hour, .minute, .calendar], from: midnightNextWeek)
     #endif
-  }
-  
-  class LocalShortDateFormatter: DateFormatter, @unchecked Sendable { // used by logging breakpoint in setPromoteExtrasExpirationTimer
-    override init() { super.init(); dateStyle = .short; timeStyle = .short }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   }
   
   private func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
@@ -642,6 +675,48 @@ class AppModel: NSObject {
     }
   }
   
+  private func anyAppWindowsOpen() -> Bool {
+    // Omitting any windows with canBecomeKey false because that identifies a hidden window for the
+    // status item with undocumented class NSStatusItemWindow or something. Identifying it by its type 
+    // would be bad because that type is undocumented. but noticed that its this window has 
+    // canBecomeKey false though, so using that. Doesn't seem like any valid window would have this false.
+    NSApplication.shared.windows.filter { $0.canBecomeKey }.contains { $0.isVisible }
+  }
+  
+  private func startPollingToRehideMenuIcon() {
+    hideMenuPollingTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 2, interval: 2) { [weak self] in
+      guard let self = self else { return false }
+      if !UserDefaults.standard.menuHiddenWhenInactive || !menuIcon.isVisible {
+        hideMenuPollingTimer?.cancel()
+        hideMenuPollingTimer = nil
+        return false
+      }
+      if !anyAppWindowsOpen() && !queue.isOn {
+        menuIcon.isVisible = false
+        return false
+      }
+      return true
+    }
+  }
+  
+  private func stopPollingToRehideMenuIcon() {
+    hideMenuPollingTimer?.cancel()
+    hideMenuPollingTimer = nil
+  }
+  
+  private func menuIconWasRemoved() {
+    // if hiding the icon is an allowed feature, then when the user drags-removes the
+    // menu icon, act like turning the "hide" setting on. if not allowed act like quit
+    if !Self.allowMenuHiding {
+      NSApplication.shared.terminate(nil)
+      
+    } else if UserDefaults.standard.menuHiddenWhenInactive == false {
+      UserDefaults.standard.menuHiddenWhenInactive = true
+    }
+    
+    stopPollingToRehideMenuIcon() // if this timer was on, it's no longer needed
+  }
+  
   // swiftlint:disable cyclomatic_complexity
   private func initializeObservers() {
     clipboardCheckIntervalObserver = UserDefaults.standard.observe(\.clipboardCheckInterval, options: .old) { [weak self] _, change in
@@ -708,23 +783,17 @@ class AppModel: NSObject {
       guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
       updateSavingHistory(newValue)
     }
-    // note: only code in this class should be changing UserDefaults.standard.keepHistory directly
-    #if FALSE
-    statusItemConfigurationObserver = UserDefaults.standard.observe(\.showInStatusBar, options: .old) { [weak self] _, change in
-      guard let self = self else { return }
-      if let newValue = change.newValue, newValue == UserDefaults.standard.showInStatusBar { return }
-      if self.statusItem.isVisible != change.newValue! {
-        self.statusItem.isVisible = change.newValue!
+    menuHidingObserver = UserDefaults.standard.observe(\.menuHiddenWhenInactive, options: .new) { [weak self] _, change in
+      // turning setting on (hide) first starts polling to wait until all of the app's
+      // windows are closed, but turning setting off makes menu visislbe immediately
+      guard let self = self, let newValue = change.newValue, Self.allowMenuHiding else { return }
+      if newValue == true && menuIcon.isVisible {
+        startPollingToRehideMenuIcon()
+      } else if newValue == false && !menuIcon.isVisible {
+        menuIcon.isVisible = true
+        stopPollingToRehideMenuIcon()
       }
     }
-    statusItemVisibilityObserver = observe(\.statusItem.isVisible, options: .old) { [weak self] _, change in
-      guard let self = self else { return }
-      if let newValue = change.newValue, newValue == UserDefaults.standard.isVisible { return }
-      if UserDefaults.standard.showInStatusBar != change.newValue! {
-        UserDefaults.standard.showInStatusBar = change.newValue!
-      }
-    }
-    #endif
   }
   // swiftlint:enable cyclomatic_complexity
   

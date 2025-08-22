@@ -19,6 +19,11 @@ on:
         type: boolean
         required: true
         default: true
+      forceAppcast:
+        description: "(even if not a tag-invoked build)"
+        type: boolean
+        required: true
+        default: false
       isPrerelease:
         description: "Prerelease"
         type: boolean
@@ -28,6 +33,7 @@ on:
 env:
   githubReleaseDefault: true
   updateAppcastDefault: true
+  forceAppcastDefault: false
   isPrereleaseDefault: false
   projectfile: "Batch Clipboard.xcodeproj"
   buildscheme: "Batch Clipboard"
@@ -114,9 +120,21 @@ jobs:
             echo "- Use supplied value for updateAppcast: ${{ inputs.updateAppcast }}"
             updateAppcast=${{ inputs.updateAppcast }}
           fi
+          if [[ $updateAppcast == 'true' ]] ; then
+            if [[ -z "${{ inputs.forceAppcast }}" ]] ; then
+              echo "- Use default value for forceAppcast: ${{ env.forceAppcastDefault }}"
+              forceAppcast=${{ env.forceAppcastDefault }}
+            else
+              echo "- Use supplied value for forceAppcast: ${{ inputs.forceAppcast }}"
+              forceAppcast=${{ inputs.forceAppcast }}
+            fi
+          else
+            forceAppcast='false'
+          fi
           
           echo "githubRelease=$githubRelease" >> $GITHUB_OUTPUT
           echo "updateAppcast=$updateAppcast" >> $GITHUB_OUTPUT
+          echo "forceAppcast=$forceAppcast" >> $GITHUB_OUTPUT
           echo "prerelease=$isPrerelease" >> $GITHUB_OUTPUT
       
       - name: Validate
@@ -178,14 +196,21 @@ jobs:
           if [[ -z $tag && ${{ steps.inputs.outputs.githubRelease }} == 'true' ]] ; then
             echo "::notice::Creating a github release skipped because no tag \"v$version\" was found"
           fi
-          if [[ ${{ steps.inputs.outputs.updateAppcast }} == 'true' && ( -z $tag || ${{ steps.inputs.outputs.githubRelease }} != 'true' ) ]] ; then
-            echo "::notice::Updating the sparkle appcast is always skipped for untagged or non-github release builds"
+          updateAppcast="${{ steps.inputs.outputs.updateAppcast }}"
+          if [[ $updateAppcast == 'true' && ( -z $tag || ${{ steps.inputs.outputs.githubRelease }} != 'true' ) ]] ; then
+            if [[ ${{ steps.inputs.outputs.forceAppcast }} == 'true' ]] ; then
+              echo "::notice::Updating the sparkle appcast is usually skipped for untagged or non-github release builds, but forcibly enabled"
+              updateAppcast='true'
+            else
+              echo "::notice::Updating the sparkle appcast is skipped for untagged or non-github release builds"
+            fi
           fi
           
           echo "version=$version" >> $GITHUB_OUTPUT
           echo "bundleid=$bundleid" >> $GITHUB_OUTPUT
           echo "releasename=$releasename" >> $GITHUB_OUTPUT
           echo "archivename=$releasenameNoSpaces" >> $GITHUB_OUTPUT
+          echo "updateAppcast=$updateAppcast" >> $GITHUB_OUTPUT
           if [[ -n $tag ]] ; then
             echo "tag=$tag" >> $GITHUB_OUTPUT
           fi
@@ -217,7 +242,7 @@ jobs:
             "Build/Products/Release/${{ env.bundlename }}/Contents/Info.plist"
           bundleVersion=$(plutil -extract CFBundleVersion raw \
             "Build/Products/Release/${{ env.bundlename }}/Contents/Info.plist" 2> /dev/null)
-          if [[ -z $bundleVersion && "${{ steps.inputs.outputs.updateAppcast }}" == 'true' ]] ; then
+          if [[ -z $bundleVersion && "${{ steps.version.outputs.updateAppcast }}" == 'true' ]] ; then
             echo "::error::Unable to find the app's bundle version"
             exit 1
           elif [[ -z $bundleVersion ]] ; then
@@ -227,7 +252,7 @@ jobs:
           echo "::notice::Built ${{ steps.version.outputs.releasename }} version ${{ steps.version.outputs.version }}, build number $bundleVersion"
           
           symfilename="${{ env.bundlename }}.dSYM"
-          if [ ! -d "${{ env.builddir }}/$symfilename" ] ; then
+          if [[ ! -d "${{ env.builddir }}/$symfilename" ]] ; then
             echo "::warning::Symbol file not found"
           fi
           
@@ -326,7 +351,7 @@ jobs:
           subitems=""
           addsubitems()
           {
-            if [ -z "$subitems" ] ; then
+            if [[ -z "$subitems" ]] ; then
               subitems="$1"
             else
               subitems="$subitems"$'\n'"$1"
@@ -334,31 +359,31 @@ jobs:
           }
           
           frameworksdir="${{ steps.build.outputs.appbundle }}/Contents/Frameworks"
-          if [ -d "$frameworksdir" ] ; then
+          if [[ -d "$frameworksdir" ]] ; then
             frameworksdirdylibs=$(find "$frameworksdir" -depth -name "*.dylib")
-            if [ -n "$frameworksdirdylibs" ] ; then
+            if [[ -n "$frameworksdirdylibs" ]] ; then
               addsubitems "$frameworksdirdylibs"
             fi
             frameworksdirbundles=$(find "$frameworksdir" -depth -type d -name "*.bundle")
-            if [ -n "$frameworksdirbundles" ] ; then
+            if [[ -n "$frameworksdirbundles" ]] ; then
               addsubitems "$frameworksdirbundles"
             fi
             frameworksdirframeworks=$(find "$frameworksdir" -depth -type d -name "*.framework")
-            if [ -n "$frameworksdirframeworks" ] ; then
+            if [[ -n "$frameworksdirframeworks" ]] ; then
               for framework in $frameworksdirframeworks; do
                 frameworksubapp=$(find "$framework" -depth -type d -name "*.app")
-                if [ -n "$frameworksubapp" ] ; then
+                if [[ -n "$frameworksubapp" ]] ; then
                   addsubitems "$frameworksubapp"
                 fi
                 frameworksubapp=$(find "$framework" -depth -type d -name "*.xpc")
-                if [ -n "$frameworksubapp" ] ; then
+                if [[ -n "$frameworksubapp" ]] ; then
                   addsubitems "$frameworksubapp"
                 fi
                 # search for executables with limited depth to avoid ones within an .app
                 frameworkname=$(basename -s ".framework" "$framework")
                 frameworksubexecutable=$(find "$framework" -maxdepth 4 -type f -perm +111 \
                                         -not -name "$frameworkname")
-                if [ -n "$frameworksubexecutable" ] ; then
+                if [[ -n "$frameworksubexecutable" ]] ; then
                   addsubitems "$frameworksubexecutable"
                 fi
               done
@@ -377,7 +402,7 @@ jobs:
           # for subitem in $subitems; do
           #   echo -n "" > subentitlements.xml # codesign doesn't erase prev contents but appends, avoid this problem
           #   xcrun codesign -d --entitlements subentitlements.xml --xml "$subitem"
-          #   if [ -s subentitlements.xml ] ; then
+          #   if [[ -s subentitlements.xml ]] ; then
           #     xcrun codesign --force --sign "${{ secrets.PROD_MACOS_CERTIFICATE_NAME }}" \
           #       --entitlements subentitlements.xml --options runtime -v "$subitem"
           #   else
@@ -433,7 +458,7 @@ jobs:
           echo "- Notarize app"
           xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait \
             2>&1 | tee notarytool-out.txt
-          if [ ${PIPESTATUS[0]} -ne 0 ] || grep -q Invalid notarytool-out.txt ; then
+          if [[ ${PIPESTATUS[0]} -ne 0 ]] || grep -q Invalid notarytool-out.txt ; then
             if sed -nr '/^[[:space:]]*id: (.*)$/{s//\1/p;q;}' notarytool-out.txt > notarytool-id.txt ; then
               echo "- Extract notarytool failure log"
               xcrun notarytool log "$(<notarytool-id.txt)" --keychain-profile "notarytool-profile"
@@ -548,7 +573,7 @@ jobs:
           echo "- Notarize disk image"
           xcrun notarytool submit "${{ steps.dmg.outputs.file }}" --keychain-profile "notarytool-profile" --wait \
             2>&1 | tee notarytool-out.txt
-          if [ ${PIPESTATUS[0]} -ne 0 ] || grep -q Invalid notarytool-out.txt ; then
+          if [[ ${PIPESTATUS[0]} -ne 0 ]] || grep -q Invalid notarytool-out.txt ; then
             if sed -nr '/^[[:space:]]*id: (.*)$/{s//\1/p;q;}' notarytool-out.txt > notarytool-id.txt ; then
               echo "- Extract notarytool failure log"
               xcrun notarytool log "$(<notarytool-id.txt)" --keychain-profile "notarytool-profile"
@@ -589,14 +614,14 @@ jobs:
           echo "file=$zippedAppFile" >> $GITHUB_OUTPUT
       
       - name: Setup Sparkle
-        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
         uses: jozefizso/setup-sparkle@v1
         with:
           version: 2.6.0
       
       - name: Generate Sparkle Appcast File
         id: sparkle
-        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.inputs.outputs.prerelease != 'true' && steps.version.outputs.tag }}
         run: |
           # Generate Sparkle Appcast File step bash script
           
@@ -654,20 +679,20 @@ jobs:
           
           echo "appcastGenerated=true" >> $GITHUB_OUTPUT
       
+      - name: Save Appcast File as Artifact
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: appcast.xml
+          path: appcast.xml
+      
       # - name: Commit Appcast File
       #   if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
       #   uses: stefanzweifel/git-auto-commit-action@v5
       #   with:
       #     commit_message: Automated Change to appcast.xml
-      #     file_pattern: "appcast.xml"
+      #     file_pattern: "appcast*.xml"
       #     status_options: "--untracked-files=no"
-      
-      - name: Save Appcast File as Artifact
-        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.inputs.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: appcast.xml
-          path: appcast.xml
       
       - name: Draft Tagged Release
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.tag }}

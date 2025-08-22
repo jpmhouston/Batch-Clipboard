@@ -90,6 +90,7 @@ extension AppModel {
     }
     
     queue.on()
+    ensureMenuIconVisible()
     menuIcon.update(forQueueSize: 0)
     updateMenuTitle()
     commenceClipboardMonitoring()
@@ -127,6 +128,7 @@ extension AppModel {
     menu.cancelledQueue(count)
     updateMenuIcon()
     updateMenuTitle()
+    letMenuIconAutoHide()
     updateClipboardMonitoring()
     
     return true
@@ -168,6 +170,8 @@ extension AppModel {
     
     if !queue.isOn {
       queue.on()
+      ensureMenuIconVisible()
+      updateMenuIcon()
     }
     
     Self.busy = true
@@ -278,6 +282,9 @@ extension AppModel {
       menu.poppedClipOffQueue()
       updateMenuIcon(.decrement)
       updateMenuTitle()
+      if !queue.isOn {
+        letMenuIconAutoHide()
+      }
       updateClipboardMonitoring()
       
       #if APP_STORE
@@ -366,7 +373,7 @@ extension AppModel {
         guard let self = self else { return }
         
         do {
-          try self.queue.finishBulkDequeue()
+          try queue.finishBulkDequeue()
         } catch {
           // clipboard might be in wrong state, otherwise presume continuing
           // should be the most correct thing
@@ -378,10 +385,13 @@ extension AppModel {
         }
         
         // final update to these and including icon not updated since the start
-        self.menu.poppedClipsOffQueue(count)
-        self.updateMenuIcon()
-        self.updateMenuTitle()
-        self.updateClipboardMonitoring()
+        menu.poppedClipsOffQueue(count)
+        updateMenuIcon()
+        updateMenuTitle()
+        if !queue.isOn {
+          letMenuIconAutoHide()
+        }
+        updateClipboardMonitoring()
         
         Self.busy = false
         
@@ -474,6 +484,9 @@ extension AppModel {
     menu.poppedClipOffQueue()
     updateMenuIcon(.decrement)
     updateMenuTitle()
+    if !queue.isOn {
+      letMenuIconAutoHide()
+    }
     updateClipboardMonitoring()
   }
   
@@ -515,6 +528,7 @@ extension AppModel {
     }
     
     menu.startedQueueFromHistory(index)
+    ensureMenuIconVisible()
     updateMenuIcon()
     updateMenuTitle()
     commenceClipboardMonitoring()
@@ -586,6 +600,7 @@ extension AppModel {
     }
     
     menu.startedQueueFromBatch()
+    ensureMenuIconVisible()
     updateMenuIcon()
     updateMenuTitle()
     commenceClipboardMonitoring()
@@ -701,6 +716,10 @@ extension AppModel {
     menu.deletedClipFromQueue(index)
     updateMenuIcon(.decrement)
     updateMenuTitle()
+    if !queue.isOn {
+      letMenuIconAutoHide()
+    }
+    updateClipboardMonitoring()
   }
   
   func deleteBatch(atIndex index: Int) {
@@ -794,6 +813,8 @@ extension AppModel {
     }
     updateMenuIcon()
     updateMenuTitle()
+    letMenuIconAutoHide()
+    updateClipboardMonitoring()
   }
   
   @IBAction
@@ -843,7 +864,6 @@ extension AppModel {
   
   @IBAction
   func showIntro(_ sender: AnyObject) {
-    sanityCheckStatusItem() // log this here because it can be triggered from an open about box
     takeFocus()
     introWindowController.openIntro(with: self)
   }
@@ -859,13 +879,12 @@ extension AppModel {
   }
   
   func showSettings(selectingPane pane: Settings.PaneIdentifier? = nil) {
-    sanityCheckStatusItem() // log stuff here because it can be triggered from an open intro window
     takeFocus()
     settingsWindowController.show(pane: pane)
     settingsWindowController.window?.orderFrontRegardless()
   }
   
-  func showIntroAtPermissionPage() {
+  func showIntroAtPermissionPage() {    
     takeFocus()
     introWindowController.openIntro(atPage: .checkAuth, with: self)
   }
@@ -890,13 +909,10 @@ extension AppModel {
     NSApp.terminate(sender)
   }
   
-  private func sanityCheckStatusItem() {
-    #if false // DEBUG
-    // swiftlint:disable force_cast
-    os_log(.debug, "NSStatusItem = %@, isVisible = %d, UserDefaults showInStatusBar = %d, AppModel = %@, ProxyMenu = %@",
-           menuIcon.statusItem, menuIcon.statusItem.isVisible, UserDefaults.standard.showInStatusBar,
-           (NSApp.delegate as! AppDelegate).model!, (NSApp.delegate as! AppDelegate).model!.menuController!.proxyMenu)
-    // swiftlint:enable force_cast
+  @IBAction
+  func installUpdate(_ sender: AnyObject) {
+    #if SPARKLE_UPDATES
+    updaterController.updater.checkForUpdates()
     #endif
   }
   
@@ -1051,6 +1067,7 @@ extension AppModel {
         case .openSettings:
           self?.openSecurityPanel()
         case .openIntro:
+          self?.ensureMenuIconVisible(pollingForWindowsToClose: true)
           self?.showIntroAtPermissionPage()
         default:
           break
@@ -1065,7 +1082,8 @@ extension AppModel {
   private func commenceClipboardMonitoring() {
     if !UserDefaults.standard.keepHistory {
       clipboard.restart()
-    } else if UserDefaults.standard.ignoreEvents {
+    }
+    if UserDefaults.standard.ignoreEvents {
       UserDefaults.standard.ignoreEvents = false
       UserDefaults.standard.ignoreOnlyNextEvent = false
     }
@@ -1097,6 +1115,16 @@ extension AppModel {
   private func cancelCopyTimeoutTimer() {
     copyTimeoutTimer?.cancel()
     copyTimeoutTimer = nil
+  }
+  
+  private func sanityCheckStatusItem() {
+    #if DEBUG
+    // swiftlint:disable force_cast
+    os_log(.debug, "NSStatusItem = %@, isVisible = %d, UserDefaults showInStatusBar = %d, AppModel = %@, ProxyMenu = %@",
+           menuIcon.statusItem, menuIcon.statusItem.isVisible, UserDefaults.standard.showInStatusBar,
+           (NSApp.delegate as! AppDelegate).model!, (NSApp.delegate as! AppDelegate).model!.menuController!.proxyMenu)
+    // swiftlint:enable force_cast
+    #endif
   }
   
 }

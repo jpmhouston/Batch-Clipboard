@@ -84,19 +84,19 @@
                         <action selector="startReplay:" target="-2" id="meN-9w-5Wi"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Copy to Batch" tag="103" id="ieX-in-c9O">
+                <menuItem title="Copy Into Batch" tag="103" id="ieX-in-c9O">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedCopy:" target="-2" id="VYn-hd-kO6"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Paste from Batch &amp; Advance" tag="104" id="WZ5-r7-f8t">
+                <menuItem title="Paste From Batch &amp; Advance" tag="104" id="WZ5-r7-f8t">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Advance to Next Batch Item" hidden="YES" id="TLY-ku-V0E">
+                <menuItem title="Advance To Next Batch Item" hidden="YES" id="TLY-ku-V0E">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
                     <connections>
                         <action selector="advanceQueue:" target="-2" id="Bb4-sn-Nnk"/>

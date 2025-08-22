@@ -23,9 +23,13 @@ class MenuBarIcon {
     }
   }
   
-  var isVisible: Bool = true {
-    didSet {
-      statusItem.isVisible = isVisible
+  var isVisible: Bool {
+    get {
+      statusItem.isVisible
+    }
+    set {
+      ignoreNextIsVisibleChange = (newValue == false)
+      statusItem.isVisible = newValue
     }
   }
   
@@ -54,6 +58,7 @@ class MenuBarIcon {
   private var iconBlinkTimer: DispatchSourceTimer?
   private var iconBlinkIntervalSeconds: Double { 0.75 }
   private var shouldOpenCallback: (() -> Bool)?
+  private var ignoreNextIsVisibleChange = false
   
   private enum SymbolTransition {
     case replace
@@ -126,8 +131,11 @@ class MenuBarIcon {
       visibilityObserver?.invalidate()
     } else if let callback = wasRemoved {
       statusItem.behavior = .removalAllowed
-      visibilityObserver = statusItem.observe(\.isVisible, options: .new) { _, change in
-        if change.newValue == false {
+      visibilityObserver = statusItem.observe(\.isVisible, options: .new) { [weak self] _, change in
+        guard let self = self else { return }
+        if ignoreNextIsVisibleChange == true {
+          ignoreNextIsVisibleChange = false
+        } else if change.newValue == false {
           callback()
         }
       }
