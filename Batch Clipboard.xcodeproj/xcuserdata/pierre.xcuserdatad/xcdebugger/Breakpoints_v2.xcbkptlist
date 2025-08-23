@@ -26,51 +26,5 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6A55E016-CD75-43C0-80C0-687F8464DD0D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Source/Settings/AdvancedSettingsViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "startObservingMenuHiding()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6A55E016-CD75-43C0-80C0-687F8464DD0D - 609e5d4c649f0955"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (__C.NSUserDefaults, Foundation.NSKeyValueObservedChange&lt;Swift.Bool&gt;) -&gt; () in Batch_Clipboard__MAS_.AdvancedSettingsViewController.startObservingMenuHiding() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Settings/AdvancedSettingsViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-               <Location
-                  uuid = "6A55E016-CD75-43C0-80C0-687F8464DD0D - 609e5d4c649f0955"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (__C.NSUserDefaults, Foundation.NSKeyValueObservedChange&lt;Swift.Bool&gt;) -&gt; () in Batch_Clipboard__MAS_.AdvancedSettingsViewController.startObservingMenuHiding() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Settings/AdvancedSettingsViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

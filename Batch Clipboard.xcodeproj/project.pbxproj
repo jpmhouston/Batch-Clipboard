@@ -566,7 +566,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -d .git -a -d .jj/repo/store/git ] ; then\n  gitopt=\"--git-dir=.jj/repo/store/git\"\nfi\ngit $gitopt branch --show-current >/dev/null || exit 0\ngitbranch=$(git $gitopt branch --show-current)\ngitcommitcount=$(git $gitopt rev-list --count HEAD)\nbundleversion=$(bc -e \"$gitcommitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $gitbranch (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
+			shellScript = "if [ ! -d .git -a -d .jj ] ; then\n  jj root >/dev/null || exit 0\n  branchname=$(jj bookmark list --all-remotes -T 'if(remote, name ++ \"\\n\")' | head -n 1 | xargs)\n  commitcount=$(jj log -r '::@- & ~root()' --no-graph -T builtin_log_oneline | wc -l | tr -d \"[:blank:]\")\nelse\n  git branch >/dev/null || exit 0\n  branchname=$(git branch --show-current)\n  commitcount=$(git rev-list --count HEAD)\nfi\nif [ -z \"$branchname\" -o -z \"$commitcount\" ] ; then\n  echo \"Failed to extract one or both branch-name and commit-count ($branchname,$commitcount)\"\n  exit 0\nfi\nbundleversion=$(bc -e \"$commitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $branchname (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8F8C48AB2BAD51B000C3A219 /* Patch CFBundleVersion Script */ = {
@@ -587,7 +587,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ! -d .git -a -d .jj/repo/store/git ] ; then\n  gitopt=\"--git-dir=.jj/repo/store/git\"\nfi\ngit $gitopt branch --show-current >/dev/null || exit 0\ngitbranch=$(git $gitopt branch --show-current)\ngitcommitcount=$(git $gitopt rev-list --count HEAD)\nbundleversion=$(bc -e \"$gitcommitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $gitbranch (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
+			shellScript = "if [ ! -d .git -a -d .jj ] ; then\n  jj root >/dev/null || exit 0\n  branchname=$(jj bookmark list --all-remotes -T 'if(remote, name ++ \"\\n\")' | head -n 1 | xargs)\n  commitcount=$(jj log -r '::@- & ~root()' --no-graph -T builtin_log_oneline | wc -l | tr -d \"[:blank:]\")\nelse\n  git branch >/dev/null || exit 0\n  branchname=$(git branch --show-current)\n  commitcount=$(git rev-list --count HEAD)\nfi\nif [ -z \"$branchname\" -o -z \"$commitcount\" ] ; then\n  echo \"Failed to extract one or both branch-name and commit-count ($branchname,$commitcount)\"\n  exit 0\nfi\nbundleversion=$(bc -e \"$commitcount + 2000\")\necho \"Patching CFBundleVersion to be $bundleversion based on count of commits to branch $branchname (plus 2000)\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $bundleversion\" \"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
