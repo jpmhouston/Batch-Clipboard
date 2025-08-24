@@ -33,13 +33,16 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>INIntentsSupported</key>
 	<array>
-		<string>Clearintent</string>
-		<string>GetIntent</string>
-		<string>DeleteIntent</string>
-		<string>StartIntent</string>
+		<string>StartCopyingIntent</string>
+		<string>StartPastingIntent</string>
 		<string>CancelIntent</string>
-		<string>Intent1</string>
+		<string>BatchCopyIntent</string>
 		<string>BatchPasteIntent</string>
+		<string>AdvanceIntent</string>
+		<string>ClearIntent</string>
+		<string>RepeatBatchIntent</string>
+		<string>SelectNamedBatchIntent</string>
+		<string>PasteSequentiallyIntent</string>
 	</array>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
@@ -55,14 +58,16 @@
 	<string>NSApplication</string>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>AdvanceIntent</string>
 		<string>BatchCopyIntent</string>
 		<string>BatchPasteIntent</string>
 		<string>CancelIntent</string>
 		<string>ClearIntent</string>
-		<string>DeleteIntent</string>
-		<string>GetIntent</string>
-		<string>SelectIntent</string>
-		<string>StartIntent</string>
+		<string>PasteSequentiallyIntent</string>
+		<string>RepeatBatchIntent</string>
+		<string>SelectNamedBatchIntent</string>
+		<string>StartCopyingIntent</string>
+		<string>StartPastingIntent</string>
 	</array>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>

@@ -19,6 +19,7 @@ import os.log
 extension AppModel {
   
   private var copyTimeoutSeconds: Double { 1.0 }
+  private var copyIntentDelaySeconds: Double { 0.25 }
   private var standardPasteDelaySeconds: Double { 0.33333 }
   private var standardPasteDelay: DispatchTimeInterval { .milliseconds(Int(standardPasteDelaySeconds * 1000)) }
   private var extraPasteDelaySeconds: Double { 0.66666 }
@@ -35,49 +36,175 @@ extension AppModel {
     //if #unavailable(macOS 14) { true } else { false }
   }
   
-  // MARK: - simple intent handlers
+  // MARK: - intent helpers
   
-  func delete(position: Int) -> Clip? {
-    guard position < history.count else {
+  func historyItemCount() -> Int {
+    return history.count
+  }
+  
+  func historyItem(at historyIntentIdx: Int) -> Clip? {
+    let index = historyIntentIdx - 1
+    guard index >= 0 && index < history.count else {
       return nil
     }
-    let clip: Clip = history.all[position]
-    deleteHistoryClip(atIndex: position)
+    return history.all[index]
+  }
+  
+  func deleteHistoryItem(at historyIntentIdx: Int) -> Clip? {
+    let index = historyIntentIdx - 1
+    guard index >= 0 && index < history.count else {
+      return nil
+    }
+    let clip = history.all[index]
+    deleteHistoryClip(atIndex: index)
     return clip
   }
   
-  func item(at position: Int) -> Clip? {
-    guard position < history.count else {
+  func replayFromHistory(at historyIntentIdx: Int) -> Bool {
+    let index = historyIntentIdx - 1
+    guard index >= 0 && index < history.count else {
+      return false
+    }
+    return replayFromHistory(atIndex: index, interactive: false)
+  }
+  
+  func queueItemCount() -> Int {
+    return queue.size
+  }
+  
+  func queueItem(at queueIntentIdx: Int) -> Clip? {
+    let index = queue.size - queueIntentIdx
+    guard index >= 0 && index < queue.size else {
       return nil
     }
-    return history.all[position]
+    return queue.clips[index]
   }
   
-  func clearHistory() {
-    deleteClips()
+  func deleteQueueItem(at queueIntentIdx: Int) -> Clip? {
+    let index = queue.size - queueIntentIdx
+    guard index >= 0 && index < queue.size else {
+      return nil
+    }
+    let clip = queue.clips[index]
+    deleteQueueClip(atIndex: index)
+    return clip
   }
   
-  // TODO: add missing intent handlers
-  // getting item from queue and batch, deleting from queue and batch, deleting entire batch,
-  // paste all/multiple, replay last batch
+  func replayQueue() -> Bool {
+    return replayBatch(nil, interactive: false)
+  }
+  
+  func savedBatchCount() -> Int {
+    return history.batches.count
+  }
+  
+  func batchTitle(at batchIntentIdx: Int) -> String? {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return nil }
+    return batches[batchIndex].fullname ?? ""
+  }
+  
+  func savedBatchItemCount(at batchIntentIdx: Int) -> Int {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return 0 }
+    return batches[batchIndex].count
+  }
+  
+  func getFromBatch(at batchIntentIdx: Int, clipItemAt clipsIntentIdx: Int) -> Clip? {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return nil }
+    let batch = batches[batchIndex]
+    let clipIndex = batch.count - clipsIntentIdx
+    guard clipIndex >= 0 && clipIndex < batch.count else { return nil }
+    return batch.getClipsArray()[clipIndex]
+  }
+  
+  func deleteFromBatch(at batchIntentIdx: Int, clipItemAt clipsIntentIdx: Int) -> Clip? {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return nil }
+    let batch = batches[batchIndex]
+    let clipIndex = batch.count - clipsIntentIdx
+    guard let clip = batch.clipAtIndex(clipIndex) else { return nil }
+    batch.removeClip(atIndex: clipIndex)
+    return clip
+  }
+  
+  func deleteBatch(at batchIntentIdx: Int) -> String? {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return nil }
+    let title = batches[batchIndex].fullname ?? ""
+    deleteBatch(atIndex: batchIndex)
+    return title
+  }
+  
+  func replayBatch(at batchIntentIdx: Int) -> Bool {
+    let batchIndex = batchIntentIdx - 1
+    let batches = history.batches
+    guard batchIndex >= 0 && batchIndex < batches.count else { return false }
+    return replayBatch(batches[batchIndex], interactive: false)
+  }
+  
+  func replayBatch(named name: String) -> Bool {
+    guard let batch = history.batches.first(where: { $0.fullname?.caseInsensitiveCompare(name) == .orderedSame }) else {
+      return false
+    }
+    return replayBatch(batch, interactive: false)
+  }
+  
+  func indexOfBatch(named name: String) -> Int? {
+    guard let index = history.batches.firstIndex(where: { $0.fullname?.caseInsensitiveCompare(name) == .orderedSame }) else {
+      return nil
+    }
+    return index
+  }
+  
+  func putClipOnClipboard(_ clip: Clip) {
+    clipboard.copy(clip)
+  }
+  
+  func pasteSequentialItems(count: Int, separator: String, completion: @escaping (Bool) -> Void) -> Bool {
+    let num = count > 0 && count <= queue.size ? count : queue.size
+    return queuedPasteMultiple(num, separator: separator.isEmpty ? nil : separator, interactive: false, completion: completion)
+  }
+  
+  func performQueuedCopy(completion: @escaping (Bool) -> Void) -> Bool {
+    guard queuedCopy(interactive: false) else {
+      return false
+    }
+    // fake a wait for completion, always calling with success=true after a fixed delay,
+    // as there isn't a good way to hook this up to the clipboardChanged callback
+    DispatchQueue.main.asyncAfter(deadline: .now() + copyIntentDelaySeconds) {
+      completion(true)
+    }
+    return true
+  }
+  
+  func performQueuedPaste(completion: @escaping (Bool) -> Void) -> Bool {
+    return queuedPaste(interactive: false, completion: completion)
+  }
   
   // MARK: - clipboard features
   
   @IBAction
   func startQueueMode(_ sender: AnyObject) {
-    // convenience handler for the menu item
+    // handler for the menu item
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     startQueueMode(interactive: true)
   }
   
   func startQueueMode() {
-    // convenience handler for the global keyboard shortcut
+    // handler for the global keyboard shortcut
     startQueueMode(interactive: true)
   }
   
   @discardableResult
   func startQueueMode(interactive: Bool = false) -> Bool {
-    // handler for the global keyboard shortcut and menu item via convenience functions above,
+    // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
       return false
@@ -136,28 +263,34 @@ extension AppModel {
   
   @IBAction
   func startReplay(_ sender: AnyObject) {
+    startReplay()
+  }
+  
+  @discardableResult
+  func startReplay() -> Bool {
     do {
       try queue.replaying()
+      return true
     } catch {
-      return
+      return false
     }
   }
   
   @IBAction
   func queuedCopy(_ sender: AnyObject) {
-    // convenience handler for the menu item
+    // handler for the menu item
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     queuedCopy(interactive: true)
   }
   
   func queuedCopy() {
-    // convenience handler for the global keyboard shortcut
+    // handler for the global keyboard shortcut
     queuedCopy(interactive: true)
   }
   
   @discardableResult
   func queuedCopy(interactive: Bool = false) -> Bool {
-    // handler for the global keyboard shortcut and menu item via convenience functions above,
+    // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
       return false
@@ -197,7 +330,8 @@ extension AppModel {
     let withinTimeout = copyTimeoutTimer != nil
     if withinTimeout {
       cancelCopyTimeoutTimer()
-      // perhaps assert Self.busy here?
+      // perhaps assert the busy flag is set here? better to not change the flag if the timer expired,
+      // although its a shared timer just like the flag so its not really much better
       
       // i tried having this in a defer, awkward, should be the same to do it early
       Self.busy = false
@@ -224,19 +358,19 @@ extension AppModel {
   
   @IBAction
   func queuedPaste(_ sender: AnyObject) {
-    // convenience handler for the menu item
+    // handler for the menu item
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     queuedPaste(interactive: true)
   }
   
   func queuedPaste() {
-    // convenience handler for the global keyboard shortcut
+    // handler for the global keyboard shortcut
     queuedPaste(interactive: true)
   }
   
   @discardableResult
-  func queuedPaste(interactive: Bool = false) -> Bool {
-    // handler for the global keyboard shortcut and menu item via convenience functions above,
+  func queuedPaste(interactive: Bool = false, completion: ((Bool) -> Void)? = nil) -> Bool {
+    // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
       return false
@@ -262,15 +396,16 @@ extension AppModel {
     // make the frontmost application perform a paste, then advance the queue after our
     // heuristic delay, keep the app from doing anything else until them
     invokeApplicationPaste(plusDelay: decrementQueueDelay) { [weak self] in
-      guard let self = self else { return }
-      
-      defer {
-        Self.busy = false // in a defer so the catch below can simply early-exit
+      guard let self = self else {
+        completion?(false)
+        return
       }
       
       do {
         try self.queue.dequeue()
       } catch {
+        Self.busy = false
+        completion?(false)
         return
       }
       
@@ -287,11 +422,15 @@ extension AppModel {
       }
       updateClipboardMonitoring()
       
+      Self.busy = false
+      
       #if APP_STORE
-      if !queue.isOn {
+      if interactive && !queue.isOn {
         AppStoreReview.ask(after: 20)
       }
       #endif
+      
+      completion?(true)
     }
     
     return true
@@ -309,104 +448,119 @@ extension AppModel {
   @IBAction
   func queuedPasteMultiple(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    queuedPasteMultiple(count: nil, interactive: true)
+    doQueuedPasteMultiple(all: false)
   }
   
   @IBAction
   func queuedPasteAll(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    queuedPasteMultiple(count: queue.size, interactive: true)
+    doQueuedPasteMultiple(all: true)
   }
   
-  @discardableResult
-  func queuedPasteMultiple(count: Int?, interactive: Bool = false) -> Bool {
+  private func doQueuedPasteMultiple(all: Bool) {
     guard !Self.busy else {
-      return false
+      return
     }
     
     guard AppModel.allowPasteMultiple else {
-      if interactive {
-        showBonusFeaturePromotionAlert()
-      }
-      return false
+      showBonusFeaturePromotionAlert()
+      return
     }
     
     guard !queue.isEmpty else {
-      return false
+      return
     }
-    guard accessibilityCheck(interactive: interactive) else {
-      return false
+    // this is done in the full queuedPasteMultiple below, but do it here first with interactive true
+    // so the potential alert happens before the other alert below asking for count and separator
+    guard accessibilityCheck(interactive: true) else {
+      return
     }
     
-    if let count = count {
-      return queuedPasteMultiple(min(count, queue.size), interactive: interactive)
+    // interactive=false used below because the interactive part, the accessibilityCheck call
+    // and optionally the number & separator alert, have already been done
+    
+    if all {
+      queuedPasteMultiple(queue.size, interactive: false)
       
     } else {
-      showNumberToPasteAlert { number, seperatorStr in
-        self.queuedPasteMultiple(number, seperator: seperatorStr, interactive: interactive)
+      showNumberToPasteAlert { number, separatorStr in
+        self.queuedPasteMultiple(number, separator: separatorStr, interactive: false)
       }
-      
-      return true
     }
   }
   
   @discardableResult
-  private func queuedPasteMultiple(_ count: Int, seperator: String? = nil, interactive: Bool = true) -> Bool {
+  private func queuedPasteMultiple(_ count: Int, separator: String? = nil, interactive: Bool = false,
+                                   completion: ((Bool) -> Void)? = nil) -> Bool {
+    guard !Self.busy else {
+      return false
+    }
     guard count >= 1 && count <= queue.size else {
       return false
     }
     if count == 1 {
       return queuedPaste(interactive: interactive)
-    } else {
-      do {
-        try queue.replaying() // ensures queue head is on the clipboard
-      } catch {
-        return false
-      }
-      
-      Self.busy = true
-      
-      // menu icon will show "-" for the duration
-      updateMenuIcon(.persistentDecrement)
-      
-      queuedPasteMultipleIterator(to: count, withSeparator: seperator) { [weak self] _ in
-        guard let self = self else { return }
-        
-        do {
-          try queue.finishBulkDequeue()
-        } catch {
-          // clipboard might be in wrong state, otherwise presume continuing
-          // should be the most correct thing
-        }
-        
-        if !queue.isOn && history.isListActive {
-          // dequeuing has turned off the queue and its contents may have been added to the history
-          history.trim(to: Self.effectiveMaxClips)
-        }
-        
-        // final update to these and including icon not updated since the start
-        menu.poppedClipsOffQueue(count)
-        updateMenuIcon()
-        updateMenuTitle()
-        if !queue.isOn {
-          letMenuIconAutoHide()
-        }
-        updateClipboardMonitoring()
-        
-        Self.busy = false
-        
-        #if APP_STORE
-        if !queue.isOn && interactive {
-          AppStoreReview.ask(after: 20)
-        }
-        #endif
-      }
-      
-      return true
     }
+    
+    guard accessibilityCheck(interactive: interactive) else {
+      return false
+    }
+    
+    do {
+      try queue.replaying() // ensures queue head is on the clipboard
+    } catch {
+      return false
+    }
+    
+    Self.busy = true
+    
+    // menu icon will show "-" for the duration
+    updateMenuIcon(.persistentDecrement)
+    
+    queuedPasteMultipleIterator(to: count, withSeparator: separator) { [weak self] pastedCount in
+      guard let self = self else {
+        completion?(false)
+        return
+      }
+      var success = (pastedCount == count)
+      
+      do {
+        try queue.finishBulkDequeue()
+      } catch {
+        // clipboard might be in wrong state, otherwise presume continuing
+        // should be the most correct thing
+        success = false
+      }
+      
+      if !queue.isOn && history.isListActive {
+        // dequeuing has turned off the queue and its contents may have been added to the history
+        history.trim(to: Self.effectiveMaxClips)
+      }
+      
+      // final update to these and including icon not updated since the start
+      menu.poppedClipsOffQueue(count)
+      updateMenuIcon()
+      updateMenuTitle()
+      if !queue.isOn {
+        letMenuIconAutoHide()
+      }
+      updateClipboardMonitoring()
+      
+      Self.busy = false
+      
+      completion?(success)
+      
+      #if APP_STORE
+      if !queue.isOn && interactive {
+        AppStoreReview.ask(after: 20)
+      }
+      #endif
+    }
+    
+    return true
   }
   
-  private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, withSeparator seperator: String?,
+  private func queuedPasteMultipleIterator(increment count: Int = 0, to max: Int, withSeparator separator: String?,
                                            then completion: @escaping (Int) -> Void) {
     guard max > 0 && count < max else {
       // don't expect to ever be called with count>=max, exit condition is below, before recursive call
@@ -429,9 +583,9 @@ extension AppModel {
         return
       }
       
-      if let seperator = seperator, !seperator.isEmpty {
+      if let separator = separator, !separator.isEmpty {
         // paste the separator between clips
-        clipboard.copy(seperator)
+        clipboard.copy(separator)
         invokeApplicationPaste(plusDelay: self.pasteMultipleDelay) { [weak self] in
           guard self != nil else { return }
           next(newCount)
@@ -449,31 +603,36 @@ extension AppModel {
         }
         
         updateMenuTitle()
-        queuedPasteMultipleIterator(increment: nextCount, to: max, withSeparator: seperator, then: completion)
+        queuedPasteMultipleIterator(increment: nextCount, to: max, withSeparator: separator, then: completion)
       }
     }
   }
   
   @IBAction
   func advanceQueue(_ sender: AnyObject) {
+    advanceQueue()
+  }
+  
+  @discardableResult
+  func advanceQueue() -> Bool {
     guard !Self.busy else {
-      return
+      return false
     }
     
     guard !queue.isEmpty else {
-      return
+      return false
     }
     
     do {
       try queue.replaying()
     } catch {
-      return
+      return false
     }
     
     do {
       try self.queue.dequeue()
     } catch {
-      return
+      return false
     }
     
     if !queue.isOn && history.isListActive {
@@ -488,10 +647,36 @@ extension AppModel {
       letMenuIconAutoHide()
     }
     updateClipboardMonitoring()
+    
+    return true
+  }
+  
+  @IBAction
+  func copyClip(_ sender: AnyObject) {
+    guard let clip = (sender as? ClipMenuItem)?.clip else {
+      return
+    }
+    copyClip(clip)
+  }
+  
+  @discardableResult
+  func copyClip(_ clip: Clip) -> Bool {
+    guard !Self.busy else {
+      return false
+    }
+    
+    clipboard.copy(clip)
+    return true
   }
   
   @IBAction
   func replayFromHistory(_ sender: AnyObject) {
+    // by-pass the replay feature if its not supported, make just like a normal select/click
+    if !AppModel.allowReplayFromHistory {
+      copyClip(sender)
+      return
+    }
+    
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     guard let clip = (sender as? ClipMenuItem)?.clip, let index = history.all.firstIndex(of: clip) else {
       return
@@ -507,7 +692,7 @@ extension AppModel {
     guard AppModel.allowReplayFromHistory else {
       return false
     }
-    guard accessibilityCheck() else {
+    guard accessibilityCheck(interactive: interactive) else {
       return false
     }
     
@@ -543,7 +728,7 @@ extension AppModel {
   }
   
   func replayLastBatch() {
-    // convenience handler for the global keyboard shortcut
+    // handler for the global keyboard shortcut
     replayBatch(nil, interactive: true)
   }
   
@@ -558,7 +743,7 @@ extension AppModel {
   }
   
   func replaySavedBatch(_ batch: Batch) {
-    // convenience handler for the global keyboard shortcut
+    // handler for the global keyboard shortcut
     replayBatch(batch, interactive: true)
   }
   
@@ -610,11 +795,14 @@ extension AppModel {
   
   @IBAction
   func renameSavedBatch(_ sender: AnyObject) {
-    menu.cancelTrackingWithoutAnimation()
-    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    guard !Self.busy else {
       return
     }
     
+    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+      return
+    }
     guard let intialName = batch.fullname else {
       return
     }
@@ -634,22 +822,17 @@ extension AppModel {
   @IBAction
   func saveBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
-    saveBatch()
-  }
-  
-  @discardableResult
-  func saveBatch() -> Bool {
     guard !Self.busy else {
-      return false
+      return
     }
     
     guard AppModel.allowSavedBatches else {
       showBonusFeaturePromotionAlert()
-      return false
+      return
     }
     
     guard let batch = history.currentBatch, !batch.isEmpty else {
-      return false
+      return
     }
     
     showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
@@ -660,21 +843,24 @@ extension AppModel {
       registerHotKeyHandler(forBatch: newBatch)
       menu.addedBatch(newBatch)
     }
-    
-    return true
   }
   
-  @IBAction
-  func copyClip(_ sender: AnyObject) {
+  @discardableResult
+  func saveBatch(withName name: String) -> Bool {
+    // callable from intent
     guard !Self.busy else {
-      return
+      return false
+    }
+    guard prohibitedNewBatchNames().contains(name) == false else {
+      return false
     }
     
-    guard let clip = (sender as? ClipMenuItem)?.clip else {
-      return
-    }
+    let newBatch = Batch.create(withName: name, shortcut: nil, clips: history.lastBatchClips)
     
-    clipboard.copy(clip)
+    registerHotKeyHandler(forBatch: newBatch)
+    menu.addedBatch(newBatch)
+    
+    return true
   }
   
   func deleteHistoryClip(atIndex index: Int) {
@@ -783,15 +969,16 @@ extension AppModel {
   
   @IBAction
   func clear(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    clearHistory(interactive: true)
+  }
+  
+  func clearHistory(clipboardIncluded: Bool = false, interactive: Bool = false) {
     guard !Self.busy else {
       return
     }
     
-    clearHistory(suppressClearAlert: false)
-  }
-  
-  func clearHistory(suppressClearAlert: Bool, clipboardIncluded: Bool = false) {
-    if suppressClearAlert {
+    if !interactive {
       deleteClips(clipboardIncluded: clipboardIncluded)
     } else {
       showClearHistoryAlert() { [weak self] in
@@ -933,22 +1120,22 @@ extension AppModel {
     alerts.withNumberToPasteAlert(maxValue: queue.size, separatorDefault: lastSeparator) { [weak self] num, choise in
       guard let self = self else { return }
       if let num = num {
-        var seperator: String?
+        var separator: String?
         switch choise {
         case .builtIn(let selection):
-          seperator = selection.string
+          separator = selection.string
           UserDefaults.standard.set(selection.rawValue, forKey: "lastPasteSeparatorIndex")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
         case .addOn(let title):
-          seperator = title
+          separator = title
           UserDefaults.standard.set(title, forKey: "lastPasteSeparatorTitle")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
         default:
-          seperator = nil
+          separator = nil
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorIndex")
           UserDefaults.standard.removeObject(forKey: "lastPasteSeparatorTitle")
         }
-        completion(num, seperator)
+        completion(num, separator)
       }
       
       returnFocus()
@@ -1052,7 +1239,7 @@ extension AppModel {
     menuIcon.badge = queue.isOn ? String(queue.size) : ""
   }
   
-  private func accessibilityCheck(interactive: Bool = true) -> Bool {
+  private func accessibilityCheck(interactive: Bool) -> Bool {
     #if DEBUG
     if AppDelegate.shouldFakeAppInteraction {
       return true // clipboard short-circuits the frontmost app TODO: eventually use a mock clipboard obj

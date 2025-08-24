@@ -7,9 +7,11 @@
 //
 
 import Intents
+import os.log
 
 @available(macOS 11.0, *)
 class CancelIntentHandler: NSObject, CancelIntentHandling {
+  
   private var model: AppModel!
   
   init(_ model: AppModel) {

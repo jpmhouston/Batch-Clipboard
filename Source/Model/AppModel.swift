@@ -257,7 +257,7 @@ class AppModel: NSObject {
   
   func terminate() {
     if UserDefaults.standard.clearOnQuit {
-      clearHistory(suppressClearAlert: true, clipboardIncluded: UserDefaults.standard.clearSystemClipboard)
+      clearHistory(clipboardIncluded: UserDefaults.standard.clearSystemClipboard, interactive: false)
     }
   }
   

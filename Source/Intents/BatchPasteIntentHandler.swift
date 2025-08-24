@@ -7,9 +7,11 @@
 //
 
 import Intents
+import os.log
 
 @available(macOS 11.0, *)
 class BatchPasteIntentHandler: NSObject, BatchPasteIntentHandling {
+  
   private var model: AppModel!
   
   init(_ model: AppModel) {
@@ -17,11 +19,13 @@ class BatchPasteIntentHandler: NSObject, BatchPasteIntentHandling {
   }
   
   func handle(intent: BatchPasteIntent, completion: @escaping (BatchPasteIntentResponse) -> Void) {
-    guard model.queuedPaste(interactive: false) else {
+    guard model.performQueuedPaste(completion: pasteCompletion) else {
       completion(BatchPasteIntentResponse(code: .failure, userActivity: nil))
       return
     }
-    completion(BatchPasteIntentResponse(code: .success, userActivity: nil))
+    func pasteCompletion(_ ok: Bool) {
+      completion(BatchPasteIntentResponse(code: ok ? .success : .failure, userActivity: nil))
+    }
   }
   
 }

@@ -10,17 +10,20 @@
 //
 
 import Intents
+import os.log
 
 @available(macOS 11.0, *)
 class ClearIntentHandler: NSObject, ClearIntentHandling {
+  
   private var model: AppModel!
-
+  
   init(_ model: AppModel) {
     self.model = model
   }
-
+  
   func handle(intent: ClearIntent, completion: @escaping (ClearIntentResponse) -> Void) {
-    model.clearHistory()
-    return completion(ClearIntentResponse(code: .success, userActivity: nil))
+    model.clearHistory(interactive: false)
+    completion(ClearIntentResponse(code: .success, userActivity: nil))
   }
+  
 }

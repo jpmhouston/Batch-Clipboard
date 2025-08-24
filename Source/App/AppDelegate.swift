@@ -69,25 +69,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   
   @available(macOS 11.0, *)
   func application(_ application: NSApplication, handlerFor intent: INIntent) -> Any? {
-    if intent is SelectIntent {
-      return SelectIntentHandler(model)
-    } else if intent is ClearIntent {
-      return ClearIntentHandler(model)
-    } else if intent is GetIntent {
-      return GetIntentHandler(model)
-    } else if intent is DeleteIntent {
-      return DeleteIntentHandler(model)
-    } else if intent is StartIntent  {
-      return StartIntentHandler(model)
-    } else if intent is CancelIntent {
-      return CancelIntentHandler(model)
-    } else if intent is BatchCopyIntent {
-      return BatchCopyIntentHandler(model)
-    } else if intent is BatchPasteIntent {
-      return BatchPasteIntentHandler(model)
-    }
+    os_log(.default, "intent %@", String(describing: type(of: intent)))
+    return switch intent {
+    case is StartCopyingIntent:           StartCopyingIntentHandler(model)
+    case is StartPastingIntent:           StartPastingIntentHandler(model)
+    case is CancelIntent:                 CancelIntentHandler(model)
+    case is BatchCopyIntent:              BatchCopyIntentHandler(model)
+    case is BatchPasteIntent:             BatchPasteIntentHandler(model)
+    case is AdvanceIntent:                AdvanceIntentHandler(model)
+    case is ClearIntent:                  ClearIntentHandler(model)
+    case is RepeatBatchIntent:            RepeatBatchIntentHandler(model)
+    case is SelectNamedBatchIntent:       SelectNamedBatchIntentHandler(model)
+    case is PasteSequentiallyIntent:      PasteSequentiallyIntentHandler(model)
     
-    return nil
+    #if ALL_INTENTS
+    case is HistoryItemCountIntent:       HistoryItemCountIntentHandler(model)
+    case is GetHistoryItemIntent:         GetHistoryItemIntentHandler(model)
+    case is SelectHistoryItemIntent:      SelectHistoryItemIntentHandler(model)
+    case is StartFromHistoryItemIntent:   StartFromHistoryItemIntentHandler(model)
+    case is DeleteHistoryItemIntent:      DeleteHistoryItemIntentHandler(model)
+    
+    case is BatchItemCountIntent:         BatchItemCountIntentHandler(model)
+    case is GetBatchItemIntent:           GetBatchItemIntentHandler(model)
+    case is SelectBatchItemIntent:        SelectBatchItemIntentHandler(model)
+    case is DeleteBatchItemIntent:        DeleteBatchItemIntentHandler(model)
+    
+    case is SavedBatchCountIntent:        SavedBatchCountIntentHandler(model)
+    case is SavedBatchTitleIntent:        SavedBatchTitleIntentHandler(model)
+    case is SelectSavedBatchIntent:       SelectSavedBatchIntentHandler(model)
+    case is FindNamedBatchIntent:         FindNamedBatchIntentHandler(model)
+    case is DeleteSavedBatchIntent:       DeleteSavedBatchIntentHandler(model)
+    
+    case is SavedBatchItemCountIntent:    SavedBatchItemCountIntentHandler(model)
+    case is GetSavedBatchItemIntent:      GetSavedBatchItemIntentHandler(model)
+    case is SelectSavedBatchItemIntent:   SelectSavedBatchItemIntentHandler(model)
+    case is DeleteSavedBatchItemIntent:   DeleteSavedBatchItemIntentHandler(model)
+    #endif
+    default: nil
+    }
   }
   
   func showResetAlert(_ continuation: () -> Void) {

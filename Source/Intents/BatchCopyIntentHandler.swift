@@ -7,9 +7,11 @@
 //
 
 import Intents
+import os.log
 
 @available(macOS 11.0, *)
 class BatchCopyIntentHandler: NSObject, BatchCopyIntentHandling {
+  
   private var model: AppModel!
   
   init(_ model: AppModel) {
@@ -17,11 +19,12 @@ class BatchCopyIntentHandler: NSObject, BatchCopyIntentHandling {
   }
   
   func handle(intent: BatchCopyIntent, completion: @escaping (BatchCopyIntentResponse) -> Void) {
-    guard model.queuedCopy(interactive: false) else {
+    if model.performQueuedCopy(completion: copyCompletion) == false {
       completion(BatchCopyIntentResponse(code: .failure, userActivity: nil))
-      return
     }
-    completion(BatchCopyIntentResponse(code: .success, userActivity: nil))
+    func copyCompletion(_ ok: Bool) {
+      completion(BatchCopyIntentResponse(code: ok ? .success : .failure, userActivity: nil))
+    }
   }
   
 }
