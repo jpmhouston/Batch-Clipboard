@@ -10,14 +10,17 @@
             <connections>
                 <outlet property="advancedPasteCheckbox" destination="MKU-CC-W4r" id="6Yj-BK-1mE"/>
                 <outlet property="avoidTakingFocusCheckbox" destination="4MH-H4-Ce2" id="iHM-Ux-GrT"/>
+                <outlet property="clearDataVsBatchesLabel" destination="T3s-O5-vAv" id="7b3-gc-h6a"/>
                 <outlet property="clearOnQuitCheckbox" destination="O2y-qd-u6c" id="awd-Ep-Rex"/>
                 <outlet property="clearSystemClipboardCheckbox" destination="lGE-3K-m2Y" id="yUd-O9-5tm"/>
+                <outlet property="hideClearVsBatchesDescriptionConstraint" destination="MEM-Fp-bfP" id="tac-d9-Mke"/>
                 <outlet property="hideHistoryOffDescriptionConstraint" destination="pqq-P7-yri" id="nab-OK-uYR"/>
                 <outlet property="hideMenuHidingControlsConstraint" destination="eNR-tY-TS7" id="38Z-3e-CD6"/>
                 <outlet property="initialHistoryOffDescriptionField" destination="PGC-0Y-l3G" id="IM3-fX-r0y"/>
                 <outlet property="legacyFocusCheckbox" destination="pMu-3Y-w4N" id="tZG-yc-bsO"/>
                 <outlet property="menuHidingCheckbox" destination="6gC-NB-sAW" id="sYF-kW-KKO"/>
                 <outlet property="menuHidingLabel" destination="NSL-k6-qIy" id="gGd-sg-Wqj"/>
+                <outlet property="showClearVsBatchesDescriptionConstraint" destination="Fci-M5-uqP" id="uGS-Rg-xyP"/>
                 <outlet property="showHistoryOffDescriptionConstraint" destination="eT9-zi-r8M" id="CsY-F3-pYV"/>
                 <outlet property="showMenuHidingControlsConstraint" destination="MAG-1F-VEf" id="772-tt-Tsb"/>
                 <outlet property="subsequentHistoryOnDescriptionField" destination="ahJ-Lm-rjm" id="vSr-7E-gK2"/>
@@ -28,10 +31,10 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="vfL-pB-YIa">
-            <rect key="frame" x="0.0" y="0.0" width="518" height="691"/>
+            <rect key="frame" x="0.0" y="0.0" width="518" height="723"/>
             <subviews>
                 <button toolTip="Automatically remove all unpinned items before quitting the application." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O2y-qd-u6c">
-                    <rect key="frame" x="26" y="654" width="378" height="18"/>
+                    <rect key="frame" x="26" y="686" width="378" height="18"/>
                     <buttonCell key="cell" type="check" title="Clear saved clipboard data when quitting app or restarting" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JvB-ng-8vt">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -41,7 +44,7 @@
                     </connections>
                 </button>
                 <button toolTip="When enabled, clearing the history would also clear the current system clipboard." verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="lGE-3K-m2Y">
-                    <rect key="frame" x="42" y="630" width="216" height="18"/>
+                    <rect key="frame" x="42" y="662" width="216" height="18"/>
                     <buttonCell key="cell" type="check" title="Also clear the system clipboard" bezelStyle="regularSquare" imagePosition="left" inset="2" id="WSh-1o-SG8">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -50,6 +53,15 @@
                         <action selector="clearSystemClipboardChanged:" target="-2" id="1Lb-Tj-REC"/>
                     </connections>
                 </button>
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T3s-O5-vAv">
+                    <rect key="frame" x="26" y="627" width="470" height="28"/>
+                    <textFieldCell key="cell" id="KBR-9J-tGr">
+                        <font key="font" metaFont="smallSystem"/>
+                        <string key="title">Clears the last batch, and clipboard history if you have that enabled. Saved batches, however, will never be deleted automatically.</string>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MKU-CC-W4r">
                     <rect key="frame" x="26" y="598" width="233" height="18"/>
                     <buttonCell key="cell" type="check" title="Show advanced paste menu items" bezelStyle="regularSquare" imagePosition="left" inset="2" id="gWI-FN-u6v">
@@ -221,14 +233,18 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                 <constraint firstAttribute="trailing" secondItem="pW7-e8-4Mf" secondAttribute="trailing" constant="24" id="AEY-5g-ff1"/>
                 <constraint firstAttribute="trailing" secondItem="NSL-k6-qIy" secondAttribute="trailing" constant="24" id="AXl-3F-5nN"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dRG-hi-pNI" secondAttribute="trailing" constant="24" id="AjD-eh-USZ"/>
+                <constraint firstItem="MKU-CC-W4r" firstAttribute="top" secondItem="T3s-O5-vAv" secondAttribute="bottom" constant="12" id="AxF-02-nqQ"/>
                 <constraint firstItem="b73-sw-gL3" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="Czx-hr-QSQ"/>
                 <constraint firstAttribute="width" constant="518" id="Don-lS-OlP"/>
                 <constraint firstItem="Sb1-dZ-Kuf" firstAttribute="top" secondItem="Z0r-EQ-N1g" secondAttribute="bottom" constant="10" id="EtG-TW-w2r"/>
                 <constraint firstItem="lGE-3K-m2Y" firstAttribute="leading" secondItem="O2y-qd-u6c" secondAttribute="leading" constant="16" id="FUN-2S-Vs1"/>
+                <constraint firstItem="T3s-O5-vAv" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" constant="8" symbolic="YES" id="Fci-M5-uqP"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="6gC-NB-sAW" secondAttribute="trailing" constant="24" id="HsW-7n-31t"/>
+                <constraint firstItem="T3s-O5-vAv" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="LXP-Ne-280"/>
+                <constraint firstAttribute="trailing" secondItem="T3s-O5-vAv" secondAttribute="trailing" constant="24" id="LaY-1J-j98"/>
                 <constraint firstItem="Z0r-EQ-N1g" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="LnO-Xr-Aa4"/>
                 <constraint firstItem="uoQ-aq-GS3" firstAttribute="top" secondItem="NSL-k6-qIy" secondAttribute="bottom" constant="16" id="MAG-1F-VEf"/>
-                <constraint firstItem="MKU-CC-W4r" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" constant="16" id="MEM-Fp-bfP"/>
+                <constraint firstItem="MKU-CC-W4r" firstAttribute="top" secondItem="lGE-3K-m2Y" secondAttribute="bottom" priority="700" constant="16" id="MEM-Fp-bfP"/>
                 <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="pMu-3Y-w4N" secondAttribute="trailing" constant="24" id="MLx-Ml-0Nu"/>
                 <constraint firstItem="pW7-e8-4Mf" firstAttribute="leading" secondItem="vfL-pB-YIa" secondAttribute="leading" constant="28" id="MlS-4C-uld"/>
                 <constraint firstAttribute="trailing" secondItem="PGC-0Y-l3G" secondAttribute="trailing" constant="24" id="MmF-1a-4V7"/>
