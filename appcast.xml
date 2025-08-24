@@ -2,9 +2,118 @@
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
     <channel>
         <title>Batch Clipboard</title>
-        <link>https://raw.githubusercontent.com/jpmhouston/Cleepp/forkmain/appcast.xml</link>
+        <link>https://raw.githubusercontent.com/jpmhouston/Batch-Clipboard/main/appcast.xml</link>
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
+        <item>
+            <title>2.0b2</title>
+            <pubDate>Tue, 26 Aug 2025 16:11:18 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2052</sparkle:version>
+            <sparkle:shortVersionString>2.0b2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Added support for a beta channel to Sparkle updates in the non-app
+store version, a checkbox in the General panel of the Settings window to
+get betas in addition to final releases, a new menu item just below
+About… when an update found. If the user cancels the update alert on
+launch then they can use this menu item instead of going into the
+Settings window.</li>
+<li>Revise the menu items some more, tweaking the titles of several
+items, changing which are shown and disabled when not applicable vs
+hidden.</li>
+<li>New extra feature for the app store releases, checkbox in the
+Advanced panel of the Settings window to hide the menu bar icon when the
+app has no active batch, or when the application re-opened in the Finder
+(also causes the Settings window to open).</li>
+<li>Fixes and improvements to the application intents accessible from
+Shortcuts and Spotlight.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.0b2/Batch.Clipboard.2.0b2.zip" length="6204364" type="application/octet-stream" sparkle:edSignature="H973U2F87QuevHTyTn+dT7N3Dcn0QycntGpgMmgBKNdflNrOJl/i61vA95YoHT/vict0qld+IF6CSJniIY7HDQ=="/>
+        </item>
+        <item>
+            <title>2.0b1</title>
+            <pubDate>Wed, 20 Aug 2025 14:30:47 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2044</sparkle:version>
+            <sparkle:shortVersionString>2.0b1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>A substantially new version with a lot of changes. TL;DR:</p>
+<ul>
+<li>a simpler and more efficient history-off mode is the new
+default</li>
+<li>a repeat last batch feature</li>
+<li>in the app store version: saved batches</li>
+<li>improved simplicity for the menu and settings window</li>
+</ul>
+<p>What’s listed below somewhat exhaustively includes the many changes
+both visible and under the hood. The version notes in the release
+version will instead be less complete, and a list more like what’s below
+will be posted on the documentation website
+batchclipboard.bananameter.lol.</p>
+<ul>
+<li>Implemented major feature: ability to turn history off for
+simplicity and system effeciency, now the default.</li>
+<li>When history off and without need to stay consistent with its
+bottom-up order, ie. most recent at the top, the current batch is now
+shown in top-down order, ie. first to paste at the top.</li>
+<li>Migrating from 1.0.x to 2.0 shows a Intro page offering to switch to
+the new history-off default or keep using history, the default for those
+users is to keep using the history features unless they choose to switch
+then or later in the Settings window Storage panel.</li>
+<li>Implemented major feature: replaying previous batch again, and
+support giving the menu item a keyboard shortcut (empty by
+default).</li>
+<li>Implemented major feature for app store version users who’ve made an
+in-app purchase: saving current or previous batches, each can have an
+optional keyboard shortcut. They appear in a new section of the menu
+when there’s no current batch active, each with their clips in a submenu
+and items to replay, rename. A saved batch or individual clips within
+can be deleted with the same command-delete shortcut when the menu is
+open.</li>
+<li>Improved feature for app store version users who’ve made an in-app
+purchase: in-between pasting multiple clips at a time from the current
+batch, a new option to insert a space, newline, or comma.</li>
+<li>By necessity, the Undo Last Paste feature for app store version
+users who’ve made an in-app purchase is now removed in the new default
+history-off mode.</li>
+<li>Menu simplification: in new default history-off mode, no
+complication of a different form of the menu when its opened with the
+option key pressed.</li>
+<li>Menu simplification: the Start Replaying and Advance menu items are
+now hidden by default. They can be restore with an option in the
+Settings window Advanced panel.</li>
+<li>Menu simplification: the type-in filter history field, the one
+that’s available in the expanded menu when history on for app store
+version users who’ve made an in-app purchase, this is hidden by default
+unless turned on in the Settings window Appearance panel.</li>
+<li>Minor improvements to the menu: when deleting items from the menu
+with command-delete the menu no longer closes, new title labels over
+Current Batch, Saved History, Saved Batch sections.</li>
+<li>Improved simplicity of how the menu is opened in reaction to clicks
+in hopes of addressing possible failures, stripping some unused feature
+of the old behavior inherited from Maccy. Added an option to the
+Settings window Advanced panel for reverting to the old behavior in case
+of incompatibilities.</li>
+<li>Improved layout and location of options in Settings window panels:
+new history switch and related menu size fields together in the Storage
+panel, new or improved descriptive labels in the General, Appearance,
+and Advanced panels.</li>
+<li>Improved layout and language in the Intro window, including
+descriptions of IAP-unlocked features in the app store version.</li>
+<li>Unit tests to verify correct queue, history behavior, and also
+general backing store correctness including migration from older
+versions. Improved menu reliability with sanity checking and logging of
+unexpected conditions.</li>
+<li>Migrated source to new GitHub repository that isn’t a fork of
+Maccy.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.0b1/Batch.Clipboard.2.0b1.zip" length="6145717" type="application/octet-stream" sparkle:edSignature="pZOdyPHO7zNt0b98svafTBn4qZDJu2VBRxqyFyNd0Zh+iuuSvw+aJj7R1/laROD91EZIK41rZY1hM1zW/m9AAQ=="/>
+        </item>
         <item>
             <title>1.0.3</title>
             <pubDate>Sat, 12 Jul 2025 02:02:15 +0000</pubDate>
@@ -18,28 +127,6 @@ windows.</li>
 </ul>
 ]]></description>
             <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.3/Batch.Clipboard.1.0.3.zip" length="6743192" type="application/octet-stream" sparkle:edSignature="V2HYFxjejq7FX58ASWJESmSeIij5p5lFPB1OecWC9spAIlNgzukLJLESYETjlXlkBk4M6tQniVz9VG3uotlUCA=="/>
-        </item>
-        <item>
-            <title>1.0.3b1</title>
-            <pubDate>Thu, 03 Jul 2025 12:14:34 +0000</pubDate>
-            <link>https://github.com/jpmhouston/Cleepp/releases</link>
-            <sparkle:version>962</sparkle:version>
-            <sparkle:shortVersionString>1.0.3b1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul>
-<li>Attempt to address crash: avoid impossible Swift range and log
-details to console.</li>
-<li>Attempt to address crash: ensure history menu item deletion calls
-menu code on main thread.</li>
-<li>Address some outstanding TODOs: upgrade print statements to os_log
-calls.</li>
-<li>Address some outstanding TODOs: handle cut, copy, paste within the
-filter text field (copies not added to the clipboard history).</li>
-<li>Address some outstanding TODOs: make more strings within source code
-localizable.</li>
-</ul>
-]]></description>
-            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.3b1/Batch.Clipboard.1.0.3b1.zip" length="6743340" type="application/octet-stream" sparkle:edSignature="MyZIrFiiJooWYw3Zw/LK07W2WJ3YL06rciFwkfAdpvqobVtE3YUh65JBgtARFDJPlRRVxOCndM3LlHv6wYKECw=="/>
         </item>
         <item>
             <title>1.0.2</title>
@@ -59,99 +146,15 @@ version (matching non-app store workflow behavior).</li>
             <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.2/Batch.Clipboard.1.0.2.zip" length="6737024" type="application/octet-stream" sparkle:edSignature="J83xcRZqAT26prIkM9vTvShNJvxTGPaSrPP7dtrtkWbqCnhpRPhbodK6Q6bDylGoNR0AYkGql3MMX8FF+iABCg=="/>
         </item>
         <item>
-            <title>1.0.1b12</title>
-            <pubDate>Tue, 22 Apr 2025 01:43:50 +0000</pubDate>
+            <title>1.0.1</title>
+            <pubDate>Sat, 03 May 2025 00:46:54 +0000</pubDate>
             <link>https://github.com/jpmhouston/Cleepp/releases</link>
-            <sparkle:version>925</sparkle:version>
-            <sparkle:shortVersionString>1.0.1b12</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul>
-<li>Expose Start Replaying and Advance (without pasting) menu items
-without holding shift key, made Start Replaying take place of Start
-Batch, separate out Cancel item.</li>
-<li>Fixed Advance menu item wasn’t starting batch replay.</li>
-<li>Made non-appstore build action log the SHA256 hash of the zip file,
-needed for the homebrew cask file.</li>
-</ul>
+            <sparkle:version>937</sparkle:version>
+            <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>First official release. For pre-release development history see github.com/jpmhouston/Cleepp/releases</p>
 ]]></description>
-            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.1b12/Batch.Clipboard.1.0.1b12.zip" length="6717595" type="application/octet-stream" sparkle:edSignature="3CtJ15IeTPZdTcc8p8R3KTJuqorTq7/OypUWQ68q2MQ2BthHV2rZBGHUXlHLOYeTBbrUkxSfM0NX55y1xeVXDA=="/>
-        </item>
-        <item>
-            <title>1.0.1b11</title>
-            <pubDate>Fri, 18 Apr 2025 18:59:55 +0000</pubDate>
-            <link>https://github.com/jpmhouston/Cleepp/releases</link>
-            <sparkle:version>919</sparkle:version>
-            <sparkle:shortVersionString>1.0.1b11</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul>
-<li>Fixed alternate menu item mechanism not working for paste and new
-advance items, made it appear only when queue size &gt;= 2 because if
-size = 1 then advancing is same as using the existing Cancel menu
-item.</li>
-<li>Fixed minor error in github workflow for smoke builds.</li>
-</ul>
-]]></description>
-            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.1b11/Batch.Clipboard.1.0.1b11.zip" length="6717938" type="application/octet-stream" sparkle:edSignature="xJwqSiirX6UXghBGJ1ggBpHqpPYN6M6gD2EIUFGuSVG29ahy6kS/9g5BzoK6AlSavqRgKeLwM52kJamMcaGuBg=="/>
-        </item>
-        <item>
-            <title>1.0.1b10</title>
-            <pubDate>Fri, 11 Apr 2025 00:15:27 +0000</pubDate>
-            <link>https://github.com/jpmhouston/Cleepp/releases</link>
-            <sparkle:version>915</sparkle:version>
-            <sparkle:shortVersionString>1.0.1b10</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>11.0</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul>
-<li>Added alternate menu item to start replaying the collected batch of
-clipboard items; beforehand the clipboard will always contain the most
-recently copied item, afterwards it contains the next in the batch to be
-pasted.</li>
-<li>Made the new Start Replaying Itemd and Show Intro menu items
-accessible with the shift key modifier, with shift-clicking the status
-menu icon now opening the menu rathen than behaving just like
-control-clicking.</li>
-<li>Simplified titles of some menu items to refer to Batch instead of
-Collecting / Replaying.</li>
-<li>When starting batch explicitly rather than automatically with the
-shortcut, no longer stay in batch mode when all items are pasted.</li>
-<li>Preview bonus menu items, visible but disabled and badged, visible
-by default in app store version for one week before they disappear.
-Checkboxes to control this added to the General section of the Settings
-window.</li>
-<li>Updated the Intro window to reflect changed Start Batcgh menu items,
-minor edits.</li>
-<li>Fixed issues with the close box of keyboard shortcut fields not
-working in the General panel of the Settings window. Upgrading this 3rd
-party library dependency required increasing the minimum OS supported
-from Mojave to Catalina.</li>
-<li>Improved slightly the layout in the General panel of the Settings
-window. Admittedly there’s still the issue of unnecessary vertical white
-space when first opening the Settings window, subsequently fixed when
-switching panels and then returing to General.</li>
-</ul>
-]]></description>
-            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.1b10/Batch.Clipboard.1.0.1b10.zip" length="6716017" type="application/octet-stream" sparkle:edSignature="iCjlfg3aV47FA+MlP4GmdDUd9pfcu/JxLW1DHn8br08xayuiDFN323/hQaciRWgtCrNITWQ7bv3Lq5hGwkLvAw=="/>
-        </item>
-        <item>
-            <title>1.0b1</title>
-            <pubDate>Sun, 16 Jun 2024 04:20:09 -0700</pubDate>
-            <link>https://github.com/jpmhouston/Cleepp/releases</link>
-            <sparkle:version>814</sparkle:version>
-            <sparkle:shortVersionString>1.0b1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>10.14.6</sparkle:minimumSystemVersion>
-            <description><![CDATA[<ul>
-<li>Renamed Cleepp to Batch Clipboard, revising app and menubar icon to
-clipboard with asterisk.</li>
-<li>Merge changes from Maccy, fixing many localizations that aren’t used
-right now, better MS Word compatibility.</li>
-<li>Fixes to and expansion of app intents (needs testing).</li>
-<li>Fixes to Sparkle updates that weren’t running fully at launch but
-instead when Settings were opened, alerts that were non-responsive.</li>
-<li>Reset Sparkle appcast file again making a hard break between pre-1.0
-and 1.0, as update that changes app name and bundle id seems
-problematic.</li>
-</ul>
-]]></description>
-            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/Batch.Clipboard.1.0b1.zip" length="9697753" type="application/octet-stream" sparkle:edSignature="XMm3IoGKOLdHnme8OGV8Y100KadwWMJq1gHrou7r/U8/grq5tIlLxSEovFvfDekeCHhT4Vwi9LYMFFOLR8bbBQ=="/>
+            <enclosure url="https://github.com/jpmhouston/Cleepp/releases/download/v1.0.1/Batch.Clipboard.1.0.1.zip" length="6733219" type="application/octet-stream" sparkle:edSignature="g6D8V6sfXWyu41l+VWa3WSQmTAnKqWXqvpX9JxPfKCyb9lNaWVLtgeL1jalNTq0D5YUghs1Bfd27ERzgZPT2CA=="/>
         </item>
     </channel>
 </rss>
