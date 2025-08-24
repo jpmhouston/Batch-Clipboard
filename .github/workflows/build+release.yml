@@ -661,9 +661,16 @@ jobs:
           echo "- Copy in current appcast.xml"
           cp ./appcast.xml "$sparkleStuffDir/appcast.xml"
           
+          if [[ ${{ steps.inputs.outputs.prerelease }} == 'true' ]]; then
+            echo "- Adding beta channel parameter"
+            channelarg="--channel beta"
+          else
+            channelarg=""
+          fi
+          
           echo "- Update appcast.xml"
           if ! echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | generate_appcast --ed-key-file - \
-            --link "$releasesURL" --download-url-prefix "$downloadURLPrefix" \
+            --link "$releasesURL" --download-url-prefix "$downloadURLPrefix" $channelarg \
             --embed-release-notes -o ./appcast.xml "$sparkleStuffDir"
           then
             echo "::warning::generate_appcast failed, no new appcast.xml file generated"
