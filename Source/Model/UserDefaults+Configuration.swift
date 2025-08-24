@@ -55,6 +55,10 @@ extension UserDefaults {
     static let sparkleUsesBetaFeed = "sparkleUsesBetaFeed"
     static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
     
+    // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
+    // a statusitem on the menubar. Make accessor for the sake of saving & restoring this position.
+    static let systemMenubarPosition = "NSStatusItem Preferred Position Item-0"
+    
     // maccy had a few like this, perhaps something to continue doing?
 //    static var showInStatusBar: String {
 //      ProcessInfo.processInfo.arguments.contains("ui-testing") ? "showInStatusBarUITests" : "showInStatusBar"
@@ -313,4 +317,19 @@ extension UserDefaults {
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfMenuHiddenWhenInactive() -> Bool { false }
   
+  public var systemMenubarPosition: Int? {
+    get {
+      if object(forKey: Keys.systemMenubarPosition) != nil {
+        integer(forKey: Keys.systemMenubarPosition)
+      } else {
+        nil
+      }
+    }
+    set {
+      if let newValue = newValue {
+        set(newValue, forKey: Keys.systemMenubarPosition)
+      }
+      // could do `removeObject` when newValue nil, but don't think that's needed atm
+    }
+  }
 }

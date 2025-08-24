@@ -31,9 +31,9 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
   private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
   
-#if SPARKLE_UPDATES
+  #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
-#endif
+  #endif
   private lazy var loginItemsURL = URL(
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
@@ -48,13 +48,14 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var openLoginItemsPanelRow: NSGridRow!
   @IBOutlet weak var automaticUpdatesCheckbox: NSButton!
   @IBOutlet weak var betaFeedUpdatesCheckbox: NSButton!
+  @IBOutlet weak var menuHidingCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
   @IBOutlet weak var checkForUpdatesItemsRow: NSGridRow!
-  @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
   @IBOutlet weak var promoteExtrasItemsRow: NSGridRow!
+  @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
   
-#if SPARKLE_UPDATES
+  #if SPARKLE_UPDATES
   init(updater: SPUUpdater) {
     sparkleUpdater = updater
     super.init(nibName: nil, bundle: nil)
@@ -67,7 +68,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-#endif
+  #endif
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -85,21 +86,21 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
     addSubviewWithManualLayout(replayHotkeyContainerView, replayHotkeyRecorder)
     
-#if SPARKLE_UPDATES
+    #if SPARKLE_UPDATES
     showSparkleUpdateOptions(true)
-#else
+    #else
     showSparkleUpdateOptions(false)
-#endif
+    #endif
     
-#if APP_STORE
+    #if APP_STORE
     if #available(macOS 14, *) { // badged menu items first available in macOS 14
       showPromoteExtrasOptions(true)
     } else {
       showPromoteExtrasOptions(false)
     }
-#else
+    #else
     showPromoteExtrasOptions(false)
-#endif
+    #endif
     
     if #available(macOS 13.0, *) {
       showLaunchAtLoginOptions(true)
@@ -113,6 +114,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     populateLaunchAtLogin()
     populateSparkleAutomaticUpdates()
     populateSparkleBetaFeed()
+    populateMenuHiding()
     populatePromoteExtrasOptions()
   }
   
@@ -148,6 +150,11 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     let useBetaFeed = UserDefaults.standard.sparkleUsesBetaFeed
     betaFeedUpdatesCheckbox.state = useBetaFeed ? .on : .off
     #endif
+  }
+  
+  private func populateMenuHiding() {
+    let hideMenu = UserDefaults.standard.menuHiddenWhenInactive
+    menuHidingCheckbox.state = hideMenu ? .off : .on
   }
   
   private func populatePromoteExtrasOptions() {
@@ -212,6 +219,10 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     NSWorkspace.shared.open(url)
   }
   
+  @IBAction func menuHidingChanged(_ sender: NSButton) {
+    UserDefaults.standard.menuHiddenWhenInactive = (sender.state == .off)
+  }
+  
   @IBAction func promoteExtrasChanged(_ sender: NSButton) {
     #if APP_STORE
     UserDefaults.standard.promoteExtras = (sender.state == .on)
@@ -257,7 +268,9 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   private func showPromoteExtrasOptions(_ show: Bool) {
     promoteExtrasItemsRow.isHidden = !show
+    #if MENU_HIDING_IN_ADVANCED_PANEL
     promoteExtrasSeparatorRow.isHidden = !show
+    #endif
   }
   
 }

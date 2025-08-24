@@ -30,8 +30,8 @@ class AppModel: NSObject {
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
   static var allowSavedBatches = false
-  static var allowMenuHiding = false
   // always include these features:
+  static var allowMenuHiding = true
   static var allowExpandedHistory = true
   static var allowLastBatch = true
   
@@ -210,7 +210,6 @@ class AppModel: NSObject {
     
     // launch initial user interface
     menu.buildDynamicItems()
-    letMenuIconAutoHide()
     
     // The first `menu.prepareToOpen()` can take a while so do it early instead of when the menu
     // is first clicked on. To not delay the intro window from opening, delay this call.
@@ -230,6 +229,8 @@ class AppModel: NSObject {
       // expect user migrating from 1.0 won't fall into cases above, get here & really see this page   
       showIntroAtHistoryUpdatePage()
       ensureMenuIconVisible(pollingForWindowsToClose: true)
+    } else {
+      letMenuIconAutoHide()
     }
     
     // this instantiates the settings window, but it's not not initially visible
@@ -485,7 +486,6 @@ class AppModel: NSObject {
     Self.allowPasteMultiple = hasPurchased
     Self.allowUndoCopy = hasPurchased
     Self.allowSavedBatches = hasPurchased
-    Self.allowMenuHiding = hasPurchased
   }
   
   func hasAccessibilityPermissionBeenGranted() -> Bool {
@@ -552,6 +552,7 @@ class AppModel: NSObject {
     }
     // useful, tricky breakpoint here: setting exipiry timer to @LocalShortDateFormatter().string(from:date)@
     
+    promotionExpirationTimer?.cancel()
     promotionExpirationTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay:
                                                 date.timeIntervalSinceNow) { [weak self] in
       guard let self = self else { return }
@@ -684,15 +685,18 @@ class AppModel: NSObject {
   }
   
   private func startPollingToRehideMenuIcon() {
+    guard hideMenuPollingTimer == nil else { 
+      return // rather than restarting time if called a second time, if already running then leave it
+    }
     hideMenuPollingTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 2, interval: 2) { [weak self] in
       guard let self = self else { return false }
       if !UserDefaults.standard.menuHiddenWhenInactive || !menuIcon.isVisible {
-        hideMenuPollingTimer?.cancel()
         hideMenuPollingTimer = nil
         return false
       }
       if !anyAppWindowsOpen() && !queue.isOn {
         menuIcon.isVisible = false
+        hideMenuPollingTimer = nil
         return false
       }
       return true

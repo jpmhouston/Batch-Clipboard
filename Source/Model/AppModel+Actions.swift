@@ -1290,9 +1290,7 @@ extension AppModel {
   // be declared as a property, cannot be done within this extension
   
   private func runOnCopyTimeoutTimer(afterTimeout timeout: Double, _ action: @escaping () -> Void) {
-    if copyTimeoutTimer != nil {
-      cancelCopyTimeoutTimer()
-    }
+    copyTimeoutTimer?.cancel()
     copyTimeoutTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: timeout) { [weak self] in
       self?.copyTimeoutTimer = nil // doing this before calling closure supports closure itself calling runOnCopyTimeoutTimer, fwiw
       action()

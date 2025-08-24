@@ -726,10 +726,9 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   // MARK: -
   
   private func runOnLogoDelayTimer(withDelay delay: Double, _ action: @escaping () -> Void) {
-    if logoTimer != nil {
-      cancelLogoTimer()
-    }
-    logoTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: delay) {
+    logoTimer?.cancel()
+    logoTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: delay) { [weak self] in
+      self?.logoTimer = nil
       action()
     }
   }
@@ -740,9 +739,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   }
   
   private func runOnDemoTimer(afterDelay delay: Double, _ action: @escaping () -> Void) {
-    if demoTimer != nil {
-      cancelDemoTimer()
-    }
+    demoTimer?.cancel()
     demoTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: delay) { [weak self] in
       self?.demoTimer = nil // doing this before calling closure supports closure itself calling runOnDemoTimer
       action()

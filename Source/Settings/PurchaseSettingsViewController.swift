@@ -269,9 +269,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   private func startTimeoutTimer(withDuration duration: Double, timeout: @escaping () -> Void) {
-    if timeoutTimer != nil {
-      cancelTimeoutTimer()
-    }
+    timeoutTimer?.cancel()
     timeoutTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: duration) { [weak self] in
       self?.timeoutTimer = nil // doing this before calling closure supports closure itself calling startTimeoutTimer, fwiw
       timeout()

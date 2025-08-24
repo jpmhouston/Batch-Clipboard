@@ -28,8 +28,15 @@ class MenuBarIcon {
       statusItem.isVisible
     }
     set {
-      ignoreNextIsVisibleChange = (newValue == false)
-      statusItem.isVisible = newValue
+      if newValue == false {
+        cacheMenuPosition()
+        ignoreNextIsVisibleChange = true // don't invoke callback for detecting icon dragged off menubar
+        statusItem.isVisible = false
+        ignoreNextIsVisibleChange = false
+      } else {
+        restoreMenuPosition()
+        statusItem.isVisible = true
+      }
     }
   }
   
@@ -59,6 +66,7 @@ class MenuBarIcon {
   private var iconBlinkIntervalSeconds: Double { 0.75 }
   private var shouldOpenCallback: (() -> Bool)?
   private var ignoreNextIsVisibleChange = false
+  private var cachedMenubarPosition: Int?
   
   private enum SymbolTransition {
     case replace
@@ -73,6 +81,11 @@ class MenuBarIcon {
     if #unavailable(macOS 11) {
       (statusItem.button?.cell as? NSButtonCell)?.highlightsBy = []
     }
+  }
+  
+  deinit {
+    // put cached menubar position back into userdefaults across relaunches 
+    restoreMenuPosition()
   }
   
   func setImage(named name: NSImage.Name) {
@@ -126,22 +139,18 @@ class MenuBarIcon {
   }
   
   func enableRemoval(_ enable: Bool, wasRemoved: (() -> Void)? = nil) {
-    if !enable {
-      statusItem.behavior = []
-      visibilityObserver?.invalidate()
-    } else if let callback = wasRemoved {
+    if enable, let callback = wasRemoved {
       statusItem.behavior = .removalAllowed
       visibilityObserver = statusItem.observe(\.isVisible, options: .new) { [weak self] _, change in
         guard let self = self else { return }
-        if ignoreNextIsVisibleChange == true {
-          ignoreNextIsVisibleChange = false
-        } else if change.newValue == false {
+        if !ignoreNextIsVisibleChange && change.newValue == false {
           callback()
         }
       }
     } else {
-      statusItem.behavior = .terminationOnRemoval
+      statusItem.behavior = enable ? [] : .terminationOnRemoval
       visibilityObserver?.invalidate()
+      visibilityObserver = nil
     }
   }
   
@@ -188,10 +197,20 @@ class MenuBarIcon {
     }
   }
   
-  private func runOnIconBlinkTimer(afterDelay delay: Double, _ action: @escaping () -> Void) {
-    if iconBlinkTimer != nil {
-      cancelBlinkTimer()
+  private func cacheMenuPosition() {
+    // when setting status item invisible, the menu position saved to userdefaults
+    // is deleted, or sometimes it is i'm not sure
+    cachedMenubarPosition = UserDefaults.standard.systemMenubarPosition
+  }
+  
+  private func restoreMenuPosition() {
+    if let position = cachedMenubarPosition {
+      UserDefaults.standard.systemMenubarPosition = position
     }
+  }
+  
+  private func runOnIconBlinkTimer(afterDelay delay: Double, _ action: @escaping () -> Void) {
+    iconBlinkTimer?.cancel()
     iconBlinkTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: delay) { [weak self] in
       self?.iconBlinkTimer = nil // doing this before calling closure supports closure itself calling runOnIconBlinkTimer, fwiw
       action()

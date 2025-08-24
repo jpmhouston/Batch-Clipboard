@@ -10,17 +10,18 @@
             <connections>
                 <outlet property="automaticUpdatesCheckbox" destination="Mxc-Pf-Ef9" id="443-Kc-WHD"/>
                 <outlet property="betaFeedUpdatesCheckbox" destination="GVa-2H-aEA" id="0yW-t3-1Xl"/>
-                <outlet property="checkForUpdatesItemsRow" destination="bpM-Oe-CBP" id="VBQ-Mw-0J1"/>
+                <outlet property="checkForUpdatesItemsRow" destination="1mV-QC-dVq" id="SPe-dU-gfI"/>
                 <outlet property="copyHotkeyContainerView" destination="gv6-rV-zkI" id="nuk-d3-lAf"/>
                 <outlet property="launchAtLoginCheckbox" destination="mOE-Th-WLC" id="xDm-OD-zqC"/>
-                <outlet property="launchAtLoginRow" destination="1lR-od-X06" id="1dh-3k-rja"/>
+                <outlet property="launchAtLoginRow" destination="232-HF-VEQ" id="P3m-bi-i5U"/>
+                <outlet property="menuHidingCheckbox" destination="OBF-sn-fha" id="tBB-rX-UoX"/>
                 <outlet property="openLoginItemsPanelButton" destination="fWD-v1-Rli" id="TCE-ct-nLA"/>
-                <outlet property="openLoginItemsPanelRow" destination="E4T-ss-Za5" id="9vD-8I-pRQ"/>
+                <outlet property="openLoginItemsPanelRow" destination="eMX-8f-nbZ" id="o0p-Ho-H7D"/>
                 <outlet property="pasteHotkeyContainerView" destination="pPs-rF-k8m" id="9te-4V-6tN"/>
                 <outlet property="promoteExtrasCheckbox" destination="GBC-St-esC" id="qyF-2c-G8X"/>
                 <outlet property="promoteExtrasExpiresCheckbox" destination="S6J-6l-2IE" id="VU6-gB-qyr"/>
                 <outlet property="promoteExtrasItemsRow" destination="t58-uQ-JlU" id="DDV-mT-cYr"/>
-                <outlet property="promoteExtrasSeparatorRow" destination="GUX-S5-fhF" id="Mqr-7X-f0X"/>
+                <outlet property="promoteExtrasSeparatorRow" destination="GUX-S5-fhF" id="feI-pO-FOM"/>
                 <outlet property="replayHotkeyContainerView" destination="MBx-4h-6VP" id="eip-IG-VVZ"/>
                 <outlet property="startHotkeyContainerView" destination="wkA-3I-kqY" id="kTs-tU-jLB"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -29,10 +30,10 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="500"/>
+            <rect key="frame" x="0.0" y="0.0" width="480" height="674"/>
             <subviews>
                 <gridView xPlacement="leading" yPlacement="top" rowAlignment="lastBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="GOB-4Q-pQY">
-                    <rect key="frame" x="24" y="20" width="432" height="460"/>
+                    <rect key="frame" x="24" y="20" width="432" height="643"/>
                     <constraints>
                         <constraint firstItem="pPs-rF-k8m" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="Sr0-Gh-8Ra"/>
                         <constraint firstItem="wkA-3I-kqY" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="iEx-Rt-Ozr"/>
@@ -40,26 +41,141 @@
                         <constraint firstItem="gv6-rV-zkI" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="y3v-De-b8N"/>
                     </constraints>
                     <rows>
-                        <gridRow bottomPadding="6" id="1lR-od-X06"/>
-                        <gridRow bottomPadding="6" id="E4T-ss-Za5"/>
-                        <gridRow bottomPadding="8" id="bpM-Oe-CBP"/>
-                        <gridRow topPadding="4" id="mzz-6k-Dz9"/>
-                        <gridRow topPadding="4" id="1lh-Qw-cAx"/>
+                        <gridRow topPadding="-8" bottomPadding="4" id="Rtf-DZ-kxy"/>
+                        <gridRow id="1lh-Qw-cAx"/>
                         <gridRow id="rSH-D5-fQU"/>
                         <gridRow id="mpB-IZ-sST"/>
                         <gridRow bottomPadding="6" id="RFe-Ts-oH0"/>
                         <gridRow id="GUX-S5-fhF"/>
-                        <gridRow topPadding="6" id="t58-uQ-JlU"/>
+                        <gridRow topPadding="6" bottomPadding="6" id="232-HF-VEQ"/>
+                        <gridRow bottomPadding="6" id="eMX-8f-nbZ"/>
+                        <gridRow bottomPadding="6" id="1mV-QC-dVq"/>
+                        <gridRow id="9L9-uE-qLH"/>
+                        <gridRow topPadding="6" id="m6d-MA-IKv"/>
+                        <gridRow topPadding="11" id="t58-uQ-JlU"/>
                     </rows>
                     <columns>
                         <gridColumn xPlacement="trailing" id="vOJ-9h-G8Y"/>
                         <gridColumn width="300" id="pQU-Pz-q1v"/>
                     </columns>
                     <gridCells>
-                        <gridCell row="1lR-od-X06" column="vOJ-9h-G8Y" id="Wx5-lS-Xrs"/>
-                        <gridCell row="1lR-od-X06" column="pQU-Pz-q1v" id="IOf-sB-Gav">
-                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mOE-Th-WLC">
-                                <rect key="frame" x="130" y="443" width="119" height="18"/>
+                        <gridCell row="Rtf-DZ-kxy" column="vOJ-9h-G8Y" id="HrY-LT-8BM"/>
+                        <gridCell row="Rtf-DZ-kxy" column="pQU-Pz-q1v" id="eIg-IF-Jr9">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Mid-lr-u2U">
+                                <rect key="frame" x="130" y="629" width="200" height="14"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Customize global keyboard shortcuts" id="1vs-l1-URT">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="1lh-Qw-cAx" column="vOJ-9h-G8Y" id="2m8-9a-mJO">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
+                                <rect key="frame" x="17" y="584" width="104" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="10R-0q-RDn"/>
+                                </constraints>
+                                <textFieldCell key="cell" alignment="right" title="Copy into batch:" id="hdM-75-pvO">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="1lh-Qw-cAx" column="pQU-Pz-q1v" id="t3H-4Z-90w">
+                            <customView key="contentView" identifier="copykeyview" toolTip="Global shortcut key to copy into the current batch, starting a new one if necessary. Default: ^⌘C." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gv6-rV-zkI">
+                                <rect key="frame" x="132" y="587" width="200" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Ntm-y4-aXK"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="nextKeyView" destination="pPs-rF-k8m" id="efK-Zb-0fF"/>
+                                </connections>
+                            </customView>
+                        </gridCell>
+                        <gridCell row="rSH-D5-fQU" column="vOJ-9h-G8Y" id="MkQ-Ti-RAy">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
+                                <rect key="frame" x="9" y="543" width="112" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="ARz-S4-0pY"/>
+                                </constraints>
+                                <textFieldCell key="cell" alignment="right" title="Paste from batch:" id="1Tw-Z5-00F">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="rSH-D5-fQU" column="pQU-Pz-q1v" id="yVM-gZ-e0i">
+                            <customView key="contentView" identifier="pastekeyview" toolTip="Global shortcut key to paste next clipboard item from the current batch. Default: ^⌘P." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pPs-rF-k8m">
+                                <rect key="frame" x="132" y="546" width="200" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Nux-kj-G8Q"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="nextKeyView" destination="wkA-3I-kqY" id="VAO-Za-1mg"/>
+                                </connections>
+                            </customView>
+                        </gridCell>
+                        <gridCell row="mpB-IZ-sST" column="vOJ-9h-G8Y" id="U7s-9H-Buf">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
+                                <rect key="frame" x="45" y="502" width="76" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="ccs-88-5v0"/>
+                                </constraints>
+                                <textFieldCell key="cell" alignment="right" title="Start batch:" id="PZa-sP-B3m">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="mpB-IZ-sST" column="pQU-Pz-q1v" id="N7Y-NA-8b1">
+                            <customView key="contentView" identifier="startkeyview" toolTip="Global shortcut key to start a new batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wkA-3I-kqY">
+                                <rect key="frame" x="132" y="505" width="200" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="j2p-Ny-ogZ"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="4QL-aw-kBe"/>
+                                </connections>
+                            </customView>
+                        </gridCell>
+                        <gridCell row="RFe-Ts-oH0" column="vOJ-9h-G8Y" id="bLz-c8-PjC">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zap-FI-RBI">
+                                <rect key="frame" x="9" y="461" width="112" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="zw9-cy-ivA"/>
+                                </constraints>
+                                <textFieldCell key="cell" alignment="right" title="Replay last batch:" id="hSv-L2-ggS">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="RFe-Ts-oH0" column="pQU-Pz-q1v" id="ceZ-e4-Xfu">
+                            <customView key="contentView" identifier="replaykeyview" toolTip="Global shortcut key to replay the most recently completed batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MBx-4h-6VP">
+                                <rect key="frame" x="132" y="464" width="200" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="zUJ-QZ-kPB"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="W4X-lF-lRM"/>
+                                </connections>
+                            </customView>
+                        </gridCell>
+                        <gridCell row="GUX-S5-fhF" column="vOJ-9h-G8Y" headOfMergedCell="t3O-rf-TGe" id="t3O-rf-TGe">
+                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fah-TO-d2Q">
+                                <rect key="frame" x="332" y="444" width="100" height="5"/>
+                            </box>
+                        </gridCell>
+                        <gridCell row="GUX-S5-fhF" column="pQU-Pz-q1v" headOfMergedCell="t3O-rf-TGe" id="i7x-TW-kLM"/>
+                        <gridCell row="232-HF-VEQ" column="vOJ-9h-G8Y" id="ZrQ-5C-nuc"/>
+                        <gridCell row="232-HF-VEQ" column="pQU-Pz-q1v" id="HCS-gd-bGh">
+                            <button key="contentView" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mOE-Th-WLC">
+                                <rect key="frame" x="130" y="415" width="119" height="18"/>
                                 <buttonCell key="cell" type="check" title="Launch at login" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cfl-qm-UkM">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -69,10 +185,10 @@
                                 </connections>
                             </button>
                         </gridCell>
-                        <gridCell row="E4T-ss-Za5" column="vOJ-9h-G8Y" id="VPs-T2-TJo"/>
-                        <gridCell row="E4T-ss-Za5" column="pQU-Pz-q1v" id="ZAg-Pc-caU">
+                        <gridCell row="eMX-8f-nbZ" column="vOJ-9h-G8Y" id="as4-Oy-UtN"/>
+                        <gridCell row="eMX-8f-nbZ" column="pQU-Pz-q1v" id="0yL-n5-sg2">
                             <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
-                                <rect key="frame" x="132" y="338" width="300" height="82"/>
+                                <rect key="frame" x="132" y="320" width="300" height="82"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
                                         <rect key="frame" x="-2" y="26" width="304" height="56"/>
@@ -104,10 +220,10 @@
                                 </customSpacing>
                             </stackView>
                         </gridCell>
-                        <gridCell row="bpM-Oe-CBP" column="vOJ-9h-G8Y" id="F1h-En-eCd"/>
-                        <gridCell row="bpM-Oe-CBP" column="pQU-Pz-q1v" id="4MC-s5-NJN">
+                        <gridCell row="1mV-QC-dVq" column="vOJ-9h-G8Y" id="Y9p-vy-afK"/>
+                        <gridCell row="1mV-QC-dVq" column="pQU-Pz-q1v" id="h04-50-TT0">
                             <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iDZ-rJ-xSU">
-                                <rect key="frame" x="132" y="258" width="220" height="66"/>
+                                <rect key="frame" x="132" y="240" width="220" height="66"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Mxc-Pf-Ef9">
                                         <rect key="frame" x="-2" y="49" width="222" height="18"/>
@@ -155,118 +271,62 @@
                                 </customSpacing>
                             </stackView>
                         </gridCell>
-                        <gridCell row="mzz-6k-Dz9" column="vOJ-9h-G8Y" headOfMergedCell="hec-ch-tJx" xPlacement="fill" yPlacement="center" id="hec-ch-tJx">
-                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Mfq-pZ-sSn">
-                                <rect key="frame" x="0.0" y="235" width="432" height="5"/>
+                        <gridCell row="9L9-uE-qLH" column="vOJ-9h-G8Y" headOfMergedCell="yd5-NW-Usj" id="yd5-NW-Usj">
+                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iu8-fy-LMA">
+                                <rect key="frame" x="332" y="223" width="100" height="5"/>
                             </box>
                         </gridCell>
-                        <gridCell row="mzz-6k-Dz9" column="pQU-Pz-q1v" headOfMergedCell="hec-ch-tJx" id="hE2-yX-ng0"/>
-                        <gridCell row="1lh-Qw-cAx" column="vOJ-9h-G8Y" id="2m8-9a-mJO">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
-                                <rect key="frame" x="17" y="192" width="104" height="23"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="23" id="10R-0q-RDn"/>
-                                </constraints>
-                                <textFieldCell key="cell" alignment="right" title="Copy into batch:" id="hdM-75-pvO">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
+                        <gridCell row="9L9-uE-qLH" column="pQU-Pz-q1v" headOfMergedCell="yd5-NW-Usj" id="02s-0x-eYk"/>
+                        <gridCell row="m6d-MA-IKv" column="vOJ-9h-G8Y" id="VL1-Me-CkK"/>
+                        <gridCell row="m6d-MA-IKv" column="pQU-Pz-q1v" id="3ja-GV-RvV">
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSs-0A-Zux">
+                                <rect key="frame" x="132" y="67" width="300" height="144"/>
+                                <subviews>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OBF-sn-fha">
+                                        <rect key="frame" x="-2" y="127" width="202" height="18"/>
+                                        <buttonCell key="cell" type="check" title="Always show in the menu bar" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NfH-5K-dzl">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="menuHidingChanged:" target="-2" id="bqP-MS-1xg"/>
+                                        </connections>
+                                    </button>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gFw-S5-5kX">
+                                        <rect key="frame" x="-2" y="50" width="304" height="70"/>
+                                        <textFieldCell key="cell" id="aQA-uj-3x2">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Turn this off to hide the menu bar icon when Batch Clipboard is not in use. The menu bar icon and the count beside it will un-hide once you start copying a batch and until it is all pasted. You may wish to turn this on if you only use the keyboard shortcuts.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ScW-oO-69R">
+                                        <rect key="frame" x="-2" y="0.0" width="304" height="42"/>
+                                        <textFieldCell key="cell" id="yDb-Vk-Ia6">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="title">Also, reopening Batch Clipboard in the Finder will show this settings window and un-hide the menu bar icon for as long as the window is open.</string>
+                                            <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
                         </gridCell>
-                        <gridCell row="1lh-Qw-cAx" column="pQU-Pz-q1v" id="t3H-4Z-90w">
-                            <customView key="contentView" identifier="copykeyview" toolTip="Global shortcut key to copy into the current batch, starting a new one if necessary. Default: ^⌘C." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gv6-rV-zkI">
-                                <rect key="frame" x="132" y="195" width="200" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Ntm-y4-aXK"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="nextKeyView" destination="pPs-rF-k8m" id="efK-Zb-0fF"/>
-                                </connections>
-                            </customView>
-                        </gridCell>
-                        <gridCell row="rSH-D5-fQU" column="vOJ-9h-G8Y" id="MkQ-Ti-RAy">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
-                                <rect key="frame" x="9" y="151" width="112" height="23"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="23" id="ARz-S4-0pY"/>
-                                </constraints>
-                                <textFieldCell key="cell" alignment="right" title="Paste from batch:" id="1Tw-Z5-00F">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="rSH-D5-fQU" column="pQU-Pz-q1v" id="yVM-gZ-e0i">
-                            <customView key="contentView" identifier="pastekeyview" toolTip="Global shortcut key to paste next clipboard item from the current batch. Default: ^⌘P." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pPs-rF-k8m">
-                                <rect key="frame" x="132" y="154" width="200" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Nux-kj-G8Q"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="nextKeyView" destination="wkA-3I-kqY" id="VAO-Za-1mg"/>
-                                </connections>
-                            </customView>
-                        </gridCell>
-                        <gridCell row="mpB-IZ-sST" column="vOJ-9h-G8Y" id="U7s-9H-Buf">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
-                                <rect key="frame" x="45" y="110" width="76" height="23"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="23" id="ccs-88-5v0"/>
-                                </constraints>
-                                <textFieldCell key="cell" alignment="right" title="Start batch:" id="PZa-sP-B3m">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="mpB-IZ-sST" column="pQU-Pz-q1v" id="N7Y-NA-8b1">
-                            <customView key="contentView" identifier="startkeyview" toolTip="Global shortcut key to start a new batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wkA-3I-kqY">
-                                <rect key="frame" x="132" y="113" width="200" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="j2p-Ny-ogZ"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="4QL-aw-kBe"/>
-                                </connections>
-                            </customView>
-                        </gridCell>
-                        <gridCell row="RFe-Ts-oH0" column="vOJ-9h-G8Y" id="bLz-c8-PjC">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zap-FI-RBI">
-                                <rect key="frame" x="9" y="69" width="112" height="23"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="23" id="zw9-cy-ivA"/>
-                                </constraints>
-                                <textFieldCell key="cell" alignment="right" title="Replay last batch:" id="hSv-L2-ggS">
-                                    <font key="font" usesAppearanceFont="YES"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </gridCell>
-                        <gridCell row="RFe-Ts-oH0" column="pQU-Pz-q1v" id="ceZ-e4-Xfu">
-                            <customView key="contentView" identifier="replaykeyview" toolTip="Global shortcut key to replay the most recently completed batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MBx-4h-6VP">
-                                <rect key="frame" x="132" y="72" width="200" height="30"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="zUJ-QZ-kPB"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="W4X-lF-lRM"/>
-                                </connections>
-                            </customView>
-                        </gridCell>
-                        <gridCell row="GUX-S5-fhF" column="vOJ-9h-G8Y" headOfMergedCell="t3O-rf-TGe" id="t3O-rf-TGe">
-                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fah-TO-d2Q">
-                                <rect key="frame" x="332" y="52" width="100" height="5"/>
-                            </box>
-                        </gridCell>
-                        <gridCell row="GUX-S5-fhF" column="pQU-Pz-q1v" headOfMergedCell="t3O-rf-TGe" id="i7x-TW-kLM"/>
                         <gridCell row="t58-uQ-JlU" column="vOJ-9h-G8Y" id="vcE-dg-xAt"/>
                         <gridCell row="t58-uQ-JlU" column="pQU-Pz-q1v" id="BVc-ZY-77k">
                             <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qym-v6-aJj">
-                                <rect key="frame" x="132" y="0.0" width="203" height="40"/>
+                                <rect key="frame" x="132" y="8" width="203" height="40"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GBC-St-esC">
                                         <rect key="frame" x="-2" y="23" width="205" height="18"/>
