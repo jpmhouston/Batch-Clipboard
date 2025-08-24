@@ -94,33 +94,15 @@
 				Credits/Licenses.xib,
 				Intents/AdvanceIntentHandler.swift,
 				Intents/BatchCopyIntentHandler.swift,
-				Intents/BatchItemCountIntentHandler.swift,
 				Intents/BatchPasteIntentHandler.swift,
 				Intents/CancelIntentHandler.swift,
 				Intents/ClearIntentHandler.swift,
-				Intents/DeleteBatchItemIntentHandler.swift,
-				Intents/DeleteHistoryItemIntentHandler.swift,
-				Intents/DeleteSavedBatchIntentHandler.swift,
-				Intents/DeleteSavedBatchItemIntentHandler.swift,
-				Intents/FindNamedBatchIntentHandler.swift,
-				Intents/GetBatchItemIntentHandler.swift,
-				Intents/GetHistoryItemIntentHandler.swift,
-				Intents/GetSavedBatchItemIntentHandler.swift,
-				Intents/HistoryItemCountIntentHandler.swift,
 				Intents/IntentHistoryItemExtension.swift,
 				Intents/Intents.intentdefinition,
 				Intents/PasteSequentiallyIntentHandler.swift,
 				Intents/RepeatBatchIntentHandler.swift,
-				Intents/SavedBatchCountIntentHandler.swift,
-				Intents/SavedBatchItemCountIntentHandler.swift,
-				Intents/SavedBatchTitleIntentHandler.swift,
-				Intents/SelectBatchItemIntentHandler.swift,
-				Intents/SelectHistoryItemIntentHandler.swift,
 				Intents/SelectNamedBatchIntentHandler.swift,
-				Intents/SelectSavedBatchIntentHandler.swift,
-				Intents/SelectSavedBatchItemIntentHandler.swift,
 				Intents/StartCopyingIntentHandler.swift,
-				Intents/StartFromHistoryItemIntentHandler.swift,
 				Intents/StartPastingIntentHandler.swift,
 				Intro/Intro.swift,
 				Intro/Intro.xib,
@@ -206,33 +188,15 @@
 				Credits/Licenses.xib,
 				Intents/AdvanceIntentHandler.swift,
 				Intents/BatchCopyIntentHandler.swift,
-				Intents/BatchItemCountIntentHandler.swift,
 				Intents/BatchPasteIntentHandler.swift,
 				Intents/CancelIntentHandler.swift,
 				Intents/ClearIntentHandler.swift,
-				Intents/DeleteBatchItemIntentHandler.swift,
-				Intents/DeleteHistoryItemIntentHandler.swift,
-				Intents/DeleteSavedBatchIntentHandler.swift,
-				Intents/DeleteSavedBatchItemIntentHandler.swift,
-				Intents/FindNamedBatchIntentHandler.swift,
-				Intents/GetBatchItemIntentHandler.swift,
-				Intents/GetHistoryItemIntentHandler.swift,
-				Intents/GetSavedBatchItemIntentHandler.swift,
-				Intents/HistoryItemCountIntentHandler.swift,
 				Intents/IntentHistoryItemExtension.swift,
 				Intents/Intents.intentdefinition,
 				Intents/PasteSequentiallyIntentHandler.swift,
 				Intents/RepeatBatchIntentHandler.swift,
-				Intents/SavedBatchCountIntentHandler.swift,
-				Intents/SavedBatchItemCountIntentHandler.swift,
-				Intents/SavedBatchTitleIntentHandler.swift,
-				Intents/SelectBatchItemIntentHandler.swift,
-				Intents/SelectHistoryItemIntentHandler.swift,
 				Intents/SelectNamedBatchIntentHandler.swift,
-				Intents/SelectSavedBatchIntentHandler.swift,
-				Intents/SelectSavedBatchItemIntentHandler.swift,
 				Intents/StartCopyingIntentHandler.swift,
-				Intents/StartFromHistoryItemIntentHandler.swift,
 				Intents/StartPastingIntentHandler.swift,
 				Intro/Intro.swift,
 				Intro/Intro.xib,
@@ -684,7 +648,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b1;
+				MARKETING_VERSION = 2.0b2;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -719,7 +683,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b1;
+				MARKETING_VERSION = 2.0b2;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -753,7 +717,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b1;
+				MARKETING_VERSION = 2.0b2;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -788,7 +752,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b1;
+				MARKETING_VERSION = 2.0b2;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

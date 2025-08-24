@@ -1,5 +1,12 @@
 Batch Clipboard Changelog
 
+## version 2.0b2 (2025-08-26)
+
+- Added support for a beta channel to Sparkle updates in the non-app store version, a checkbox in the General panel of the Settings window to get betas in addition to final releases, a new menu item just below About... when an update found. If the user cancels the update alert on launch then they can use this menu item instead of going into the Settings window.
+- Revise the menu items some more, tweaking the titles of several items, changing which are shown and disabled when not applicable vs hidden.
+- New extra feature for the app store releases, checkbox in the Advanced panel of the Settings window to hide the menu bar icon when the app has no active batch, or when the application re-opened in the Finder (also causes the Settings window to open).
+- Fixes and improvements to the application intents accessible from Shortcuts and Spotlight.
+
 ## version 2.0b1 (2025-08-20 🌭🏖️)
 
 A substantially new version with a lot of changes. TL;DR:
