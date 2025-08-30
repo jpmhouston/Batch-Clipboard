@@ -652,7 +652,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b2;
+				MARKETING_VERSION = 2.0b3;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -687,7 +687,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b2;
+				MARKETING_VERSION = 2.0b3;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -721,7 +721,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b2;
+				MARKETING_VERSION = 2.0b3;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -756,7 +756,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0b2;
+				MARKETING_VERSION = 2.0b3;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -892,7 +892,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				ASSETCATALOG_OTHER_FLAGS = "--enable-icon-stack-fallback-generation=disabled";
+				ASSETCATALOG_OTHER_FLAGS = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
