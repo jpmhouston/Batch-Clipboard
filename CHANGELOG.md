@@ -1,5 +1,12 @@
 Batch Clipboard Changelog
 
+## version 2.0b3 (2025-08-30)
+
+- Decided option to hde the menu bar icon should be for all versions instead of only for in-app purchasers. Moved its setting from the Advanced panel to the General panel and improved its layout.
+-  Added a clarification to the Advanced panel in the Settings window that saved batched are never cleared when to clear-history option it turned on.
+- Fixed an issue where upon hiding the menu bar icon macOS forgets its favored position in the menu. 
+- On macOS 26 Tahoe use a liquid-glass version of the app icon. 
+
 ## version 2.0b2 (2025-08-26)
 
 - Added support for a beta channel to Sparkle updates in the non-app store version, a checkbox in the General panel of the Settings window to get betas in addition to final releases, a new menu item just below About... when an update found. If the user cancels the update alert on launch then they can use this menu item instead of going into the Settings window.
