@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24123.1"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -461,103 +461,173 @@ DQ
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="KsF-0O-kYb" userLabel="four">
                     <rect key="frame" x="1812" y="0.0" width="604" height="324"/>
                     <subviews>
-                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="IXd-5W-gVN" userLabel="History On X Ref">
-                            <rect key="frame" x="0.0" y="324" width="176" height="0.0"/>
-                            <constraints>
-                                <constraint firstAttribute="height" id="eTo-o3-l4h"/>
-                            </constraints>
-                        </customView>
-                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLU-4D-eX7" userLabel="History On">
-                            <rect key="frame" x="9" y="58" width="158" height="244"/>
-                            <subviews>
-                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aQW-Cm-WI7">
-                                    <rect key="frame" x="6" y="6" width="146" height="232"/>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="HistoryOn" id="jAk-jR-q2s"/>
-                                </imageView>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="bottom" secondItem="aQW-Cm-WI7" secondAttribute="bottom" constant="6" id="Gwy-In-DiJ"/>
-                                <constraint firstItem="aQW-Cm-WI7" firstAttribute="top" secondItem="mLU-4D-eX7" secondAttribute="top" constant="6" id="S1I-1A-75C"/>
-                                <constraint firstItem="aQW-Cm-WI7" firstAttribute="leading" secondItem="mLU-4D-eX7" secondAttribute="leading" constant="6" id="VOg-vr-utz"/>
-                                <constraint firstAttribute="trailing" secondItem="aQW-Cm-WI7" secondAttribute="trailing" constant="6" id="YQl-ZU-KXn"/>
-                            </constraints>
-                        </customView>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2gU-aX-COh">
-                            <rect key="frame" x="13" y="21" width="150" height="30"/>
-                            <buttonCell key="cell" type="push" title="Keep Using History" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dGD-n6-63w">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="historyOnChosen:" target="o5X-kK-gzk" id="bzn-B3-r7s"/>
-                            </connections>
-                        </button>
-                        <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
-                            <rect key="frame" x="176" y="13" width="252" height="298"/>
+                        <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
+                            <rect key="frame" x="14" y="20" width="576" height="285"/>
                             <subviews>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1E-a5-ph9">
-                                    <rect key="frame" x="-2" y="260" width="256" height="38"/>
+                                    <rect key="frame" x="37" y="266" width="503" height="19"/>
                                     <textFieldCell key="cell" alignment="center" title="It appears that you're upgrading from version 1.0 of Batch Clipboard." id="sli-fr-ZY7">
-                                        <font key="font" metaFont="system" size="15"/>
+                                        <font key="font" metaFont="system" size="16"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Na-yh-HCi">
+                                    <rect key="frame" x="238" y="220" width="100" height="38"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="introTransitionIcons" id="o0c-fo-6bi"/>
+                                </imageView>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wIb-UL-fdx">
-                                    <rect key="frame" x="-2" y="174" width="256" height="80"/>
+                                    <rect key="frame" x="-2" y="164" width="580" height="48"/>
                                     <textFieldCell key="cell" alignment="center" id="CzH-Ug-w4O">
                                         <font key="font" metaFont="system"/>
-                                        <string key="title">The new default behavior no longer maintains a global clipboard history. This removes the expanded menu (opened with ⌥. held, displays recent clips, lets you select one to re-paste it).</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
-                                    <rect key="frame" x="-2" y="88" width="256" height="80"/>
-                                    <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
-                                        <font key="font" metaFont="system"/>
-                                        <string key="title">With this change, performance of your OS is improved, the menu is simplified, and menu items displaying the current batch are displayed in a more natural, top-down order.</string>
+                                        <mutableString key="title">The application's new default behavior no longer keeps your clipboard history. This omits the expanded menu (opened with ⌥. held, displays recent clips, lets you select one to re-paste it). This change improves performance, simplifies the menu, and avoids duplicating OS features.</mutableString>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-u0-aIy">
-                                    <rect key="frame" x="-2" y="34" width="256" height="48"/>
-                                    <textFieldCell key="cell" alignment="center" title="Please choose now to adopt the new behavior, or confirm you prefer to keep using the clipboard history features." id="vmd-9Q-SJu">
+                                    <rect key="frame" x="-2" y="124" width="580" height="32"/>
+                                    <textFieldCell key="cell" alignment="center" id="vmd-9Q-SJu">
                                         <font key="font" metaFont="system"/>
+                                        <string key="title">With the buttons below, please choose to continue using the application's clipboard history, or to adopt the new default with those features off and the menu simplified.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfI-Cy-XwZ">
-                                    <rect key="frame" x="-2" y="281" width="671" height="17"/>
-                                    <textFieldCell key="cell" alignment="center" title="You've choosen to continue using the clipboard history features. Great that you're making use of them!" id="RPu-G4-0l5">
-                                        <font key="font" metaFont="system" size="14"/>
+                                    <rect key="frame" x="-2" y="269" width="678" height="16"/>
+                                    <textFieldCell key="cell" alignment="center" title="You've choosen to instead continue using the application's clipboard history. Great that you're finding it useful!" id="RPu-G4-0l5">
+                                        <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uzd-uG-7Kf">
-                                    <rect key="frame" x="-2" y="281" width="694" height="17"/>
-                                    <textFieldCell key="cell" alignment="center" title="You've choosen the new default that turns off the clipboard history. I hope you like the improved simplicity." id="LRW-UU-tmL">
-                                        <font key="font" metaFont="system" size="14"/>
+                                    <rect key="frame" x="-2" y="269" width="800" height="16"/>
+                                    <textFieldCell key="cell" alignment="center" id="LRW-UU-tmL">
+                                        <font key="font" metaFont="system"/>
+                                        <string key="title">You've choosen to adopt the new default and turn off the application's clipboard history. Hopefully you like the improved simplicity.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="jTB-D7-JIM">
+                                    <rect key="frame" x="188" y="116" width="200" height="0.0"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="200" id="HtM-7M-LeJ"/>
+                                        <constraint firstAttribute="height" id="Uue-Lz-ndJ"/>
+                                    </constraints>
+                                </customView>
+                                <stackView hidden="YES" distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CcR-5G-bB5" userLabel="unused controls">
+                                    <rect key="frame" x="0.0" y="263" width="310" height="22"/>
+                                    <subviews>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PBy-Zz-j9y" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
+                                            <rect key="frame" x="-2" y="3" width="120" height="16"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Keep Using History" id="gjK-FK-JRY">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <switch horizontalHuggingPriority="750" verticalHuggingPriority="750" baseWritingDirection="leftToRight" alignment="left" translatesAutoresizingMaskIntoConstraints="NO" id="1Xt-RA-0eM">
+                                            <rect key="frame" x="134" y="-2" width="42" height="25"/>
+                                            <connections>
+                                                <action selector="historySwitched:" target="o5X-kK-gzk" id="CSj-Hp-Hgg"/>
+                                            </connections>
+                                        </switch>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ixI-mN-SAa" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
+                                            <rect key="frame" x="192" y="3" width="120" height="16"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Use New Behavior" id="bQd-gB-eVw">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="1Xt-RA-0eM" firstAttribute="centerX" secondItem="CcR-5G-bB5" secondAttribute="centerX" id="2hW-1i-Q8q"/>
+                                    </constraints>
+                                    <visibilityPriorities>
+                                        <integer value="1000"/>
+                                        <integer value="1000"/>
+                                        <integer value="1000"/>
+                                    </visibilityPriorities>
+                                    <customSpacing>
+                                        <real value="3.4028234663852886e+38"/>
+                                        <real value="3.4028234663852886e+38"/>
+                                        <real value="3.4028234663852886e+38"/>
+                                    </customSpacing>
+                                </stackView>
+                                <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vap-Ge-QSh">
+                                    <rect key="frame" x="142" y="88" width="292" height="20"/>
+                                    <subviews>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zth-Yg-4cV">
+                                            <rect key="frame" x="-7" y="-7" width="150" height="32"/>
+                                            <buttonCell key="cell" type="push" title="Keep Using History" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="peu-x0-fjR">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="historyOn:" target="o5X-kK-gzk" id="oxS-kn-2yB"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OOV-DV-BYx">
+                                            <rect key="frame" x="149" y="-7" width="150" height="32"/>
+                                            <buttonCell key="cell" type="push" title="New Simpler Menu" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SX4-Nw-fgh">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="historyOff:" target="o5X-kK-gzk" id="FIn-W7-j7W"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="OOV-DV-BYx" firstAttribute="width" secondItem="Zth-Yg-4cV" secondAttribute="width" id="kvY-Qt-laY"/>
+                                    </constraints>
+                                    <visibilityPriorities>
+                                        <integer value="1000"/>
+                                        <integer value="1000"/>
+                                    </visibilityPriorities>
+                                    <customSpacing>
+                                        <real value="3.4028234663852886e+38"/>
+                                        <real value="3.4028234663852886e+38"/>
+                                    </customSpacing>
+                                </stackView>
+                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="f4y-Xq-2QE">
+                                    <rect key="frame" x="188" y="78" width="200" height="2"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="2" id="D4R-3N-7ju"/>
+                                        <constraint firstAttribute="width" constant="200" id="VgF-el-Gbo"/>
+                                    </constraints>
+                                </customView>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KOt-85-QgQ">
-                                    <rect key="frame" x="-2" y="0.0" width="256" height="28"/>
-                                    <textFieldCell key="cell" alignment="center" title="If you just use the ^⌘C and ^⌘V shortcuts and didn't know about all this, pick “Use New” 🠊" id="wFx-Dt-X1x">
+                                    <rect key="frame" x="16" y="56" width="545" height="14"/>
+                                    <textFieldCell key="cell" alignment="center" title="If you just use the ^⌘C and ^⌘V shortcuts and don't know what this means, pick “New Simpler Menu”" id="wFx-Dt-X1x">
                                         <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
+                                    <rect key="frame" x="27" y="0.0" width="522" height="48"/>
+                                    <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
+                                        <font key="font" metaFont="system"/>
+                                        <string key="title">Note: no matter which choice, menu items displaying the current batch are now displayed in a more natural, top-down order. These were reversed in version 1.0 to match the order of the clipboard history menu items.</string>
                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                             </subviews>
                             <constraints>
-                                <constraint firstAttribute="width" priority="800" constant="252" id="xGq-4E-56d"/>
+                                <constraint firstItem="uCT-e6-3Vv" firstAttribute="width" secondItem="cuh-Dc-5pF" secondAttribute="width" multiplier="0.9" id="JvZ-yl-bFm"/>
                             </constraints>
                             <visibilityPriorities>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
@@ -574,67 +644,21 @@ DQ
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
                             </customSpacing>
                         </stackView>
-                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Ssk-Li-zU9" userLabel="History Off X Ref">
-                            <rect key="frame" x="428" y="324" width="176" height="0.0"/>
-                            <constraints>
-                                <constraint firstAttribute="height" id="sg3-eR-IUJ"/>
-                            </constraints>
-                        </customView>
-                        <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mPM-1H-u4B" userLabel="History Off">
-                            <rect key="frame" x="437" y="57" width="158" height="246"/>
-                            <subviews>
-                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wwG-go-RH0">
-                                    <rect key="frame" x="6" y="6" width="146" height="232"/>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="HistoryOff" id="V6i-yd-x8K"/>
-                                </imageView>
-                            </subviews>
-                            <constraints>
-                                <constraint firstAttribute="bottom" secondItem="wwG-go-RH0" secondAttribute="bottom" constant="6" id="5Ki-4a-fs6"/>
-                                <constraint firstItem="wwG-go-RH0" firstAttribute="leading" secondItem="mPM-1H-u4B" secondAttribute="leading" constant="6" id="8sb-nJ-TiT"/>
-                                <constraint firstItem="wwG-go-RH0" firstAttribute="top" secondItem="mPM-1H-u4B" secondAttribute="top" constant="8" id="M05-7i-7od"/>
-                                <constraint firstAttribute="trailing" secondItem="wwG-go-RH0" secondAttribute="trailing" constant="6" id="m6O-Vh-GHk"/>
-                            </constraints>
-                        </customView>
-                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j0M-DH-c5a">
-                            <rect key="frame" x="444" y="21" width="145" height="29"/>
-                            <buttonCell key="cell" type="push" title="Use New Behavior" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mHu-VA-X6U">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="system"/>
-                            </buttonCell>
-                            <connections>
-                                <action selector="historyOffChosen:" target="o5X-kK-gzk" id="Dsd-xi-SWD"/>
-                            </connections>
-                        </button>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" id="15n-ce-HgM"/>
-                        <constraint firstItem="mPM-1H-u4B" firstAttribute="centerX" secondItem="Ssk-Li-zU9" secondAttribute="centerX" id="2we-ib-BbJ"/>
                         <constraint firstItem="cuh-Dc-5pF" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="10" id="DHo-uh-Non"/>
-                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" secondItem="IXd-5W-gVN" secondAttribute="trailing" id="EYm-F4-kWH"/>
-                        <constraint firstItem="IXd-5W-gVN" firstAttribute="leading" secondItem="KsF-0O-kYb" secondAttribute="leading" id="G3q-hs-G8K"/>
-                        <constraint firstItem="mPM-1H-u4B" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="12" id="GAV-qg-UNE"/>
-                        <constraint firstItem="mPM-1H-u4B" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cuh-Dc-5pF" secondAttribute="trailing" constant="5" id="Hu6-J2-WqG"/>
-                        <constraint firstAttribute="bottom" secondItem="2gU-aX-COh" secondAttribute="bottom" constant="28" id="Jek-D1-bH5"/>
-                        <constraint firstItem="j0M-DH-c5a" firstAttribute="centerX" secondItem="mPM-1H-u4B" secondAttribute="centerX" id="M8u-Rx-nn1"/>
-                        <constraint firstItem="Ssk-Li-zU9" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" id="NmN-B8-cZF"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" secondItem="KsF-0O-kYb" secondAttribute="leading" constant="14" id="IEq-i7-B2T"/>
                         <constraint firstItem="cuh-Dc-5pF" firstAttribute="centerX" secondItem="KsF-0O-kYb" secondAttribute="centerX" id="PCJ-1u-Y2N"/>
-                        <constraint firstItem="j0M-DH-c5a" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mPM-1H-u4B" secondAttribute="bottom" constant="12" id="Phs-pM-KKo"/>
-                        <constraint firstItem="mPM-1H-u4B" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" constant="-18" id="SfF-jb-yGe"/>
-                        <constraint firstAttribute="trailing" secondItem="Ssk-Li-zU9" secondAttribute="trailing" id="Xs3-x3-7Ir"/>
-                        <constraint firstItem="mLU-4D-eX7" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" constant="-18" id="ZAw-5V-7PB"/>
-                        <constraint firstItem="2gU-aX-COh" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mLU-4D-eX7" secondAttribute="bottom" constant="12" id="Zhc-ll-PM6"/>
-                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="mPM-1H-u4B" secondAttribute="trailing" constant="2" id="b2A-0R-Q2O"/>
-                        <constraint firstItem="Ssk-Li-zU9" firstAttribute="leading" secondItem="cuh-Dc-5pF" secondAttribute="trailing" id="e5a-CW-23H"/>
-                        <constraint firstItem="mLU-4D-eX7" firstAttribute="top" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="top" constant="12" id="eqO-D8-5Lm"/>
-                        <constraint firstItem="mLU-4D-eX7" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="KsF-0O-kYb" secondAttribute="leading" constant="2" id="gLG-iW-7Qw"/>
-                        <constraint firstItem="IXd-5W-gVN" firstAttribute="top" secondItem="KsF-0O-kYb" secondAttribute="top" id="hwo-bR-AMW"/>
-                        <constraint firstItem="mLU-4D-eX7" firstAttribute="centerX" secondItem="IXd-5W-gVN" secondAttribute="centerX" id="i1w-eo-j2e"/>
-                        <constraint firstAttribute="bottom" secondItem="j0M-DH-c5a" secondAttribute="bottom" constant="28" id="m17-cK-9SD"/>
-                        <constraint firstItem="2gU-aX-COh" firstAttribute="centerX" secondItem="mLU-4D-eX7" secondAttribute="centerX" id="vQq-pk-fDh"/>
-                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="mLU-4D-eX7" secondAttribute="trailing" constant="5" id="whj-D1-6vq"/>
+                        <constraint firstItem="cuh-Dc-5pF" firstAttribute="centerY" secondItem="KsF-0O-kYb" secondAttribute="centerY" id="fBE-vu-6TR"/>
                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cuh-Dc-5pF" secondAttribute="bottom" constant="10" id="xXu-Hb-XAG"/>
+                        <constraint firstAttribute="trailing" secondItem="cuh-Dc-5pF" secondAttribute="trailing" constant="14" id="zXf-rU-YMg"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Lc8-1d-FJl" userLabel="five">
@@ -1428,12 +1452,13 @@ DQ
                 <outlet property="hasAuthorizationEmoji" destination="Blh-fS-N36" id="eRF-FH-QKn"/>
                 <outlet property="hasAuthorizationLabel" destination="DkE-IU-Osz" id="H3p-a5-uM4"/>
                 <outlet property="historyChoiceNeededLabel" destination="q1e-u0-aIy" id="zUN-hV-INE"/>
-                <outlet property="historyOffButton" destination="j0M-DH-c5a" id="cDG-az-KdM"/>
-                <outlet property="historyOffChoiceLabel" destination="uzd-uG-7Kf" id="h7C-NH-yIR"/>
-                <outlet property="historyOffImageContainer" destination="mPM-1H-u4B" id="0Fi-BR-4qn"/>
-                <outlet property="historyOnButton" destination="2gU-aX-COh" id="tH5-KR-6XA"/>
-                <outlet property="historyOnChoiceLabel" destination="yfI-Cy-XwZ" id="eiR-Wg-fwB"/>
-                <outlet property="historyOnImageContainer" destination="mLU-4D-eX7" id="wgI-52-bjD"/>
+                <outlet property="historyOffButton" destination="OOV-DV-BYx" id="gJR-zc-yZ1"/>
+                <outlet property="historyOffDescriptionLabel" destination="uzd-uG-7Kf" id="h7C-NH-yIR"/>
+                <outlet property="historyOffLabel" destination="ixI-mN-SAa" id="g9S-V9-hnL"/>
+                <outlet property="historyOnButton" destination="Zth-Yg-4cV" id="Imh-TR-Tgu"/>
+                <outlet property="historyOnDescriptionLabel" destination="yfI-Cy-XwZ" id="eiR-Wg-fwB"/>
+                <outlet property="historyOnLabel" destination="PBy-Zz-j9y" id="TYG-j9-MF3"/>
+                <outlet property="historySwitch" destination="1Xt-RA-0eM" id="Sta-6M-ued"/>
                 <outlet property="inAppPurchageLabel" destination="P2t-k7-gU7" id="a6G-Nu-gN5"/>
                 <outlet property="inAppPurchageTitle" destination="UGh-0A-tPy" id="TLr-MX-UKf"/>
                 <outlet property="logoRestartButton" destination="VW6-3z-458" id="SHF-Tc-OkX"/>
@@ -1460,14 +1485,13 @@ DQ
         </viewController>
     </objects>
     <resources>
-        <image name="HistoryOff" width="73" height="116"/>
-        <image name="HistoryOn" width="73" height="116"/>
         <image name="IntroLogo" width="332" height="94"/>
         <image name="arrow.counterclockwise" catalog="system" width="11" height="13"/>
         <image name="introDemo1" width="300" height="284"/>
         <image name="introFilledNumberedMenuIcon" width="100" height="35"/>
         <image name="introOutlineMenuIcon" width="31" height="35"/>
         <image name="introSettingsPanel" width="315.5" height="276"/>
+        <image name="introTransitionIcons" width="100" height="38"/>
         <image name="stop.circle" catalog="system" width="15" height="15"/>
     </resources>
 </document>

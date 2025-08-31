@@ -46,7 +46,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   private var showsFilterField = false
   private var showsSavedBatches = false
   private var useHistory = true
-  private var useNaturalOrder = false
+  private var useNaturalOrder = true
   private var isFiltered = false
   private var isVisible = false
   private var queueItemsNeedsRebuild = false
@@ -389,7 +389,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   func buildDynamicItems() {
     useHistory = UserDefaults.standard.keepHistory
-    useNaturalOrder = !useHistory // TODO: maybe add UserDefaults.standard.naturalOrder
+    //useNaturalOrder = !useHistory // now always leave set to true even when history on
     
     rebuildQueueItems()
     rebuildHistoryItems()

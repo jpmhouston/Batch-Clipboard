@@ -114,7 +114,7 @@ class IntroWindowController: PagedWindowController {
 
 }
 
-class IntroViewController: NSViewController, PagedWindowControllerDelegate {
+class IntroViewController: NSViewController, PagedWindowControllerDelegate, ClickableTextFieldDelegate {
   @IBOutlet var staticLogoImage: NSImageView?
   @IBOutlet var animatedLogoImage: SDAnimatedImageView?
   @IBOutlet var logoStopButton: NSButton?
@@ -130,12 +130,13 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   @IBOutlet var authorizationVerifiedEmoji: NSTextField?
   @IBOutlet var authorizationDeniedEmoji: NSTextField?
   @IBOutlet var historyChoiceNeededLabel: NSTextField?
-  @IBOutlet var historyOnChoiceLabel: NSTextField?
-  @IBOutlet var historyOffChoiceLabel: NSTextField?
+  @IBOutlet var historyOnDescriptionLabel: NSTextField?
+  @IBOutlet var historyOffDescriptionLabel: NSTextField?
   @IBOutlet var historyOnButton: NSButton?
   @IBOutlet var historyOffButton: NSButton?
-  @IBOutlet var historyOnImageContainer: NSView?
-  @IBOutlet var historyOffImageContainer: NSView?
+  @IBOutlet var historySwitch: NSSwitch?
+  @IBOutlet var historyOnLabel: ClickableTextField?
+  @IBOutlet var historyOffLabel: ClickableTextField?
   @IBOutlet var demoImage: NSImageView?
   @IBOutlet var demoCopyBubble: NSView?
   @IBOutlet var demoPasteBubble: NSView?
@@ -190,7 +191,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
   override func viewDidLoad() {
     styleLabels()
     setupLogo()
-    setupHistoryChoiceImages()
+    setupClickableLabels()
   }
   
   deinit {
@@ -414,6 +415,11 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     }
   }
   
+  private func setupClickableLabels() {
+    historyOnLabel?.clickDelegate = self
+    historyOffLabel?.clickDelegate = self
+  }
+  
   private func removeOptionKeyObserver() {
     if let eventMonitor = optionKeyEventMonitor {
       NSEvent.removeMonitor(eventMonitor)
@@ -438,41 +444,46 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     copyMaccyLinkButton?.isHidden = !showCopy
   }
   
-  private func setupHistoryChoiceImages() {
-    historyOnImageContainer?.wantsLayer = true
-    historyOffImageContainer?.wantsLayer = true
-    historyOnImageContainer?.layer?.masksToBounds = true
-    historyOffImageContainer?.layer?.masksToBounds = true
-    let inset = if let imageSubview = historyOnImageContainer?.subviews.first {
-      imageSubview.frame.origin.x
-    } else {
-      8 as CGFloat
-    }
-    historyOnImageContainer?.layer?.borderWidth = inset / 3
-    historyOffImageContainer?.layer?.borderWidth = inset / 3
-    historyOnImageContainer?.layer?.cornerRadius = inset / 2
-    historyOffImageContainer?.layer?.cornerRadius = inset / 2
-  }
-  
   private func showHistoryChoiceViews(forUpgradeChosen upgrade: Bool?) {
-    let clear = NSColor.clear
-    let highlight = NSColor.highlightColor
     if let upgrade = upgrade {
       historyChoiceNeededLabel?.isHidden = true
-      historyOnChoiceLabel?.isHidden = upgrade
-      historyOffChoiceLabel?.isHidden = !upgrade
-      historyOnButton?.isEnabled = upgrade
-      historyOffButton?.isEnabled = !upgrade
-      historyOnImageContainer?.layer?.borderColor = upgrade ? clear.cgColor : highlight.cgColor
-      historyOffImageContainer?.layer?.borderColor = upgrade ? highlight.cgColor : clear.cgColor
+      historyOnDescriptionLabel?.isHidden = upgrade
+      historyOffDescriptionLabel?.isHidden = !upgrade
+      historyOnButton?.state = upgrade ? .off : .on
+      historyOffButton?.state = upgrade ? .on : .off
+      //historySwitch?.state = upgrade ? .on : .off
+      //styleLabel(historyOnLabel, toShowSelected: !upgrade)
+      //styleLabel(historyOffLabel, toShowSelected: upgrade)
     } else {
       historyChoiceNeededLabel?.isHidden = false
-      historyOnChoiceLabel?.isHidden = true
-      historyOffChoiceLabel?.isHidden = true
-      historyOnButton?.isEnabled = true
-      historyOffButton?.isEnabled = true
-      historyOnImageContainer?.layer?.borderColor = clear.cgColor
-      historyOffImageContainer?.layer?.borderColor = clear.cgColor
+      historyOnDescriptionLabel?.isHidden = true
+      historyOffDescriptionLabel?.isHidden = true
+      historyOnButton?.state = .off
+      historyOffButton?.state = .off
+      //historySwitch?.state = .off
+      //styleLabel(historyOnLabel, toShowSelected: false)
+      //styleLabel(historyOffLabel, toShowSelected: false)
+    }
+  }
+  
+  //private func styleLabel(_ label: NSTextField?, toShowSelected selected: Bool) {
+  //  guard let label = label else { return }
+  //  let activeStyle: [NSAttributedString.Key: Any] = [.underlineStyle: NSUnderlineStyle.single.rawValue]
+  //  var selectedStyle: [NSAttributedString.Key: Any] = [:]
+  //  if let font = label.font, let bold = NSFont(descriptor: font.fontDescriptor.withSymbolicTraits(.bold), size: font.pointSize) {
+  //    selectedStyle = [.font: bold]
+  //  }
+  //  label.attributedStringValue = NSAttributedString(string: label.stringValue, attributes: selected ? selectedStyle : activeStyle)
+  //}
+  
+  private func changeKeepHistory(to newValue: Bool) {
+    if newValue != UserDefaults.standard.keepHistory {
+      // assume this var is observed, and `keepHistory` in defaults will be changed on
+      // our behalf to match if its confirmed (which we must observe to detect that change)
+      keepHistoryChange = newValue 
+    } else {
+      UserDefaults.standard.keepHistoryChoicePending = false
+      showHistoryChoiceViews(forUpgradeChosen: !newValue)
     }
   }
   
@@ -480,13 +491,13 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     // Need to obsevre `keepHistory` in defaults because we set it only indirectly,
     // by first setting our var `keepHistoryChange` which the app model itself observes
     // and potentially opens a confirmation alert before finally setting `keepHistory`.
-    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: []) { [weak self] _, _ in
-      guard self != nil else { return }
-      self?.keepHistoryChange = UserDefaults.standard.keepHistory
-      UserDefaults.standard.keepHistoryChoicePending = false
+    historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: .new) { [weak self] _, change in
+      guard let self = self, let newValue = change.newValue else { return }
+      keepHistoryChange = newValue
       
+      UserDefaults.standard.keepHistoryChoicePending = false
       DispatchQueue.main.async {
-        self?.showHistoryChoiceViews(forUpgradeChosen: !UserDefaults.standard.keepHistory)
+        self.showHistoryChoiceViews(forUpgradeChosen: !newValue)
       }
     }
     highlightChangeObserver = NSApplication.shared.observe(\.effectiveAppearance, options: []) { [weak self] _, _ in
@@ -651,16 +662,41 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate {
     }
   }
   
-  @IBAction func historyOnChosen(_ sender: AnyObject) {
-    // assume this var is observed, and `keepHistory` in defaults will be changed on
-    // our behalf to match if its confirmed (which we must observe to detect that change)
-    keepHistoryChange = true
+  @IBAction func historyOn(_ sender: AnyObject) {
+    if historyOnButton?.state == .on {
+      historyOffButton?.state = .off
+      changeKeepHistory(to: true)
+      
+    } else if historyOffButton?.state != .on {
+      UserDefaults.standard.keepHistoryChoicePending = true
+      showHistoryChoiceViews(forUpgradeChosen: nil)
+    }
   }
   
-  @IBAction func historyOffChosen(_ sender: AnyObject) {
-    // assume this var is observed, and `keepHistory` in defaults will be changed on
-    // our behalf to match if its confirmed (which we must observe to detect that change)
-    keepHistoryChange = false
+  @IBAction func historyOff(_ sender: AnyObject) {
+    if historyOffButton?.state == .on {
+      historyOnButton?.state = .off
+      changeKeepHistory(to: false)
+      
+    } else if historyOnButton?.state != .on {
+      UserDefaults.standard.keepHistoryChoicePending = true
+      showHistoryChoiceViews(forUpgradeChosen: nil)
+    }
+  }
+  
+  // historySwitch hidden for now and instead using just buttons
+  @IBAction func historySwitched(_ sender: AnyObject) {
+    guard let switchControl = sender as? NSSwitch else { return }
+    changeKeepHistory(to: switchControl.state == .off)
+  }
+
+  // clickable historyOnLabel & historyOffLabel are hidden for now and instead using just buttons
+  func clickDidOccur(on field: ClickableTextField) {
+    if field == historyOnLabel {
+      changeKeepHistory(to: true)
+    } else if field == historyOffLabel {
+      changeKeepHistory(to: false)
+    }
   }
   
   @IBAction func openAppInMacAppStore(_ sender: AnyObject) {

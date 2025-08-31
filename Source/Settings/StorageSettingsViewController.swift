@@ -95,18 +95,17 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     // by first setting our var `keepHistoryChange` which the app model itself observes
     // and potentially opens a confirmation alert before finally setting `keepHistory`.
     historySavingObserver = UserDefaults.standard.observe(\.keepHistory, options: [.old, .new]) { [weak self] _, change in
-      guard let self = self else { return }
+      guard let self = self, let newValue = change.newValue else { return }
       // swiftlint:disable line_length
       //print("keepHistory observer, old = \(change.oldValue == nil ? "nil" : String(describing: change.oldValue!)), new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), old=new: \(change.newValue == change.oldValue)")
       // swiftlint:enable line_length
-      keepHistoryChange = UserDefaults.standard.keepHistory
+      keepHistoryChange = newValue
       
       // always set the switch to match `keepHistory`, and the observable flag
-      populateClipboardHistoryToggle()
-      // only update the UI if the value has truly changed
-      if change.newValue != change.oldValue {
-        updateClipboardHistoryDependencies()
-        forceRelayout()
+      DispatchQueue.main.async {
+        self.populateClipboardHistoryToggle()
+        self.updateClipboardHistoryDependencies()
+        self.forceRelayout()
       }
     }
   }

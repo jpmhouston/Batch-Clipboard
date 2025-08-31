@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "Menu demo history off.png",
+      "filename" : "transition-icons.png",
       "idiom" : "mac",
       "scale" : "1x"
     },
     {
-      "filename" : "Menu demo history off@2x.png",
+      "filename" : "transition-icons@2x.png",
       "idiom" : "mac",
       "scale" : "2x"
     }

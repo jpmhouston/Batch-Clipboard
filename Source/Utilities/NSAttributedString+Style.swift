@@ -151,4 +151,5 @@ extension NSMutableAttributedString {
     
     return NSRange(location: delimitedLocation, length: delimitedLength)
   }
+  
 }

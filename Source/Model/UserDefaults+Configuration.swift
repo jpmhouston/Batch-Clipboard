@@ -273,7 +273,8 @@ extension UserDefaults {
     get { bool(forKey: Keys.keepHistory) }
     set { set(newValue, forKey: Keys.keepHistory) }
   }
-  @objc dynamic public class func automaticallyNotifiesObserversOfKeepHistory() -> Bool { false }
+  // no longer include a `func automaticallyNotifiesObserversOfKeepHistory()`
+  // in this case was preventing correct observations rather than supressing duplicates
   
   public var keepHistoryChoicePending: Bool {
     get { bool(forKey: Keys.keepHistoryChoicePending) }
