@@ -635,7 +635,7 @@ jobs:
       
       - name: Generate Sparkle Appcast File
         id: sparkle
-        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.prerelease != 'true' && steps.version.outputs.tag }}
+        if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
         run: |
           # Generate Sparkle Appcast File step bash script
           
