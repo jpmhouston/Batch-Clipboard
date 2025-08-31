@@ -6,6 +6,35 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.0b3</title>
+            <pubDate>Sun, 31 Aug 2025 15:42:52 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2060</sparkle:version>
+            <sparkle:shortVersionString>2.0b3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Now current batch menu item are always in natural order, top is most
+recent to paste, even when history features are on.</li>
+<li>Rebuilt the Intro window panel for transition from 1.0 and
+confirming history on or off, improving layout to allow larger and more
+descriptive text, no longer focus on the menu item order but instead
+performance, simplicity, duplication of OS features.</li>
+<li>Decided option to hde the menu bar icon should be for all versions
+instead of only for in-app purchasers. Moved its setting from the
+Advanced panel to the General panel and improved its layout.</li>
+<li>Added a clarification to the Advanced panel in the Settings window
+that saved batched are never cleared when to clear-history option it
+turned on.</li>
+<li>Fixed an issue where upon hiding the menu bar icon macOS forgets its
+favored position in the menu.</li>
+<li>Prepare for using a liquid-glass version of the app icon on macOS 26
+Tahoe, original icon on older systems.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.0b3/Batch.Clipboard.2.0b3.zip" length="6215179" type="application/octet-stream" sparkle:edSignature="j84eUx1DUIb/5PveMzbOAuqmbUkW96e1mbrK0jc9stzWDyYMwDVXDZuIErPg0jFxoYr702mT+DhGCuXaKyX0DA=="/>
+        </item>
+        <item>
             <title>2.0b2</title>
             <pubDate>Tue, 26 Aug 2025 16:11:18 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
