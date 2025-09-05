@@ -49,7 +49,7 @@ The app is also available for no cost on the Mac App Store
 the free GitHub version. The Mac App Store version, however, has an in-app purchase allowing
 users to support future development and unlocks few bonus features. Read more about those
 bonus features [in the documenentaion]
-(https://batchclipboard.bananameter.lol/Base-App-Differences/).
+(https://batchclipboard.bananameter.lol/App-Store-Version-Differences/).
 
 Future betas of the App Store version may be available from its TestFlight
 [page](ttps://testflight.apple.com/join/epg3cusH), but we don't guarentee there will always
