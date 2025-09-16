@@ -45,7 +45,7 @@ env:
 jobs:
   build:
     name: Build and Release Non-AppStore Variant
-    runs-on: macos-15
+    runs-on: macos-26
     permissions:
       contents: write # action-gh-release needs this https://github.com/softprops/action-gh-release
     
@@ -55,14 +55,6 @@ jobs:
         with:
           fetch-depth: 0 # required for 'git show-ref --tags' to work
           ref: "${{ env.branch }}"
-      
-      # - name: Patch Xcode 15.3
-      #   uses: 2sem/patch-package-resolved@v2
-      #   # this fixes a mysterious build failure
-      #   #   xcodebuild: error: Could not resolve package dependencies:
-      #   #     Package.resolved file is corrupted or malformed; fix or delete the file
-      #   #     to continue: unknown 'PinsStorage' version '3'
-      #   # should probably remove this when upgrading the "runs-on" platform
       
       - name: Install tools
         # pandoc is used by sparkle step and by one of the xcode project's build rules
