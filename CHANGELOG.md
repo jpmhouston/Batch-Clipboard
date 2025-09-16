@@ -1,5 +1,9 @@
 # Batch Clipboard Changelog
 
+## version 2.0.1 (2025-09-17)
+
+Build with Xcode 26 to use liquid glass icon on macOS 26 Tahoe.
+
 ## version 2.0 (2025-09-05)
 
 The only change from 2.0b3 to 2.0 (final) is the readme file included in non-app store build disk images.
