@@ -6,6 +6,17 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.0.1</title>
+            <pubDate>Wed, 17 Sep 2025 17:35:51 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:version>2067</sparkle:version>
+            <sparkle:shortVersionString>2.0.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>Build with Xcode 26 to use liquid glass icon on macOS 26 Tahoe.</p>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.0.1/Batch.Clipboard.2.0.1.zip" length="7491544" type="application/octet-stream" sparkle:edSignature="pw4zaVSDkXpw+TV0Q53Rx0T1eV0gfK4Hfh4IxfhqIOHedARtKaOyO8NL3WFe8aW2Te2n/ccYT+gqpaAOTe9bBA=="/>
+        </item>
+        <item>
             <title>2.0</title>
             <pubDate>Fri, 05 Sep 2025 13:30:07 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
