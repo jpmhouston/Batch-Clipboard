@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24410" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24123.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24410"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -249,6 +249,7 @@ CA
                 </menuItem>
             </items>
             <connections>
+                <outlet property="aboutItem" destination="m9D-8J-nyc" id="Jaa-M9-mdt"/>
                 <outlet property="batchesHeadingItem" destination="f2x-Sv-BAT" id="y8o-vZ-G4X"/>
                 <outlet property="clearItem" destination="u3d-qz-ihN" id="aak-jk-gan"/>
                 <outlet property="deleteItem" destination="vGj-r1-rIx" id="wrK-G3-cEq"/>
@@ -276,6 +277,8 @@ CA
                 <outlet property="replayLastBatchItem" destination="fuN-bD-8p7" id="TuM-0x-2mh"/>
                 <outlet property="saveCurrentBatchItem" destination="83L-SB-PRJ" id="Eun-bQ-Yyi"/>
                 <outlet property="saveLastBatchItem" destination="mW6-UJ-rBZ" id="XbX-Zo-vcZ"/>
+                <outlet property="settingsItem" destination="Dy3-In-uEL" id="Oas-k3-S8S"/>
+                <outlet property="showIntroItem" destination="1Eb-11-wVB" id="rA9-VB-qhQ"/>
                 <outlet property="undoCopyItem" destination="FT3-WA-g9c" id="VA5-67-hoL"/>
                 <outlet property="updateAvailableItem" destination="rv6-UC-fPh" id="fNX-q6-Van"/>
             </connections>

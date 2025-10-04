@@ -312,7 +312,7 @@ class Clip: NSManagedObject {
   }
   
   // MARK: -
-    
+  
   override var debugDescription: String {
     debugContentsDescription()
   }

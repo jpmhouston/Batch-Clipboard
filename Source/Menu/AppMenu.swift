@@ -106,6 +106,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
     return postIndex - firstIndex
   }
   
+  @IBOutlet weak var aboutItem: NSMenuItem?
+  @IBOutlet weak var showIntroItem: NSMenuItem?
   @IBOutlet weak var updateAvailableItem: NSMenuItem?
   @IBOutlet weak var queueStartItem: NSMenuItem?
   @IBOutlet weak var queueStopItem: NSMenuItem?
@@ -135,6 +137,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var deleteItem: NSMenuItem?
   @IBOutlet weak var clearItem: NSMenuItem?
   @IBOutlet weak var undoCopyItem: NSMenuItem?
+  @IBOutlet weak var settingsItem: NSMenuItem?
   
   // MARK: - lifecycle, overrides, delegate methods
   
@@ -214,6 +217,32 @@ class AppMenu: NSMenu, NSMenuDelegate {
     queueHeadingItem?.title = ""
     historyHeadingItem?.title = ""
     batchesHeadingItem?.title = ""
+    
+    if #available(macOS 26.0, *) {
+      addTahoeItemIcons()
+    }
+  }
+  
+  @available(macOS 11.0, *)
+  func addTahoeItemIcons() {
+    aboutItem?.image = NSImage(systemSymbolName: "info.bubble", accessibilityDescription: nil)
+    showIntroItem?.image = NSImage(systemSymbolName: "info.bubble", accessibilityDescription: nil)
+    updateAvailableItem?.image = NSImage(systemSymbolName: "icloud.and.arrow.down", accessibilityDescription: nil)
+    //queueStartItem
+    queueStopItem?.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: nil)
+    //queueReplayItem
+    queuedCopyItem?.image = NSImage(systemSymbolName: "document.on.document", accessibilityDescription: nil)
+    queuedPasteItem?.image = NSImage(systemSymbolName: "document.on.clipboard", accessibilityDescription: nil)
+    //queueAdvanceItem
+    //queuedPasteMultipleItem
+    //queuedPasteAllItem
+    replayLastBatchItem?.image = NSImage(systemSymbolName: "arrow.uturn.forward", accessibilityDescription: nil)
+    saveLastBatchItem?.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)
+    saveCurrentBatchItem?.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)
+    deleteItem?.image = NSImage(systemSymbolName: "trash", accessibilityDescription: nil)
+    clearItem?.image = NSImage(systemSymbolName: "trash", accessibilityDescription: nil)
+    undoCopyItem?.image = NSImage(systemSymbolName: "arrow.uturn.backward", accessibilityDescription: nil)
+    settingsItem?.image = NSImage(systemSymbolName: "gear.circle", accessibilityDescription: nil)
   }
   
   func prepareForPopup() {
