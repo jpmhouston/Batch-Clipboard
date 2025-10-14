@@ -25,5 +25,6 @@ extension AppModel {
   static var openSettingsPanelURL = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
   static var showIntroInAppURL = "batchclipapp:intro"
   static var showLicensesInAppURL = "batchclipapp:licenses"
+  static var toggleQueueModeInAppURL = "batchclipapp:toggle"
   
 }

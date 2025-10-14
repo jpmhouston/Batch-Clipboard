@@ -261,6 +261,15 @@ extension AppModel {
     return true
   }
   
+  @discardableResult
+  func toggleQueueMode() -> Bool {
+    if !queue.isOn {
+      return startQueueMode(interactive: true)
+    } else {
+      return cancelQueueMode()
+    }
+  }
+  
   @IBAction
   func startReplay(_ sender: AnyObject) {
     startReplay()

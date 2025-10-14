@@ -60,6 +60,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     if url.absoluteString == AppModel.showLicensesInAppURL {
       model.showLicenses()
     }
+    if url.absoluteString == AppModel.toggleQueueModeInAppURL {
+      model.toggleQueueMode()
+    }
   }
   
   func applicationWillTerminate(_ notification: Notification) {

@@ -251,6 +251,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func menuBarShouldOpen() -> Bool {
+    // TODO?: pass in args (modiferFlags: NSEvent.ModifierFlags, isRightClick: Bool)
     // used when menu opens directly from the MenuBarIcon, not MenuController & ProxyMenu
     guard let event = NSApp.currentEvent else {
       os_log(.debug, "NSApp.currentEvent is nil when intercepting statusbaritem click, just letting menu open")
@@ -1008,13 +1009,28 @@ class AppMenu: NSMenu, NSMenuDelegate {
   func performQueueModeToggle() {
     guard !AppModel.busy else { return }
     
-    if !queue.isOn {
-      guard let queueStartItem = queueStartItem else { return }
-      performActionForItem(at: index(of: queueStartItem))
-      
-    } else if queue.isOn && queue.isEmpty {
-      guard let queueStopItem = queueStopItem else { return }
-      performActionForItem(at: index(of: queueStopItem)) // TODO: find out why this usually doesn't work
+    // There's no good way to call the model from here, this code doesn't have
+    // a reference to that instance. Tried doing this but it usually didn't work
+    // for some unknown reason:
+//    if !queue.isOn {
+//      guard let queueStartItem = queueStartItem else { return }
+//      performActionForItem(at: index(of: queueStartItem))
+//    } else if queue.isOn && queue.isEmpty {
+//      guard let queueStopItem = queueStopItem else { return }
+//      performActionForItem(at: index(of: queueStopItem)) // TODO: find out why this usually doesn't work
+//    }
+    
+    // Instead open an in-app url that the app delegate detects and calls the
+    // model's toggle function. Yes I know a static member of AppModel is used here
+    // somewhat hypocritcally :/
+    
+    let urlString = AppModel.toggleQueueModeInAppURL
+    guard let url = URL(string: urlString) else {
+      os_log(.default, "failed to create URL %@", urlString)
+      return
+    }
+    if !NSWorkspace.shared.open(url) {
+      os_log(.default, "failed to open URL %@", urlString)
     }
   }
   

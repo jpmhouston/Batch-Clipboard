@@ -105,6 +105,7 @@ class MenuBarIcon {
       shouldOpenCallback = callback
       statusItem.button?.target = self
       statusItem.button?.action = #selector(statusBarButtonClicked(sender:))
+      statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
       statusItem.menu = nil // has to be nil for the action to be called
     } else {
       // otherwise expect statusItem.menu to be set behind our backs to
