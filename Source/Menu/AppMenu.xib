@@ -242,6 +242,7 @@ CA
                         <action selector="showSettings:" target="-2" id="T0z-qq-fZJ"/>
                     </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="AjU-dy-4EL"/>
                 <menuItem title="Quit Batch Clipboard" tag="109" keyEquivalent="q" id="yjd-dE-jma">
                     <connections>
                         <action selector="quit:" target="-2" id="DKY-Ef-7Mu"/>
@@ -288,7 +289,7 @@ CA
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
@@ -319,7 +320,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="ACTIVE BATCH" id="r5c-9f-aE2">
                         <font key="font" metaFont="miniSystem"/>
@@ -340,7 +341,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
                         <font key="font" metaFont="miniSystem"/>
@@ -361,7 +362,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
                         <font key="font" metaFont="miniSystem"/>
