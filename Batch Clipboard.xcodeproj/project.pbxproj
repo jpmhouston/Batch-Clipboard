@@ -991,7 +991,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
 			requirement = {
-				kind = upToNextMajorVersion;
+				kind = upToNextMinorVersion;
 				minimumVersion = 2.6.0;
 			};
 		};
@@ -999,7 +999,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Settings.git";
 			requirement = {
-				kind = upToNextMajorVersion;
+				kind = upToNextMinorVersion;
 				minimumVersion = 3.0.3;
 			};
 		};
@@ -1047,8 +1047,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/space-code/flare";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.2;
+				kind = exactVersion;
+				version = 3.0.2;
 			};
 		};
 		8F8C484F2BAD51B000C3A219 /* XCRemoteSwiftPackageReference "Sauce" */ = {
@@ -1095,16 +1095,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tikhop/TPInAppReceipt";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				kind = upToNextMinorVersion;
+				minimumVersion = 3.4.0;
 			};
 		};
 		8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.19.1;
+				kind = exactVersion;
+				version = 5.19.1;
 			};
 		};
 		DA00993E256414560030E697 /* XCRemoteSwiftPackageReference "fuse-swift" */ = {
@@ -1128,7 +1128,7 @@
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 2.3.0;
+				minimumVersion = 2.4.0;
 			};
 		};
 		DA5154D62564102900C01004 /* XCRemoteSwiftPackageReference "Sauce" */ = {
