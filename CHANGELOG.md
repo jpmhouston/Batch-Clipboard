@@ -1,5 +1,12 @@
 # Batch Clipboard Changelog
 
+## version 2.1b1 (2025-10-24)
+
+- Improved menu appearance on macOS 26 Tahoe by adding icons for menu item and tweaking location of item separators.
+- Fixed detection of control-click and right-click on the menu bar icon.
+
+Still investigating the somewhat laggy menu when running on macOS 26.x. It improved when on macOS 26.1 betas compared to 26.0, so it seems to be an OS issue, but searching for work-around.
+
 ## version 2.0.1 (2025-09-17)
 
 Build with Xcode 26 to use liquid glass icon on macOS 26 Tahoe.
