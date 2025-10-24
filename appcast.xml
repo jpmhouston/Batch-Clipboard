@@ -6,6 +6,26 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.1b1</title>
+            <pubDate>Fri, 24 Oct 2025 09:27:41 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2073</sparkle:version>
+            <sparkle:shortVersionString>2.1b1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Improved menu appearance on macOS 26 Tahoe by adding icons for menu
+item and tweaking location of item separators.</li>
+<li>Fixed detection of control-click and right-click on the menu bar
+icon.</li>
+</ul>
+<p>Still investigating the somewhat laggy menu when running on macOS
+26.x. It improved when on macOS 26.1 betas compared to 26.0, so it seems
+to be an OS issue, but searching for work-around.</p>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.1b1/Batch.Clipboard.2.1b1.zip" length="7446070" type="application/octet-stream" sparkle:edSignature="kgZLyDGKaIRVqNlTh8Nc7ZbEMjovLJiF+9qxwJDXM8YjqjdmY+x+a6CyzcvOzExndhZYl5OWl5ETlaKoIttmAQ=="/>
+        </item>
+        <item>
             <title>2.0.1</title>
             <pubDate>Wed, 17 Sep 2025 17:35:51 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
