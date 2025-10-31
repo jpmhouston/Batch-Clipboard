@@ -1,9 +1,18 @@
 # Batch Clipboard Changelog
 
+## version 2.1 (2025-10-31 🎃)
+
+- Improved menu appearance on macOS 26 Tahoe by adding icons for menu item and tweaking location of item separators (since 2.1b1 also added an icon to the quit menu item).
+- Fixed detection of control-click and right-click on the menu bar icon to quickly toggle batch mode on and off.
+- Upgraded some source code dependencies, primarily to Sparkle fixing a theoretical security issue. 
+
+Note: macOS 26.1 is recommended over the initial release version of macOS Tahoe. You may experience some lag using the menu especially on Macs with Intel processors, which is still being investigated. This lag is more pronounced running macOS 26.0 and somewhat improved with macOS 26.1.
+
 ## version 2.1b1 (2025-10-24)
 
 - Improved menu appearance on macOS 26 Tahoe by adding icons for menu item and tweaking location of item separators.
-- Fixed detection of control-click and right-click on the menu bar icon.
+- Fixed detection of control-click and right-click on the menu bar icon to quickly toggle batch mode on and off.
+- Upgraded source code dependencies, primarily to Sparkle fixing a theoretical security issue. 
 
 Still investigating the somewhat laggy menu when running on macOS 26.x. It improved when on macOS 26.1 betas compared to 26.0, so it seems to be an OS issue, but searching for work-around.
 
