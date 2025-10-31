@@ -138,6 +138,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var clearItem: NSMenuItem?
   @IBOutlet weak var undoCopyItem: NSMenuItem?
   @IBOutlet weak var settingsItem: NSMenuItem?
+  @IBOutlet weak var quitItem: NSMenuItem?
   
   // MARK: - lifecycle, overrides, delegate methods
   
@@ -243,6 +244,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     clearItem?.image = NSImage(systemSymbolName: "trash", accessibilityDescription: nil)
     undoCopyItem?.image = NSImage(systemSymbolName: "arrow.uturn.backward", accessibilityDescription: nil)
     settingsItem?.image = NSImage(systemSymbolName: "gear.circle", accessibilityDescription: nil)
+    quitItem?.image = NSImage(systemSymbolName: "xmark.rectangle", accessibilityDescription: nil)
   }
   
   func prepareForPopup() {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24410" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24410"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -275,6 +275,7 @@ CA
                 <outlet property="queuedPasteAllItem" destination="mK7-my-GpM" id="1fB-7e-6og"/>
                 <outlet property="queuedPasteItem" destination="WZ5-r7-f8t" id="nfN-UU-R2i"/>
                 <outlet property="queuedPasteMultipleItem" destination="4b4-xr-zN6" id="tAs-Yl-Dbs"/>
+                <outlet property="quitItem" destination="yjd-dE-jma" id="qSW-Ck-Arg"/>
                 <outlet property="replayLastBatchItem" destination="fuN-bD-8p7" id="TuM-0x-2mh"/>
                 <outlet property="saveCurrentBatchItem" destination="83L-SB-PRJ" id="Eun-bQ-Yyi"/>
                 <outlet property="saveLastBatchItem" destination="mW6-UJ-rBZ" id="XbX-Zo-vcZ"/>
@@ -289,7 +290,7 @@ CA
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
@@ -320,7 +321,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="ACTIVE BATCH" id="r5c-9f-aE2">
                         <font key="font" metaFont="miniSystem"/>
@@ -341,7 +342,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
                         <font key="font" metaFont="miniSystem"/>
@@ -362,7 +363,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
                         <font key="font" metaFont="miniSystem"/>
