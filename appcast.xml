@@ -6,6 +6,30 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.1</title>
+            <pubDate>Fri, 31 Oct 2025 20:00:00 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:version>2076</sparkle:version>
+            <sparkle:shortVersionString>2.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Improved menu appearance on macOS 26 Tahoe by adding icons for menu
+item and tweaking location of item separators (since 2.1b1 also added an
+icon to the quit menu item).</li>
+<li>Fixed detection of control-click and right-click on the menu bar
+icon to quickly toggle batch mode on and off.</li>
+<li>Upgraded some source code dependencies, primarily to Sparkle fixing
+a theoretical security issue.</li>
+</ul>
+<p>Note: macOS 26.1 is recommended over the initial release version of
+macOS Tahoe. You may experience some lag using the menu especially on
+Macs with Intel processors, which is still being investigated. This lag
+is more pronounced running macOS 26.0 and somewhat improved with macOS
+26.1.</p>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.1/Batch.Clipboard.2.1.zip" length="7446848" type="application/octet-stream" sparkle:edSignature="zms66XB8w3ZMRIgevjXSXSi4CrpnMfminviGrpX6SSzvKXSjgKBnEwXLUVUNhKdQNi0RuntkyChJDKHh/V12Bw=="/>
+        </item>
+        <item>
             <title>2.1b1</title>
             <pubDate>Fri, 24 Oct 2025 09:27:41 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
