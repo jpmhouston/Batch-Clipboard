@@ -1,5 +1,10 @@
 # Batch Clipboard Changelog
 
+## version 2.2b1 (2025-11-22)
+
+- Fixed removing batch items from menu after they get pasted.
+- Fixed crash when using Undo Last Copy, the IAP-unlocked feature in the app store version.
+
 ## version 2.1 (2025-10-31 🎃)
 
 - Improved menu appearance on macOS 26 Tahoe by adding icons for menu item and tweaking location of item separators (since 2.1b1 also added an icon to the quit menu item).
