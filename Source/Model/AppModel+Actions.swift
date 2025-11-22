@@ -392,6 +392,8 @@ extension AppModel {
       return false
     }
     
+    nop() // TODO: remove once no longer need a breakpoint here
+    
     do {
       try queue.replaying()
     } catch {
@@ -632,6 +634,8 @@ extension AppModel {
       return false
     }
     
+    nop() // TODO: remove once no longer need a breakpoint here
+    
     do {
       try queue.replaying()
     } catch {
@@ -844,6 +848,8 @@ extension AppModel {
       return
     }
     
+    nop() // TODO: remove once no longer need a breakpoint here
+    
     showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
       guard let self = self else { return }
       
@@ -924,6 +930,7 @@ extension AppModel {
     guard index >= 0 && index < history.batches.count else {
       return
     }
+    
     let batch = history.batches[index]
     
     showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in

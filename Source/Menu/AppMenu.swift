@@ -886,13 +886,53 @@ class AppMenu: NSMenu, NSMenuDelegate {
       }
     }
     
-    for index in first ..< end {
-      setClipItemVisibility(at: index, visible: showQueueSection, badgeless: true)
+    // if no queue items, do nothing
+    guard first < end else {
+      return
     }
     
-    // badge the last item, which is the head of the queue 
-    if first < end, #available(macOS 14, *) {
-      let headItemGroup = useNaturalOrder ? first : end - batchItemGroupCount
+    // if queue not showing simply hide all the items
+    if !showQueueSection {
+      for index in first ..< end {
+        setClipItemVisibility(at: index, visible: false, badgeless: true)
+      }
+      return
+    }
+    
+    // sanity check number if menu item vs queue size
+    let menuItemCount = end - first
+    let menuGroupCount = menuItemCount / batchItemGroupCount
+    guard menuGroupCount >= queue.size, menuItemCount % batchItemGroupCount == 0 else {
+      fatalError("queue menu items mismatch, \(first)..<\(end) vs \(queue.size)")
+    }
+    
+    var headItemGroup: Int
+    
+    // show items representing the remaining queue clips, hide the items for clips already pasted 
+    if useNaturalOrder {
+      let firstVisible = end - queue.size * batchItemGroupCount
+      for index in first ..< firstVisible {
+        setClipItemVisibility(at: index, visible: false, badgeless: true)
+      }
+      for index in firstVisible ..< end {
+        setClipItemVisibility(at: index, visible: true, badgeless: true)
+      }
+      headItemGroup = firstVisible
+    } else {
+      let endVisible = first + queue.size * batchItemGroupCount
+      for index in first ..< endVisible {
+        setClipItemVisibility(at: index, visible: true, badgeless: true)
+      }
+      for index in endVisible ..< end {
+        setClipItemVisibility(at: index, visible: false, badgeless: true)
+      }
+      headItemGroup = end - batchItemGroupCount
+    }
+    
+    guard headItemGroup < end else { return } // shouldn't happen, TODO: change to an assert
+    
+    // badge the item representing the head of the queue 
+    if #available(macOS 14, *) {
       for cnt in 0 ..< batchItemGroupCount {
         if let headQueueItem = safeItem(at: headItemGroup + cnt), headQueueItem.isEnabled { 
           headQueueItem.badge = queueHeadBadge as? NSMenuItemBadge
@@ -1092,7 +1132,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   func pushedClipsOnQueue(_ count: Int) {
     queueItemsNeedsRebuild = true
-    historyItemsNeedsRebuild = true
+    //historyItemsNeedsRebuild = true
     rebuildNecessaryDynamicItemsInBackground()
   }
   
@@ -1107,13 +1147,16 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return
     }
     
-    // Leaky abstraction!: We know popped queue clips don't no longer go to the history right away.
+    // Leaky abstraction!: We know popped queue clips no longer go to the history right away.
     // If queue hassn't fully emptied, rely on visibility update to remove popped clip items the
     // next time the menu is opened and no need to rebuild any menu items yet.
     if queue.isEmpty {
       queueItemsNeedsRebuild = true
       historyItemsNeedsRebuild = true
       rebuildNecessaryDynamicItemsInBackground()
+      
+    } else {
+      nop()
     }
   }
   
@@ -1137,7 +1180,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     
     queueItemsNeedsRebuild = true
-    historyItemsNeedsRebuild = true
+    //historyItemsNeedsRebuild = true
     rebuildNecessaryDynamicItemsInBackground()
   }
   

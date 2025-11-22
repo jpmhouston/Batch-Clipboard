@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24123.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,19 +24,19 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="634" height="404"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1090"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="646" height="406"/>
+                <rect key="frame" x="0.0" y="0.0" width="646" height="410"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <box titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="8qq-nm-Jph">
-                        <rect key="frame" x="17" y="56" width="612" height="332"/>
+                        <rect key="frame" x="20" y="64" width="606" height="326"/>
                         <view key="contentView" id="chR-CP-HL5">
-                            <rect key="frame" x="4" y="5" width="604" height="324"/>
+                            <rect key="frame" x="0.0" y="0.0" width="606" height="326"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="UJc-WP-5nb" customClass="UnresponsiveScrollView" customModule="Batch_Clipboard" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
+                                    <rect key="frame" x="0.0" y="2" width="604" height="324"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <clipView key="contentView" id="khg-XL-g6n">
                                         <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
@@ -65,7 +65,7 @@
                         </constraints>
                     </box>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nn0-3a-LL4">
-                        <rect key="frame" x="546" y="13" width="87" height="32"/>
+                        <rect key="frame" x="550" y="20" width="76" height="24"/>
                         <buttonCell key="cell" type="push" title="Next" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wID-aa-qzs">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -78,7 +78,7 @@ DQ
                         </connections>
                     </button>
                     <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gFf-JM-Tzj">
-                        <rect key="frame" x="546" y="13" width="87" height="32"/>
+                        <rect key="frame" x="550" y="20" width="76" height="24"/>
                         <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0rV-u7-S5x">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -88,7 +88,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Nx8-Ge-Pwg">
-                        <rect key="frame" x="461" y="13" width="87" height="32"/>
+                        <rect key="frame" x="461" y="20" width="77" height="24"/>
                         <buttonCell key="cell" type="push" title="Previous" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="oSR-g0-pFl">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -144,7 +144,7 @@ DQ
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VNn-Zg-RaA">
                             <rect key="frame" x="36" y="84" width="538" height="96"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="g8m-UI-Ipo">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="g8m-UI-Ipo">
                                     <rect key="frame" x="-2" y="36" width="542" height="60"/>
                                     <textFieldCell key="cell" id="u3E-8K-Lim">
                                         <font key="font" metaFont="system" size="17"/>
@@ -153,7 +153,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Ed-EA-huu">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4Ed-EA-huu">
                                     <rect key="frame" x="-2" y="0.0" width="536" height="20"/>
                                     <textFieldCell key="cell" title="There's a tiny bit of setup you must do the first time you use the app..." id="136-X1-mq3">
                                         <font key="font" metaFont="system" size="17"/>
@@ -171,7 +171,7 @@ DQ
                                 <real value="3.4028234663852886e+38"/>
                             </customSpacing>
                         </stackView>
-                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="300" translatesAutoresizingMaskIntoConstraints="NO" id="uw2-o6-hWz">
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="300" translatesAutoresizingMaskIntoConstraints="NO" id="uw2-o6-hWz">
                             <rect key="frame" x="34" y="20" width="332" height="30"/>
                             <textFieldCell key="cell" title="to open this again use About in the menu bar menu with the above icon, click &quot;reopen the intro window&quot;" id="nAg-nr-2O5">
                                 <font key="font" metaFont="cellTitle"/>
@@ -179,7 +179,7 @@ DQ
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Vey-Vh-Zet">
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Vey-Vh-Zet">
                             <rect key="frame" x="394" y="20" width="192" height="15"/>
                             <textFieldCell key="cell" lineBreakMode="clipping" title="press the next button to continue" id="997-1T-N4Q">
                                 <font key="font" metaFont="cellTitle"/>
@@ -236,7 +236,7 @@ DQ
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="DiN-8O-NU2" userLabel="two">
                     <rect key="frame" x="604" y="0.0" width="604" height="324"/>
                     <subviews>
-                        <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="gJb-ZW-iAj">
+                        <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="gJb-ZW-iAj">
                             <rect key="frame" x="34" y="76" width="200" height="212"/>
                             <textFieldCell key="cell" lineBreakMode="clipping" title="🛂" id="ebn-Q0-N6T">
                                 <font key="font" metaFont="system" size="180"/>
@@ -244,7 +244,7 @@ DQ
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </textFieldCell>
                         </textField>
-                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Blh-fS-N36">
+                        <textField hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="900" verticalCompressionResistancePriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="Blh-fS-N36">
                             <rect key="frame" x="34" y="76" width="200" height="212"/>
                             <textFieldCell key="cell" lineBreakMode="clipping" title="✅" id="gnG-ZT-UMf">
                                 <font key="font" metaFont="system" size="180"/>
@@ -255,7 +255,7 @@ DQ
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EDA-eq-AfB">
                             <rect key="frame" x="268" y="43" width="300" height="239"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BCE-cs-oZY">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BCE-cs-oZY">
                                     <rect key="frame" x="-2" y="182" width="304" height="57"/>
                                     <textFieldCell key="cell" title="Batch Clipboard needs your authorization to be able to instruct the frontmost application to perform a Copy or Paste." id="VI8-q1-aOr">
                                         <font key="font" metaFont="system" size="16"/>
@@ -263,7 +263,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EvF-0r-9Z1">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EvF-0r-9Z1">
                                     <rect key="frame" x="-2" y="128" width="304" height="38"/>
                                     <textFieldCell key="cell" title="This authorization has not yet been granted." id="lhN-0D-29x">
                                         <font key="font" metaFont="system" size="16"/>
@@ -271,7 +271,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DkE-IU-Osz">
+                                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DkE-IU-Osz">
                                     <rect key="frame" x="-2" y="166" width="233" height="38"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" title="This authorization has already been granted." id="Jti-hB-gYF">
@@ -281,10 +281,10 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nCR-Wr-cCe">
-                                    <rect key="frame" x="0.0" y="84" width="252" height="28"/>
+                                    <rect key="frame" x="0.0" y="84" width="260" height="28"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2VO-Pm-i8d">
-                                            <rect key="frame" x="-6" y="-6" width="240" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="236" height="28"/>
                                             <buttonCell key="cell" type="push" title="Open Privacy &amp; Security Panel" bezelStyle="rounded" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="J3i-c2-9gG">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system" size="15"/>
@@ -293,8 +293,8 @@ DQ
                                                 <action selector="openSettingsAppSecurityPanel:" target="o5X-kK-gzk" id="WnQ-Go-Hb3"/>
                                             </connections>
                                         </button>
-                                        <progressIndicator maxValue="100" displayedWhenStopped="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="w2D-dO-d7T">
-                                            <rect key="frame" x="236" y="6" width="16" height="16"/>
+                                        <progressIndicator wantsLayer="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="w2D-dO-d7T">
+                                            <rect key="frame" x="244" y="6" width="16" height="16"/>
                                         </progressIndicator>
                                     </subviews>
                                     <visibilityPriorities>
@@ -306,7 +306,7 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rEx-zK-yMR">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rEx-zK-yMR">
                                     <rect key="frame" x="-2" y="0.0" width="304" height="68"/>
                                     <textFieldCell key="cell" id="naz-h7-dY3">
                                         <font key="font" metaFont="system" size="14"/>
@@ -358,7 +358,7 @@ DQ
                         <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="250" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NbK-HR-eEY">
                             <rect key="frame" x="364" y="24" width="210" height="276"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="avZ-Lx-MdF">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="avZ-Lx-MdF">
                                     <rect key="frame" x="-2" y="225" width="214" height="51"/>
                                     <textFieldCell key="cell" title="The Accessibility subpanel of your Mac's Privacy &amp; Security settings should have opened." id="gdT-wb-YBu">
                                         <font key="font" metaFont="system" size="14"/>
@@ -366,7 +366,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="752" translatesAutoresizingMaskIntoConstraints="NO" id="KHW-LV-WPV">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="752" translatesAutoresizingMaskIntoConstraints="NO" id="KHW-LV-WPV">
                                     <rect key="frame" x="-2" y="185" width="214" height="28"/>
                                     <textFieldCell key="cell" title="Unlock using the lock icon at the bottom if your window has that." id="qlp-HD-HkR">
                                         <font key="font" metaFont="smallSystem"/>
@@ -374,7 +374,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="GKA-E6-jD4">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="GKA-E6-jD4">
                                     <rect key="frame" x="-2" y="122" width="214" height="51"/>
                                     <textFieldCell key="cell" title="If Batch Clipboard is in the list and off, turn it on. Check all is well using the button below." id="Ahq-i4-uGv">
                                         <font key="font" metaFont="system" size="14"/>
@@ -382,7 +382,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="753" translatesAutoresizingMaskIntoConstraints="NO" id="WEY-X6-Vmb">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="753" translatesAutoresizingMaskIntoConstraints="NO" id="WEY-X6-Vmb">
                                     <rect key="frame" x="-2" y="40" width="214" height="70"/>
                                     <textFieldCell key="cell" id="uNZ-xu-9dB">
                                         <font key="font" metaFont="smallSystem"/>
@@ -392,10 +392,10 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wRU-32-pOq">
-                                    <rect key="frame" x="0.0" y="0.0" width="134" height="28"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="142" height="28"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UAU-vW-BHg">
-                                            <rect key="frame" x="-6" y="-6" width="76" height="40"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="72" height="28"/>
                                             <buttonCell key="cell" type="push" title="Check" bezelStyle="rounded" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tAd-cr-Mmq">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system" size="15"/>
@@ -404,16 +404,16 @@ DQ
                                                 <action selector="checkAccessibilityAuthorization:" target="o5X-kK-gzk" id="dsI-nd-dJb"/>
                                             </connections>
                                         </button>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vGq-Jf-faS">
-                                            <rect key="frame" x="70" y="0.0" width="31" height="28"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vGq-Jf-faS">
+                                            <rect key="frame" x="78" y="0.0" width="31" height="28"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="✅" id="oz9-Dx-jW0">
                                                 <font key="font" metaFont="system" size="24"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4k3-Do-TDL">
-                                            <rect key="frame" x="105" y="0.0" width="31" height="28"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="4k3-Do-TDL">
+                                            <rect key="frame" x="113" y="0.0" width="31" height="28"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="❌" id="ddF-JC-E3k">
                                                 <font key="font" metaFont="system" size="24"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -462,10 +462,10 @@ DQ
                     <rect key="frame" x="1812" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cuh-Dc-5pF">
-                            <rect key="frame" x="14" y="20" width="576" height="285"/>
+                            <rect key="frame" x="14" y="18" width="576" height="289"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1E-a5-ph9">
-                                    <rect key="frame" x="37" y="266" width="503" height="19"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1E-a5-ph9">
+                                    <rect key="frame" x="37" y="270" width="503" height="19"/>
                                     <textFieldCell key="cell" alignment="center" title="It appears that you're upgrading from version 1.0 of Batch Clipboard." id="sli-fr-ZY7">
                                         <font key="font" metaFont="system" size="16"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -473,20 +473,20 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Na-yh-HCi">
-                                    <rect key="frame" x="238" y="220" width="100" height="38"/>
+                                    <rect key="frame" x="238" y="224" width="100" height="38"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="introTransitionIcons" id="o0c-fo-6bi"/>
                                 </imageView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wIb-UL-fdx">
-                                    <rect key="frame" x="-2" y="164" width="580" height="48"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="wIb-UL-fdx">
+                                    <rect key="frame" x="-2" y="168" width="580" height="48"/>
                                     <textFieldCell key="cell" alignment="center" id="CzH-Ug-w4O">
                                         <font key="font" metaFont="system"/>
-                                        <mutableString key="title">The application's new default behavior no longer keeps your clipboard history. This omits the expanded menu (opened with ⌥. held, displays recent clips, lets you select one to re-paste it). This change improves performance, simplifies the menu, and avoids duplicating OS features.</mutableString>
+                                        <string key="title">The application's new default behavior no longer keeps your clipboard history. This omits the expanded menu (opened with ⌥. held, displays recent clips, lets you select one to re-paste it). This change improves performance, simplifies the menu, and avoids duplicating OS features.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-u0-aIy">
-                                    <rect key="frame" x="-2" y="124" width="580" height="32"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q1e-u0-aIy">
+                                    <rect key="frame" x="-2" y="128" width="580" height="32"/>
                                     <textFieldCell key="cell" alignment="center" id="vmd-9Q-SJu">
                                         <font key="font" metaFont="system"/>
                                         <string key="title">With the buttons below, please choose to continue using the application's clipboard history, or to adopt the new default with those features off and the menu simplified.</string>
@@ -494,16 +494,16 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfI-Cy-XwZ">
-                                    <rect key="frame" x="-2" y="269" width="678" height="16"/>
+                                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfI-Cy-XwZ">
+                                    <rect key="frame" x="-2" y="273" width="678" height="16"/>
                                     <textFieldCell key="cell" alignment="center" title="You've choosen to instead continue using the application's clipboard history. Great that you're finding it useful!" id="RPu-G4-0l5">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uzd-uG-7Kf">
-                                    <rect key="frame" x="-2" y="269" width="800" height="16"/>
+                                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uzd-uG-7Kf">
+                                    <rect key="frame" x="-2" y="273" width="800" height="16"/>
                                     <textFieldCell key="cell" alignment="center" id="LRW-UU-tmL">
                                         <font key="font" metaFont="system"/>
                                         <string key="title">You've choosen to adopt the new default and turn off the application's clipboard history. Hopefully you like the improved simplicity.</string>
@@ -512,17 +512,17 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="jTB-D7-JIM">
-                                    <rect key="frame" x="188" y="116" width="200" height="0.0"/>
+                                    <rect key="frame" x="188" y="120" width="200" height="0.0"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="200" id="HtM-7M-LeJ"/>
                                         <constraint firstAttribute="height" id="Uue-Lz-ndJ"/>
                                     </constraints>
                                 </customView>
                                 <stackView hidden="YES" distribution="fill" orientation="horizontal" alignment="centerY" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CcR-5G-bB5" userLabel="unused controls">
-                                    <rect key="frame" x="0.0" y="263" width="310" height="22"/>
+                                    <rect key="frame" x="0.0" y="265" width="326" height="24"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PBy-Zz-j9y" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
-                                            <rect key="frame" x="-2" y="3" width="120" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PBy-Zz-j9y" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
+                                            <rect key="frame" x="-2" y="4" width="120" height="16"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Keep Using History" id="gjK-FK-JRY">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -530,13 +530,13 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <switch horizontalHuggingPriority="750" verticalHuggingPriority="750" baseWritingDirection="leftToRight" alignment="left" translatesAutoresizingMaskIntoConstraints="NO" id="1Xt-RA-0eM">
-                                            <rect key="frame" x="134" y="-2" width="42" height="25"/>
+                                            <rect key="frame" x="136" y="0.0" width="54" height="24"/>
                                             <connections>
                                                 <action selector="historySwitched:" target="o5X-kK-gzk" id="CSj-Hp-Hgg"/>
                                             </connections>
                                         </switch>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ixI-mN-SAa" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
-                                            <rect key="frame" x="192" y="3" width="120" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ixI-mN-SAa" customClass="ClickableTextField" customModule="Batch_Clipboard" customModuleProvider="target">
+                                            <rect key="frame" x="208" y="4" width="120" height="16"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Use New Behavior" id="bQd-gB-eVw">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -559,10 +559,10 @@ DQ
                                     </customSpacing>
                                 </stackView>
                                 <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vap-Ge-QSh">
-                                    <rect key="frame" x="142" y="88" width="292" height="20"/>
+                                    <rect key="frame" x="138" y="88" width="300" height="24"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zth-Yg-4cV">
-                                            <rect key="frame" x="-7" y="-7" width="150" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="140" height="24"/>
                                             <buttonCell key="cell" type="push" title="Keep Using History" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="peu-x0-fjR">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -572,7 +572,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OOV-DV-BYx">
-                                            <rect key="frame" x="149" y="-7" width="150" height="32"/>
+                                            <rect key="frame" x="160" y="0.0" width="140" height="24"/>
                                             <buttonCell key="cell" type="push" title="New Simpler Menu" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SX4-Nw-fgh">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -601,7 +601,7 @@ DQ
                                         <constraint firstAttribute="width" constant="200" id="VgF-el-Gbo"/>
                                     </constraints>
                                 </customView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KOt-85-QgQ">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KOt-85-QgQ">
                                     <rect key="frame" x="16" y="56" width="545" height="14"/>
                                     <textFieldCell key="cell" alignment="center" title="If you just use the ^⌘C and ^⌘V shortcuts and don't know what this means, pick “New Simpler Menu”" id="wFx-Dt-X1x">
                                         <font key="font" metaFont="smallSystem"/>
@@ -609,7 +609,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uCT-e6-3Vv">
                                     <rect key="frame" x="27" y="0.0" width="522" height="48"/>
                                     <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
                                         <font key="font" metaFont="system"/>
@@ -667,7 +667,7 @@ DQ
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2od-RL-Ncb">
                             <rect key="frame" x="20" y="79" width="256" height="221"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HdN-b8-HK8">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HdN-b8-HK8">
                                     <rect key="frame" x="-2" y="201" width="207" height="20"/>
                                     <textFieldCell key="cell" title="All you really need to know" id="Jfu-p1-klM">
                                         <font key="font" metaFont="system" size="17"/>
@@ -675,7 +675,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j5D-BV-2Nj">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="j5D-BV-2Nj">
                                     <rect key="frame" x="-2" y="115" width="247" height="76"/>
                                     <textFieldCell key="cell" id="sQU-xV-qk3">
                                         <font key="font" metaFont="system" size="15"/>
@@ -687,7 +687,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9NK-Et-oQ9">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="9NK-Et-oQ9">
                                     <rect key="frame" x="-2" y="29" width="225" height="76"/>
                                     <textFieldCell key="cell" id="rY6-tp-XkG">
                                         <font key="font" metaFont="system" size="15"/>
@@ -699,7 +699,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xHv-6I-rzd">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xHv-6I-rzd">
                                     <rect key="frame" x="-2" y="0.0" width="259" height="19"/>
                                     <textFieldCell key="cell" title="The order copied is the order pasted." id="acT-Af-oDw">
                                         <font key="font" metaFont="system" size="15"/>
@@ -721,7 +721,7 @@ DQ
                                 <real value="3.4028234663852886e+38"/>
                             </customSpacing>
                         </stackView>
-                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iIv-Wn-GsU">
+                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="iIv-Wn-GsU">
                             <rect key="frame" x="18" y="20" width="250" height="30"/>
                             <textFieldCell key="cell" title="^⌘ means hold down both the control and command keys" id="XxD-fk-TpK">
                                 <font key="font" metaFont="cellTitle"/>
@@ -740,7 +740,7 @@ DQ
                         <visualEffectView hidden="YES" blendingMode="withinWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="lnS-C6-5P3">
                             <rect key="frame" x="386" y="68" width="96" height="49"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qyg-M6-bxJ">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qyg-M6-bxJ">
                                     <rect key="frame" x="14" y="8" width="68" height="33"/>
                                     <textFieldCell key="cell" lineBreakMode="clipping" title="^⌘C" id="JCF-vV-xdu">
                                         <font key="font" metaFont="system" size="28"/>
@@ -766,7 +766,7 @@ DQ
                         <visualEffectView hidden="YES" blendingMode="withinWindow" material="contentBackground" state="followsWindowActiveState" translatesAutoresizingMaskIntoConstraints="NO" id="ge4-gO-Z9z">
                             <rect key="frame" x="387" y="208" width="94" height="49"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vpt-aV-2nZ">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vpt-aV-2nZ">
                                     <rect key="frame" x="14" y="8" width="66" height="33"/>
                                     <textFieldCell key="cell" lineBreakMode="clipping" title="^⌘V" id="VHV-TF-QnU">
                                         <font key="font" metaFont="system" size="28"/>
@@ -812,7 +812,7 @@ DQ
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-QF-9kR">
                             <rect key="frame" x="24" y="64" width="550" height="236"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ysO-Hd-YBl">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ysO-Hd-YBl">
                                     <rect key="frame" x="-2" y="216" width="192" height="20"/>
                                     <textFieldCell key="cell" title="About the menu bar icon" id="vdW-8n-96U">
                                         <font key="font" metaFont="system" size="17"/>
@@ -823,7 +823,7 @@ DQ
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="veb-Qn-gI4">
                                     <rect key="frame" x="0.0" y="172" width="550" height="32"/>
                                     <subviews>
-                                        <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="nXv-aL-ixw">
+                                        <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="nXv-aL-ixw">
                                             <rect key="frame" x="-2" y="8" width="519" height="17"/>
                                             <textFieldCell key="cell" title="Batch Clipboard lives in the menu bar and the icon looks outlined like this: " id="QSh-Vk-jUJ">
                                                 <font key="font" metaFont="system" size="14"/>
@@ -848,7 +848,7 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Sed-8H-0RI">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Sed-8H-0RI">
                                     <rect key="frame" x="-2" y="109" width="554" height="51"/>
                                     <textFieldCell key="cell" id="Yqj-hi-edI">
                                         <font key="font" metaFont="system" size="14"/>
@@ -860,7 +860,7 @@ DQ
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B5Q-l2-QAI">
                                     <rect key="frame" x="0.0" y="63" width="550" height="34"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="kPk-oe-jvZ">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="kPk-oe-jvZ">
                                             <rect key="frame" x="-2" y="0.0" width="450" height="34"/>
                                             <textFieldCell key="cell" title="When in _batch mode_, the menu bar icon appears filled in and with a counter beside it:" id="1VJ-eQ-OVc">
                                                 <font key="font" metaFont="system" size="14"/>
@@ -885,7 +885,7 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vIb-cf-3Yn">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vIb-cf-3Yn">
                                     <rect key="frame" x="-2" y="0.0" width="554" height="51"/>
                                     <textFieldCell key="cell" id="xnL-y0-X6s">
                                         <font key="font" metaFont="system" size="14"/>
@@ -928,7 +928,7 @@ DQ
                         <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uBa-yQ-aIe">
                             <rect key="frame" x="24" y="24" width="550" height="276"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Pmd-4j-Qlf">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Pmd-4j-Qlf">
                                     <rect key="frame" x="-2" y="256" width="57" height="20"/>
                                     <textFieldCell key="cell" title="More…" id="vD0-Lx-euk">
                                         <font key="font" metaFont="system" size="17"/>
@@ -936,8 +936,8 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ofc-pm-ZHJ">
-                                    <rect key="frame" x="-2" y="195" width="554" height="51"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ofc-pm-ZHJ">
+                                    <rect key="frame" x="-2" y="196" width="554" height="51"/>
                                     <textFieldCell key="cell" id="Jnh-iX-NZD">
                                         <font key="font" metaFont="system" size="14"/>
                                         <string key="title">You can enter _batch mode_ and start collecting manually using Start Batch in the menu, or by control-clicking on the menu icon. Then insteaf of ^⌘C, any Copy or Cut command in your application will add clips into the batch.</string>
@@ -945,8 +945,8 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5b-Da-Iyj">
-                                    <rect key="frame" x="-2" y="134" width="554" height="51"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5b-Da-Iyj">
+                                    <rect key="frame" x="-2" y="136" width="554" height="51"/>
                                     <textFieldCell key="cell" id="ejz-po-1sn">
                                         <font key="font" metaFont="system" size="14"/>
                                         <string key="title">You can start replaying from _batch mode_ manually too using Start Replaying Items in the menu. You can then use your application's Paste command instead of ^⌘V, but to advance to the next clip you much use the Advance to Next menu item.</string>
@@ -954,8 +954,8 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TQG-Ao-b8j">
-                                    <rect key="frame" x="-2" y="74" width="554" height="51"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TQG-Ao-b8j">
+                                    <rect key="frame" x="-2" y="76" width="554" height="51"/>
                                     <textFieldCell key="cell" id="GUY-i5-7Qv">
                                         <font key="font" metaFont="system" size="14"/>
                                         <string key="title">The clipboard items that have been collected and not yet pasted are shown in the Batch Clipboard menu, most recent at the top, the next one to paste at the end. You can delete an item you copied accidentally with ⌘-Delete.</string>
@@ -963,8 +963,8 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Agw-Cz-wc3">
-                                    <rect key="frame" x="-2" y="30" width="554" height="34"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Agw-Cz-wc3">
+                                    <rect key="frame" x="-2" y="33" width="554" height="34"/>
                                     <textFieldCell key="cell" id="h9x-EW-Yfr">
                                         <font key="font" metaFont="system" size="14"/>
                                         <string key="title">You can turn on history in the settings. Then holding ⌥ (option key) when clicking the menu shows all recently copied items. Clicking one lets you paste it again.</string>
@@ -973,10 +973,10 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m2v-U7-QYJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="531" height="20"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="535" height="24"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="ZDM-lj-aVO">
-                                            <rect key="frame" x="-2" y="3" width="412" height="17"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="ZDM-lj-aVO">
+                                            <rect key="frame" x="-2" y="4" width="412" height="17"/>
                                             <textFieldCell key="cell" title="Also, the keyboard shortcuts ^⌘C and ^⌘V can be customized" id="vFs-Ep-8cZ">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -984,7 +984,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aMX-1w-PVi">
-                                            <rect key="frame" x="417" y="-7" width="121" height="32"/>
+                                            <rect key="frame" x="424" y="0.0" width="111" height="24"/>
                                             <buttonCell key="cell" type="push" title="Open Settings" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nI9-JH-hPE">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1033,10 +1033,10 @@ DQ
                     <rect key="frame" x="4228" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUk-ID-IIs">
-                            <rect key="frame" x="24" y="33" width="550" height="267"/>
+                            <rect key="frame" x="24" y="29" width="550" height="271"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UGh-0A-tPy">
-                                    <rect key="frame" x="-2" y="247" width="408" height="20"/>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UGh-0A-tPy">
+                                    <rect key="frame" x="-2" y="251" width="408" height="20"/>
                                     <textFieldCell key="cell" title="A few more features are available by in-app purchace" id="9nO-9v-zui">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1044,10 +1044,10 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P2t-k7-gU7">
-                                    <rect key="frame" x="0.0" y="186" width="550" height="51"/>
+                                    <rect key="frame" x="0.0" y="190" width="550" height="51"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="vvo-Gm-qL1">
-                                            <rect key="frame" x="-2" y="0.0" width="431" height="51"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="vvo-Gm-qL1">
+                                            <rect key="frame" x="-2" y="0.0" width="428" height="51"/>
                                             <textFieldCell key="cell" id="M8m-l6-A7W">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <string key="title">Exclusive to the Mac App Store version! A one-time purchase supports development of this app and unlocks a few bonus features. See more about them in the Settings window.</string>
@@ -1056,7 +1056,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TB7-Sf-mKr">
-                                            <rect key="frame" x="436" y="9" width="121" height="32"/>
+                                            <rect key="frame" x="440" y="14" width="110" height="24"/>
                                             <buttonCell key="cell" type="push" title="Open Settings" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ebq-Qr-hgW">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1079,8 +1079,8 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5i0-OJ-wh8">
-                                    <rect key="frame" x="-2" y="247" width="479" height="20"/>
+                                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5i0-OJ-wh8">
+                                    <rect key="frame" x="-2" y="251" width="479" height="20"/>
                                     <textFieldCell key="cell" title="A few more features are available in the Mac App Store version" id="l42-8A-rIE">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1088,10 +1088,10 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView hidden="YES" distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dOo-x3-0gT">
-                                    <rect key="frame" x="0.0" y="247" width="1192" height="20"/>
+                                    <rect key="frame" x="0.0" y="247" width="1196" height="24"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="CQJ-yb-PGa">
-                                            <rect key="frame" x="-2" y="0.0" width="1063" height="20"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="CQJ-yb-PGa">
+                                            <rect key="frame" x="-2" y="0.0" width="1063" height="24"/>
                                             <textFieldCell key="cell" id="Ff1-yi-L9o">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <string key="title">The download on the Mac App Store is free and has the same features as this direct-download. It also offers a one-time purchase that unlocks a few bonus features.</string>
@@ -1100,7 +1100,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" verticalCompressionResistancePriority="801" translatesAutoresizingMaskIntoConstraints="NO" id="91r-ur-G2C">
-                                            <rect key="frame" x="1068" y="-7" width="131" height="32"/>
+                                            <rect key="frame" x="1075" y="0.0" width="121" height="24"/>
                                             <buttonCell key="cell" type="push" title="Open App Store" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Vv9-OX-f76">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1124,9 +1124,9 @@ DQ
                                     </customSpacing>
                                 </stackView>
                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="fPf-Q6-YbK" userLabel="That's all.. title container">
-                                    <rect key="frame" x="0.0" y="152" width="385" height="24"/>
+                                    <rect key="frame" x="0.0" y="156" width="385" height="24"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="As5-Hw-9DD">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="As5-Hw-9DD">
                                             <rect key="frame" x="-2" y="0.0" width="389" height="20"/>
                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="That's all. Where to go for still more information" id="e9P-Jx-zaW">
                                                 <font key="font" metaFont="system" size="17"/>
@@ -1143,10 +1143,10 @@ DQ
                                     </constraints>
                                 </customView>
                                 <stackView distribution="fill" orientation="horizontal" alignment="bottom" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2j-Zt-Dp4">
-                                    <rect key="frame" x="0.0" y="122" width="433" height="20"/>
+                                    <rect key="frame" x="0.0" y="122" width="444" height="24"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpD-ga-KD6">
-                                            <rect key="frame" x="-7" y="-7" width="161" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="151" height="24"/>
                                             <buttonCell key="cell" type="push" title="More Documentation" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8wM-h8-wAH">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1156,7 +1156,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gNg-tp-eyG">
-                                            <rect key="frame" x="-7" y="-7" width="190" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="180" height="24"/>
                                             <buttonCell key="cell" type="push" title="Copy Documentation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cXv-Ew-T0w">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1166,7 +1166,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jez-C6-oFa">
-                                            <rect key="frame" x="152" y="-7" width="154" height="32"/>
+                                            <rect key="frame" x="163" y="0.0" width="144" height="24"/>
                                             <buttonCell key="cell" type="push" title="Send Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6JB-sZ-Xzj">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1176,7 +1176,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Hau-Kb-5xn">
-                                            <rect key="frame" x="-7" y="-7" width="154" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="144" height="24"/>
                                             <buttonCell key="cell" type="push" title="Copy Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="u9j-ZV-2VC">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1186,7 +1186,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K04-rZ-O0s">
-                                            <rect key="frame" x="304" y="-7" width="136" height="32"/>
+                                            <rect key="frame" x="319" y="0.0" width="125" height="24"/>
                                             <buttonCell key="cell" type="push" title="Make a Donation" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AO6-qj-kST">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1196,7 +1196,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AGe-vu-v96">
-                                            <rect key="frame" x="-7" y="-7" width="152" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="142" height="24"/>
                                             <buttonCell key="cell" type="push" title="Copy Donation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jDp-0X-CPr">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1206,7 +1206,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xiZ-Qf-6K9">
-                                            <rect key="frame" x="-7" y="-7" width="118" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="108" height="24"/>
                                             <buttonCell key="cell" type="push" title="Privacy Policy" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="RSV-zx-Ocu">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1216,7 +1216,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GsH-9g-ozW">
-                                            <rect key="frame" x="-7" y="-7" width="132" height="32"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="122" height="24"/>
                                             <buttonCell key="cell" type="push" title="App Store EULA" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KiV-53-hoh">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1250,7 +1250,7 @@ DQ
                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="wgz-NP-bdb" userLabel="Open source.. title container">
                                     <rect key="frame" x="0.0" y="88" width="544" height="24"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JiV-Jm-peE">
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JiV-Jm-peE">
                                             <rect key="frame" x="-2" y="0.0" width="548" height="20"/>
                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Batch Clipboard is open source with proven foundations" id="dfQ-sj-HNd">
                                                 <font key="font" metaFont="system" size="17"/>
@@ -1269,15 +1269,15 @@ DQ
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TSk-Ob-jbR">
                                     <rect key="frame" x="0.0" y="44" width="550" height="34"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="bJz-fV-YLk">
-                                            <rect key="frame" x="-2" y="0.0" width="405" height="34"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="bJz-fV-YLk">
+                                            <rect key="frame" x="-2" y="0.0" width="402" height="34"/>
                                             <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, the non-App Store version can be download from here." id="ncU-gg-tO7">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="id9-2O-9Q5">
+                                        <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="id9-2O-9Q5">
                                             <rect key="frame" x="-2" y="17" width="742" height="17"/>
                                             <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, it's safe handling of your data can be checked and validated." id="ON8-N1-vLv">
                                                 <font key="font" metaFont="system" size="14"/>
@@ -1286,7 +1286,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kdS-e2-KIB">
-                                            <rect key="frame" x="410" y="0.0" width="147" height="32"/>
+                                            <rect key="frame" x="414" y="5" width="136" height="24"/>
                                             <buttonCell key="cell" type="push" title="Open GitHub Page" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mXO-h5-5BP">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1296,7 +1296,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="s0H-ax-VVd">
-                                            <rect key="frame" x="-7" y="7" width="140" height="32"/>
+                                            <rect key="frame" x="0.0" y="10" width="130" height="24"/>
                                             <buttonCell key="cell" type="push" title="Copy GitHub Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wBs-50-vQg">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1322,8 +1322,8 @@ DQ
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2F-sc-bmg">
                                     <rect key="frame" x="0.0" y="0.0" width="550" height="34"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="efI-DS-y9J">
-                                            <rect key="frame" x="-2" y="0.0" width="408" height="34"/>
+                                        <textField horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="efI-DS-y9J">
+                                            <rect key="frame" x="-2" y="0.0" width="405" height="34"/>
                                             <textFieldCell key="cell" title="Batch Clipboard is a derivative of Maccy. Check out that original app if interested in a full-featured clipboard manager." id="wHd-ST-cAs">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1331,7 +1331,7 @@ DQ
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fff-0G-hUh">
-                                            <rect key="frame" x="413" y="0.0" width="144" height="32"/>
+                                            <rect key="frame" x="417" y="5" width="133" height="24"/>
                                             <buttonCell key="cell" type="push" title="Maccy Homepage" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ANa-5E-kf7">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1341,7 +1341,7 @@ DQ
                                             </connections>
                                         </button>
                                         <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DoP-zS-gJW">
-                                            <rect key="frame" x="-7" y="7" width="138" height="32"/>
+                                            <rect key="frame" x="0.0" y="10" width="128" height="24"/>
                                             <buttonCell key="cell" type="push" title="Copy Maccy Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TM7-2H-Cbz">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
