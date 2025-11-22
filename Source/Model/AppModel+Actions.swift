@@ -1031,12 +1031,6 @@ extension AppModel {
       return
     }
     
-    guard let clip = history.first else {
-      return
-    }
-    
-    history.remove(clip)
-    
     if !queue.isEmpty {
       do {
         try queue.remove(atIndex: 0)
@@ -1052,7 +1046,14 @@ extension AppModel {
       menu.deletedClipFromQueue(0)
       updateMenuIcon(.decrement)
       updateMenuTitle()
+      
     } else {
+      guard let clip = history.first else {
+        return
+      }
+      
+      history.remove(clip)
+      
       menu.deletedClipFromHistory(0)
     }
   }

@@ -154,6 +154,10 @@ class QueueSims {
   static let delFromQHoffOldest = [ "#delFromQ-H-># " +   hoff + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff ]
   static let delFromQHoffNewest = [ "#delFromQ-H<-# " +   hoff + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff ]
   
+  static let undoFromQHoff = [ "#undoFromQ-H# " +         hoff + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp ]
+  static let undoFromQHon = [ "#undoFromQ+H# " +          hon + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp ]
+  static let undoFromH = [ "#undoFromH# " +               hon + "h1,h2,h3" + iscnt+"3" + undo + iscnt+"2" + begcmph + "h1,h2" + endcmp ]
+  
   static let clearH = [ "#clearH# " +                     hon + "h1,h2" + clear + iscnt+"0" ]
   static let clearHandQ = [ "#clearH+Q# " +               hon + "h1,h2" + start + "qA,qB" + clear + isqoff + iscnt+"0" ]
   static let clearQnoH = [ "#clearQH0# " +                hon + start + "qA,qB" + clear + isqoff ]
@@ -169,6 +173,7 @@ class QueueSims {
                                         //delFromHplusQ, delFromHplusQOldest, delFromHplusQNewest, delFromQEmptyH,
                                         //delFromQEmptyHOldest, delFromQEmptyHNewest, delFromQplusH, delFromQplusHOldest, delFromQplusHNewest,
                                         //delFromQHoff, delFromQHoffOldest, delFromQHoffNewest,
+                                        //undoFromQHoff, undoFromQHon, undoFromH,
                                         //clearH, clearHandQ, clearQnoH, clearQHoff,
                                       ])
   func queueSim(run: [String]) async throws {
@@ -240,10 +245,11 @@ class QueueSims {
           try queue.add(newclip)
         
         case .undo: // replicates AppModel.undoLastCopy
-          guard let clip = history.first else { print("kinda fishy, was this intentional? no first history item at undo-copy token (\(undoTokenname) \(undo)) [\(n)]"); return }
-          history.remove(clip)
           if !queue.isEmpty {
             try queue.remove(atIndex: 0)
+          } else {
+            guard let clip = history.first else { print("kinda fishy, was this intentional? no first history item at undo-copy token (\(undoTokenname) \(undo)) [\(n)]"); return }
+            history.remove(clip)
           }
         
         case .paste:

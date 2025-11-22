@@ -1415,6 +1415,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let wasLastInMenu = menuOrderPosition == batchMenuItem.clipCount - 1 // was last in the menu, ie. at the end
     let wasHighlighed = clipMenuItem == submenu.highlightedItem
     
+    nop()
+    
     for cnt in 0 ..< batchItemGroupCount { 
       submenu.removeItem(at: subindex + cnt)
     }
