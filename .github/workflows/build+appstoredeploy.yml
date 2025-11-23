@@ -432,7 +432,8 @@ jobs:
           
           for subitem in $subitems; do
             xcrun codesign --force --sign "${{ secrets.STORE_MACOS_CERTIFICATE_NAME }}" \
-            --options runtime -v "$subitem"
+            --options runtime -v "$subitem" \
+            || (echo "Developer certs in the keychain:" ; certtool y | grep Developer\ ID ; exit 1)
           done
           
           # would instead do this to if any subcomponents themselves included entitlements:
