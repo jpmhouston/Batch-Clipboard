@@ -176,6 +176,69 @@ jobs:
             echo "tag=$tag" >> $GITHUB_OUTPUT
           fi
       
+      - name: Setup Keychain
+        run: |
+          # Setup Keychain step bash script
+          
+          if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
+            exit 1
+          fi
+          
+          if [[ -z "${{ secrets.STORE_MACOS_CERTIFICATE }}" ]] ; then
+            echo "::error::Secret STORE_MACOS_CERTIFICATE not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.STORE_MACOS_CERTIFICATE_PWD }}" ]] ; then
+            echo "::error::Secret STORE_MACOS_CERTIFICATE_PWD not defined"
+            exit 1
+          fi
+          
+          if [[ -z "${{ secrets.PKG_MACOS_CERTIFICATE }}" ]] ; then
+            echo "::error::Secret PKG_MACOS_CERTIFICATE not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.PKG_MACOS_CERTIFICATE_PWD }}" ]] ; then
+            echo "::error::Secret PKG_MACOS_CERTIFICATE_PWD not defined"
+            exit 1
+          fi
+          
+          # Turn our base64-encoded certificates back to a regular .p12 files
+          
+          signcertname="signcertificate.p12"
+          echo "- Base64-decode certificate to make \"$signcertname\""
+          echo "${{ secrets.STORE_MACOS_CERTIFICATE }}" | base64 --decode > "$signcertname"
+          
+          pkgcertname="pkgcertificate.p12"
+          echo "- Base64-encode certificate to make \"$pkgcertname\""
+          echo "${{ secrets.PKG_MACOS_CERTIFICATE }}" | base64 --decode > "$pkgcertname"
+          
+          # We need to create a new keychain, one that we can keep unlocked,
+          # otherwise using the certificate will prompt with a UI dialog asking for
+          # the certificate password, which won't work in a headless CI environment
+          
+          echo "- Create unlocked keychain \"build.keychain\""
+          security create-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain 
+          security set-keychain-settings build.keychain # omitted '-t N' option means no timeout
+          security unlock-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+          security default-keychain -s build.keychain
+          
+          echo "- Import \"$signcertname\" and \"$pkgcertname\" into \"build.keychain\""
+          security import "$signcertname" -P "${{ secrets.STORE_MACOS_CERTIFICATE_PWD }}" \
+            -T /usr/bin/security -T "$(xcrun --find codesign)" \
+            -t cert -f pkcs12 -k build.keychain
+          security import "$pkgcertname" -P "${{ secrets.PKG_MACOS_CERTIFICATE_PWD }}" \
+            -T /usr/bin/security -T "$(xcrun --find codesign)" -T "$(xcrun --find productbuild)" \
+            -t cert -f pkcs12 -k build.keychain
+          
+          security list-keychains -d user -s build.keychain
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+          
+          # Log the (encrypted) keychain contents
+          echo "- The build keychain..."
+          security dump-keychain -r build.keychain
+      
       - name: Patch Entitlements
         run: |
           # Patch Entitlements step bash script
@@ -308,65 +371,6 @@ jobs:
           profiledest="${{ steps.build.outputs.appbundle }}/Contents/${{ env.profiledestinationfile }}"
           echo "${{ secrets.STORE_MACOS_PROFILE }}" | base64 --decode > "$profiledest"
       
-      - name: Setup Keychain
-        run: |
-          # Setup Keychain step bash script
-          
-          if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
-            echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
-            exit 1
-          fi
-          
-          if [[ -z "${{ secrets.STORE_MACOS_CERTIFICATE }}" ]] ; then
-            echo "::error::Secret STORE_MACOS_CERTIFICATE not defined"
-            exit 1
-          fi
-          if [[ -z "${{ secrets.STORE_MACOS_CERTIFICATE_PWD }}" ]] ; then
-            echo "::error::Secret STORE_MACOS_CERTIFICATE_PWD not defined"
-            exit 1
-          fi
-          
-          if [[ -z "${{ secrets.PKG_MACOS_CERTIFICATE }}" ]] ; then
-            echo "::error::Secret PKG_MACOS_CERTIFICATE not defined"
-            exit 1
-          fi
-          if [[ -z "${{ secrets.PKG_MACOS_CERTIFICATE_PWD }}" ]] ; then
-            echo "::error::Secret PKG_MACOS_CERTIFICATE_PWD not defined"
-            exit 1
-          fi
-          
-          # Turn our base64-encoded certificates back to a regular .p12 files
-          
-          signcertname="signcertificate.p12"
-          echo "- Base64-decode certificate to make \"$signcertname\""
-          echo "${{ secrets.STORE_MACOS_CERTIFICATE }}" | base64 --decode > "$signcertname"
-          
-          pkgcertname="pkgcertificate.p12"
-          echo "- Base64-encode certificate to make \"$pkgcertname\""
-          echo "${{ secrets.PKG_MACOS_CERTIFICATE }}" | base64 --decode > "$pkgcertname"
-          
-          # We need to create a new keychain, one that we can keep unlocked,
-          # otherwise using the certificate will prompt with a UI dialog asking for
-          # the certificate password, which won't work in a headless CI environment
-          
-          echo "- Create unlocked keychain \"build.keychain\""
-          security create-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain 
-          security set-keychain-settings build.keychain # omitted '-t N' option means no timeout
-          security unlock-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
-          security default-keychain -s build.keychain
-          
-          echo "- Import \"$signcertname\" and \"$pkgcertname\" into \"build.keychain\""
-          security import "$signcertname" -P "${{ secrets.STORE_MACOS_CERTIFICATE_PWD }}" \
-            -T /usr/bin/security -T "$(xcrun --find codesign)" \
-            -t cert -f pkcs12 -k build.keychain
-          security import "$pkgcertname" -P "${{ secrets.PKG_MACOS_CERTIFICATE_PWD }}" \
-            -T /usr/bin/security -T "$(xcrun --find codesign)" -T "$(xcrun --find productbuild)" \
-            -t cert -f pkcs12 -k build.keychain
-          
-          security list-keychain -d user -s build.keychain
-          security set-key-partition-list -S apple-tool:,apple: \
-            -k "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
-      
       - name: Codesign App Bundle
         run: |
           # Codesign App Bundle step bash script
@@ -432,8 +436,7 @@ jobs:
           
           for subitem in $subitems; do
             xcrun codesign --force --sign "${{ secrets.STORE_MACOS_CERTIFICATE_NAME }}" \
-            --options runtime -v "$subitem" \
-            || (echo "Developer certs in the keychain:" ; certtool y | grep Developer\ ID ; exit 1)
+            --options runtime -v "$subitem"
           done
           
           # would instead do this to if any subcomponents themselves included entitlements:

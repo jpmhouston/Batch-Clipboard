@@ -221,6 +221,51 @@ jobs:
             echo "tag=$tag" >> $GITHUB_OUTPUT
           fi
       
+      - name: Setup Keychain
+        run: |
+          # Setup Keychain step bash script
+          
+          if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
+            exit 1
+          fi
+          
+          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CERTIFICATE not defined"
+            exit 1
+          fi
+          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" ]] ; then
+            echo "::error::Secret PROD_MACOS_CERTIFICATE_PWD not defined"
+            exit 1
+          fi
+          
+          # Turn our base64-encoded certificate back to a regular .p12 file
+          
+          echo "- Base64-decode certificate to make \"certificate.p12\""
+          echo "${{ secrets.PROD_MACOS_CERTIFICATE }}" | base64 --decode > certificate.p12
+          
+          # We need to create a new keychain, one that we can keep unlocked,
+          # otherwise using the certificate will prompt with a UI dialog asking for
+          # the certificate password, which won't work in a headless CI environment
+          
+          echo "- Create unlocked keychain \"build.keychain\""
+          security create-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain 
+          security default-keychain -s build.keychain
+          security set-keychain-settings build.keychain # omitted '-t N' option means no timeout
+          security unlock-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+          
+          echo "- Import \"certificate.p12\" into \"build.keychain\""
+          security import certificate.p12 -P "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" \
+            -T "$(xcrun --find codesign)" -t cert -f pkcs12 -k build.keychain
+          
+          security list-keychain -d user -s build.keychain
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
+          
+          # Log the (encrypted) keychain contents
+          echo "- The build keychain..."
+          security dump-keychain -r build.keychain
+      
       - name: Build
         id: build
         run: |
@@ -294,47 +339,6 @@ jobs:
         with:
           name: "Symbol file"
           path: ${{ steps.symbols.outputs.filename }}
-      
-      - name: Setup Keychain
-        run: |
-          # Setup Keychain step bash script
-          
-          if [[ -z "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" ]] ; then
-            echo "::error::Secret PROD_MACOS_CI_KEYCHAIN_PWD not defined"
-            exit 1
-          fi
-          
-          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE }}" ]] ; then
-            echo "::error::Secret PROD_MACOS_CERTIFICATE not defined"
-            exit 1
-          fi
-          if [[ -z "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" ]] ; then
-            echo "::error::Secret PROD_MACOS_CERTIFICATE_PWD not defined"
-            exit 1
-          fi
-          
-          # Turn our base64-encoded certificate back to a regular .p12 file
-          
-          echo "- Base64-decode certificate to make \"certificate.p12\""
-          echo "${{ secrets.PROD_MACOS_CERTIFICATE }}" | base64 --decode > certificate.p12
-          
-          # We need to create a new keychain, one that we can keep unlocked,
-          # otherwise using the certificate will prompt with a UI dialog asking for
-          # the certificate password, which won't work in a headless CI environment
-          
-          echo "- Create unlocked keychain \"build.keychain\""
-          security create-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain 
-          security default-keychain -s build.keychain
-          security set-keychain-settings build.keychain # omitted '-t N' option means no timeout
-          security unlock-keychain -p "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
-          
-          echo "- Import \"certificate.p12\" into \"build.keychain\""
-          security import certificate.p12 -P "${{ secrets.PROD_MACOS_CERTIFICATE_PWD }}" \
-            -T "$(xcrun --find codesign)" -t cert -f pkcs12 -k build.keychain
-          
-          security list-keychain -d user -s build.keychain
-          security set-key-partition-list -S apple-tool:,apple: \
-            -k "${{ secrets.PROD_MACOS_CI_KEYCHAIN_PWD }}" build.keychain
       
       - name: Codesign App Bundle
         run: |
