@@ -6,6 +6,22 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.2b1</title>
+            <pubDate>Sun, 23 Nov 2025 00:11:59 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2081</sparkle:version>
+            <sparkle:shortVersionString>2.2b1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Fixed removing batch items from menu after they get pasted.</li>
+<li>Fixed crash when using Undo Last Copy, the IAP-unlocked feature in
+the app store version.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.2b1/Batch.Clipboard.2.2b1.zip" length="7449136" type="application/octet-stream" sparkle:edSignature="d2ajwgrxE0Z74sKJ85lcmUvFaVBE7fjzY9UHIaWaN8HIXrGxrOOrohs2XrehoC4c3l673NeqtaAgAylqX4ewBA=="/>
+        </item>
+        <item>
             <title>2.1</title>
             <pubDate>Fri, 31 Oct 2025 20:00:00 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
