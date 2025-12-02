@@ -487,25 +487,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				es,
-				ru,
 				Base,
-				"zh-Hans",
-				fr,
-				nb,
-				hr,
-				it,
-				de,
-				ko,
-				"zh-Hant",
-				ja,
-				th,
-				tr,
-				bs,
-				uk,
-				he,
-				nl,
-				ar,
 			);
 			mainGroup = DAEE383A1E3DBEB100DD2966;
 			packageReferences = (
