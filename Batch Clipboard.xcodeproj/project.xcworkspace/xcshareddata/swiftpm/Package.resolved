@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/space-code/atomic.git",
       "state" : {
-        "revision" : "6a1473440c31c6debf1de2404265949ed7892b14",
-        "version" : "1.0.1"
+        "revision" : "6304c805e9d97fe1239bcde561234d857164cb10",
+        "version" : "1.1.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/space-code/concurrency.git",
       "state" : {
-        "revision" : "4592824038749a14a0c2c0605bc3c6429a81634e",
-        "version" : "0.0.3"
+        "revision" : "bb7119365ad8ab08111213c5662edc67521c60cb",
+        "version" : "0.2.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/space-code/flare",
       "state" : {
-        "revision" : "357425fd5ba73d9c8d3881129917ab2ca2e91d21",
-        "version" : "3.0.2"
+        "revision" : "88e6290920e9433715f257028a1ff0aa3867524b",
+        "version" : "3.2.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/space-code/log.git",
       "state" : {
-        "revision" : "d99fff5656c31ef7e604965b90a50ec10539c98f",
-        "version" : "1.1.0"
+        "revision" : "e1555183e51c1d7372d534bede0602c4f23e91b0",
+        "version" : "1.2.0"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/Settings.git",
       "state" : {
-        "revision" : "c677bea28d92684911f93530d0b5f4c40eea743b",
-        "version" : "3.0.5"
+        "revision" : "f41475771f65379ca10852c95119a7f53f0de5a5",
+        "version" : "3.1.2"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
-        "version" : "2.6.4"
+        "revision" : "5581748cef2bae787496fe6d61139aebe0a451f6",
+        "version" : "2.8.1"
       }
     },
     {

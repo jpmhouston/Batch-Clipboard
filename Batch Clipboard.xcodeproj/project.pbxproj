@@ -992,7 +992,7 @@
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 2.6.0;
+				minimumVersion = 2.8.0;
 			};
 		};
 		2F39CB082AD9AE1F00B749FD /* XCRemoteSwiftPackageReference "Settings" */ = {
@@ -1000,7 +1000,7 @@
 			repositoryURL = "https://github.com/sindresorhus/Settings.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 3.0.3;
+				minimumVersion = 3.1.0;
 			};
 		};
 		8F0D3C112BAB8F5A00DDB603 /* XCRemoteSwiftPackageReference "Sauce" */ = {
@@ -1047,8 +1047,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/space-code/flare";
 			requirement = {
-				kind = exactVersion;
-				version = 3.0.2;
+				kind = upToNextMinorVersion;
+				minimumVersion = 3.2.0;
 			};
 		};
 		8F8C484F2BAD51B000C3A219 /* XCRemoteSwiftPackageReference "Sauce" */ = {
