@@ -1,5 +1,13 @@
 # Batch Clipboard Changelog
 
+## version 2.2b2 (2025-12-02)
+
+- Fixed crash after copying text that contains non-breaking space and potentially other special characters.
+- Tahoe UI update in settings window (from upgrading Settings library dependency).
+- UI updates in auto-update dialog for non-appstore build (from upgrading Sparkle library dependency).
+- Potential minor fixes to purchasing in appstore build (from upgrading Flame library dependency).
+- Corrected source project setup that claimed localization that were missing, should have no effect.
+
 ## version 2.2b1 (2025-11-22)
 
 - Fixed removing batch items from menu after they get pasted.
