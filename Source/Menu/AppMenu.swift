@@ -1910,9 +1910,13 @@ class AppMenu: NSMenu, NSMenuDelegate {
     guard let clipTitle = clip.title else {
       fatalError("menu item at \(index) has clip with a nil title")
     }
+    #if VALIDATE_MENUITEM_TITLES
+    // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
+    // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
       fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
     }
+    #endif
   }
   
   private func sanityCheckBatchMenuItems() {
@@ -1951,9 +1955,13 @@ class AppMenu: NSMenu, NSMenuDelegate {
     guard let batchTitle = batch.title else {
       fatalError("menu item at \(index) has batch with a nil title")
     }
+    #if VALIDATE_MENUITEM_TITLES
+    // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
+    // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard batchTitle == item.title || (batchTitle == "" && item.title == " ") else {
       fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
     }
+    #endif
   }
   
   func sanityCheckBatchClipMenuItem(at index: Int, ofSubmenu submenu: NSMenu, withParentIndex parentIndex: Int) {
@@ -1971,9 +1979,13 @@ class AppMenu: NSMenu, NSMenuDelegate {
     guard let clipTitle = clip.title else {
       fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has clip with a nil title")
     }
+    #if VALIDATE_MENUITEM_TITLES
+    // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
+    // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
       fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has the wrong title")
     }
+    #endif
   }
   
   // This used to be called in an `add` function, presumable when adding to the
