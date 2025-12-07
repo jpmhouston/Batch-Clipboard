@@ -1,5 +1,17 @@
 # Batch Clipboard Changelog
 
+## version 2.2 (2025-12-07 ❄️)
+
+Fundamentally the same as 2.2b2. All changes since 2.1:
+
+- Fixed crash after copying text that contains non-breaking space and potentially other special characters.
+- Fixed removing batch items from menu after they get pasted.
+- Fixed crash when using Undo Last Copy, the IAP-unlocked feature in the app store version.
+- Tahoe UI update in settings window (from upgrading Settings library dependency).
+- UI updates in auto-update dialog for non-appstore build (from upgrading Sparkle library dependency).
+- Potential minor fixes to purchasing in appstore build (from upgrading Flame library dependency).
+- Corrected source project setup that claimed localization that were missing, should have no effect.
+
 ## version 2.2b2 (2025-12-02)
 
 - Fixed crash after copying text that contains non-breaking space and potentially other special characters.
