@@ -6,6 +6,32 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.2</title>
+            <pubDate>Sun, 07 Dec 2025 10:36:16 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:version>2089</sparkle:version>
+            <sparkle:shortVersionString>2.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>Fundamentally the same as 2.2b2. All changes since 2.1:</p>
+<ul>
+<li>Fixed crash after copying text that contains non-breaking space and
+potentially other special characters.</li>
+<li>Fixed removing batch items from menu after they get pasted.</li>
+<li>Fixed crash when using Undo Last Copy, the IAP-unlocked feature in
+the app store version.</li>
+<li>Tahoe UI update in settings window (from upgrading Settings library
+dependency).</li>
+<li>UI updates in auto-update dialog for non-appstore build (from
+upgrading Sparkle library dependency).</li>
+<li>Potential minor fixes to purchasing in appstore build (from
+upgrading Flame library dependency).</li>
+<li>Corrected source project setup that claimed localization that were
+missing, should have no effect.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.2/Batch.Clipboard.2.2.zip" length="7500605" type="application/octet-stream" sparkle:edSignature="Fktu3Avl1BwWkCuLj5fdOdr9jZOMhQQI0Ogj25gb3y9S41ynji9APwhtXurt+qMIASh1Xz8Z/QuyXsPt9DC6Ag=="/>
+        </item>
+        <item>
             <title>2.2b1</title>
             <pubDate>Sun, 23 Nov 2025 00:11:59 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
