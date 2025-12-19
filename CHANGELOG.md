@@ -1,5 +1,12 @@
 # Batch Clipboard Changelog
 
+## version 2.2 (2025-12-18 ⛄️🎄)
+
+Update for the App Store edition only.
+
+A rebuild with no change but the version numberto permit updates to the age rating information
+within the Mac App Store.
+
 ## version 2.2 (2025-12-07 ❄️)
 
 Fundamentally the same as 2.2b2. All changes since 2.1:
