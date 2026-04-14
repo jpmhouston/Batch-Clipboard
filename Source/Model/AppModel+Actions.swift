@@ -197,13 +197,25 @@ extension AppModel {
     startQueueMode(interactive: true)
   }
   
+  @IBAction
+  func startQueueModeWithCurrentClip(_ sender: AnyObject) {
+    // handler for the menu item
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    startQueueMode(withCurrentClip: true, interactive: true)
+  }
+  
   func startQueueMode() {
     // handler for the global keyboard shortcut
     startQueueMode(interactive: true)
   }
   
+  func startQueueModeWithCurrentClip() {
+    // handler for the global keyboard shortcut
+    startQueueMode(withCurrentClip: true, interactive: true)
+  }
+  
   @discardableResult
-  func startQueueMode(interactive: Bool = false) -> Bool {
+  func startQueueMode(withCurrentClip addCurrentClip: Bool = false, interactive: Bool = false) -> Bool {
     // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
     guard !Self.busy else {
@@ -219,6 +231,17 @@ extension AppModel {
     queue.on()
     ensureMenuIconVisible()
     menuIcon.update(forQueueSize: 0)
+    
+    if addCurrentClip && !clipboard.isEmpty, let clip = clipboard.newClipFromCurrent() {
+      do {
+        try queue.add(clip)
+        menu.addedClipToQueue(clip)
+        updateMenuIcon(.increment)
+      } catch {
+        // maybe do something to remove `clip` from coredata?
+      }
+    }
+    
     updateMenuTitle()
     commenceClipboardMonitoring()
     

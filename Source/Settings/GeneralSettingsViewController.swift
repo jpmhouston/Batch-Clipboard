@@ -29,6 +29,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   private let copyHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedCopy)
   private let pasteHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedPaste)
   private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
+  private let startWithCurrentHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStartWithCurrent)
   private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
   
   #if SPARKLE_UPDATES
@@ -41,6 +42,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var copyHotkeyContainerView: NSView!
   @IBOutlet weak var pasteHotkeyContainerView: NSView!
   @IBOutlet weak var startHotkeyContainerView: NSView!
+  @IBOutlet weak var startWithCurrentHotkeyContainerView: NSView!
   @IBOutlet weak var replayHotkeyContainerView: NSView!
   @IBOutlet weak var launchAtLoginCheckbox: NSButton!
   @IBOutlet weak var launchAtLoginRow: NSGridRow!
@@ -84,6 +86,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     addSubviewWithManualLayout(copyHotkeyContainerView, copyHotkeyRecorder)
     addSubviewWithManualLayout(pasteHotkeyContainerView, pasteHotkeyRecorder)
     addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
+    addSubviewWithManualLayout(startWithCurrentHotkeyContainerView, startWithCurrentHotkeyRecorder)
     addSubviewWithManualLayout(replayHotkeyContainerView, replayHotkeyRecorder)
     
     #if SPARKLE_UPDATES

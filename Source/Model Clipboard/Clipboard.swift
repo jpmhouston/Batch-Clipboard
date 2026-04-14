@@ -343,14 +343,20 @@ class Clipboard: CustomDebugStringConvertible {
     }
     
     // Make new clip containing what's on the pasteboard now
-    let contents = currentContents()
-    guard !contents.isEmpty else {
+    guard let newPasteboardItem = newClipFromCurrent() else {
       return
     }
-    let newPasteboardItem = Clip.create(withContents: contents, application: sourceApp?.bundleIdentifier)
     
     // Disseminate
     onNewCopyHooks.forEach({ $0(newPasteboardItem) })
+  }
+  
+  func newClipFromCurrent() -> Clip? {
+    let contents = currentContents()
+    guard !contents.isEmpty else {
+      return nil
+    }
+    return Clip.create(withContents: contents, application: sourceApp?.bundleIdentifier)
   }
   
   func currentContents() -> [ClipContent] {
@@ -359,39 +365,52 @@ class Clipboard: CustomDebugStringConvertible {
     // - https://github.com/p0deje/Maccy/issues/78
     // - https://github.com/p0deje/Maccy/issues/472
     var contents: [ClipContent] = []
-    pasteboard.pasteboardItems?.forEach({ item in
-      var types = Set(item.types)
-      if types.contains(.string) && isEmptyString(item) && !richText(item) {
-        return
-      }
-      
-      if shouldIgnore(item) {
-        return
-      }
-      
-      types = types
-        .subtracting(disabledTypes)
-        .filter { !$0.rawValue.starts(with: microsoftSourcePrefix) }
-      
-      // Maccy removes .dyn types always to fix a MS Word issue or something, but
-      // keeping them fixes LibreOffice, so only remove when evidence of any MS app
-      if types.contains(where: { $0.rawValue.starts(with: microsoftAnythingPrefix) }) {
-        types = types.filter { !$0.rawValue.starts(with: dynamicTypePrefix) }
-      }
-      
-      // Avoid reading Microsoft Word links from bookmarks and cross-references.
-      // https://github.com/p0deje/Maccy/issues/613
-      // https://github.com/p0deje/Maccy/issues/770
-      if types.isSuperset(of: [.microsoftLinkSource, .microsoftObjectLink]) {
-        types = types.subtracting([.microsoftLinkSource, .microsoftObjectLink, .pdf])
-      }
-      
-      types.forEach { type in
+    pasteboard.pasteboardItems?.forEach { item in
+      filteredItemsTypes(for: item).forEach { type in
         contents.append(ClipContent.create(type: type.rawValue, value: item.data(forType: type)))
       }
-    })
+    }
     
     return contents
+  }
+  
+  var isEmpty: Bool {
+    for item in pasteboard.pasteboardItems ?? [] {
+      if !filteredItemsTypes(for: item).isEmpty {
+        return true
+      }
+    }
+    return false
+  }
+  
+  func filteredItemsTypes(for item: NSPasteboardItem) -> Set<NSPasteboard.PasteboardType> {
+    var types = Set(item.types)
+    if types.contains(.string) && isEmptyString(item) && !richText(item) {
+      return Set()
+    }
+    
+    if shouldIgnore(item) {
+      return Set()
+    }
+    
+    types = types
+      .subtracting(disabledTypes)
+      .filter { !$0.rawValue.starts(with: microsoftSourcePrefix) }
+    
+    // Maccy removes .dyn types always to fix a MS Word issue or something, but
+    // keeping them fixes LibreOffice, so only remove when evidence of any MS app
+    if types.contains(where: { $0.rawValue.starts(with: microsoftAnythingPrefix) }) {
+      types = types.filter { !$0.rawValue.starts(with: dynamicTypePrefix) }
+    }
+    
+    // Avoid reading Microsoft Word links from bookmarks and cross-references.
+    // https://github.com/p0deje/Maccy/issues/613
+    // https://github.com/p0deje/Maccy/issues/770
+    if types.isSuperset(of: [.microsoftLinkSource, .microsoftObjectLink]) {
+      types = types.subtracting([.microsoftLinkSource, .microsoftObjectLink, .pdf])
+    }
+    
+    return types
   }
   
   // MARK: -

@@ -18,5 +18,6 @@ extension KeyboardShortcuts.Name {
   static let queuedPaste = Self("queuedPaste", default: Shortcut(.v, modifiers: [.command, .control]))
   
   static let queueStart = Self("queueStart", default: nil)
+  static let queueStartWithCurrent = Self("queueStartWithCurrent", default: nil)
   static let queueReplay = Self("queueReplay", default: nil)
 }

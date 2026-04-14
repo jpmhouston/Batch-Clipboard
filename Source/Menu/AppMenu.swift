@@ -111,6 +111,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var updateAvailableItem: NSMenuItem?
   @IBOutlet weak var queueStartItem: NSMenuItem?
   @IBOutlet weak var queueStopItem: NSMenuItem?
+  @IBOutlet weak var queueStartWithCurrentItem: NSMenuItem?
   @IBOutlet weak var queueReplayItem: NSMenuItem?
   @IBOutlet weak var queuedCopyItem: NSMenuItem?
   @IBOutlet weak var queuedPasteItem: NSMenuItem?
@@ -230,6 +231,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     showIntroItem?.image = NSImage(systemSymbolName: "info.bubble", accessibilityDescription: nil)
     updateAvailableItem?.image = NSImage(systemSymbolName: "icloud.and.arrow.down", accessibilityDescription: nil)
     //queueStartItem
+    //queueStartWithCurrentItem
     queueStopItem?.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: nil)
     //queueReplayItem
     queuedCopyItem?.image = NSImage(systemSymbolName: "document.on.document", accessibilityDescription: nil)
@@ -754,6 +756,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     //  guard let self = self else { return }
     MainActor.assumeIsolated {
       queueStartItem?.setShortcut(for: .queueStart)
+      queueStartWithCurrentItem?.setShortcut(for: .queueStartWithCurrent)
       queuedCopyItem?.setShortcut(for: .queuedCopy)
       queuedPasteItem?.setShortcut(for: .queuedPaste)
       replayLastBatchItem?.setShortcut(for: .queueReplay)
@@ -788,6 +791,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let batchEmpty = history.isLastBatchEmpty
     
     queueStartItem?.isEnabled = notBusy && !queueOn // although expect to get hidden if invalid
+    queueStartWithCurrentItem?.isEnabled = notBusy && !queueOn
     queueReplayItem?.isEnabled = notBusy && !queueEmpty && !queue.isReplaying
     queueStopItem?.isEnabled = notBusy && queueOn
     queuedCopyItem?.isEnabled = notBusy
@@ -822,6 +826,16 @@ class AppMenu: NSMenu, NSMenuDelegate {
     queueStopItem?.isVisible = queueOn
     queueReplayItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems
     queueAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems
+    
+    // optionally make "start with current clip" an alternate
+    if let queueStartItem = queueStartItem, let queueStartWithCurrentItem = queueStartWithCurrentItem {
+      if queueStartItem.keyEquivalent.isEmpty && queueStartWithCurrentItem.keyEquivalent.isEmpty {
+        queueStartWithCurrentItem.keyEquivalentModifierMask = .option 
+        queueStartWithCurrentItem.isVisibleAlternate = true
+      } else if queueStartItem.keyEquivalent == queueStartWithCurrentItem.keyEquivalent {
+        queueStartWithCurrentItem.isVisibleAlternate = true
+      }
+    }
     
     replayLastBatchItem?.isVisible = AppModel.allowLastBatch || promoteExtras
     saveLastBatchItem?.isVisible = !queueOn && (AppModel.allowSavedBatches || promoteExtras)

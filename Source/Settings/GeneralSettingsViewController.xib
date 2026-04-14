@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24123.1" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24123.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,27 +24,54 @@
                 <outlet property="promoteExtrasSeparatorRow" destination="GUX-S5-fhF" id="feI-pO-FOM"/>
                 <outlet property="replayHotkeyContainerView" destination="MBx-4h-6VP" id="eip-IG-VVZ"/>
                 <outlet property="startHotkeyContainerView" destination="wkA-3I-kqY" id="kTs-tU-jLB"/>
+                <outlet property="startWithCurrentHotkeyContainerView" destination="l8e-BL-dTo" id="0Qb-GV-la1"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="674"/>
+            <rect key="frame" x="0.0" y="0.0" width="528" height="860"/>
             <subviews>
                 <gridView xPlacement="leading" yPlacement="top" rowAlignment="lastBaseline" rowSpacing="8" columnSpacing="13" translatesAutoresizingMaskIntoConstraints="NO" id="GOB-4Q-pQY">
-                    <rect key="frame" x="24" y="20" width="432" height="643"/>
+                    <rect key="frame" x="26" y="20" width="476" height="820"/>
                     <constraints>
+                        <constraint firstItem="wkA-3I-kqY" firstAttribute="trailing" secondItem="pPs-rF-k8m" secondAttribute="trailing" placeholder="YES" id="4rT-Kv-oJw"/>
+                        <constraint firstItem="Qym-v6-aJj" firstAttribute="top" secondItem="uSs-0A-Zux" secondAttribute="bottom" priority="997" constant="19" placeholder="YES" id="6sZ-Um-3o2"/>
+                        <constraint firstItem="MBx-4h-6VP" firstAttribute="trailing" secondItem="l8e-BL-dTo" secondAttribute="trailing" placeholder="YES" id="8sh-iI-t5j"/>
+                        <constraint firstItem="l8e-BL-dTo" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="DVr-Gs-vtY"/>
+                        <constraint firstAttribute="bottom" secondItem="Qym-v6-aJj" secondAttribute="bottom" priority="998" constant="100" placeholder="YES" id="GJg-07-ghn"/>
+                        <constraint firstItem="iu8-fy-LMA" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" placeholder="YES" id="HNT-Sf-RZh"/>
+                        <constraint firstItem="N6u-W6-DOj" firstAttribute="top" secondItem="mOE-Th-WLC" secondAttribute="bottom" priority="997" constant="14" placeholder="YES" id="HWH-kg-K32"/>
+                        <constraint firstItem="wkA-3I-kqY" firstAttribute="leading" secondItem="pPs-rF-k8m" secondAttribute="leading" placeholder="YES" id="IfQ-2K-rfj"/>
+                        <constraint firstItem="l8e-BL-dTo" firstAttribute="leading" secondItem="wkA-3I-kqY" secondAttribute="leading" placeholder="YES" id="M8z-Wm-wSb"/>
+                        <constraint firstAttribute="trailing" secondItem="gv6-rV-zkI" secondAttribute="trailing" constant="129" placeholder="YES" id="ORM-xj-vjv"/>
+                        <constraint firstItem="MBx-4h-6VP" firstAttribute="leading" secondItem="l8e-BL-dTo" secondAttribute="leading" placeholder="YES" id="Qf3-cN-kaV"/>
+                        <constraint firstItem="gv6-rV-zkI" firstAttribute="top" secondItem="GOB-4Q-pQY" secondAttribute="top" constant="26" placeholder="YES" id="SJR-s8-wA7"/>
                         <constraint firstItem="pPs-rF-k8m" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="Sr0-Gh-8Ra"/>
+                        <constraint firstItem="fah-TO-d2Q" firstAttribute="top" secondItem="MBx-4h-6VP" secondAttribute="bottom" constant="17" placeholder="YES" id="Stg-33-zx2"/>
+                        <constraint firstItem="mOE-Th-WLC" firstAttribute="top" secondItem="fah-TO-d2Q" secondAttribute="bottom" constant="14" placeholder="YES" id="U3P-Re-H7J"/>
+                        <constraint firstItem="pPs-rF-k8m" firstAttribute="leading" secondItem="gv6-rV-zkI" secondAttribute="leading" placeholder="YES" id="WQJ-JO-hZn"/>
+                        <constraint firstItem="fah-TO-d2Q" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" placeholder="YES" id="dsv-lV-0S6"/>
+                        <constraint firstItem="l8e-BL-dTo" firstAttribute="trailing" secondItem="wkA-3I-kqY" secondAttribute="trailing" placeholder="YES" id="eES-dB-HQl"/>
+                        <constraint firstItem="pPs-rF-k8m" firstAttribute="trailing" secondItem="gv6-rV-zkI" secondAttribute="trailing" placeholder="YES" id="ebc-W9-LdE"/>
+                        <constraint firstItem="iu8-fy-LMA" firstAttribute="top" secondItem="iDZ-rJ-xSU" secondAttribute="bottom" priority="992" constant="14" placeholder="YES" id="fQa-9H-2ey"/>
                         <constraint firstItem="wkA-3I-kqY" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="iEx-Rt-Ozr"/>
+                        <constraint firstItem="uSs-0A-Zux" firstAttribute="top" secondItem="iu8-fy-LMA" secondAttribute="bottom" priority="999" constant="14" placeholder="YES" id="l5b-aY-5zR"/>
+                        <constraint firstItem="l8e-BL-dTo" firstAttribute="top" secondItem="wkA-3I-kqY" secondAttribute="bottom" constant="11" placeholder="YES" id="mAD-7c-fQK"/>
                         <constraint firstItem="MBx-4h-6VP" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="nSu-qc-oaS"/>
+                        <constraint firstItem="pPs-rF-k8m" firstAttribute="top" secondItem="gv6-rV-zkI" secondAttribute="bottom" constant="11" placeholder="YES" id="ofA-jA-pQZ"/>
+                        <constraint firstItem="wkA-3I-kqY" firstAttribute="top" secondItem="pPs-rF-k8m" secondAttribute="bottom" constant="11" placeholder="YES" id="tfD-UT-pVe"/>
+                        <constraint firstItem="MBx-4h-6VP" firstAttribute="top" secondItem="l8e-BL-dTo" secondAttribute="bottom" constant="11" placeholder="YES" id="xNm-l6-GVH"/>
                         <constraint firstItem="gv6-rV-zkI" firstAttribute="centerX" secondItem="GOB-4Q-pQY" secondAttribute="centerX" constant="16" id="y3v-De-b8N"/>
+                        <constraint firstItem="gv6-rV-zkI" firstAttribute="leading" secondItem="C8J-Mx-Lzz" secondAttribute="trailing" constant="3" placeholder="YES" id="zu1-ga-087"/>
                     </constraints>
                     <rows>
                         <gridRow topPadding="-8" bottomPadding="4" id="Rtf-DZ-kxy"/>
                         <gridRow id="1lh-Qw-cAx"/>
                         <gridRow id="rSH-D5-fQU"/>
                         <gridRow id="mpB-IZ-sST"/>
+                        <gridRow id="c6u-2e-1Tk"/>
                         <gridRow bottomPadding="6" id="RFe-Ts-oH0"/>
                         <gridRow id="GUX-S5-fhF"/>
                         <gridRow topPadding="6" bottomPadding="6" id="232-HF-VEQ"/>
@@ -62,7 +89,7 @@
                         <gridCell row="Rtf-DZ-kxy" column="vOJ-9h-G8Y" id="HrY-LT-8BM"/>
                         <gridCell row="Rtf-DZ-kxy" column="pQU-Pz-q1v" id="eIg-IF-Jr9">
                             <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Mid-lr-u2U">
-                                <rect key="frame" x="130" y="629" width="200" height="14"/>
+                                <rect key="frame" x="174" y="806" width="200" height="14"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Customize global keyboard shortcuts" id="1vs-l1-URT">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
@@ -71,8 +98,8 @@
                             </textField>
                         </gridCell>
                         <gridCell row="1lh-Qw-cAx" column="vOJ-9h-G8Y" id="2m8-9a-mJO">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
-                                <rect key="frame" x="17" y="584" width="104" height="23"/>
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="C8J-Mx-Lzz">
+                                <rect key="frame" x="61" y="761" width="104" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="10R-0q-RDn"/>
                                 </constraints>
@@ -84,10 +111,10 @@
                             </textField>
                         </gridCell>
                         <gridCell row="1lh-Qw-cAx" column="pQU-Pz-q1v" id="t3H-4Z-90w">
-                            <customView key="contentView" identifier="copykeyview" toolTip="Global shortcut key to copy into the current batch, starting a new one if necessary. Default: ^⌘C." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gv6-rV-zkI">
-                                <rect key="frame" x="132" y="587" width="200" height="30"/>
+                            <customView key="contentView" identifier="copykeyview" toolTip="Global shortcut key to copy into the current batch, starting a new one if necessary. Default: ^⌘C." translatesAutoresizingMaskIntoConstraints="NO" id="gv6-rV-zkI" userLabel="Copy Key View">
+                                <rect key="frame" x="166" y="764" width="181" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Ntm-y4-aXK"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="Ntm-y4-aXK"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="nextKeyView" destination="pPs-rF-k8m" id="efK-Zb-0fF"/>
@@ -95,8 +122,8 @@
                             </customView>
                         </gridCell>
                         <gridCell row="rSH-D5-fQU" column="vOJ-9h-G8Y" id="MkQ-Ti-RAy">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
-                                <rect key="frame" x="9" y="543" width="112" height="23"/>
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UNS-12-xWP">
+                                <rect key="frame" x="53" y="720" width="112" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="ARz-S4-0pY"/>
                                 </constraints>
@@ -108,10 +135,10 @@
                             </textField>
                         </gridCell>
                         <gridCell row="rSH-D5-fQU" column="pQU-Pz-q1v" id="yVM-gZ-e0i">
-                            <customView key="contentView" identifier="pastekeyview" toolTip="Global shortcut key to paste next clipboard item from the current batch. Default: ^⌘P." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pPs-rF-k8m">
-                                <rect key="frame" x="132" y="546" width="200" height="30"/>
+                            <customView key="contentView" identifier="pastekeyview" toolTip="Global shortcut key to paste next clipboard item from the current batch. Default: ^⌘P." translatesAutoresizingMaskIntoConstraints="NO" id="pPs-rF-k8m" userLabel="Paste Key View">
+                                <rect key="frame" x="166" y="723" width="181" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="Nux-kj-G8Q"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="Nux-kj-G8Q"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="nextKeyView" destination="wkA-3I-kqY" id="VAO-Za-1mg"/>
@@ -119,8 +146,8 @@
                             </customView>
                         </gridCell>
                         <gridCell row="mpB-IZ-sST" column="vOJ-9h-G8Y" id="U7s-9H-Buf">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
-                                <rect key="frame" x="45" y="502" width="76" height="23"/>
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="S1Q-kI-egx">
+                                <rect key="frame" x="89" y="679" width="76" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="ccs-88-5v0"/>
                                 </constraints>
@@ -132,19 +159,43 @@
                             </textField>
                         </gridCell>
                         <gridCell row="mpB-IZ-sST" column="pQU-Pz-q1v" id="N7Y-NA-8b1">
-                            <customView key="contentView" identifier="startkeyview" toolTip="Global shortcut key to start a new batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wkA-3I-kqY">
-                                <rect key="frame" x="132" y="505" width="200" height="30"/>
+                            <customView key="contentView" identifier="startkeyview" toolTip="Global shortcut key to start a new batch of clipboard items. Default: none." translatesAutoresizingMaskIntoConstraints="NO" id="wkA-3I-kqY" userLabel="Start Key View">
+                                <rect key="frame" x="166" y="682" width="181" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="j2p-Ny-ogZ"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="j2p-Ny-ogZ"/>
                                 </constraints>
                                 <connections>
-                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="4QL-aw-kBe"/>
+                                    <outlet property="nextKeyView" destination="l8e-BL-dTo" id="HOl-Ov-AGc"/>
+                                </connections>
+                            </customView>
+                        </gridCell>
+                        <gridCell row="c6u-2e-1Tk" column="vOJ-9h-G8Y" id="aw5-6R-jqS">
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hI4-ax-kEa">
+                                <rect key="frame" x="0.0" y="638" width="165" height="23"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="23" id="O3A-rX-9TH"/>
+                                </constraints>
+                                <textFieldCell key="cell" alignment="right" title="Start batch with clipboard:" id="zpe-4t-pmk">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </gridCell>
+                        <gridCell row="c6u-2e-1Tk" column="pQU-Pz-q1v" id="WaD-Mv-okV">
+                            <customView key="contentView" identifier="startwithcurrentkeyview" toolTip="Global shortcut key to start a new batch of clipboard items. Default: none." translatesAutoresizingMaskIntoConstraints="NO" id="l8e-BL-dTo" userLabel="Start2 Key View">
+                                <rect key="frame" x="166" y="641" width="181" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="1bZ-gC-CF3"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="nextKeyView" destination="gv6-rV-zkI" id="ptY-Zj-jbJ"/>
                                 </connections>
                             </customView>
                         </gridCell>
                         <gridCell row="RFe-Ts-oH0" column="vOJ-9h-G8Y" id="bLz-c8-PjC">
-                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zap-FI-RBI">
-                                <rect key="frame" x="9" y="461" width="112" height="23"/>
+                            <textField key="contentView" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zap-FI-RBI">
+                                <rect key="frame" x="53" y="597" width="112" height="23"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="23" id="zw9-cy-ivA"/>
                                 </constraints>
@@ -156,10 +207,10 @@
                             </textField>
                         </gridCell>
                         <gridCell row="RFe-Ts-oH0" column="pQU-Pz-q1v" id="ceZ-e4-Xfu">
-                            <customView key="contentView" identifier="replaykeyview" toolTip="Global shortcut key to replay the most recently completed batch of clipboard items. Default: none." ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MBx-4h-6VP">
-                                <rect key="frame" x="132" y="464" width="200" height="30"/>
+                            <customView key="contentView" identifier="replaykeyview" toolTip="Global shortcut key to replay the most recently completed batch of clipboard items. Default: none." translatesAutoresizingMaskIntoConstraints="NO" id="MBx-4h-6VP" userLabel="Replay Key View">
+                                <rect key="frame" x="166" y="600" width="181" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="180" id="zUJ-QZ-kPB"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="zUJ-QZ-kPB"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="nextKeyView" destination="gv6-rV-zkI" id="W4X-lF-lRM"/>
@@ -167,15 +218,15 @@
                             </customView>
                         </gridCell>
                         <gridCell row="GUX-S5-fhF" column="vOJ-9h-G8Y" headOfMergedCell="t3O-rf-TGe" id="t3O-rf-TGe">
-                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fah-TO-d2Q">
-                                <rect key="frame" x="332" y="444" width="100" height="5"/>
+                            <box key="contentView" horizontalHuggingPriority="252" verticalHuggingPriority="700" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fah-TO-d2Q">
+                                <rect key="frame" x="0.0" y="580" width="476" height="5"/>
                             </box>
                         </gridCell>
                         <gridCell row="GUX-S5-fhF" column="pQU-Pz-q1v" headOfMergedCell="t3O-rf-TGe" id="i7x-TW-kLM"/>
                         <gridCell row="232-HF-VEQ" column="vOJ-9h-G8Y" id="ZrQ-5C-nuc"/>
                         <gridCell row="232-HF-VEQ" column="pQU-Pz-q1v" id="HCS-gd-bGh">
-                            <button key="contentView" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mOE-Th-WLC">
-                                <rect key="frame" x="130" y="415" width="119" height="18"/>
+                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mOE-Th-WLC">
+                                <rect key="frame" x="176" y="536" width="114" height="32"/>
                                 <buttonCell key="cell" type="check" title="Launch at login" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cfl-qm-UkM">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -187,11 +238,14 @@
                         </gridCell>
                         <gridCell row="eMX-8f-nbZ" column="vOJ-9h-G8Y" id="as4-Oy-UtN"/>
                         <gridCell row="eMX-8f-nbZ" column="pQU-Pz-q1v" id="0yL-n5-sg2">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
-                                <rect key="frame" x="132" y="320" width="300" height="82"/>
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
+                                <rect key="frame" x="176" y="434" width="300" height="88"/>
                                 <subviews>
                                     <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
-                                        <rect key="frame" x="-2" y="26" width="304" height="56"/>
+                                        <rect key="frame" x="-2" y="32" width="304" height="56"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="999" constant="56" placeholder="YES" id="2u5-PU-EE4"/>
+                                        </constraints>
                                         <textFieldCell key="cell" id="u7U-Li-5Kf">
                                             <font key="font" metaFont="smallSystem"/>
                                             <string key="title">The ability to automatically add this app as a Login Items is only avaialable in macOS 13 and later. Use button below to open the Settings panel for adding or removing Batch Clipboard manually.</string>
@@ -200,16 +254,22 @@
                                         </textFieldCell>
                                     </textField>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fWD-v1-Rli">
-                                        <rect key="frame" x="0.0" y="-1" width="148" height="19"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="157" height="24"/>
                                         <buttonCell key="cell" type="roundRect" title="Open Login Items panel" bezelStyle="roundedRect" alignment="center" borderStyle="border" inset="2" id="CGo-tu-azT">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="cellTitle"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="998" constant="24" placeholder="YES" id="1Yr-Pf-MEP"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="openLoginItemsPanel:" target="-2" id="6dn-og-Hq2"/>
                                         </connections>
                                     </button>
                                 </subviews>
+                                <constraints>
+                                    <constraint firstItem="fWD-v1-Rli" firstAttribute="top" secondItem="GaN-gj-k5w" secondAttribute="bottom" priority="999" constant="8" symbolic="YES" placeholder="YES" id="dNL-uc-JhY"/>
+                                </constraints>
                                 <visibilityPriorities>
                                     <integer value="1000"/>
                                     <integer value="1000"/>
@@ -222,35 +282,44 @@
                         </gridCell>
                         <gridCell row="1mV-QC-dVq" column="vOJ-9h-G8Y" id="Y9p-vy-afK"/>
                         <gridCell row="1mV-QC-dVq" column="pQU-Pz-q1v" id="h04-50-TT0">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iDZ-rJ-xSU">
-                                <rect key="frame" x="132" y="240" width="220" height="66"/>
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iDZ-rJ-xSU">
+                                <rect key="frame" x="176" y="348" width="217" height="72"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Mxc-Pf-Ef9">
-                                        <rect key="frame" x="-2" y="49" width="222" height="18"/>
+                                        <rect key="frame" x="0.0" y="56" width="217" height="16"/>
                                         <buttonCell key="cell" type="check" title="Check for updates automatically" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="avb-QJ-T0h">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="999" constant="16" placeholder="YES" id="jMv-i6-dcq"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="sparkleAutomaticUpdatesChanged:" target="-2" id="pjv-0I-Ahw"/>
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GVa-2H-aEA">
-                                        <rect key="frame" x="18" y="25" width="155" height="18"/>
+                                        <rect key="frame" x="20" y="32" width="151" height="16"/>
                                         <buttonCell key="cell" type="check" title="Include beta releases" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="1xW-rQ-Ti4">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="999" constant="16" placeholder="YES" id="RyO-Ca-Zs6"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="sparkleBetaFeedChanged:" target="-2" id="wSl-lz-igc"/>
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ik8-mb-VoG">
-                                        <rect key="frame" x="0.0" y="-1" width="79" height="19"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="88" height="24"/>
                                         <buttonCell key="cell" type="roundRect" title="Check Now" bezelStyle="roundedRect" alignment="center" borderStyle="border" inset="2" id="8Rb-OS-d59">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="cellTitle"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="998" constant="24" placeholder="YES" id="HXw-nD-rKw"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="sparkleUpdateCheck:" target="-2" id="hWZ-ac-pYU"/>
                                         </connections>
@@ -272,18 +341,18 @@
                             </stackView>
                         </gridCell>
                         <gridCell row="9L9-uE-qLH" column="vOJ-9h-G8Y" headOfMergedCell="yd5-NW-Usj" id="yd5-NW-Usj">
-                            <box key="contentView" verticalHuggingPriority="700" ambiguous="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iu8-fy-LMA">
-                                <rect key="frame" x="332" y="223" width="100" height="5"/>
+                            <box key="contentView" horizontalHuggingPriority="251" verticalHuggingPriority="700" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iu8-fy-LMA">
+                                <rect key="frame" x="0.0" y="331" width="476" height="5"/>
                             </box>
                         </gridCell>
                         <gridCell row="9L9-uE-qLH" column="pQU-Pz-q1v" headOfMergedCell="yd5-NW-Usj" id="02s-0x-eYk"/>
                         <gridCell row="m6d-MA-IKv" column="vOJ-9h-G8Y" id="VL1-Me-CkK"/>
                         <gridCell row="m6d-MA-IKv" column="pQU-Pz-q1v" id="3ja-GV-RvV">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSs-0A-Zux">
-                                <rect key="frame" x="132" y="67" width="300" height="144"/>
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSs-0A-Zux">
+                                <rect key="frame" x="176" y="159" width="300" height="160"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OBF-sn-fha">
-                                        <rect key="frame" x="-2" y="127" width="202" height="18"/>
+                                        <rect key="frame" x="0.0" y="128" width="197" height="32"/>
                                         <buttonCell key="cell" type="check" title="Always show in the menu bar" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NfH-5K-dzl">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -325,25 +394,31 @@
                         </gridCell>
                         <gridCell row="t58-uQ-JlU" column="vOJ-9h-G8Y" id="vcE-dg-xAt"/>
                         <gridCell row="t58-uQ-JlU" column="pQU-Pz-q1v" id="BVc-ZY-77k">
-                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" ambiguous="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qym-v6-aJj">
-                                <rect key="frame" x="132" y="8" width="203" height="40"/>
+                            <stackView key="contentView" distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qym-v6-aJj">
+                                <rect key="frame" x="176" y="100" width="200" height="40"/>
                                 <subviews>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GBC-St-esC">
-                                        <rect key="frame" x="-2" y="23" width="205" height="18"/>
+                                        <rect key="frame" x="0.0" y="24" width="200" height="16"/>
                                         <buttonCell key="cell" type="check" title="Show Locked Bonus Features" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="cXb-pE-vZ2">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" placeholder="YES" id="uOV-N6-fVw"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="promoteExtrasChanged:" target="-2" id="zVB-lu-yez"/>
                                         </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="S6J-6l-2IE">
-                                        <rect key="frame" x="18" y="-1" width="112" height="18"/>
+                                        <rect key="frame" x="20" y="0.0" width="107" height="16"/>
                                         <buttonCell key="cell" type="check" title="For One Week" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="yyd-IU-Dmf">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="16" placeholder="YES" id="Zfz-Ih-MvE"/>
+                                        </constraints>
                                         <connections>
                                             <action selector="promoteExtrasExpiresChanged:" target="-2" id="hCl-Ks-TPR"/>
                                         </connections>
@@ -366,7 +441,7 @@
                 </gridView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="width" constant="480" id="Fv3-1h-hNx"/>
+                <constraint firstAttribute="width" constant="528" id="Fv3-1h-hNx"/>
                 <constraint firstAttribute="height" secondItem="GOB-4Q-pQY" secondAttribute="height" priority="900" constant="40" id="H9g-BS-pRz"/>
                 <constraint firstItem="GOB-4Q-pQY" firstAttribute="centerX" secondItem="Hz6-mo-xeY" secondAttribute="centerX" id="VIM-wA-DYQ"/>
                 <constraint firstItem="GOB-4Q-pQY" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="lO1-LZ-qbm"/>

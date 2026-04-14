@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24412" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24412"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -59,20 +59,26 @@
                         <action selector="showIntro:" target="-2" id="uTE-rv-v5K"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Update Available…" image="icloud.and.arrow.down" catalog="system" hidden="YES" id="rv6-UC-fPh">
+                <menuItem title="Update Available…" hidden="YES" id="rv6-UC-fPh">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="installUpdate:" target="-2" id="Vs4-5v-heB"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Fbk-9b-5n2"/>
-                <menuItem title="Start Batch" tag="101" id="Y5o-n6-NCS">
+                <menuItem title="Start Batch" id="Y5o-n6-NCS">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="startQueueMode:" target="-2" id="MbC-Ui-kST"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Cancel Batch" tag="102" hidden="YES" id="TKZ-UP-Ggw">
+                <menuItem title="Start Batch with Clipboard" hidden="YES" id="Chm-WI-ac6">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="startQueueModeWithCurrentClip:" target="-2" id="tzz-Cc-UD4"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Cancel Batch" hidden="YES" id="TKZ-UP-Ggw">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="cancelQueueMode:" target="-2" id="sql-E4-fEM"/>
@@ -84,13 +90,13 @@
                         <action selector="startReplay:" target="-2" id="meN-9w-5Wi"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Copy Into Batch" tag="103" id="ieX-in-c9O">
+                <menuItem title="Copy Into Batch" id="ieX-in-c9O">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedCopy:" target="-2" id="VYn-hd-kO6"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Paste From Batch &amp; Advance" tag="104" id="WZ5-r7-f8t">
+                <menuItem title="Paste From Batch &amp; Advance" id="WZ5-r7-f8t">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
@@ -222,7 +228,7 @@ CA
                         <action selector="deleteHighlightedItem:" target="-2" id="NuH-2A-vmC"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Clear History…" tag="105" id="u3d-qz-ihN">
+                <menuItem title="Clear History…" id="u3d-qz-ihN">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
@@ -231,19 +237,19 @@ CA
                         <action selector="clear:" target="-2" id="fCY-pl-Td7"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Undo Last Copy" tag="106" keyEquivalent="z" id="FT3-WA-g9c">
+                <menuItem title="Undo Last Copy" keyEquivalent="z" id="FT3-WA-g9c">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="undoLastCopy:" target="-2" id="d5p-Xb-FzG"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Settings…" tag="107" keyEquivalent="," id="Dy3-In-uEL">
+                <menuItem title="Settings…" keyEquivalent="," id="Dy3-In-uEL">
                     <connections>
                         <action selector="showSettings:" target="-2" id="T0z-qq-fZJ"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="AjU-dy-4EL"/>
-                <menuItem title="Quit Batch Clipboard" tag="109" keyEquivalent="q" id="yjd-dE-jma">
+                <menuItem title="Quit Batch Clipboard" keyEquivalent="q" id="yjd-dE-jma">
                     <connections>
                         <action selector="quit:" target="-2" id="DKY-Ef-7Mu"/>
                     </connections>
@@ -270,6 +276,7 @@ CA
                 <outlet property="queueHeadingItem" destination="a7s-Cu-BAT" id="N1I-j5-C4Q"/>
                 <outlet property="queueReplayItem" destination="xpH-S9-QDS" id="SV5-iZ-vcs"/>
                 <outlet property="queueStartItem" destination="Y5o-n6-NCS" id="j9S-hc-MQx"/>
+                <outlet property="queueStartWithCurrentItem" destination="Chm-WI-ac6" id="X7V-7E-REy"/>
                 <outlet property="queueStopItem" destination="TKZ-UP-Ggw" id="2PD-gl-875"/>
                 <outlet property="queuedCopyItem" destination="ieX-in-c9O" id="V9f-FJ-h9b"/>
                 <outlet property="queuedPasteAllItem" destination="mK7-my-GpM" id="1fB-7e-6og"/>
@@ -290,7 +297,7 @@ CA
             <rect key="frame" x="0.0" y="0.0" width="296" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="uIb-jp-yTA">
                     <rect key="frame" x="11" y="2" width="283" height="28"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" id="2lz-8v-x0K">
                         <font key="font" metaFont="smallSystem"/>
@@ -321,7 +328,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TeN-Rn-iTn">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="ACTIVE BATCH" id="r5c-9f-aE2">
                         <font key="font" metaFont="miniSystem"/>
@@ -342,7 +349,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Gcz-05-y5o">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="HISTORY" id="BKN-4W-rRy">
                         <font key="font" metaFont="miniSystem"/>
@@ -363,7 +370,7 @@ Shortcuts below only work while this menu is open.</string>
             <rect key="frame" x="0.0" y="0.0" width="190" height="15"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sMM-dv-zr0">
                     <rect key="frame" x="11" y="2" width="177" height="11"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="SAVED BATCHES" id="RBg-Za-7Ff">
                         <font key="font" metaFont="miniSystem"/>
@@ -381,7 +388,4 @@ Shortcuts below only work while this menu is open.</string>
             <point key="canvasLocation" x="0.0" y="660"/>
         </customView>
     </objects>
-    <resources>
-        <image name="icloud.and.arrow.down" catalog="system" width="18" height="18"/>
-    </resources>
 </document>
