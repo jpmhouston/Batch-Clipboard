@@ -12,6 +12,7 @@
 // swiftlint:disable file_length
 import AppKit
 import Sauce
+import os.log
 
 class Clipboard: CustomDebugStringConvertible {
   static let shared = Clipboard()
@@ -48,6 +49,9 @@ class Clipboard: CustomDebugStringConvertible {
   
   private var sourceApp: NSRunningApplication? { NSWorkspace.shared.frontmostApplication }
   
+  private var pollExclusionSemaphore = DispatchSemaphore(value: 1)
+  private var log = false
+  
   init() {
     #if DEBUG || UNITTEST 
     if Self.fakeryNeeded {
@@ -56,6 +60,11 @@ class Clipboard: CustomDebugStringConvertible {
     }
     #endif
     changeCount = pasteboard.changeCount
+    log = UserDefaults.standard.pasteboardLoggingOn
+  }
+  
+  func noticeLoggingFlagUpdate() {
+    log = UserDefaults.standard.pasteboardLoggingOn
   }
   
   func onNewCopy(_ hook: @escaping OnNewCopyHook) {
@@ -82,7 +91,7 @@ class Clipboard: CustomDebugStringConvertible {
     timer = Timer.scheduledTimer(
       timeInterval: UserDefaults.standard.clipboardCheckInterval,
       target: self,
-      selector: #selector(checkForChangesInPasteboard),
+      selector: #selector(fireClipboardPollingTimer),
       userInfo: nil,
       repeats: true
     )
@@ -122,21 +131,27 @@ class Clipboard: CustomDebugStringConvertible {
       if excludeFromHistory {
         changeCount = fakePasteboardChangeCount
       } else {
-        checkForChangesInPasteboard()
+        respondToFakePasteboardChange()
       }
       return
     }
     #endif
     
-    pasteboard.clearContents()
+    noticeLoggingFlagUpdate()
+    if log { os_log(.info, "changing clipboard to string value") }
     
-    if excludeFromHistory {
-      pasteboard.prepareForNewContents(with: .currentHostOnly)
+    performPasteboardChange() {
+      pasteboard.clearContents()
+      pasteboard.prepareForNewContents(with: .currentHostOnly) // used to do only if !excludeFromHistory 
+      
       pasteboard.setString(string, forType: .string)
-      changeCount = pasteboard.changeCount
-    } else {
-      pasteboard.setString(string, forType: .string)
-      checkForChangesInPasteboard()
+      
+      if excludeFromHistory {
+        ignorePasteboardChange()
+      } else {
+        if log { os_log(.info, "disseminating explicit change to clipboard") }
+        respondToPasteboardChange()
+      }
     }
   }
   
@@ -153,54 +168,58 @@ class Clipboard: CustomDebugStringConvertible {
       if excludeFromHistory {
         changeCount = fakePasteboardChangeCount
       } else {
-        checkForChangesInPasteboard()
+        respondToFakePasteboardChange()
       }
       return
     }
     #endif
     
-    pasteboard.clearContents()
-    if excludeFromHistory {
-      pasteboard.prepareForNewContents(with: .currentHostOnly)
-    }
+    noticeLoggingFlagUpdate()
+    if log { os_log(.info, "changing clipboard to stored clip item") }
     
-    var contents = item.getContents()
-    
-    if removeFormatting {
-      let stringContents = contents.filter({
-        NSPasteboard.PasteboardType($0.type) == .string
-      })
+    performPasteboardChange() {
+      pasteboard.clearContents()
+      pasteboard.prepareForNewContents(with: .currentHostOnly) // used to do only if !excludeFromHistory 
       
-      // If there is no string representation of data,
-      // behave like we didn't have to remove formatting.
-      if !stringContents.isEmpty {
-        contents = stringContents
+      var contents = item.getContents()
+      
+      if removeFormatting {
+        let stringContents = contents.filter({
+          NSPasteboard.PasteboardType($0.type) == .string
+        })
+        
+        // If there is no string representation of data,
+        // behave like we didn't have to remove formatting.
+        if !stringContents.isEmpty {
+          contents = stringContents
+        }
       }
-    }
-    
-    for content in contents {
-      guard content.type != NSPasteboard.PasteboardType.fileURL.rawValue else { continue }
-      pasteboard.setData(content.value, forType: NSPasteboard.PasteboardType(content.type))
-    }
-    
-    // Use writeObjects for file URLs so that multiple files that are copied actually work.
-    // Only do this for file URLs because it causes an issue with some other data types (like formatted text)
-    // where the item is pasted more than once.
-    let fileURLItems: [NSPasteboardItem] = contents.compactMap { item in
-      guard item.type == NSPasteboard.PasteboardType.fileURL.rawValue else { return nil }
-      guard let value = item.value else { return nil }
-      let pasteItem = NSPasteboardItem()
-      pasteItem.setData(value, forType: NSPasteboard.PasteboardType(item.type))
-      return pasteItem
-    }
-    pasteboard.writeObjects(fileURLItems)
-    
-    pasteboard.setString("", forType: .fromSelf)
-    
-    if excludeFromHistory {
-      changeCount = pasteboard.changeCount
-    } else {
-      checkForChangesInPasteboard()
+      
+      for content in contents {
+        guard content.type != NSPasteboard.PasteboardType.fileURL.rawValue else { continue }
+        pasteboard.setData(content.value, forType: NSPasteboard.PasteboardType(content.type))
+      }
+      
+      // Use writeObjects for file URLs so that multiple files that are copied actually work.
+      // Only do this for file URLs because it causes an issue with some other data types (like formatted text)
+      // where the item is pasted more than once.
+      let fileURLItems: [NSPasteboardItem] = contents.compactMap { item in
+        guard item.type == NSPasteboard.PasteboardType.fileURL.rawValue else { return nil }
+        guard let value = item.value else { return nil }
+        let pasteItem = NSPasteboardItem()
+        pasteItem.setData(value, forType: NSPasteboard.PasteboardType(item.type))
+        return pasteItem
+      }
+      pasteboard.writeObjects(fileURLItems)
+      
+      pasteboard.setString("", forType: .fromSelf)
+      
+      if excludeFromHistory {
+        ignorePasteboardChange()
+      } else {
+        if log { os_log(.info, "disseminating explicit change to clipboard") }
+        respondToPasteboardChange()
+      }
     }
   }
   
@@ -280,77 +299,6 @@ class Clipboard: CustomDebugStringConvertible {
     pasteboard.clearContents()
   }
   
-  // MARK: -
-  
-  @objc
-  func checkForChangesInPasteboard() {
-    #if DEBUG || UNITTEST
-    if fakeryEngaged {
-      // all the functionality below duplicated here :(
-      // to avoid multiple sets of ifdefs within
-      guard fakePasteboardChangeCount != changeCount else { return }
-      changeCount = fakePasteboardChangeCount
-      if UserDefaults.standard.ignoreEvents {
-        if UserDefaults.standard.ignoreOnlyNextEvent {
-          UserDefaults.standard.ignoreEvents = false
-          UserDefaults.standard.ignoreOnlyNextEvent = false
-        }
-        return
-      }
-      guard let pasteboardItem = fakePasteboard else { return }
-      // make new Clip with these contents
-      let newClipContents: Set<ClipContent>
-      switch pasteboardItem {
-      case .barestr(let str):
-        let textContent = ClipContent.create(type: NSPasteboard.PasteboardType.string.rawValue,
-                                             value: str.data(using: .utf8))
-        newClipContents = [textContent]
-      case .clip(let contents):
-        let types = contents.map { NSPasteboard.PasteboardType($0.type) }
-        if shouldIgnore(Set(types)) { return }
-        newClipContents = contents
-      }
-      let clip = Clip.create(withContents: newClipContents, application: "Fake.app")
-      onNewCopyHooks.forEach({ $0(clip) })
-      return
-    }
-    #endif
-    
-    guard pasteboard.changeCount != changeCount else {
-      return
-    }
-    
-    changeCount = pasteboard.changeCount
-    
-    if UserDefaults.standard.ignoreEvents {
-      if UserDefaults.standard.ignoreOnlyNextEvent {
-        UserDefaults.standard.ignoreEvents = false
-        UserDefaults.standard.ignoreOnlyNextEvent = false
-      }
-      
-      return
-    }
-    
-    // Reading types on NSPasteboard gives all the available
-    // types - even the ones that are not present on the NSPasteboardItem.
-    // See https://github.com/p0deje/Maccy/issues/241.
-    if shouldIgnore(Set(pasteboard.types ?? [])) {
-      return
-    }
-    
-    if let sourceAppBundle = sourceApp?.bundleIdentifier, shouldIgnore(sourceAppBundle) {
-      return
-    }
-    
-    // Make new clip containing what's on the pasteboard now
-    guard let newPasteboardItem = newClipFromCurrent() else {
-      return
-    }
-    
-    // Disseminate
-    onNewCopyHooks.forEach({ $0(newPasteboardItem) })
-  }
-  
   func newClipFromCurrent() -> Clip? {
     let contents = currentContents()
     guard !contents.isEmpty else {
@@ -370,7 +318,6 @@ class Clipboard: CustomDebugStringConvertible {
         contents.append(ClipContent.create(type: type.rawValue, value: item.data(forType: type)))
       }
     }
-    
     return contents
   }
   
@@ -383,9 +330,129 @@ class Clipboard: CustomDebugStringConvertible {
     return false
   }
   
-  func filteredItemsTypes(for item: NSPasteboardItem) -> Set<NSPasteboard.PasteboardType> {
+  // MARK: -
+  
+  private let shortTimeout: DispatchTimeInterval = .nanoseconds(10)
+  private let longTimeout: DispatchTimeInterval = .milliseconds(100)
+  
+  @objc
+  private func fireClipboardPollingTimer() {
+    noticeLoggingFlagUpdate()
+    //if log { os_log(.info, "serialized clipboard check (latest change count %d vs last known %d)", pasteboard.changeCount, changeCount) }
+    // wait on semaphore with a brief timeout, essentially test for exclusion & immediately abort
+    if pollExclusionSemaphore.wait(timeout: DispatchTime.now() + shortTimeout) == .success {
+      checkForChangeToPasteboard()
+      pollExclusionSemaphore.signal()
+    } else {
+      os_log(.info, "skipped polling clipboard due to short timeout on semophore lock")
+    }
+  }
+  
+  private func performPasteboardChange(_ closure: ()->Void) {
+    if log { os_log(.info, "serialized clipboard change (current change count %d)", pasteboard.changeCount) }
+    // wait on semaphore with a looong timeout, essentially block until exclusive access granted 
+    if pollExclusionSemaphore.wait(timeout: DispatchTime.now() + longTimeout) == .success {
+      closure()
+      pollExclusionSemaphore.signal()
+    } else {
+      if log { os_log(.error, "to avoid deadlock, skipping intended clipboard change due to long timeout on semaphore lock") }
+    }
+  }
+  
+  private func checkForChangeToPasteboard() {
+    if hasPasteboardChanged() {
+      if log { os_log(.info, "serialized clipboard check found update (latest change count %d vs last known %d)", pasteboard.changeCount, changeCount) }
+      respondToPasteboardChange()
+    }
+  }
+  
+  private func hasPasteboardChanged() -> Bool {
+    return pasteboard.changeCount != changeCount
+  }
+  
+  private func ignorePasteboardChange() {
+    changeCount = pasteboard.changeCount
+  }
+  
+  private func respondToPasteboardChange() {
+    changeCount = pasteboard.changeCount
+    
+    if UserDefaults.standard.ignoreEvents {
+      if UserDefaults.standard.ignoreOnlyNextEvent {
+        UserDefaults.standard.ignoreEvents = false
+        UserDefaults.standard.ignoreOnlyNextEvent = false
+      }
+      if log { os_log(.info, "ignored latest clipboard item because global ignore flag set") }
+      return
+    }
+    
+    // Reading types on NSPasteboard gives all the available
+    // types - even the ones that are not present on the NSPasteboardItem.
+    // See https://github.com/p0deje/Maccy/issues/241.
+    if shouldIgnore(Set(pasteboard.types ?? [])) {
+      if log { os_log(.info, "ignored latest clipboard item because data types are in the ignore set") }
+      return
+    }
+    
+    if let sourceAppBundle = sourceApp?.bundleIdentifier, shouldIgnore(sourceAppBundle) {
+      if log { os_log(.info, "ignored latest clipboard item because source application is on the ignore list") }
+      return
+    }
+    
+    // Make new clip containing what's on the pasteboard now
+    guard let newPasteboardItem = newClipFromCurrent() else {
+      if log { os_log(.info, "failed to create model objects for latest clipboard state") }
+      return
+    }
+    
+    if log { os_log(.info, "collecting new clipboard item") }
+    
+    disseminateClip(newPasteboardItem)
+  }
+  
+  #if DEBUG || UNITTEST
+  private func checkForChangeToFakePasteboard() {
+    guard fakeryEngaged else { fatalError("should only get into checkForChangeToFakePasteboard when fakeryEngaged flag set") }
+    if fakePasteboardChangeCount != changeCount {
+      respondToFakePasteboardChange()
+    }
+  }
+  
+  private func respondToFakePasteboardChange() {
+    guard fakeryEngaged else { fatalError("should only get into respondToFakePasteboardChange when fakeryEngaged flag set") }
+    changeCount = fakePasteboardChangeCount
+    if UserDefaults.standard.ignoreEvents {
+      if UserDefaults.standard.ignoreOnlyNextEvent {
+        UserDefaults.standard.ignoreEvents = false
+        UserDefaults.standard.ignoreOnlyNextEvent = false
+      }
+      return
+    }
+    guard let pasteboardItem = fakePasteboard else { return }
+    // make new Clip with these contents
+    let newClipContents: Set<ClipContent>
+    switch pasteboardItem {
+    case .barestr(let str):
+      let textContent = ClipContent.create(type: NSPasteboard.PasteboardType.string.rawValue,
+                                           value: str.data(using: .utf8))
+      newClipContents = [textContent]
+    case .clip(let contents):
+      let types = contents.map { NSPasteboard.PasteboardType($0.type) }
+      if shouldIgnore(Set(types)) { return }
+      newClipContents = contents
+    }
+    let clip = Clip.create(withContents: newClipContents, application: "Fake.app")
+    disseminateClip(clip)
+  }
+  #endif
+  
+  private func disseminateClip(_ item: Clip) {
+    onNewCopyHooks.forEach({ $0(item) })
+  }
+  
+  private func filteredItemsTypes(for item: NSPasteboardItem) -> Set<NSPasteboard.PasteboardType> {
     var types = Set(item.types)
-    if types.contains(.string) && isEmptyString(item) && !richText(item) {
+    if types.contains(.string) && isEmptyString(item) && !isRichText(item) {
       return Set()
     }
     
@@ -455,7 +522,7 @@ class Clipboard: CustomDebugStringConvertible {
     return string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
   
-  private func richText(_ item: NSPasteboardItem) -> Bool {
+  private func isRichText(_ item: NSPasteboardItem) -> Bool {
     if let rtf = item.data(forType: .rtf) {
       if let attributedString = NSAttributedString(rtf: rtf, documentAttributes: nil) {
         return !attributedString.string.isEmpty
@@ -478,12 +545,11 @@ class Clipboard: CustomDebugStringConvertible {
   }
   
   func debugCurrentItemDescription(ofLength length: Int? = nil) -> String {
-    // a variation on the code in checkForChangesInPasteboard()
-    // that notably doesn't create new ClipContent objects
+    // a variation on the code from currentContents, but notably doesn't create new ClipContent objects
     var contents: [(NSPasteboard.PasteboardType, Data)] = []
     pasteboard.pasteboardItems?.forEach({ item in
       var types = Set(item.types)
-      if types.contains(.string) && isEmptyString(item) && !richText(item) {
+      if types.contains(.string) && isEmptyString(item) && !isRichText(item) {
         return
       }
       if shouldIgnore(item) {
@@ -519,7 +585,7 @@ class Clipboard: CustomDebugStringConvertible {
     didSet {
       if fakePasteboardObservationOn {
         DispatchQueue.global().asyncAfter(deadline: .now() + fakePasteboardChangeDelay,
-                                          execute: checkForChangesInPasteboard)
+                                          execute: checkForChangeToFakePasteboard)
       }
     }
   }

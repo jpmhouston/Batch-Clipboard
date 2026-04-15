@@ -31,6 +31,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var legacyFocusCheckbox: NSButton!
   @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField!
   @IBOutlet weak var subsequentHistoryOnDescriptionField: NSTextField!
+  @IBOutlet weak var pasteboardLoggingCheckbox: NSButton!
   @IBOutlet var showHistoryOffDescriptionConstraint: NSLayoutConstraint! // these constraint
   @IBOutlet var hideHistoryOffDescriptionConstraint: NSLayoutConstraint! // outlets must not be weak
   @IBOutlet var showMenuHidingControlsConstraint: NSLayoutConstraint! // "
@@ -59,6 +60,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     updateMonitoringDescription()
     populateAvoidTakingFocus()
     populateLegacyFocus()
+    populateLogging()
   }
   
   override func viewWillDisappear() {
@@ -162,6 +164,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     legacyFocusCheckbox.state = UserDefaults.standard.legacyFocusTechnique ? .on : .off
   }
   
+  private func populateLogging() {
+    pasteboardLoggingCheckbox.state = UserDefaults.standard.pasteboardLoggingOn ? .on : .off
+  }
+  
   // MARK: -
   
   @IBAction func clearOnQuitChanged(_ sender: NSButton) {
@@ -190,6 +196,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   
   @IBAction func legacyFocusChanged(_ sender: NSButton) {
     UserDefaults.standard.legacyFocusTechnique = (sender.state == .on)
+  }
+  
+  @IBAction func pasteboardLoggingChanged(_ sender: NSButton) {
+    UserDefaults.standard.pasteboardLoggingOn = (sender.state == .on)
   }
   
 }

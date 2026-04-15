@@ -54,6 +54,7 @@ extension UserDefaults {
     static let showAdvancedPasteMenuItems = "showAdvancedPasteMenuItems"
     static let sparkleUsesBetaFeed = "sparkleUsesBetaFeed"
     static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
+    static let pasteboardLoggingOn = "pasteboardLoggingOn"
     
     // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
     // a statusitem on the menubar. Make accessor for the sake of saving & restoring this position.
@@ -332,5 +333,10 @@ extension UserDefaults {
       }
       // could do `removeObject` when newValue nil, but don't think that's needed atm
     }
+  }
+  
+  public var pasteboardLoggingOn: Bool {
+    get { bool(forKey: Keys.pasteboardLoggingOn) }
+    set { set(newValue, forKey: Keys.pasteboardLoggingOn) }
   }
 }
