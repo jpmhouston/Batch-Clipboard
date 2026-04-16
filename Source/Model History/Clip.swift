@@ -171,7 +171,11 @@ class Clip: NSManagedObject {
   #endif
   
   func contentsEqual(_ otherClip: Clip) -> Bool {
-    return otherClip.getContents().filter { otherContent in
+    return contentsEqual(otherClip.getContentsArray())
+  }
+  
+  func contentsEqual(_ otherContents: [ClipContent]) -> Bool {
+    return otherContents.filter { otherContent in
       otherContent.type.isExcluded(from: [
         NSPasteboard.PasteboardType.modified.rawValue,
         NSPasteboard.PasteboardType.fromMaccy.rawValue,

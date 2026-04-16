@@ -321,6 +321,10 @@ class Clipboard: CustomDebugStringConvertible {
     return contents
   }
   
+  func currentMatchesClip(_ clip: Clip) -> Bool {
+    return clip.contentsEqual(currentContents())
+  }
+  
   var isEmpty: Bool {
     for item in pasteboard.pasteboardItems ?? [] {
       if !filteredItemsTypes(for: item).isEmpty {

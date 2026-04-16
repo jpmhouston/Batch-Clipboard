@@ -218,6 +218,20 @@ extension AppModel {
   func startQueueMode(withCurrentClip addCurrentClip: Bool = false, interactive: Bool = false) -> Bool {
     // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
+    
+    // when using history, use replayFromHistory technique instead of the code below
+    // normally only permitted when `allowReplayFromHistory`, but an exception is made for this feature
+//    if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0), clipboard.currentMatchesClip(clip) {
+//      return replayFromHistory(atIndex: 0, overridePermission: true, interactive: interactive)
+//    }
+    if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
+      if clipboard.currentMatchesClip(clip) {
+        return replayFromHistory(atIndex: 0, overridePermission: true, interactive: interactive)
+      }
+      os_log(.error, "clipboard doesn't match first history clip!\n%s\n  vs:\n%s", clipboard.currentContents().map({ $0.type }).joined(separator: ","),
+             clip.types.map({ $0.rawValue }).joined(separator: ","))
+    }
+    
     guard !Self.busy else {
       return false
     }
@@ -239,6 +253,7 @@ extension AppModel {
         updateMenuIcon(.increment)
       } catch {
         // maybe do something to remove `clip` from coredata?
+        updateMenuIcon()
       }
     }
     
@@ -368,6 +383,17 @@ extension AppModel {
       // i tried having this in a defer, awkward, should be the same to do it early
       Self.busy = false
     }
+    
+    #if DEBUG
+    // temporary to exercise `currentMatchesClip`, remove once test cases for it added
+    if clipboard.currentMatchesClip(clip) == false {
+      os_log(.error, "clipboard doesn't match clip just taken from it!\n%s\n  vs:\n%s", clipboard.currentContents().map({ $0.type }).joined(separator: ","),
+             clip.types.map({ $0.rawValue }).joined(separator: ","))
+    }
+//    else {
+//      os_log(.debug, "clipboard matches clip just taken from it as expected :)\n%s", clip.types.map({ $0.rawValue }).joined(separator: ","))
+//    }
+    #endif
     
     if queue.isOn {
       do {
@@ -721,11 +747,11 @@ extension AppModel {
   }
   
   @discardableResult
-  func replayFromHistory(atIndex index: Int, interactive: Bool = false) -> Bool {
+  func replayFromHistory(atIndex index: Int, overridePermission: Bool = false, interactive: Bool = false) -> Bool {
     guard !Self.busy else {
       return false
     }
-    guard AppModel.allowReplayFromHistory else {
+    guard overridePermission || AppModel.allowReplayFromHistory else {
       return false
     }
     guard accessibilityCheck(interactive: interactive) else {

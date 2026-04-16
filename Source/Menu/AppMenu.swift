@@ -828,13 +828,17 @@ class AppMenu: NSMenu, NSMenuDelegate {
     queueAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems
     
     // optionally make "start with current clip" an alternate
-    if let queueStartItem = queueStartItem, let queueStartWithCurrentItem = queueStartWithCurrentItem {
-      if queueStartItem.keyEquivalent.isEmpty && queueStartWithCurrentItem.keyEquivalent.isEmpty {
-        queueStartWithCurrentItem.keyEquivalentModifierMask = .option 
-        queueStartWithCurrentItem.isVisibleAlternate = true
-      } else if queueStartItem.keyEquivalent == queueStartWithCurrentItem.keyEquivalent {
-        queueStartWithCurrentItem.isVisibleAlternate = true
+    if !queueOn, let queueStartKey = queueStartItem?.keyEquivalent, let queueStartWCKey = queueStartWithCurrentItem?.keyEquivalent {
+      if queueStartKey.isEmpty && queueStartWCKey.isEmpty { // if no key shortcut for either, make it an alternate using the option key
+        queueStartWithCurrentItem?.keyEquivalentModifierMask = .option 
+        queueStartWithCurrentItem?.isVisibleAlternate = true
+      } else if queueStartKey == queueStartWCKey { // // if only diff is modifiers, also make it an alternate
+        queueStartWithCurrentItem?.isVisibleAlternate = true
+      } else {
+        queueStartWithCurrentItem?.isVisibleAlternate = false
       }
+    } else {
+      queueStartWithCurrentItem?.isVisibleAlternate = false
     }
     
     replayLastBatchItem?.isVisible = AppModel.allowLastBatch || promoteExtras
