@@ -27,10 +27,12 @@ class Preview: NSViewController {
   private let maxTextSize = 1_500
   
   private var item: Clip?
+  private var showStartBatchLine = false
   
-  convenience init(item: Clip?) {
+  convenience init(item: Clip?, showingStartBatchLine: Bool) {
     self.init()
     self.item = item
+    self.showStartBatchLine = showingStartBatchLine
   }
   
   override func viewDidLoad() {
@@ -74,7 +76,7 @@ class Preview: NSViewController {
     
     firstCopyTimeValueLabel.stringValue = formatDate(item.firstCopiedAt)
     
-    startLabel.isHidden = !AppModel.allowReplayFromHistory
+    startLabel.isHidden = !showStartBatchLine
   }
   
   private func formatDate(_ date: Date) -> String {

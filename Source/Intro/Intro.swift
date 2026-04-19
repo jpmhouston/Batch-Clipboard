@@ -8,7 +8,7 @@
 
 // swiftlint:disable file_length
 import AppKit
-import SDWebImage
+//import SDWebImage
 import os.log
 
 import KeyboardShortcuts // delete this once debug code is deleted

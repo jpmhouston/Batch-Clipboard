@@ -97,6 +97,12 @@ class HistoryList: NSManagedObject {
     CoreDataManager.shared.saveContext()
   }
   
+  func removeAll() {
+    if let clips = clips {
+      removeFromClips(clips)
+    }
+  }
+  
   // MARK: -
   
   @objc(insertObject:inClipsAtIndex:)

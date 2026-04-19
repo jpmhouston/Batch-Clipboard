@@ -627,6 +627,11 @@ class Clipboard: CustomDebugStringConvertible {
     cannedCopyCount += 1 
     return r
   }
+  func resetAccumulated() {
+    accumulatedTextBuffer = ""
+    accumulatedDescriptions = []
+    lastPastedClip = nil
+  }
   // swiftlint:enable statement_position
   #endif
   

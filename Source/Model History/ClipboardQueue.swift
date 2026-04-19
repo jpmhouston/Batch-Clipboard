@@ -74,11 +74,6 @@ class ClipboardQueue {
     
     isOn = false
     size = 0
-    
-    // Cancelling the queue is one of the triggers to move clips into the history.
-    if clipsAreNew && history.isListActive {
-      try copyQueueToHistory()
-    }
   }
   
   func clear() throws {
@@ -142,12 +137,6 @@ class ClipboardQueue {
     size -= 1
     
     if isEmpty {
-      // Emptying queue naturally (by pasting all the clips) is one of the triggers to move clips
-      // into the history.
-      if clipsAreNew && history.isListActive {
-        try copyQueueToHistory()
-      }
-      
       isOn = stayOnWhenEmptied
       clearBatchPending = stayOnWhenEmptied
       
@@ -188,12 +177,6 @@ class ClipboardQueue {
     size -= 1
     
     if isEmpty {
-      // Emptying queue by deleting the last clip is one of the triggers to move clips
-      // into the history
-      if clipsAreNew && history.isListActive {
-        try copyQueueToHistory()
-      }
-      
       isOn = stayOnWhenEmptied
       clearBatchPending = stayOnWhenEmptied
       
@@ -294,12 +277,6 @@ class ClipboardQueue {
     size -= 1
     
     if isEmpty {
-      // Emptying queue naturally (by pasting all the clips) is one of the triggers to move clips
-      // into the history
-      if clipsAreNew && history.isListActive {
-        try copyQueueToHistory()
-      }
-      
       isOn = stayOnWhenEmptied
       clearBatchPending = stayOnWhenEmptied
       
@@ -370,16 +347,6 @@ class ClipboardQueue {
       throw QueueError.cannotAccesQueueBatch
     }
     return clip
-  }
-  
-  private func copyQueueToHistory() throws {
-    guard let batch = batch else {
-      throw QueueError.missingQueueBatch
-    }
-    
-    if !batch.isEmpty {
-      batchClips.reversed().forEach(history.add(_:))
-    }
   }
   
   // MARK: -

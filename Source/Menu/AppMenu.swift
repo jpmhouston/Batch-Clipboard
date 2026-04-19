@@ -13,6 +13,8 @@
 //  Now it's more controller than view, possibly a problem.
 //
 
+// TODO: prevent showing history when queue on
+
 // swiftlint:disable file_length
 import AppKit
 import KeyboardShortcuts
@@ -379,7 +381,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
       lastHighlightedClipItem = clipItem
       #endif
       
-      previewController.showPopover(for: clipItem, anchors: clipItemAnchors(for: clipItem))
+      previewController.showPopover(for: clipItem, withQueueOn: queue.isOn, anchors: clipItemAnchors(for: clipItem))
       
     } else if item is BatchMenuItem {
       deleteItem?.isEnabled = !AppModel.busy
@@ -1131,13 +1133,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
       os_log(.debug, "didn't expect to add history menu item when history disabled")
       return
     }
-    guard queueItemCount == 0 else {
-      os_log(.debug, "didn't expect to add history menu item when queue not empty")
-      sanityCheckClipMenuItems()
-      return
-    }
     guard let index = firstHistoryItemIndex else {
-      fatalError("can't locate the queue menu items section")
+      fatalError("can't locate the history menu items section")
     }
     
     let menuItems = buildHistoryItemAndAlternates(forClip: clip)

@@ -43,7 +43,7 @@ class QueueSims {
     case isqon = "/q+"      // check if queue is on
     case isqoff = "/q-"     // check if queue is off
     case issize = "/q:"     // check if queue the expected size
-    case iscnt = "/n:"      // check if history has the expected count
+    case ishcnt = "/n:"      // check if history has the expected count
     case isclip = "/c:"     // compare string against clipboard
     case pasted = "/e:"     // compare string against everything pasted
     case deleted = "/l:"    // compare string against last item deleted
@@ -62,6 +62,7 @@ class QueueSims {
   let queue: ClipboardQueue
   var historyMatchIndex: Int?
   var queueMatchIndex: Int?
+  var lastDeleted: String?
   var compareToEnd = false
   var useReplayingMode = true
   var queuedPasteMultipleSeparator = ""
@@ -104,137 +105,207 @@ class QueueSims {
     coreDataStack.teardown()
   }
   
+  func wipe() throws {
+    try queue.clear()
+    history.deleteAllData()
+  }
+  func reset() {
+    clipboard.resetAccumulated()
+    history.currentBatch = Batch.createUnnamed()
+    historyMatchIndex = nil
+    queueMatchIndex = nil
+    lastDeleted = nil
+    compareToEnd = false
+    useReplayingMode = true
+    queuedPasteMultipleSeparator = ""
+  }
+  
+  let logRunStringsBeforeRun = false
   let logQueueAfterEveryOp = false
   let logClipObjPointers = false
   let logQueueAfterRun = false
   
-  let smoke = [ "#sample# " +                    hon + "h1,h2" + start + "qA,qB,qC" + iscnt+"2" + issize+"3" + qpaste + qpaste + issize+"1" + canc + isqoff + iscnt+"5" +
-                                                       pasted+"qAqB" + begcmph + "h1,h2,qA,qB,qC" + endcmp ]
-  
-  let paste1EmptyH = [ "#paste1# " +             hon + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1" ]
-  let pasteAllEmptyH = [ "#pasteAll# " +         hon + start + "qA,qB" + issize+"2" + iscnt+"0" + qpaste + qpaste + isqoff + iscnt+"2" ]
-  let paste1plusH = [ "#paste1+H# " +            hon + "h1,h2" + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1" + iscnt+"2" ]
-  let pasteAllplusH = [ "#pasteAll+H# " +        hon + "h1,h2" + start + "qA,qB" + issize+"2" + qpaste + qpaste + isqoff + iscnt+"4" ]
-  let paste1Hoff = [ "#paste1-H# " +             hoff + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1" ]
-  let pasteAllHoff = [ "#pasteAll-H# " +         hoff + start + "qA,qB" + issize+"2" + qpaste + qpaste + isqoff ]
-//  let queueAgainClearsB = [ "#QQ->-H# " +        hoff + start + "qA,qB" + qpaste + qpaste + isqoff + isbcnt+"2" + start + isbcnt+"0" ]
-//  let queueAfterCancClearsB = [ "#QXQ->-H# " +   hoff + start + "qA,qB" + canc + isqoff + isbcnt+"2" + start + isbcnt+"0" ]
-  
-  let pmultAllEmptyH = [ "#pmultAll# " +         hon + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC" ]
-  let pmult1EmptyH = [ "#pmult# " +              hon + start + "qA,qB,qC" + qpmul+"1" + issize+"2" + pasted+"qA" ]
-  let pmultEmptyH = [ "#pmult# " +               hon + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB" ]
-  let pmultWSepEmptyH = [ "#pmult+,# " +         hon + start + "qA,qB,qC" + qpmuls+"." + qpmul+"2" + isqon + pasted+"qA.qB" ]
-  let pmultAllplusH = [ "#pmultAll+H# " +        hon + "h1,h2" + start + "qA,qB,qC" + qpall + isqoff + iscnt+"5" + pasted+"qAqBqC" ]
-  let pmultplusH = [ "#pmult+H# " +              hon + "h1,h2" + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB" ]
-  let pmultAllHoff = [ "#pmultAll-H# " +         hoff + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC" ]
-  let pmultHoff = [ "#pmultH-# " +               hoff + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB" ]
-  
-  let queueFromHThenPaste = [ "#qFromH# " +      hon + "h1,h2,h3" + qfromh+"1" + iscnt+"3" + begcmpq + "h2,h3" + endcmp + qpaste + qpaste + isqoff + iscnt+"3" +
-                                                       pasted+"h2h3" + begcmph + "h1,h2,h3" + endcmp ]
-  let queueFromHThenCanc = [ "#q&cancFromH# " +  hon + "h1,h2,h3" + qfromh+"1" + canc + isqoff + iscnt+"3" + begcmph + "h1,h2,h3" + endcmp ]
-  let queueAllFromH = [ "#qAllFromH# " +         hon + "h1,h2,h3" + qfromh+"2" + iscnt+"3" + begcmpq + "h1,h2,h3" + endcmp + qpmul+"3" + pasted+"h1h2h3" ]
-  let queue1FromH = [ "#q1FromH# " +             hon + "h1,h2,h3" + qfromh+"0" + iscnt+"3" + begcmpq + "h3" + endcmp + qpaste + pasted+"h3" + begcmph + "h1,h2,h3" + endcmp ]
-  
-  let delFromH = [ "#delFromH# " +               hon + "h1,h2,h3" + iscnt+"3" + del+"1" + iscnt+"2" + begcmph + "h1,h3" + endcmp ]
-  let delFromHOld = [ "#delFromH-># " +          hon + "h1,h2,h3" + del+"2" + begcmph + "h2,h3" + endcmp + del+"1" + begcmph + "h3" + endcmp + del+"0" + iscnt+"0" ]
-  let delFromHNew = [ "#delFromH<-# " +          hon + "h1,h2,h3" + del+"0" + begcmph + "h1,h2" + endcmp + del+"0" + begcmph + "h1" + endcmp + del+"0" + iscnt+"0" ]
-  let delFromHplusQ = [ "#delFromH+Q# " +        hon + "h1,h2,h3" + start + "qA,qB" + issize+"2" + iscnt+"3" + del+"1" + iscnt+"2" + begcmph + "h1,h3" + begcmpq + "qA,qB" + endcmp ]
-  let delFromHplusQOld = [ "#delFromH+Q-># " +   hon + "h1,h2" + start + "qA" + del+"1" + begcmph + "h2" + endcmp + del+"0" + iscnt+"0" + begcmpq + "qA" + endcmp ]
-  let delFromHplusQNew = [ "#delFromH+Q<-# " +   hon + "h1,h2" + start + "qA" + del+"0" + begcmph + "h1" + endcmp + del+"0" + iscnt+"0" + begcmpq + "qA" + endcmp ]
-  
-  let delFromQEmptyH = [ "#delFromQ# " +         hon + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp ]
-  let delFromQEmptyHOld = [ "#delFromQ0H-># " +  hon + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff ]
-  let delFromQEmptyHNew = [ "#delFromQ0H<-# " +  hon + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff ]
-  let delFromQplusH = [ "#delFromQ+H# " +        hon + "h1" + start + "qA,qB,qC" + iscnt+"1" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp ]
-  let delFromQplusHOld = [ "#delFromQ+H#-># " +  hon + "h1" + start + "qA,qB,qC" + qdel+"2" + issize+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" +
-                                                       begcmpq + "qC" + endcmp + qdel+"0" + isqoff + iscnt+"1" ]
-  let delFromQplusHNew = [ "#delFromQ+H<-# " +   hon + "h1" + start + "qA,qB,qC" + qdel+"0" + issize+"2" + begcmpq + "qA,qB" + endcmp + qdel+"0" +
-                                                       begcmpq + "qA" + endcmp + qdel+"0" + isqoff + iscnt+"1" ]
-  let delFromQHoff = [ "#delFromQ-H# " +         hoff + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp ]
-  let delFromQHoffOld = [ "#delFromQ-H-># " +    hoff + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff ]
-  let delFromQHoffNew = [ "#delFromQ-H<-# " +    hoff + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff ]
-  
-  let undoFromQHoff = [ "#undoFromQ-H# " +       hoff + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp ]
-  let undoFromQHon = [ "#undoFromQ+H# " +        hon + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp ]
-  let undoFromH = [ "#undoFromH# " +             hon + "h1,h2,h3" + iscnt+"3" + undo + iscnt+"2" + begcmph + "h1,h2" + endcmp ]
-  
-  let clearH = [ "#clearH# " +                   hon + "h1,h2" + clear + iscnt+"0" ]
-  let clearHandQ = [ "#clearH+Q# " +             hon + "h1,h2" + start + "qA,qB" + clear + isqoff + iscnt+"0" ]
-  let clearQnoH = [ "#clearQH0# " +              hon + start + "qA,qB" + clear + isqoff ]
-  let clearQHoff = [ "#clearQH-# " +             hoff + start + "qA,qB" + clear + isqoff ]
-  
-  let queueFromHPlusAddsToH = [ "#qFromH+# " +   hon + "h1,h2" + qfromh+"0" + begcmpq + "h2" + endcmp + "q1,q2" + qpall + begcmph + "h1,h2" + endcmp ] // want "h1,h2,q1,q2"
+//  let smoke = "#sample# " +                   hon + "h1,h2" + start + "qA,qB,qC" + ishcnt+"2" + issize+"3" + qpaste + qpaste + issize+"1" + canc + isqoff + ishcnt+"5" +
+//                                                      pasted+"qAqB" + begcmph + "h1,h2,qA,qB,qC" + endcmp
+//  
+//  let paste1EmptyH = "#paste1# " +            hon + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1"
+//  let pasteAllEmptyH = "#pasteAll# " +        hon + start + "qA,qB" + issize+"2" + ishcnt+"2" + qpaste + qpaste + isqoff + ishcnt+"2"
+//  let paste1plusH = "#paste1+H# " +           hon + "h1,h2" + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1" + ishcnt+"4"
+//  let pasteAllplusH = "#pasteAll+H# " +       hon + "h1,h2" + start + "qA,qB" + issize+"2" + ishcnt+"4" + qpaste + qpaste + isqoff
+//  let paste1Hoff = "#paste1-H# " +            hoff + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1"
+//  let pasteAllHoff = "#pasteAll-H# " +        hoff + start + "qA,qB" + issize+"2" + qpaste + qpaste + isqoff
+////  let queueAgainClearsB = "#QQ->-H# " +       hoff + start + "qA,qB" + qpaste + qpaste + isqoff + isbcnt+"2" + start + isbcnt+"0"
+////  let queueAfterCancClearsB = "#QXQ->-H# " +  hoff + start + "qA,qB" + canc + isqoff + isbcnt+"2" + start + isbcnt+"0"
+//  
+//  let pmultAllEmptyH = "#pmultAll# " +        hon + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC"
+//  let pmult1EmptyH = "#pmult1# " +            hon + start + "qA,qB,qC" + qpmul+"1" + issize+"2" + pasted+"qA"
+//  let pmult2EmptyH = "#pmult2# " +            hon + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB"
+//  let pmultWSepEmptyH = "#pmult+,# " +        hon + start + "qA,qB,qC" + qpmuls+"." + qpmul+"2" + isqon + pasted+"qA.qB"
+//  let pmultAllplusH = "#pmultAll+H# " +       hon + "h1,h2" + start + "qA,qB,qC" + qpall + isqoff + ishcnt+"5" + pasted+"qAqBqC"
+//  let pmultplusH = "#pmult+H# " +             hon + "h1,h2" + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB"
+//  let pmultAllHoff = "#pmultAll-H# " +        hoff + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC"
+//  let pmultHoff = "#pmult-H# " +              hoff + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB"
+//  
+//  let queueFromHThenPaste = "#qFromH# " +     hon + "h1,h2,h3" + qfromh+"1" + ishcnt+"3" + begcmpq + "h2,h3" + endcmp + qpaste + qpaste + isqoff + pasted+"h2h3" + begcmph + "h1,h2,h3" + endcmp
+//  let queueFromHThenCanc = "#q&cancFromH# " + hon + "h1,h2,h3" + qfromh+"1" + canc + isqoff + ishcnt+"3" + begcmph + "h1,h2,h3" + endcmp
+//  let queueAllFromH = "#qAllFromH# " +        hon + "h1,h2,h3" + qfromh+"2" + ishcnt+"3" + begcmpq + "h1,h2,h3" + endcmp + qpmul+"3" + pasted+"h1h2h3"
+//  let queue1FromH = "#q1FromH# " +            hon + "h1,h2,h3" + qfromh+"0" + ishcnt+"3" + begcmpq + "h3" + endcmp + qpaste + pasted+"h3" + begcmph + "h1,h2,h3" + endcmp
+//  
+//  let delFromH = "#delFromH# " +              hon + "h1,h2,h3" + ishcnt+"3" + del+"1" + ishcnt+"2" + begcmph + "h1,h3" + endcmp
+//  let delFromHOld = "#delFromH-># " +         hon + "h1,h2,h3" + del+"2" + begcmph + "h2,h3" + endcmp + del+"1" + begcmph + "h3" + endcmp + del+"0" + ishcnt+"0"
+//  let delFromHNew = "#delFromH<-# " +         hon + "h1,h2,h3" + del+"0" + begcmph + "h1,h2" + endcmp + del+"0" + begcmph + "h1" + endcmp + del+"0" + ishcnt+"0"
+//  let delFromHplusQ = "#delFromH+Q# " +       hon + "h1,h2,h3" + start + "qA,qB" + issize+"2" + ishcnt+"5" + del+"1" + ishcnt+"4" + begcmph + "h1,h2,h3,qB" +
+//                                                      begcmpq + "qA,qB" + endcmp
+//  let delFromHplusQOld = "#delFromH+Q-># " +  hon + "h1,h2" + start + "qA" + del+"1" + begcmph + "h1,qA" + endcmp + del+"0" + ishcnt+"1" + begcmpq + "qA" + endcmp
+//  let delFromHplusQNew = "#delFromH+Q<-# " +  hon + "h1,h2" + start + "qA" + del+"0" + begcmph + "h1,h2" + endcmp + del+"0" + ishcnt+"1" + begcmpq + "qA" + begcmph + "h1" + endcmp
+//  
+//  let delFromQEmptyH = "#delFromQ# " +        hon + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp
+//  let delFromQEmptyHOld = "#delFromQ0H-># " + hon + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff
+//  let delFromQEmptyHNew = "#delFromQ0H<-# " + hon + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp //+ qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff
+//  let delFromQplusH = "#delFromQ+H# " +       hon + "h1" + start + "qA,qB,qC" + ishcnt+"4" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp
+//  let delFromQplusHOld = "#delFromQ+H#-># " + hon + "h1" + start + "qA,qB,qC" + qdel+"2" + issize+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" +
+//                                                      begcmpq + "qC" + endcmp + qdel+"0" + isqoff + ishcnt+"1"
+//  let delFromQplusHNew = "#delFromQ+H<-# " +  hon + "h1" + start + "qA,qB,qC" + qdel+"0" + issize+"2" + begcmpq + "qA,qB" + endcmp + qdel+"0" +
+//                                                      begcmpq + "qA" + endcmp + qdel+"0" + isqoff + ishcnt+"1"
+//  let delFromQHoff = "#delFromQ-H# " +        hoff + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp
+//  let delFromQHoffOld = "#delFromQ-H-># " +   hoff + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff
+//  let delFromQHoffNew = "#delFromQ-H<-# " +   hoff + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff
+//  
+//  let undoFromQHoff = "#undoFromQ-H# " +      hoff + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp
+//  let undoFromQHon = "#undoFromQ+H# " +       hon + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp
+//  let undoFromH = "#undoFromH# " +            hon + "h1,h2,h3" + ishcnt+"3" + undo + ishcnt+"2" + begcmph + "h1,h2" + endcmp
+//  
+//  let clearH = "#clearH# " +                  hon + "h1,h2" + clear + ishcnt+"0"
+//  let clearHandQ = "#clearH+Q# " +            hon + "h1,h2" + start + "qA,qB" + ishcnt+"4" + issize+"2" + clear + isqoff + ishcnt+"0" + issize+"0"
+//  let clearQnoH = "#clearQH0# " +             hon + start + "qA,qB" + clear + isqoff
+//  let clearQHoff = "#clearQH-# " +            hoff + start + "qA,qB" + clear + isqoff
+//  
+//  let queueFromHPlusAddsToH = "#qFromH+# " +  hon + "h1,h2" + qfromh+"0" + begcmpq + "h2" + endcmp + "q1,q2" + qpall + begcmph + "h1,h2,q1,q2" + endcmp
 
-  // enabling several at a time was sometimes causing coredata exceptions & crashes,
-  // is it happning less now or not at all?
+  // enabling several parameterized tests a time was sometimes causing coredata exceptions & crashes,
+  // is it happening less since changing from parameterized tests to functions, or maybe not at all?
+  // nope, still getting sporatic crahes (!) and warnings:
+  // "unresolved coredata error when saving context" / "Cannot save objects with references outside of their own stores"
+  // will try breaking up runs to be 1 per test... TBD
   
   @Test func `queue simulator smoke test`() async throws {
-    try await queueSim(run: smoke)
+    try await queueSim(
+      "#smoke# " + hon + "h1,h2" + start + "qA,qB,qC" + ishcnt+"5" + issize+"3" + qpaste + qpaste + issize+"1" + canc + isqoff + ishcnt+"5" +
+          pasted+"qAqB" + begcmph + "h1,h2,qA,qB,qC" + endcmp
+    )
   }
   
-//  @Test func `paste tests`() async throws {
-//    try await queueSim(runs: paste1EmptyH, pasteAllEmptyH, paste1plusH, pasteAllplusH, paste1Hoff, pasteAllHoff)
-//  }
-//  
-//  @Test func `paste multiple tests`() async throws {
-//    try await queueSim(runs: pmultAllEmptyH, pmult1EmptyH, pmultEmptyH, pmultWSepEmptyH, pmultAllplusH, pmultplusH, pmultAllHoff, pmultHoff)
-//  }
-//  
-//  @Test func `queue tests`() async throws {
-//    try await queueSim(runs: queueFromHThenPaste, queueFromHThenCanc, queueAllFromH, queue1FromH, delFromH, delFromHOld, delFromHNew)
-//  }
-//  
-//  @Test func `history delete tests`() async throws {
-//    try await queueSim(runs: delFromHplusQ, delFromHplusQOld, delFromHplusQNew, delFromQEmptyH)
-//  }
-//  
-//  @Test func `queue delete tests`() async throws {
-//    try await queueSim(runs: delFromQEmptyHOld, delFromQEmptyHNew, delFromQplusH, delFromQplusHOld, delFromQplusHNew, delFromQHoff, delFromQHoffOld, delFromQHoffNew)
-//  }
-//  
-//  @Test func `undo tests`() async throws {
-//    try await queueSim(runs: undoFromQHoff, undoFromQHon, undoFromH)
-//  }
-//  
-//  @Test func `clear tests`() async throws {
-//    try await queueSim(runs: clearH, clearHandQ, clearQnoH, clearQHoff)
-//  }
-  
-  @Test func `queue from history then queueing more item adds them to history`() async throws {
-    try await queueSim(runs: queueFromHPlusAddsToH)
+  @Test func `paste tests`() async throws {
+    try await queueSim(runs:
+                       "#paste1# " + hon + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1",
+                       "#pasteAll# " + hon + start + "qA,qB" + issize+"2" + ishcnt+"2" + qpaste + qpaste + isqoff + ishcnt+"2",
+                       "#paste1+H# " + hon + "h1,h2" + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1" + ishcnt+"4",
+                       "#pasteAll+H# " + hon + "h1,h2" + start + "qA,qB" + issize+"2" + ishcnt+"4" + qpaste + qpaste + isqoff,
+                       "#paste1-H# " + hoff + start + "qA,qB" + issize+"2" + qpaste + isqon + issize+"1",
+                       "#pasteAll-H# " + hoff + start + "qA,qB" + issize+"2" + qpaste + qpaste + isqoff
+    )
   }
   
-  // used to have just 1 test like this:
-//  @Test("queue sim", arguments: [ smoke,
-//                                  paste1EmptyH, pasteAllEmptyH, paste1plusH, pasteAllplusH, paste1Hoff, pasteAllHoff,
-//                                  pmultAllEmptyH, pmult1EmptyH, pmultEmptyH, pmultWSepEmptyH, pmultAllplusH, pmultplusH, pmultAllHoff, pmultHoff,
-//                                  queueFromHThenPaste, queueFromHThenCanc, queueAllFromH, queue1FromH, delFromH, delFromHOld, delFromHNew,
-//                                  delFromHplusQ, delFromHplusQOld, delFromHplusQNew, delFromQEmptyH,
-//                                  delFromQEmptyHOld, delFromQEmptyHNew, delFromQplusH, delFromQplusHOld, delFromQplusHNew,delFromQHoff, delFromQHoffOld, delFromQHoffNew,
-//                                  undoFromQHoff, undoFromQHon, undoFromH,
-//                                  clearH, clearHandQ, clearQnoH, clearQHoff,
-//                                ])
-//  func runQueueSim(run: [String]) async throws {
-//    try await queueSim(run: run)
-//  }
-  
-  func queueSim(runs: [String]...) async throws {
-    for run in runs where run.count > 0 {
-      try await queueSim(run: run)
-    }
+  @Test func `paste multiple tests`() async throws {
+    try await queueSim(runs:
+                       "#pmultAll# " + hon + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC",
+                       "#pmult1# " + hon + start + "qA,qB,qC" + qpmul+"1" + issize+"2" + pasted+"qA",
+                       "#pmult2# " + hon + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB",
+                       "#pmult+,# " + hon + start + "qA,qB,qC" + qpmuls+"." + qpmul+"2" + isqon + pasted+"qA.qB"
+    )
   }
   
-  func queueSim(run: [String]) async throws {
-    //if let match = run[0].firstMatch(of: /^#([^#]*)#/) { print(match.1) }
-    //print(run)
-    
-    try #require(history.count == 0) // with xcode 26, build fails without `try` here
-    
-    var lastDeleted: String? = nil
-    var n = 0
-    
-    for segment in run {
-      var tokenize = segment
+  @Test func `paste multiple tests 2`() async throws {
+    try await queueSim(runs:
+                       "#pmultAll+H# " + hon + "h1,h2" + start + "qA,qB,qC" + qpall + isqoff + ishcnt+"5" + pasted+"qAqBqC",
+                       "#pmult+H# " + hon + "h1,h2" + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB",
+                       "#pmultAll-H# " + hoff + start + "qA,qB,qC" + qpall + isqoff + pasted+"qAqBqC",
+                       "#pmult-H# " + hoff + start + "qA,qB,qC" + qpmul+"2" + issize+"1" + pasted+"qAqB"
+    )
+  }
+  
+  @Test func `queue tests`() async throws {
+    try await queueSim(runs:
+                       "#qFromH# " + hon + "h1,h2,h3" + qfromh+"1" + ishcnt+"3" + begcmpq + "h2,h3" + endcmp + qpaste + qpaste + isqoff + pasted+"h2h3" +
+                              begcmph + "h1,h2,h3" + endcmp,
+                       "#q&cancFromH# " + hon + "h1,h2,h3" + qfromh+"1" + canc + isqoff + ishcnt+"3" + begcmph + "h1,h2,h3" + endcmp,
+                       "#qAllFromH# " + hon + "h1,h2,h3" + qfromh+"2" + ishcnt+"3" + begcmpq + "h1,h2,h3" + endcmp + qpmul+"3" + pasted+"h1h2h3",
+                       "#q1FromH# " + hon + "h1,h2,h3" + qfromh+"0" + ishcnt+"3" + begcmpq + "h3" + endcmp + qpaste + pasted+"h3" + begcmph + "h1,h2,h3" + endcmp,
+                       "#qFromH+qMore# " + hon + "h1,h2" + qfromh+"0" + begcmpq + "h2" + endcmp + "q1,q2" + qpall + begcmph + "h1,h2,q1,q2" + endcmp
+    )
+  }
+  
+  @Test func `history delete tests`() async throws {
+    try await queueSim(runs:
+                       "#delFromH# " + hon + "h1,h2,h3" + ishcnt+"3" + del+"1" + ishcnt+"2" + begcmph + "h1,h3" + endcmp,
+                       "#delFromH-># " + hon + "h1,h2,h3" + del+"2" + begcmph + "h2,h3" + endcmp + del+"1" + begcmph + "h3" + endcmp + del+"0" + ishcnt+"0",
+                       "#delFromH<-# " + hon + "h1,h2,h3" + del+"0" + begcmph + "h1,h2" + endcmp + del+"0" + begcmph + "h1" + endcmp + del+"0" + ishcnt+"0",
+                       "#delFromH+Q# " + hon + "h1,h2,h3" + start + "qA,qB" + issize+"2" + ishcnt+"5" + del+"1" + ishcnt+"4" + begcmph + "h1,h2,h3,qB" +
+                              begcmpq + "qA,qB" + endcmp,
+                       "#delFromH+Q-># " + hon + "h1,h2" + start + "qA" + del+"1" + begcmph + "h1,qA" + endcmp + del+"0" + ishcnt+"1" + begcmpq + "qA" + endcmp,
+                       "#delFromH+Q<-# " + hon + "h1,h2" + start + "qA" + del+"0" + begcmph + "h1,h2" + endcmp + del+"0" + ishcnt+"1" + begcmpq + "qA" + begcmph + "h1" + endcmp
+    )
+  }
+  
+  @Test func `queue delete tests`() async throws {
+    try await queueSim(runs:
+                       "#delFromQ# " + hon + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp,
+                       "#delFromQ0H-># " + hon + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff,
+                       "#delFromQ0H<-# " + hon + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff
+    )
+  }
+  
+  @Test func `queue delete tests 2`() async throws {
+    try await queueSim(runs:
+                       "#delFromQ+H# " + hon + "h1" + start + "qA,qB,qC" + ishcnt+"4" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp,
+                       "#delFromQ+H#-># " + hon + "h1" + start + "qA,qB,qC" + qdel+"2" + issize+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" +
+                              begcmpq + "qC" + endcmp + qdel+"0" + isqoff,
+                       "#delFromQ+H<-# " + hon + "h1" + start + "qA,qB,qC" + qdel+"0" + issize+"2" + begcmpq + "qA,qB" + endcmp + qdel+"0" +
+                              begcmpq + "qA" + endcmp + qdel+"0" + isqoff
+    )
+  }
+  
+  @Test func `queue delete tests 3`() async throws {
+    try await queueSim(runs:
+                       "#delFromQ-H# " + hoff + start + "qA,qB,qC" + issize+"3" + qdel+"1" + issize+"2" + begcmpq + "qA,qC" + endcmp,
+                       "#delFromQ-H-># " + hoff + start + "qA,qB,qC" + qdel+"2" + begcmpq + "qB,qC" + endcmp + qdel+"1" + begcmpq + "qC" + endcmp + qdel+"0" + isqoff,
+                       "#delFromQ-H<-# " + hoff + start + "qA,qB,qC" + qdel+"0" + begcmpq + "qA,qB" + endcmp + qdel+"0" + begcmpq + "qA" + endcmp + qdel+"0" + isqoff
+    )
+  }
+  
+  @Test func `undo tests`() async throws {
+    try await queueSim(runs:
+                       "#undoFromQ-H# " + hoff + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp,
+                       "#undoFromQ+H# " + hon + start + "qA,qB,qC" + issize+"3" + undo + issize+"2" + begcmpq + "qA,qB" + endcmp,
+                       "#undoFromH# " + hon + "h1,h2,h3" + ishcnt+"3" + undo + ishcnt+"2" + begcmph + "h1,h2" + endcmp
+    )
+  }
+  
+  @Test func `clear tests`() async throws {
+    try await queueSim(runs:
+                       "#clearH# " + hon + "h1,h2" + clear + ishcnt+"0",
+                       "#clearH+Q# " + hon + "h1,h2" + start + "qA,qB" + ishcnt+"4" + issize+"2" + clear + isqoff + ishcnt+"0",
+                       "#clearQH0# " + hon + start + "qA,qB" + clear + isqoff,
+                       "#clearQH-# " + hoff + start + "qA,qB" + clear + isqoff
+    )
+  }
+  
+  func queueSim(_ run: String) async throws {
+    return try await queueSim(runs: run)
+  }
+  
+  func queueSim(runs: String...) async throws {
+    for run in runs {
+      if logRunStringsBeforeRun {
+        print(run)
+      } else if runs.count > 1 {
+        if let match = run.firstMatch(of: /^#([^#]*)#/) { print(match.1) } // maybe remove these cryptic embedded test names?
+      }
+      
+      reset()
+      var n = 0
+      
+      var tokenize = run
       while !tokenize.isEmpty {
         guard let str = nextTokenString(from: &tokenize) else { continue }
         
@@ -281,9 +352,9 @@ class QueueSims {
           #expect(queue.isOn, "at is-size token \(issize) [\(n)]")
           guard queue.isOn else { continue }
           #expect(sz == queue.size, "at is-size token (\(issizeTokenname) \(issize)) [\(n)]")
-        case .iscnt:
-          guard let cnt = value, cnt >= 0 else { print("unexpected is-history-count token (\(iscntTokenname) \(iscnt)) [\(n)] non-+ve-int parameter, instead '\(param ?? "")'"); continue }
-          #expect(history.count == cnt, "at is-history-count token (\(iscntTokenname) \(iscnt)) [\(n)]")
+        case .ishcnt:
+          guard let cnt = value, cnt >= 0 else { print("unexpected is-history-count token (\(ishcntTokenname) \(ishcnt)) [\(n)] non-+ve-int parameter, instead '\(param ?? "")'"); continue }
+          #expect(history.count == cnt, "at is-history-count token (\(ishcntTokenname) \(ishcnt)) [\(n)]")
         
         case .qcopy: // replicates AppModel.queuedCopy + clipboardChanged 
           guard let param = param, !param.isEmpty else { print("unexpected queued-copy token (\(qcopyTokenname) \(qcopy)) [\(n)] parameter empty"); continue }
@@ -298,8 +369,9 @@ class QueueSims {
         case .undo: // replicates AppModel.undoLastCopy
           if !queue.isEmpty {
             try queue.remove(atIndex: 0)
-          } else {
-            guard let clip = history.first else { print("kinda fishy, was this intentional? no first history item at undo-copy token (\(undoTokenname) \(undo)) [\(n)]"); return }
+          }
+          if history.isListActive {
+            guard let clip = history.first else { print("kinda fishy, was this intentional? no first history item at undo-copy token (\(undoTokenname) \(undo)) [\(n)]"); continue }
             history.remove(clip)
           }
         
@@ -501,7 +573,8 @@ class QueueSims {
             let newclip = Clip.create(withContents: [newcc], application: ProcessInfo.processInfo.processName)
             if queue.isOn {
               try queue.add(newclip)
-            } else {
+            }
+            if history.isListActive {
               history.add(newclip)
             }
           }
@@ -516,12 +589,13 @@ class QueueSims {
         }
       } // loop over tokens in str
       
-    } // loop over str
-    
-    if logQueueAfterRun && !logQueueAfterEveryOp {
-      print("after run: \(queue.dump)")
-      if logClipObjPointers && history.count > 0 { print("\(history.ptrs)") }
-    }
+      if logQueueAfterRun && !logQueueAfterEveryOp {
+        print("after run: \(queue.dump)")
+        if logClipObjPointers && history.count > 0 { print("\(history.ptrs)") }
+      }
+      
+      try wipe()
+    } // loop over run strings
   }
   
 }
@@ -552,7 +626,7 @@ var nostay =    QueueSims.Token.nostay.rawValue
 var isqon =     QueueSims.Token.isqon.rawValue
 var isqoff =    QueueSims.Token.isqoff.rawValue
 var issize =    QueueSims.Token.issize.rawValue
-var iscnt =     QueueSims.Token.iscnt.rawValue
+var ishcnt =    QueueSims.Token.ishcnt.rawValue
 var isclip =    QueueSims.Token.isclip.rawValue
 var pasted =    QueueSims.Token.pasted.rawValue
 var deleted =   QueueSims.Token.deleted.rawValue
@@ -588,7 +662,7 @@ var nostayTokenname =     "nostay"
 var isqonTokenname =      "isqon"
 var isqoffTokenname =     "isqoff"
 var issizeTokenname =     "issize"
-var iscntTokenname =      "iscnt"
+var ishcntTokenname =     "ishcnt"
 var isclipTokenname =     "isclip"
 var pastedTokenname =     "pasted"
 var deletedTokenname =    "deleted"

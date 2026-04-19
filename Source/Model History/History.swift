@@ -141,6 +141,7 @@ class History {
   }
   
   func clearHistory() {
+    currentList?.removeAll()
     clips.forEach(deleteClip(_:))
     CoreDataManager.shared.saveContext()
   }

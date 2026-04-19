@@ -55,6 +55,18 @@
             ReferencedContainer = "container:Batch Clipboard.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "com&#x200b;.apple&#x200b;.&#x200b;Core&#x200b;Data&#x200b;.&#x200b;Concurrency&#x200b;Debug"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "com&#x200b;.apple&#x200b;.&#x200b;Core&#x200b;Data&#x200b;.&#x200b;Logging&#x200b;.stderr"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

@@ -14,7 +14,6 @@ import os.log
 
 // TODO: make methods throw or at least return error instead of bool
 // TODO: os_log more caught errors
-// TODO: restore the saved breakpoints that got made invalid
 
 extension AppModel {
   
@@ -221,9 +220,6 @@ extension AppModel {
     
     // when using history, use replayFromHistory technique instead of the code below
     // normally only permitted when `allowReplayFromHistory`, but an exception is made for this feature
-//    if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0), clipboard.currentMatchesClip(clip) {
-//      return replayFromHistory(atIndex: 0, overridePermission: true, interactive: interactive)
-//    }
     if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
       if clipboard.currentMatchesClip(clip) {
         return replayFromHistory(atIndex: 0, overridePermission: true, interactive: interactive)
@@ -283,11 +279,6 @@ extension AppModel {
       try queue.off()
     } catch {
       os_log(.default, "ignoring error from turning off queue %@", "\(error)")
-    }
-    
-    if history.isListActive {
-      // after canceling the queue its contents may have been added to the history
-      history.trim(to: Self.effectiveMaxClips)
     }
     
     menu.cancelledQueue(count)
@@ -405,13 +396,12 @@ extension AppModel {
       menu.addedClipToQueue(clip)
       updateMenuIcon(.increment)
       updateMenuTitle()
-      
-    } else if history.isListActive {
-      history.add(clip)
-      history.trim(to: Self.effectiveMaxClips)
-      
-      menu.addedClipToHistory(clip)
     }
+    
+    history.add(clip)
+    history.trim(to: Self.effectiveMaxClips)
+    
+    menu.addedClipToHistory(clip)
   }
   
   @IBAction
@@ -444,7 +434,11 @@ extension AppModel {
     nop() // TODO: remove once no longer need a breakpoint here
     
     do {
-      try queue.replaying()
+      if !queue.isOn {
+        try queue.replaying()
+      } else {
+        try queue.putNextOnClipboard()
+      }
     } catch {
       return false
     }
@@ -467,11 +461,6 @@ extension AppModel {
         Self.busy = false
         completion?(false)
         return
-      }
-      
-      if !queue.isOn && history.isListActive {
-        // dequeuing has turned off the queue and its contents may have been added to the history
-        history.trim(to: Self.effectiveMaxClips)
       }
       
       menu.poppedClipOffQueue()
@@ -567,7 +556,11 @@ extension AppModel {
     }
     
     do {
-      try queue.replaying() // ensures queue head is on the clipboard
+      if !queue.isOn {
+        try queue.replaying()
+      } else {
+        try queue.putNextOnClipboard()
+      }
     } catch {
       return false
     }
@@ -590,11 +583,6 @@ extension AppModel {
         // clipboard might be in wrong state, otherwise presume continuing
         // should be the most correct thing
         success = false
-      }
-      
-      if !queue.isOn && history.isListActive {
-        // dequeuing has turned off the queue and its contents may have been added to the history
-        history.trim(to: Self.effectiveMaxClips)
       }
       
       // final update to these and including icon not updated since the start
@@ -686,7 +674,11 @@ extension AppModel {
     nop() // TODO: remove once no longer need a breakpoint here
     
     do {
-      try queue.replaying()
+      if !queue.isOn {
+        try queue.replaying()
+      } else {
+        try queue.putNextOnClipboard()
+      }
     } catch {
       return false
     }
@@ -695,11 +687,6 @@ extension AppModel {
       try self.queue.dequeue()
     } catch {
       return false
-    }
-    
-    if !queue.isOn && history.isListActive {
-      // dequeuing has turned off the queue and its contents may have been added to the history
-      history.trim(to: Self.effectiveMaxClips)
     }
     
     menu.poppedClipOffQueue()
@@ -958,11 +945,6 @@ extension AppModel {
       return
     }
     
-    if !queue.isOn && history.isListActive {
-      // removing has turned off the queue and its contents may have been added to the history
-      history.trim(to: Self.effectiveMaxClips)
-    }
-    
     menu.deletedClipFromQueue(index)
     updateMenuIcon(.decrement)
     updateMenuTitle()
@@ -1087,20 +1069,12 @@ extension AppModel {
         return
       }
       
-      if !queue.isOn && history.isListActive {
-        // removing has turned off the queue and contents may have been added to the history
-        history.trim(to: Self.effectiveMaxClips)
-      }
-      
       menu.deletedClipFromQueue(0)
       updateMenuIcon(.decrement)
       updateMenuTitle()
-      
-    } else {
-      guard let clip = history.first else {
-        return
-      }
-      
+    }
+    
+    if history.isListActive, let clip = history.first {
       history.remove(clip)
       
       menu.deletedClipFromHistory(0)

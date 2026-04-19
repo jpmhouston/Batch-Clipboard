@@ -28,12 +28,12 @@ class PreviewPopoverController {
     cancelPopover()
   }
   
-  func showPopover(for menuItem: ClipMenuItem, anchors: (NSView, NSView)? = nil) {
+  func showPopover(for menuItem: ClipMenuItem, withQueueOn queueOn: Bool, anchors: (NSView, NSView)? = nil) {
     previewThrottle.throttle { [self] in
       let popover = NSPopover()
       popover.animates = false
       popover.behavior = .semitransient
-      popover.contentViewController = Preview(item: menuItem.clip)
+      popover.contentViewController = Preview(item: menuItem.clip, showingStartBatchLine: AppModel.allowReplayFromHistory && !queueOn)
       
       let window: NSWindow?
       if menuItem.parent != nil, let rect = screenFrameForMenuItem(menuItem, orAnchors: anchors) {
