@@ -1,6 +1,15 @@
 # Batch Clipboard Changelog
 
-## version 2.2 (2025-12-18 ⛄️🎄)
+## version 2.3b1 (2026-04-22)
+
+- New feature: hold option key to show Start Batch with Clipboard, use if you cut/copy something then realize you in fact want a batch of several clips, it starts a batch with the first item being what's already on the clipboard.
+- Added some concurrency safeguards between setting OS clipboard and polling to detect updates.
+- New advanced checkbox to enable some debug logging.
+- Improved behavior of clip history (if enabled) when collecting a batch, in some circumstances new clips would end up not being added to the history.
+- Fixed behavior of temporarly recalling clips from the history when in the middle of pasting a batch, the next batch clip pasted with the assigned shortcut would re-paste the recalled clip instead of the next batch clip.
+- Removed dependency on the package SDWebImage, not used since early betas of version 1.
+
+## version 2.2.1 (2025-12-18 ⛄️🎄)
 
 Update for the App Store edition only.
 
