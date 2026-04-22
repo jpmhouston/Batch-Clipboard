@@ -26,8 +26,6 @@
 		8F8C48B62BAD538600C3A219 /* TPInAppReceipt in Frameworks */ = {isa = PBXBuildFile; productRef = 8F8C48B52BAD538600C3A219 /* TPInAppReceipt */; };
 		8FC1949E2E3B78EC002589CF /* Sauce in Frameworks */ = {isa = PBXBuildFile; productRef = 8FC1949D2E3B78EC002589CF /* Sauce */; };
 		8FC194A02E3BB54E002589CF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FC1949F2E3BB54D002589CF /* CoreData.framework */; };
-		8FCDFC172BC7E92400A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC162BC7E92400A16FBE /* SDWebImage */; };
-		8FCDFC192BC7E96C00A16FBE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 8FCDFC182BC7E96C00A16FBE /* SDWebImage */; };
 		8FD2EE022E505FE6004558F5 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 8FD2EE012E505FE6004558F5 /* KeyboardShortcuts */; };
 /* End PBXBuildFile section */
 
@@ -312,7 +310,6 @@
 				8F0D3C5E2BAB8F5A00DDB603 /* Carbon.framework in Frameworks */,
 				8F12B56F2BD3B827004F059B /* Sparkle in Frameworks */,
 				8F0D3C5D2BAB8F5A00DDB603 /* KeyboardShortcuts in Frameworks */,
-				8FCDFC172BC7E92400A16FBE /* SDWebImage in Frameworks */,
 				8F0D3C5F2BAB8F5A00DDB603 /* SwiftHEXColors in Frameworks */,
 				8F0D3C602BAB8F5A00DDB603 /* Sauce in Frameworks */,
 				8F0D3C612BAB8F5A00DDB603 /* Settings in Frameworks */,
@@ -328,7 +325,6 @@
 				8F8C48962BAD51B000C3A219 /* Carbon.framework in Frameworks */,
 				8F8C48972BAD51B000C3A219 /* KeyboardShortcuts in Frameworks */,
 				8F8C48982BAD51B000C3A219 /* SwiftHEXColors in Frameworks */,
-				8FCDFC192BC7E96C00A16FBE /* SDWebImage in Frameworks */,
 				8F8C48992BAD51B000C3A219 /* Sauce in Frameworks */,
 				8F8C489A2BAD51B000C3A219 /* Settings in Frameworks */,
 				8F8C489C2BAD51B000C3A219 /* Fuse in Frameworks */,
@@ -408,7 +404,6 @@
 				8F0D3C142BAB8F5A00DDB603 /* SwiftHEXColors */,
 				8F0D3C162BAB8F5A00DDB603 /* KeyboardShortcuts */,
 				8F0D3C1C2BAB8F5A00DDB603 /* Settings */,
-				8FCDFC162BC7E92400A16FBE /* SDWebImage */,
 				8F12B56E2BD3B827004F059B /* Sparkle */,
 			);
 			productName = Maccy;
@@ -437,7 +432,6 @@
 				8F8C48542BAD51B000C3A219 /* KeyboardShortcuts */,
 				8F8C48582BAD51B000C3A219 /* Settings */,
 				8F8C48B52BAD538600C3A219 /* TPInAppReceipt */,
-				8FCDFC182BC7E96C00A16FBE /* SDWebImage */,
 				8F5CBF332C8CFBB70058C06C /* Flare */,
 			);
 			productName = Maccy;
@@ -499,7 +493,6 @@
 				2F39CB022AD9A93C00B749FD /* XCRemoteSwiftPackageReference "Sparkle" */,
 				2F39CB082AD9AE1F00B749FD /* XCRemoteSwiftPackageReference "Settings" */,
 				8F8C48B42BAD538600C3A219 /* XCRemoteSwiftPackageReference "TPInAppReceipt" */,
-				8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				8F5CBF322C8CFBB70058C06C /* XCRemoteSwiftPackageReference "flare" */,
 			);
 			productRefGroup = DAEE38441E3DBEB100DD2966 /* Products */;
@@ -1081,14 +1074,6 @@
 				minimumVersion = 3.4.0;
 			};
 		};
-		8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
-			requirement = {
-				kind = exactVersion;
-				version = 5.19.1;
-			};
-		};
 		DA00993E256414560030E697 /* XCRemoteSwiftPackageReference "fuse-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krisk/fuse-swift";
@@ -1201,16 +1186,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DA5154D62564102900C01004 /* XCRemoteSwiftPackageReference "Sauce" */;
 			productName = Sauce;
-		};
-		8FCDFC162BC7E92400A16FBE /* SDWebImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */;
-			productName = SDWebImage;
-		};
-		8FCDFC182BC7E96C00A16FBE /* SDWebImage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8FCDFC152BC7E92400A16FBE /* XCRemoteSwiftPackageReference "SDWebImage" */;
-			productName = SDWebImage;
 		};
 		8FD2EE012E505FE6004558F5 /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;

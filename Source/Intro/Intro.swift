@@ -8,8 +8,11 @@
 
 // swiftlint:disable file_length
 import AppKit
-//import SDWebImage
 import os.log
+
+#if INTRO_ANIMATED_LOGO
+import SDWebImage
+#endif
 
 import KeyboardShortcuts // delete this once debug code is deleted
 
@@ -116,7 +119,9 @@ class IntroWindowController: PagedWindowController {
 
 class IntroViewController: NSViewController, PagedWindowControllerDelegate, ClickableTextFieldDelegate {
   @IBOutlet var staticLogoImage: NSImageView?
+  #if INTRO_ANIMATED_LOGO
   @IBOutlet var animatedLogoImage: SDAnimatedImageView?
+  #endif
   @IBOutlet var logoStopButton: NSButton?
   @IBOutlet var logoRestartButton: NSButton?
   @IBOutlet var setupNeededLabel: NSTextField?
@@ -357,7 +362,6 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
     animatedLogoImage?.image = sdImage
     logoRestartButton?.isHidden = false
     #else
-    animatedLogoImage?.isHidden = true
     logoStopButton?.isHidden = true
     logoRestartButton?.isHidden = true
     #endif
