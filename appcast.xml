@@ -6,6 +6,35 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3b1</title>
+            <pubDate>Thu, 23 Apr 2026 02:46:50 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2098</sparkle:version>
+            <sparkle:shortVersionString>2.3b1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>New feature: hold option key to show Start Batch with Clipboard, use
+if you cut/copy something then realize you in fact want a batch of
+several clips, it starts a batch with the first item being what’s
+already on the clipboard.</li>
+<li>Added some concurrency safeguards between setting OS clipboard and
+polling to detect updates.</li>
+<li>New advanced checkbox to enable some debug logging.</li>
+<li>Improved behavior of clip history (if enabled) when collecting a
+batch, in some circumstances new clips would end up not being added to
+the history.</li>
+<li>Fixed behavior of temporarly recalling clips from the history when
+in the middle of pasting a batch, the next batch clip pasted with the
+assigned shortcut would re-paste the recalled clip instead of the next
+batch clip.</li>
+<li>Removed dependency on the package SDWebImage, not used since early
+betas of version 1.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3b1/Batch.Clipboard.2.3b1.zip" length="7104100" type="application/octet-stream" sparkle:edSignature="PVRkrJOwzCtMwYA8sJf5FItaxuyKLkVaT+ziSQy+Zlz7gUtSzCYNd+eR3rapArFUzzZflmY01TmA/Q6/2yEgAg=="/>
+        </item>
+        <item>
             <title>2.2</title>
             <pubDate>Sun, 07 Dec 2025 10:36:16 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
