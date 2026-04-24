@@ -186,8 +186,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1132"
-            endingLineNumber = "1132"
+            startingLineNumber = "1133"
+            endingLineNumber = "1133"
             landmarkName = "addedClipToHistory(_:)"
             landmarkType = "7">
             <Actions>
@@ -211,8 +211,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1110"
-            endingLineNumber = "1110"
+            startingLineNumber = "1111"
+            endingLineNumber = "1111"
             landmarkName = "addedClipToQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -236,8 +236,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1149"
-            endingLineNumber = "1149"
+            startingLineNumber = "1150"
+            endingLineNumber = "1150"
             landmarkName = "pushedClipsOnQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -261,8 +261,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1155"
-            endingLineNumber = "1155"
+            startingLineNumber = "1156"
+            endingLineNumber = "1156"
             landmarkName = "poppedClipsOffQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -286,8 +286,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1171"
-            endingLineNumber = "1171"
+            startingLineNumber = "1172"
+            endingLineNumber = "1172"
             landmarkName = "poppedClipsOffQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -311,8 +311,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1187"
-            endingLineNumber = "1187"
+            startingLineNumber = "1188"
+            endingLineNumber = "1188"
             landmarkName = "startedQueueFromHistory(_:)"
             landmarkType = "7">
             <Actions>
@@ -336,8 +336,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1203"
-            endingLineNumber = "1203"
+            startingLineNumber = "1204"
+            endingLineNumber = "1204"
             landmarkName = "startedQueueFromBatch()"
             landmarkType = "7">
             <Actions>
@@ -361,8 +361,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1199"
-            endingLineNumber = "1199"
+            startingLineNumber = "1200"
+            endingLineNumber = "1200"
             landmarkName = "startedQueueFromHistory(_:)"
             landmarkType = "7">
             <Actions>
@@ -386,8 +386,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1204"
-            endingLineNumber = "1204"
+            startingLineNumber = "1205"
+            endingLineNumber = "1205"
             landmarkName = "startedQueueFromBatch()"
             landmarkType = "7">
             <Actions>
@@ -411,8 +411,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1151"
-            endingLineNumber = "1151"
+            startingLineNumber = "1152"
+            endingLineNumber = "1152"
             landmarkName = "pushedClipsOnQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -436,8 +436,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1174"
-            endingLineNumber = "1174"
+            startingLineNumber = "1175"
+            endingLineNumber = "1175"
             landmarkName = "poppedClipsOffQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -461,8 +461,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1211"
-            endingLineNumber = "1211"
+            startingLineNumber = "1212"
+            endingLineNumber = "1212"
             landmarkName = "deletedClipFromQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -486,8 +486,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1272"
-            endingLineNumber = "1272"
+            startingLineNumber = "1273"
+            endingLineNumber = "1273"
             landmarkName = "deletedClipFromHistory(_:)"
             landmarkType = "7">
             <Actions>
@@ -511,8 +511,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1316"
-            endingLineNumber = "1316"
+            startingLineNumber = "1317"
+            endingLineNumber = "1317"
             landmarkName = "deletedHistory()"
             landmarkType = "7">
             <Actions>
@@ -536,8 +536,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1331"
-            endingLineNumber = "1331"
+            startingLineNumber = "1332"
+            endingLineNumber = "1332"
             landmarkName = "addedBatch(_:)"
             landmarkType = "7">
             <Actions>
@@ -561,8 +561,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1361"
-            endingLineNumber = "1361"
+            startingLineNumber = "1362"
+            endingLineNumber = "1362"
             landmarkName = "deletedBatch(_:)"
             landmarkType = "7">
             <Actions>
@@ -586,8 +586,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1401"
-            endingLineNumber = "1401"
+            startingLineNumber = "1402"
+            endingLineNumber = "1402"
             landmarkName = "deletedClip(_:fromBatch:)"
             landmarkType = "7">
             <Actions>
@@ -611,8 +611,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1473"
-            endingLineNumber = "1473"
+            startingLineNumber = "1474"
+            endingLineNumber = "1474"
             landmarkName = "updateFilter(filter:)"
             landmarkType = "7">
             <Actions>
@@ -636,8 +636,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1516"
-            endingLineNumber = "1516"
+            startingLineNumber = "1517"
+            endingLineNumber = "1517"
             landmarkName = "select(_:)"
             landmarkType = "7">
             <Actions>
@@ -761,8 +761,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "895"
-            endingLineNumber = "895"
+            startingLineNumber = "896"
+            endingLineNumber = "896"
             landmarkName = "updateQueueClipItemVisibility()"
             landmarkType = "7">
             <Actions>
@@ -786,8 +786,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "965"
-            endingLineNumber = "965"
+            startingLineNumber = "966"
+            endingLineNumber = "966"
             landmarkName = "updateHistoryClipItemVisibility()"
             landmarkType = "7">
             <Actions>
@@ -811,8 +811,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1003"
-            endingLineNumber = "1003"
+            startingLineNumber = "1004"
+            endingLineNumber = "1004"
             landmarkName = "updateBatchItemVisibility()"
             landmarkType = "7">
             <Actions>
@@ -836,8 +836,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1020"
-            endingLineNumber = "1020"
+            startingLineNumber = "1021"
+            endingLineNumber = "1021"
             landmarkName = "trimHistoryClipMenuItems()"
             landmarkType = "7">
             <Actions>
@@ -861,8 +861,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1041"
-            endingLineNumber = "1041"
+            startingLineNumber = "1042"
+            endingLineNumber = "1042"
             landmarkName = "trimHistoryClipMenuItems()"
             landmarkType = "7">
             <Actions>
@@ -1136,8 +1136,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "554"
-            endingLineNumber = "554"
+            startingLineNumber = "559"
+            endingLineNumber = "559"
             landmarkName = "queuedPasteMultiple(_:separator:interactive:completion:)"
             landmarkType = "7">
             <Actions>
@@ -1161,8 +1161,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "551"
-            endingLineNumber = "551"
+            startingLineNumber = "556"
+            endingLineNumber = "556"
             landmarkName = "queuedPasteMultiple(_:separator:interactive:completion:)"
             landmarkType = "7">
             <Actions>
@@ -1186,8 +1186,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "619"
-            endingLineNumber = "619"
+            startingLineNumber = "624"
+            endingLineNumber = "624"
             landmarkName = "queuedPasteMultipleIterator(increment:to:withSeparator:then:)"
             landmarkType = "7">
             <Actions>
@@ -1211,8 +1211,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "677"
-            endingLineNumber = "677"
+            startingLineNumber = "682"
+            endingLineNumber = "682"
             landmarkName = "advanceQueue()"
             landmarkType = "7">
             <Actions>
@@ -1236,8 +1236,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "674"
-            endingLineNumber = "674"
+            startingLineNumber = "679"
+            endingLineNumber = "679"
             landmarkName = "advanceQueue()"
             landmarkType = "7">
             <Actions>
@@ -1261,8 +1261,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "752"
-            endingLineNumber = "752"
+            startingLineNumber = "757"
+            endingLineNumber = "757"
             landmarkName = "replayFromHistory(atIndex:overridePermission:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1286,8 +1286,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "816"
-            endingLineNumber = "816"
+            startingLineNumber = "821"
+            endingLineNumber = "821"
             landmarkName = "replayBatch(_:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1311,8 +1311,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "820"
-            endingLineNumber = "820"
+            startingLineNumber = "825"
+            endingLineNumber = "825"
             landmarkName = "replayBatch(_:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1336,8 +1336,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "887"
-            endingLineNumber = "887"
+            startingLineNumber = "892"
+            endingLineNumber = "892"
             landmarkName = "saveBatch(_:)"
             landmarkType = "7">
             <Actions>
@@ -1361,8 +1361,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "909"
-            endingLineNumber = "909"
+            startingLineNumber = "914"
+            endingLineNumber = "914"
             landmarkName = "saveBatch(withName:)"
             landmarkType = "7">
             <Actions>
@@ -1386,8 +1386,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "926"
-            endingLineNumber = "926"
+            startingLineNumber = "931"
+            endingLineNumber = "931"
             landmarkName = "deleteHistoryClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1411,8 +1411,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "941"
-            endingLineNumber = "941"
+            startingLineNumber = "946"
+            endingLineNumber = "946"
             landmarkName = "deleteQueueClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1436,8 +1436,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "965"
-            endingLineNumber = "965"
+            startingLineNumber = "970"
+            endingLineNumber = "970"
             landmarkName = "deleteBatch(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1461,8 +1461,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "983"
-            endingLineNumber = "983"
+            startingLineNumber = "988"
+            endingLineNumber = "988"
             landmarkName = "deleteBatchClip(atIndex:forBatchAtIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1486,8 +1486,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1039"
-            endingLineNumber = "1039"
+            startingLineNumber = "1044"
+            endingLineNumber = "1044"
             landmarkName = "deleteClips(clipboardIncluded:)"
             landmarkType = "7">
             <Actions>
@@ -1511,8 +1511,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "717"
-            endingLineNumber = "717"
+            startingLineNumber = "722"
+            endingLineNumber = "722"
             landmarkName = "copyClip(_:)"
             landmarkType = "7">
             <Actions>
@@ -1536,8 +1536,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1231"
-            endingLineNumber = "1231"
+            startingLineNumber = "1232"
+            endingLineNumber = "1232"
             landmarkName = "deletedClipFromQueue(_:)"
             landmarkType = "7">
             <Actions>
@@ -1561,8 +1561,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1291"
-            endingLineNumber = "1291"
+            startingLineNumber = "1292"
+            endingLineNumber = "1292"
             landmarkName = "deletedClipFromHistory(_:)"
             landmarkType = "7">
             <Actions>
@@ -1586,8 +1586,8 @@
             filePath = "Source/Menu/AppMenu.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1433"
-            endingLineNumber = "1433"
+            startingLineNumber = "1434"
+            endingLineNumber = "1434"
             landmarkName = "deletedClip(_:fromBatch:)"
             landmarkType = "7">
             <Actions>
@@ -1611,8 +1611,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "559"
-            endingLineNumber = "559"
+            startingLineNumber = "564"
+            endingLineNumber = "564"
             landmarkName = "queuedPasteMultiple(_:separator:interactive:completion:)"
             landmarkType = "7">
             <Actions>

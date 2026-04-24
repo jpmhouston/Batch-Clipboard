@@ -838,9 +838,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
         queueStartWithCurrentItem?.isVisibleAlternate = true
       } else {
         queueStartWithCurrentItem?.isVisibleAlternate = false
+        queueStartWithCurrentItem?.isVisible = true // not an alternate, instead always visible below "start" 
       }
     } else {
-      queueStartWithCurrentItem?.isVisibleAlternate = false
+      queueStartWithCurrentItem?.isVisibleAlternate = false // only show "start", both should be disabled anyway
     }
     
     replayLastBatchItem?.isVisible = AppModel.allowLastBatch || promoteExtras

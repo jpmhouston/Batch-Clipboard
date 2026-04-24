@@ -71,7 +71,9 @@ class AppModel: NSObject {
   
   private var copyHotKey: CopyKeyboardShortcutHandler!
   private var pasteHotKey: PasteKeyboardShortcutHandler!
+  private var pasteMultipleHotKey: PasteMultipleKeyboardShortcutHandler!
   private var startHotKey: StartKeyboardShortcutHandler!
+  private var startWithCurrentHotKey: StartWithCurrentKeyboardShortcutHandler!
   private var replayLastHotKey: ReplayLastKeyboardShortcutHandler!
   private var savedBatchHotKeys: Set<ReplaySavedKeyboardShortcutHandler> = []
   
@@ -188,7 +190,9 @@ class AppModel: NSObject {
     // hotkey and clipboard callbacks
     copyHotKey = CopyKeyboardShortcutHandler(queuedCopy)
     pasteHotKey = PasteKeyboardShortcutHandler(queuedPaste)
+    pasteMultipleHotKey = PasteMultipleKeyboardShortcutHandler(queuedPasteMultiple)
     startHotKey = StartKeyboardShortcutHandler(startQueueMode)
+    startWithCurrentHotKey = StartWithCurrentKeyboardShortcutHandler(startQueueModeWithCurrentClip)
     replayLastHotKey = ReplayLastKeyboardShortcutHandler(replayLastBatch)
     restoreSavedBatchHotKeys()
     

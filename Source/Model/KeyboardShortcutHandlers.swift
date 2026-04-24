@@ -15,15 +15,6 @@ import Sauce
 
 class StartKeyboardShortcutHandler {
   typealias Handler = () -> Void
-
-//  static public var key: Key? {
-//    guard let key = KeyboardShortcuts.Shortcut(name: .queueStart)?.key else {
-//      return nil
-//    }
-//    return Sauce.shared.key(for: key.rawValue)
-//  }
-//  static public var modifierFlags: NSEvent.ModifierFlags? { KeyboardShortcuts.Shortcut(name: .queueStart)?.modifiers }
-
   private var handler: Handler
 
   init(_ handler: @escaping Handler) {
@@ -32,17 +23,18 @@ class StartKeyboardShortcutHandler {
   }
 }
 
+class StartWithCurrentKeyboardShortcutHandler {
+  typealias Handler = () -> Void
+  private var handler: Handler
+
+  init(_ handler: @escaping Handler) {
+    self.handler = handler
+    KeyboardShortcuts.onKeyDown(for: .queueStartWithCurrent, action: handler)
+  }
+}
+
 class CopyKeyboardShortcutHandler {
   typealias Handler = () -> Void
-
-//  static public var key: Key? {
-//    guard let key = KeyboardShortcuts.Shortcut(name: .queuedCopy)?.key else {
-//      return nil
-//    }
-//    return Sauce.shared.key(for: key.rawValue)
-//  }
-//  static public var modifierFlags: NSEvent.ModifierFlags? { KeyboardShortcuts.Shortcut(name: .queuedCopy)?.modifiers }
-
   private var handler: Handler
 
   init(_ handler: @escaping Handler) {
@@ -53,15 +45,6 @@ class CopyKeyboardShortcutHandler {
 
 class PasteKeyboardShortcutHandler {
   typealias Handler = () -> Void
-
-//  static public var key: Key? {
-//    guard let key = KeyboardShortcuts.Shortcut(name: .queuedPaste)?.key else {
-//      return nil
-//    }
-//    return Sauce.shared.key(for: key.rawValue)
-//  }
-//  static public var modifierFlags: NSEvent.ModifierFlags? { KeyboardShortcuts.Shortcut(name: .queuedPaste)?.modifiers }
-
   private var handler: Handler
 
   init(_ handler: @escaping Handler) {
@@ -70,17 +53,18 @@ class PasteKeyboardShortcutHandler {
   }
 }
 
+class PasteMultipleKeyboardShortcutHandler {
+  typealias Handler = () -> Void
+  private var handler: Handler
+
+  init(_ handler: @escaping Handler) {
+    self.handler = handler
+    KeyboardShortcuts.onKeyDown(for: .queuedPasteMultiple, action: handler)
+  }
+}
+
 class ReplayLastKeyboardShortcutHandler {
   typealias Handler = () -> Void
-  
-//  static public var key: Key? {
-//    guard let key = KeyboardShortcuts.Shortcut(name: .queueReplay)?.key else {
-//      return nil
-//    }
-//    return Sauce.shared.key(for: key.rawValue)
-//  }
-//  static public var modifierFlags: NSEvent.ModifierFlags? { KeyboardShortcuts.Shortcut(name: .queueReplay)?.modifiers }
-  
   private var handler: Handler
   
   init(_ handler: @escaping Handler) {
@@ -91,7 +75,6 @@ class ReplayLastKeyboardShortcutHandler {
 
 class ReplaySavedKeyboardShortcutHandler: Hashable {
   typealias Handler = (Batch) -> Void
-  
   var name: KeyboardShortcuts.Name
   var batch: Batch
   private var handler: Handler

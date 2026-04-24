@@ -506,6 +506,11 @@ extension AppModel {
     doQueuedPasteMultiple(all: true)
   }
   
+  func queuedPasteMultiple() {
+    // handler for the global keyboard shortcut
+    doQueuedPasteMultiple(all: false)
+  }
+  
   private func doQueuedPasteMultiple(all: Bool) {
     guard !Self.busy else {
       return
