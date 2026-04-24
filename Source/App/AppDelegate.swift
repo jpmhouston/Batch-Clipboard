@@ -20,9 +20,6 @@ import os.log
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-  @IBOutlet weak var copyMenuItem: NSMenuItem!
-  @IBOutlet weak var pasteMenuItem: NSMenuItem!
-  @IBOutlet weak var cutMenuItem: NSMenuItem!
   
   var model: AppModel!
   

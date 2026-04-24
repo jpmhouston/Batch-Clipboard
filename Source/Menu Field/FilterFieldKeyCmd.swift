@@ -14,28 +14,34 @@ import KeyboardShortcuts
 import Sauce
 
 enum FilterFieldKeyCmd: CaseIterable {
-  // Fetch paste from Edit / Paste menu item.
-  // Fallback to ⌘V if unavailable.
-  static var pasteKey: Key {
-    (NSApp.delegate as? AppDelegate)?.pasteMenuItem.key ?? .v
-  }
-  static var pasteKeyModifiers: NSEvent.ModifierFlags {
-    (NSApp.delegate as? AppDelegate)?.pasteMenuItem.keyEquivalentModifierMask ?? [.command]
-  }
   
-  static var copyKey: Key {
-    (NSApp.delegate as? AppDelegate)?.copyMenuItem.key ?? .c
-  }
-  static var copyKeyModifiers: NSEvent.ModifierFlags {
-    (NSApp.delegate as? AppDelegate)?.copyMenuItem.keyEquivalentModifierMask ?? [.command]
-  }
-  
-  static var cutKey: Key {
-    (NSApp.delegate as? AppDelegate)?.cutMenuItem.key ?? .x
-  }
-  static var cutKeyModifiers: NSEvent.ModifierFlags {
-    (NSApp.delegate as? AppDelegate)?.cutMenuItem.keyEquivalentModifierMask ?? [.command]
-  }
+  // used to fetch paste from an unused, internal Edit menu, falling back to ⌘V
+  // but now that .xib is gone because it seems it was related to app mini-hangs
+  // so now hardcode ⌘C,⌘X,⌘V
+//  static var pasteKey: Key {
+//    (NSApp.delegate as? AppDelegate)?.pasteMenuItem.key ?? .v
+//  }
+//  static var pasteKeyModifiers: NSEvent.ModifierFlags {
+//    (NSApp.delegate as? AppDelegate)?.pasteMenuItem.keyEquivalentModifierMask ?? [.command]
+//  }
+//  static var copyKey: Key {
+//    (NSApp.delegate as? AppDelegate)?.copyMenuItem.key ?? .c
+//  }
+//  static var copyKeyModifiers: NSEvent.ModifierFlags {
+//    (NSApp.delegate as? AppDelegate)?.copyMenuItem.keyEquivalentModifierMask ?? [.command]
+//  }
+//  static var cutKey: Key {
+//    (NSApp.delegate as? AppDelegate)?.cutMenuItem.key ?? .x
+//  }
+//  static var cutKeyModifiers: NSEvent.ModifierFlags {
+//    (NSApp.delegate as? AppDelegate)?.cutMenuItem.keyEquivalentModifierMask ?? [.command]
+//  }
+  static var pasteKey: Key { .v }
+  static var pasteKeyModifiers: NSEvent.ModifierFlags { [.command] }
+  static var copyKey: Key { .c }
+  static var copyKeyModifiers: NSEvent.ModifierFlags { [.command] }
+  static var cutKey: Key { .x }
+  static var cutKeyModifiers: NSEvent.ModifierFlags { [.command] }
   
   case clearSearch
   case deleteOneCharFromSearch
