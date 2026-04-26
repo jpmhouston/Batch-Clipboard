@@ -1,5 +1,10 @@
 # Batch Clipboard Changelog
 
+## version 2.3b2 (2026-04-26)
+
+- Complete implementation of Start Batch with Clipboard hotkey, and fix menu item appearance when its defined.
+- Removed internal hidden menu bar definition that was intended to assist localization (which is all still to come), as doing so in a reduced-complexity test app seemed to help solve menu lag on some systems.
+
 ## version 2.3b1 (2026-04-22)
 
 - New feature: hold option key to show Start Batch with Clipboard, use if you cut/copy something then realize you in fact want a batch of several clips, it starts a batch with the first item being what's already on the clipboard.
