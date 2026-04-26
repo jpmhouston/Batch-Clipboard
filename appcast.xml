@@ -6,6 +6,25 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3b2</title>
+            <pubDate>Sun, 26 Apr 2026 19:09:07 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2102</sparkle:version>
+            <sparkle:shortVersionString>2.3b2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Complete implementation of Start Batch with Clipboard hotkey, and
+fix menu item appearance when its defined.</li>
+<li>Removed internal hidden menu bar definition that was intended to
+assist localization (which is all still to come), as doing so in a
+reduced-complexity test app seemed to help solve menu lag on some
+systems.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3b2/Batch.Clipboard.2.3b2.zip" length="7095986" type="application/octet-stream" sparkle:edSignature="ArWYZxU/boeLp+RQdqdnd5VOn3qriBiBjj0u+HFpLT9a5KTP2hJL8mYvHLMcfkT3So5i5uhM1UrzITj91PAmDg=="/>
+        </item>
+        <item>
             <title>2.3b1</title>
             <pubDate>Thu, 23 Apr 2026 02:46:50 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
