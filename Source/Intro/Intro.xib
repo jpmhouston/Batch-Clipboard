@@ -939,7 +939,7 @@ DQ
                                     <rect key="frame" x="-2" y="136" width="554" height="51"/>
                                     <textFieldCell key="cell" id="ejz-po-1sn">
                                         <font key="font" metaFont="system" size="14"/>
-                                        <string key="title">You can start replaying from _batch mode_ manually too using Start Replaying Items in the menu. You can then use your application's Paste command instead of ^⌘V, but to advance to the next clip you much use the Advance to Next menu item.</string>
+                                        <string key="title">You can start replaying from _batch mode_ manually too using Start Replaying Items in the menu. You can then use your application's Paste command instead of ^⌘V, but to advance to the next clip you must use the Advance to Next menu item.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
