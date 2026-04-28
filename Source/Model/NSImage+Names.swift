@@ -19,6 +19,7 @@ extension NSImage.Name {
   static let menuIconNonemptyPlus = NSImage.Name("menuListPlus")
   static let menuIconNonemptyMinus = NSImage.Name("menuListMinus")
   
+  static let app = NSImage.Name("apptoolbar.png") // loadName("apptoolbar") when get around to adding symbol variant
   static let externalDrive = loadName("externaldrive")
   static let gear = loadName("gearshape")
   static let doubleGear = loadName("gearshape.2")

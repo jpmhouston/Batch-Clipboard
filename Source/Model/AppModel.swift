@@ -62,7 +62,6 @@ class AppModel: NSObject {
   // with `private` and the "public to this module" declarations lines to look different.
   
   internal let menuIcon = MenuBarIcon()
-  internal let about = About()
   internal let clipboard = Clipboard.shared
   internal let history = History()
   internal let alerts = Alerts()
@@ -92,12 +91,14 @@ class AppModel: NSObject {
   internal var queue: ClipboardQueue!
   internal var copyTimeoutTimer: DispatchSourceTimer?
   internal var hideMenuPollingTimer: DispatchSourceTimer?
+  internal var settingsFirstOpen = true
   
   internal lazy var storageSettingsPaneViewController = StorageSettingsViewController()
   #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
   internal lazy var settingsWindowController = SettingsWindowController(
     panes: [
+      AboutSettingsViewController(),
       generalSettingsPaneViewController,
       AppearanceSettingsViewController(),
       storageSettingsPaneViewController,
@@ -109,6 +110,7 @@ class AppModel: NSObject {
   #else
   internal lazy var settingsWindowController = SettingsWindowController(
     panes: [
+      AboutSettingsViewController(),
       GeneralSettingsViewController(updater: updaterController.updater),
       AppearanceSettingsViewController(),
       storageSettingsPaneViewController,

@@ -8,6 +8,7 @@
 "about" = "About";
 "quit" = "Quit";
 "preferences" = "Preferences…";
+"preferences_about" = "About";
 "preferences_advanced" = "Advanced";
 "preferences_appearance" = "Appearance";
 "preferences_ignore" = "Ignore";

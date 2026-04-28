@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Thin-M.png",
+      "filename" : "appicon-black@1x.png",
       "idiom" : "mac",
       "scale" : "1x"
     },
@@ -12,12 +12,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Thin-M-1.png",
+      "filename" : "appicon-white@1x.png",
       "idiom" : "mac",
       "scale" : "1x"
     },
     {
-      "filename" : "Thin-M@1x.png",
+      "filename" : "appicon-black@2x.png",
       "idiom" : "mac",
       "scale" : "2x"
     },
@@ -28,7 +28,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Thin-M@1x-1.png",
+      "filename" : "appicon-white@2x.png",
       "idiom" : "mac",
       "scale" : "2x"
     }

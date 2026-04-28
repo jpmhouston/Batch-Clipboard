@@ -1091,7 +1091,7 @@ extension AppModel {
   @IBAction
   func showAbout(_ sender: AnyObject) {
     takeFocus()
-    about.openAbout()
+    showSettings(selectingPane: .about)
   }
   
   @IBAction
@@ -1112,7 +1112,12 @@ extension AppModel {
   
   func showSettings(selectingPane pane: Settings.PaneIdentifier? = nil) {
     takeFocus()
-    settingsWindowController.show(pane: pane)
+    if settingsFirstOpen && pane == nil {
+      settingsWindowController.show(pane: .general)
+      settingsFirstOpen = false
+    } else {
+      settingsWindowController.show(pane: pane)
+    }
     settingsWindowController.window?.orderFrontRegardless()
   }
   

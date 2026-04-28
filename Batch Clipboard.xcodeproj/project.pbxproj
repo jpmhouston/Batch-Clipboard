@@ -79,7 +79,6 @@
 		8F301B2C2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/AppIcon.icon,
@@ -141,6 +140,8 @@
 				"Model/NSImage+Names.swift",
 				Model/SparkleDelegate.swift,
 				"Model/UserDefaults+Configuration.swift",
+				Settings/AboutSettingsViewController.swift,
+				Settings/AboutSettingsViewController.xib,
 				Settings/AdvancedSettingsViewController.swift,
 				Settings/AdvancedSettingsViewController.xib,
 				Settings/AppearanceSettingsViewController.swift,
@@ -175,7 +176,6 @@
 		8F301B2D2E1C46440066DAC4 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				App/About.swift,
 				App/AppDelegate.swift,
 				"App/AppDelegate+UITestability.swift",
 				App/AppIcon.icon,
@@ -238,6 +238,8 @@
 				"Model/NSImage+Names.swift",
 				Model/SparkleDelegate.swift,
 				"Model/UserDefaults+Configuration.swift",
+				Settings/AboutSettingsViewController.swift,
+				Settings/AboutSettingsViewController.xib,
 				Settings/AdvancedSettingsViewController.swift,
 				Settings/AdvancedSettingsViewController.xib,
 				Settings/AppearanceSettingsViewController.swift,
@@ -631,7 +633,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SPARKLE_UPDATES DEBUG BONUS_FEATUES_ON";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SPARKLE_UPDATES $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -666,7 +668,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = SPARKLE_UPDATES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "SPARKLE_UPDATES $(inherited)";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -700,7 +702,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE DEBUG xBONUS_FEATUES_ON xIGNORE_RECEIPT_ON_LAUNCH $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "APP_STORE  xBONUS_FEATUES_ON xIGNORE_RECEIPT_ON_LAUNCH $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};

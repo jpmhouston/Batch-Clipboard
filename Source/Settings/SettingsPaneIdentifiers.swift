@@ -12,6 +12,7 @@
 import Settings
 
 extension Settings.PaneIdentifier {
+  static let about = Self("about")
   static let advanced = Self("advanced")
   static let appearance = Self("appearance")
   static let general = Self("general")
