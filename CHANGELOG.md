@@ -1,5 +1,10 @@
 # Batch Clipboard Changelog
 
+## version 2.3b3 (2026-05-01)
+
+- About Batch Clipboard now opens a new first About panel in the Settings window, with more room to describe what the app does and use real buttons for linking to further resources instead of underlined text.
+- Fixed typo in the Intro window.
+
 ## version 2.3b2 (2026-04-26)
 
 - Complete implementation of Start Batch with Clipboard hotkey, and fix menu item appearance when its defined.
