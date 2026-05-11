@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -96,14 +95,14 @@
                         <action selector="queuedCopy:" target="-2" id="VYn-hd-kO6"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Paste From Batch &amp; Advance" id="WZ5-r7-f8t">
+                <menuItem title="Paste &amp; Advance" id="WZ5-r7-f8t">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Advance To Next Batch Item" hidden="YES" id="TLY-ku-V0E">
-                    <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
+                <menuItem title="Skip To Next" hidden="YES" id="TLY-ku-V0E">
+                    <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="advanceQueue:" target="-2" id="Bb4-sn-Nnk"/>
                     </connections>
@@ -155,16 +154,34 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" id="kp3-oD-t3p">
                         <items>
-                            <menuItem title="Paste Again" id="wJ6-Z2-RAm">
+                            <menuItem title="Replay Batch" id="wJ6-Z2-RAm">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="replaySavedBatch:" target="-2" id="ZUb-Qr-TWq"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Rename, Change Shortcut…" id="sEA-9J-9oP">
+                            <menuItem title="Replay Batch Repeated" alternate="YES" id="cOG-6Y-TuS">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                                <connections>
+                                    <action selector="replaySavedBatchLooped:" target="-2" id="t0p-a1-kRq"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Replay Batch Repeated" hidden="YES" id="SRA-ZX-5UQ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="renameSavedBatch:" target="-2" id="frg-cH-0Qh"/>
+                                    <action selector="replaySavedBatchLooped:" target="-2" id="aDl-Dt-Xim"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Replay Batch Once" hidden="YES" alternate="YES" id="uLq-dJ-bCB">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                                <connections>
+                                    <action selector="replaySavedBatch:" target="-2" id="oeU-EA-Npc"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Edit Batch…" id="sEA-9J-9oP">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="editSavedBatch:" target="-2" id="frg-cH-0Qh"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="oet-xG-lPc"/>

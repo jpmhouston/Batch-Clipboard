@@ -30,6 +30,7 @@ class AppModel: NSObject {
   static var allowPasteMultiple = false
   static var allowUndoCopy = false
   static var allowSavedBatches = false
+  static var allowRepeatingBatch = false
   // always include these features:
   static var allowMenuHiding = true
   static var allowExpandedHistory = true
@@ -496,6 +497,7 @@ class AppModel: NSObject {
     Self.allowPasteMultiple = hasPurchased
     Self.allowUndoCopy = hasPurchased
     Self.allowSavedBatches = hasPurchased
+    Self.allowRepeatingBatch = hasPurchased
   }
   
   func hasAccessibilityPermissionBeenGranted() -> Bool {
@@ -648,7 +650,7 @@ class AppModel: NSObject {
       history.offloadList()
       clipboard.stop()
       menu.buildDynamicItems()
-    } else if UserDefaults.standard.supressSaveClipsAlert {
+    } else if UserDefaults.standard.suppressSaveClipsAlert {
       UserDefaults.standard.keepHistory = false
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
         history.clearHistory()
@@ -666,7 +668,7 @@ class AppModel: NSObject {
           
           UserDefaults.standard.saveClipsAcrossDisabledHistory = retainDB
           if dontAskAgain {
-            UserDefaults.standard.supressSaveClipsAlert = true
+            UserDefaults.standard.suppressSaveClipsAlert = true
           }
           
           if !retainDB {

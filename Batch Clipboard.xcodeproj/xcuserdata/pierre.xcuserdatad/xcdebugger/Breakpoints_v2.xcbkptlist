@@ -188,7 +188,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1124"
             endingLineNumber = "1124"
-            landmarkName = "addedClipToQueue(_:)"
+            landmarkName = "addedClipToHistory(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -213,7 +213,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1102"
             endingLineNumber = "1102"
-            landmarkName = "enableExpandedMenu(_:full:)"
+            landmarkName = "addedClipToQueue(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -238,7 +238,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1141"
             endingLineNumber = "1141"
-            landmarkName = "addedClipToHistory(_:)"
+            landmarkName = "pushedClipsOnQueue(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -263,7 +263,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1147"
             endingLineNumber = "1147"
-            landmarkName = "addedClipToHistory(_:)"
+            landmarkName = "poppedClipsOffQueue(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -313,7 +313,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1179"
             endingLineNumber = "1179"
-            landmarkName = "poppedClipOffQueue()"
+            landmarkName = "startedQueueFromHistory(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -338,7 +338,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1195"
             endingLineNumber = "1195"
-            landmarkName = "startedQueueFromHistory(_:)"
+            landmarkName = "startedQueueFromBatch()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -388,7 +388,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1196"
             endingLineNumber = "1196"
-            landmarkName = "startedQueueFromHistory(_:)"
+            landmarkName = "startedQueueFromBatch()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -413,7 +413,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1143"
             endingLineNumber = "1143"
-            landmarkName = "addedClipToHistory(_:)"
+            landmarkName = "pushedClipsOnQueue(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -463,7 +463,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1203"
             endingLineNumber = "1203"
-            landmarkName = "startedQueueFromBatch()"
+            landmarkName = "deletedClipFromQueue(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -488,7 +488,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1264"
             endingLineNumber = "1264"
-            landmarkName = "deletedClipFromQueue(_:)"
+            landmarkName = "deletedClipFromHistory(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -513,7 +513,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1308"
             endingLineNumber = "1308"
-            landmarkName = "deletedClipFromHistory(_:)"
+            landmarkName = "deletedHistory()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -538,7 +538,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1323"
             endingLineNumber = "1323"
-            landmarkName = "deletedHistory()"
+            landmarkName = "addedBatch(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -563,7 +563,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1353"
             endingLineNumber = "1353"
-            landmarkName = "renamedBatch(_:)"
+            landmarkName = "deletedBatch(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -588,7 +588,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1393"
             endingLineNumber = "1393"
-            landmarkName = "deletedBatch(_:)"
+            landmarkName = "deletedClip(_:fromBatch:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -613,7 +613,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1465"
             endingLineNumber = "1465"
-            landmarkName = "deletedClip(_:fromBatch:)"
+            landmarkName = "updateFilter(filter:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -638,7 +638,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1508"
             endingLineNumber = "1508"
-            landmarkName = "updateFilter(filter:)"
+            landmarkName = "select(_:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -738,7 +738,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "806"
             endingLineNumber = "806"
-            landmarkName = "updateDisabledStaticItems()"
+            landmarkName = "updateStaticItemVisibility()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -763,8 +763,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "887"
             endingLineNumber = "887"
-            landmarkName = "AppMenu"
-            landmarkType = "3">
+            landmarkName = "updateQueueClipItemVisibility()"
+            landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
                   ActionExtensionID = "Xcode.BreakpointAction.Log">
@@ -788,7 +788,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "957"
             endingLineNumber = "957"
-            landmarkName = "updateQueueClipItemVisibility()"
+            landmarkName = "updateHistoryClipItemVisibility()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -813,7 +813,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "995"
             endingLineNumber = "995"
-            landmarkName = "updateHistoryClipItemVisibility()"
+            landmarkName = "updateBatchItemVisibility()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -838,7 +838,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1012"
             endingLineNumber = "1012"
-            landmarkName = "updateBatchItemVisibility()"
+            landmarkName = "trimHistoryClipMenuItems()"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -1236,9 +1236,9 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1064"
-            endingLineNumber = "1064"
-            landmarkName = "replayBatch(_:interactive:)"
+            startingLineNumber = "1074"
+            endingLineNumber = "1074"
+            landmarkName = "replayBatch(_:looped:interactive:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -1261,9 +1261,9 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1068"
-            endingLineNumber = "1068"
-            landmarkName = "replayBatch(_:interactive:)"
+            startingLineNumber = "1078"
+            endingLineNumber = "1078"
+            landmarkName = "replayBatch(_:looped:interactive:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy
@@ -1286,8 +1286,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1137"
-            endingLineNumber = "1137"
+            startingLineNumber = "1159"
+            endingLineNumber = "1159"
             landmarkName = "saveBatch(_:)"
             landmarkType = "7">
             <Actions>
@@ -1311,8 +1311,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1159"
-            endingLineNumber = "1159"
+            startingLineNumber = "1181"
+            endingLineNumber = "1181"
             landmarkName = "saveBatch(withName:)"
             landmarkType = "7">
             <Actions>
@@ -1336,8 +1336,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1178"
-            endingLineNumber = "1178"
+            startingLineNumber = "1200"
+            endingLineNumber = "1200"
             landmarkName = "deleteHistoryClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1361,8 +1361,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1193"
-            endingLineNumber = "1193"
+            startingLineNumber = "1215"
+            endingLineNumber = "1215"
             landmarkName = "deleteQueueClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1386,8 +1386,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1217"
-            endingLineNumber = "1217"
+            startingLineNumber = "1239"
+            endingLineNumber = "1239"
             landmarkName = "deleteBatch(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1411,8 +1411,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1235"
-            endingLineNumber = "1235"
+            startingLineNumber = "1257"
+            endingLineNumber = "1257"
             landmarkName = "deleteBatchClip(atIndex:forBatchAtIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1436,8 +1436,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1291"
-            endingLineNumber = "1291"
+            startingLineNumber = "1313"
+            endingLineNumber = "1313"
             landmarkName = "deleteClips(clipboardIncluded:)"
             landmarkType = "7">
             <Actions>

@@ -68,7 +68,8 @@
 "save_batch_alert_confirm" = "Save";
 "save_batch_alert_cancel" = "Cancel";
 "save_batch_name_placeholder" = "Name required";
-"rename_batch_alert_message" = "Rename batch, or change its keyboard shortcut";
-"rename_batch_alert_comment" = "The name must not already be used by an existing saved batch.";
+"rename_batch_alert_message" = "Edit batch";
+"rename_batch_alert_comment" = "You can rename this batch, or change its keyboard shortcut, or delete it. The name must not already be used by an existing saved batch.";
 "rename_batch_alert_confirm" = "Update";
+"rename_batch_alert_delete" = "Delete";
 "rename_batch_alert_cancel" = "Cancel";

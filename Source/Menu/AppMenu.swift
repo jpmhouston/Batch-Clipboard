@@ -767,7 +767,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func updateBatchShortcuts() {
     iterateOverBatchParentItems {
-      $0.refreshShortcut()
+      $0.refreshSubmenuItems()
     }
   }
   
@@ -1338,10 +1338,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     sanityCheckBatchMenuItems()
   }
   
-  func renamedBatch(_ batch: Batch) {
+  func editedBatch(_ batch: Batch) {
     iterateOverBatchParentItems { item in
       if item.batch === batch {
-        item.refreshShortcut()
+        item.refreshSubmenuItems()
         item.regenerateTitle()
         return false // to abort iterating
       }

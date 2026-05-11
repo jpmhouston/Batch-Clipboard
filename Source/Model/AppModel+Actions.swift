@@ -1044,8 +1044,18 @@ extension AppModel {
     replayBatch(batch, interactive: true)
   }
   
+  @IBAction
+  func replaySavedBatchLooped(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation()
+    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+      return
+    }
+    
+    replayBatch(batch, looped: true, interactive: true)
+  }
+  
   @discardableResult
-  func replayBatch(_ batch: Batch?, interactive: Bool = false) -> Bool {
+  func replayBatch(_ batch: Batch?, looped: Bool? = nil, interactive: Bool = false) -> Bool {
     guard !Self.busy else {
       return false
     }
@@ -1072,9 +1082,9 @@ extension AppModel {
     
     do {
       if let batch = batch {
-        try queue.replayClips(batch.getClipsArray())
+        try queue.replayClips(batch.getClipsArray(), repeatAfterDecrementToZero: looped ?? batch.repeating)
       } else {
-        try queue.replayQueue()
+        try queue.replayQueue(repeatAfterDecrementToZero: looped ?? false)
       }
       try queue.replaying()
     } catch {
@@ -1093,7 +1103,7 @@ extension AppModel {
   // saved batches ↓
   
   @IBAction
-  func renameSavedBatch(_ sender: AnyObject) {
+  func editSavedBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
     guard !Self.busy else {
       return
@@ -1106,15 +1116,27 @@ extension AppModel {
       return
     }
     
-    showRenameBatchAlert(withCurrentName: intialName, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
+    showEditBatchAlert(withCurrentName: intialName, prohobitedNames: prohibitedNewBatchNames(),
+                       repeating: batch.repeating) { [weak self] name, shortcut, repeating, delete in
       guard let self = self else { return }
-      
+      if delete {
+        if let index = history.batches.firstIndex(of: batch) {
+          // with confirmation alert:
+          deleteBatch(atIndex: index)
+          // or without confirmation alert:
+          //unregisterHotKeyDefinition(forBatch: batch)
+          //history.removeSavedBatch(atIndex: index)
+          //menu.deletedBatch(index)
+        }
+        return
+      }
       batch.fullname = name
       batch.keyShortcut = shortcut
+      batch.repeating = repeating
       CoreDataManager.shared.saveContext()
       
       replaceRegisteredHotKey(forRenamedBatch: batch)
-      menu.renamedBatch(batch)
+      menu.editedBatch(batch)
     } 
   }
   
@@ -1136,7 +1158,7 @@ extension AppModel {
     
     nop() // TODO: remove once no longer need a breakpoint here
     
-    showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut in
+    showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut, repeating in
       guard let self = self else { return }
       
       let newBatch = Batch.create(withName: name, shortcut: shortcut, clips: history.lastBatchClips)
@@ -1445,29 +1467,33 @@ extension AppModel {
   }
   
   private func showSaveBatchAlert(showingCount count: Int, prohobitedNames: Set<String>,
-                                  _ completion: @escaping (String, HotKeyShortcut?) -> Void) {
+                                  _ completion: @escaping (String, HotKeyShortcut?, Bool) -> Void) {
     takeFocus()
     
-    alerts.withSaveBatchAlert(forCurrentBatch: queue.isOn, showingCount: count,
-                              excludingNames: prohobitedNames) { [weak self] name, shortcut in
+    let allowRepeat = AppModel.allowRepeatingBatch && UserDefaults.standard.showRepeatBatchDefaultOption
+    alerts.withSaveBatchAlert(forCurrentBatch: queue.isOn, excludingNames: prohobitedNames, showingCount: count,
+                              showingRepeat: allowRepeat) { [weak self] name, shortcut, repeating in
       guard let self = self else { return }
       if let name = name {
-        completion(name, shortcut)
+        completion(name, shortcut, repeating)
       }
       
       returnFocus()
     }
   }
   
-  private func showRenameBatchAlert(withCurrentName currentName: String, prohobitedNames: Set<String>,
-                                    _ completion: @escaping (String, HotKeyShortcut?) -> Void) {
+  private func showEditBatchAlert(withCurrentName currentName: String, prohobitedNames: Set<String>, repeating: Bool,
+                                  _ completion: @escaping (String, HotKeyShortcut?, Bool, Bool) -> Void) {
     takeFocus()
     
-    alerts.withRenameBatchAlert(withCurrentName: currentName,
-                                excludingNames: prohobitedNames) { [weak self]  name, shortcut in
+    let allowRepeat = AppModel.allowRepeatingBatch && UserDefaults.standard.showRepeatBatchDefaultOption
+    alerts.withEditBatchAlert(withCurrentName: currentName, excludingNames: prohobitedNames,
+                              repeating: allowRepeat ? repeating : nil) { [weak self]  name, shortcut, repeating, delete in
       guard let self = self else { return }
-      if name != nil || shortcut != nil {
-        completion(name ?? currentName, shortcut)
+      if delete {
+        completion(currentName, shortcut, false, true)
+      } else {
+        completion(name ?? currentName, shortcut, repeating, false)
       }
       
       returnFocus()
@@ -1475,7 +1501,7 @@ extension AppModel {
   }
   
   private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping () -> Void) {
-    if true { // UserDefaults.standard.suppressDeleteBatchAlert {
+    if UserDefaults.standard.suppressDeleteBatchAlert {
       completion()
       
     } else {

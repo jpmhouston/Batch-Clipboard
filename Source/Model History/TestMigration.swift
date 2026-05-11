@@ -13,18 +13,33 @@ import AppKit
 class CoreDataMigrations {
   
   @Test("sanity check migration 1.0 to 1.1")
-  func migrationTo1point1() throws {
+  func migrationFrom1point0To1point1() throws {
     try migrateStore(fromVersionNumber: "1.0", toVersionNumber: "1.1")
   }
   
   @Test("migration 1.0 to 1.2")
-  func migrationFrom1point0() throws {
+  func migrationFrom1point0To1point2() throws {
     try migrateStore(fromVersionNumber: "1.0", toVersionNumber: "1.2")
   }
   
+  @Test("migration 1.0 to 1.3")
+  func migrationFrom1point0To1point3() throws {
+    try migrateStore(fromVersionNumber: "1.0", toVersionNumber: "1.3")
+  }
+  
   @Test("migration 1.1 to 1.2")
-  func migrationFrom1point1() throws {
+  func migrationFrom1point1To1point2() throws {
     try migrateStore(fromVersionNumber: "1.1", toVersionNumber: "1.2")
+  }
+  
+  @Test("migration 1.1 to 1.3")
+  func migrationFrom1point1To1point3() throws {
+    try migrateStore(fromVersionNumber: "1.1", toVersionNumber: "1.3")
+  }
+  
+  @Test("migration 1.2 to 1.3")
+  func migrationFrom1point2To1point3() throws {
+    try migrateStore(fromVersionNumber: "1.2", toVersionNumber: "1.3")
   }
   
   // technique taken from https://stackoverflow.com/a/42591816/592739

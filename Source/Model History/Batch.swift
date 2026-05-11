@@ -20,6 +20,7 @@ class Batch: NSManagedObject {
   @NSManaged public var fullname: String?
   @NSManaged public var title: String?
   @NSManaged public var clips: NSOrderedSet?
+  @NSManaged public var repeats: NSNumber?
   
   // like history clips are in backwards order, most recent first
   var first: Clip? { clips?.firstObject as? Clip }
@@ -121,6 +122,11 @@ class Batch: NSManagedObject {
   }
   
   // MARK: -
+  
+  var repeating: Bool {
+    get { repeats?.boolValue ?? false }
+    set { repeats = NSNumber(value: newValue) }
+  }
   
   var keyShortcut: KeyboardShortcuts.Shortcut? {
     get { Self.keyShortcut(forData: shortcut) }

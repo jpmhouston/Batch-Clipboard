@@ -17,6 +17,7 @@ class ClipboardQueue {
   var isOn = false
   var isReplaying = false // stopped just queuing new clips and have started pasting
   var stayOnWhenEmptied = false
+  var repeatWhenEmptied = false
   var clipsAreNew = false // ie. not replayed from a batch
   var clearBatchPending = false
   
@@ -56,6 +57,7 @@ class ClipboardQueue {
     isReplaying = false
     clipsAreNew = true
     stayOnWhenEmptied = allowEmpty
+    repeatWhenEmptied = false
     clearBatchPending = false
     size = 0
     
@@ -137,7 +139,11 @@ class ClipboardQueue {
     
     size -= 1
     
-    if isEmpty {
+    if isEmpty && repeatWhenEmptied {
+      size = clips.count
+      try clipboard.copy(getNext())
+      
+    } else if isEmpty {
       isOn = stayOnWhenEmptied
       clearBatchPending = stayOnWhenEmptied
       
@@ -203,7 +209,7 @@ class ClipboardQueue {
     }
   }
   
-  func replayClips(_ clips: [Clip]) throws {
+  func replayClips(_ clips: [Clip], repeatAfterDecrementToZero repeats: Bool = false) throws {
     // fill batch with clips from history
     if clips.isEmpty {
       return
@@ -220,13 +226,14 @@ class ClipboardQueue {
     isReplaying = false
     clipsAreNew = false
     stayOnWhenEmptied = false
+    repeatWhenEmptied = repeats
     clearBatchPending = false
     size = clips.count
     
     // leave clipboard unchanged because isReplaying is false
   }
   
-  func replayQueue() throws {
+  func replayQueue(repeatAfterDecrementToZero repeats: Bool = false) throws {
     guard !isOn else {
       throw QueueError.alreadyInProgress
     }
@@ -241,6 +248,7 @@ class ClipboardQueue {
     isReplaying = true
     clipsAreNew = false
     stayOnWhenEmptied = false
+    repeatWhenEmptied = repeats
     clearBatchPending = false
     size = batch.count
     
@@ -277,7 +285,11 @@ class ClipboardQueue {
     
     size -= 1
     
-    if isEmpty {
+    if isEmpty && repeatWhenEmptied {
+      size = clips.count
+      try clipboard.copy(getNext())
+      
+    } else if isEmpty {
       isOn = stayOnWhenEmptied
       clearBatchPending = stayOnWhenEmptied
       

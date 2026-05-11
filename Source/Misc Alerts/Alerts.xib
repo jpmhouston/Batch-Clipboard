@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24112" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24765" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24112"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24765"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Alerts" customModule="Batch_Clipboard" customModuleProvider="target">
             <connections>
+                <outlet property="batchDeleteButton" destination="jzN-VC-9NG" id="Q61-yH-0S2"/>
+                <outlet property="batchDeleteButtonSpacer" destination="zTR-vs-9Sc" id="VlD-aG-5mE"/>
                 <outlet property="batchHotkeyCheckbox" destination="Ilx-QS-tta" id="8Oy-IP-IaR"/>
                 <outlet property="batchHotkeyContainerView" destination="fmE-sR-8wY" id="8ad-qf-18B"/>
                 <outlet property="batchNameField" destination="paL-gU-1Ho" id="Iac-6J-fm9"/>
                 <outlet property="pasteMultipleAccessoryView" destination="y41-gr-I26" id="WE2-vw-uWi"/>
                 <outlet property="pasteMultipleField" destination="g7b-ej-XJP" id="eBd-PJ-Lz8"/>
                 <outlet property="pasteWithSeparatorPopup" destination="5OK-9O-70e" id="qD7-fG-g2O"/>
+                <outlet property="repeatReplayCheckbox" destination="os4-5K-a9k" id="9z7-Fj-NcH"/>
                 <outlet property="saveBatchAccessoryView" destination="lxV-CJ-jsd" id="hna-ZQ-mNv"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="y41-gr-I26" userLabel="Paste Count Accessory View">
-            <rect key="frame" x="0.0" y="0.0" width="222" height="59"/>
+            <rect key="frame" x="0.0" y="0.0" width="222" height="66"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="g7b-ej-XJP" customClass="RangedIntegerTextField" customModule="Batch_Clipboard" customModuleProvider="target">
-                    <rect key="frame" x="71" y="38" width="80" height="21"/>
+                    <rect key="frame" x="71" y="42" width="80" height="24"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="80" id="bxX-Uh-ybj"/>
                     </constraints>
@@ -35,10 +38,10 @@
                     </textFieldCell>
                 </textField>
                 <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XYg-PJ-efZ">
-                    <rect key="frame" x="0.0" y="0.0" width="222" height="20"/>
+                    <rect key="frame" x="0.0" y="0.0" width="222" height="24"/>
                     <subviews>
                         <textField focusRingType="none" horizontalHuggingPriority="800" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7D5-kP-IVS">
-                            <rect key="frame" x="-2" y="3" width="80" height="15"/>
+                            <rect key="frame" x="-2" y="5" width="80" height="15"/>
                             <textFieldCell key="cell" lineBreakMode="clipping" title="Separated By" id="riN-fo-Lcf">
                                 <font key="font" metaFont="cellTitle"/>
                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -46,7 +49,7 @@
                             </textFieldCell>
                         </textField>
                         <popUpButton horizontalHuggingPriority="300" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="5OK-9O-70e">
-                            <rect key="frame" x="81" y="-4" width="145" height="25"/>
+                            <rect key="frame" x="84" y="0.0" width="138" height="24"/>
                             <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Umy-et-KNZ" id="8or-z1-Gi7">
                                 <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" size="12" name="HelveticaNeue"/>
@@ -84,49 +87,118 @@
             </constraints>
             <point key="canvasLocation" x="137" y="320.5"/>
         </customView>
-        <customView id="lxV-CJ-jsd" userLabel="Batch Name Accessory View">
-            <rect key="frame" x="0.0" y="0.0" width="222" height="91"/>
+        <customView id="lxV-CJ-jsd" userLabel="Batch Edit Accessory View">
+            <rect key="frame" x="0.0" y="0.0" width="245" height="179"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="paL-gU-1Ho">
-                    <rect key="frame" x="0.0" y="70" width="222" height="21"/>
+                <stackView distribution="fill" orientation="vertical" alignment="centerX" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MS4-OH-2AJ">
+                    <rect key="frame" x="0.0" y="0.0" width="245" height="179"/>
+                    <subviews>
+                        <textField focusRingType="none" verticalHuggingPriority="900" translatesAutoresizingMaskIntoConstraints="NO" id="paL-gU-1Ho">
+                            <rect key="frame" x="3" y="155" width="240" height="24"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="240" id="IzM-R0-mmr"/>
+                            </constraints>
+                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="center" drawsBackground="YES" id="BdQ-PF-tL8">
+                                <font key="font" usesAppearanceFont="YES"/>
+                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="94m-Dt-eTo" userLabel="Spacer">
+                            <rect key="frame" x="73" y="147" width="100" height="0.0"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="100" id="J5o-CT-Zzb"/>
+                                <constraint firstAttribute="height" id="R1K-BE-NQx"/>
+                            </constraints>
+                        </customView>
+                        <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="7" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="800" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rZ0-Bf-n7e">
+                            <rect key="frame" x="29" y="84" width="187" height="55"/>
+                            <subviews>
+                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="os4-5K-a9k">
+                                    <rect key="frame" x="0.0" y="39" width="183" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Default to replay repeating" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vT6-ek-WQc">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="batchRepeatCheckboxChanged:" target="-2" id="K1r-tr-5sA"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ilx-QS-tta">
+                                    <rect key="frame" x="0.0" y="0.0" width="187" height="32"/>
+                                    <buttonCell key="cell" type="check" title="Assign a keyboard shortcut" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="eTe-EK-TQn">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="batchHotkeyCheckboxChanged:" target="-2" id="UEf-IQ-mvA"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <visibilityPriorities>
+                                <integer value="1000"/>
+                                <integer value="1000"/>
+                            </visibilityPriorities>
+                            <customSpacing>
+                                <real value="3.4028234663852886e+38"/>
+                                <real value="3.4028234663852886e+38"/>
+                            </customSpacing>
+                        </stackView>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="fmE-sR-8wY">
+                            <rect key="frame" x="33" y="46" width="180" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="BPz-h4-TH9"/>
+                                <constraint firstAttribute="width" constant="180" id="MKw-SX-9Rd"/>
+                            </constraints>
+                        </customView>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="zTR-vs-9Sc" userLabel="Spacer">
+                            <rect key="frame" x="73" y="36" width="100" height="2"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="2" id="Gmv-Ug-OoA"/>
+                                <constraint firstAttribute="width" constant="100" id="bWB-a6-Rhg"/>
+                            </constraints>
+                        </customView>
+                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jzN-VC-9NG">
+                            <rect key="frame" x="8" y="0.0" width="230" height="28"/>
+                            <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" controlSize="large" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="CDN-fi-joP">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="batchDeleteButtonPressed:" target="-2" id="8i6-Sy-aU5"/>
+                            </connections>
+                        </button>
+                    </subviews>
                     <constraints>
-                        <constraint firstAttribute="width" constant="222" id="IzM-R0-mmr"/>
+                        <constraint firstItem="jzN-VC-9NG" firstAttribute="leading" secondItem="paL-gU-1Ho" secondAttribute="leading" constant="5" id="LCx-Ip-Tos"/>
+                        <constraint firstItem="paL-gU-1Ho" firstAttribute="trailing" secondItem="jzN-VC-9NG" secondAttribute="trailing" constant="5" id="hoo-h9-vNg"/>
                     </constraints>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="center" drawsBackground="YES" id="BdQ-PF-tL8">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ilx-QS-tta">
-                    <rect key="frame" x="14" y="37" width="192" height="18"/>
-                    <buttonCell key="cell" type="check" title="Assign a keyboard shortcut" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="eTe-EK-TQn">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                </button>
-                <customView translatesAutoresizingMaskIntoConstraints="NO" id="fmE-sR-8wY">
-                    <rect key="frame" x="21" y="0.0" width="180" height="30"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="30" id="BPz-h4-TH9"/>
-                        <constraint firstAttribute="width" constant="180" id="MKw-SX-9Rd"/>
-                    </constraints>
-                </customView>
+                    <visibilityPriorities>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                    </visibilityPriorities>
+                    <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                    </customSpacing>
+                </stackView>
             </subviews>
             <constraints>
-                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Ilx-QS-tta" secondAttribute="trailing" id="4BP-oF-2lv"/>
-                <constraint firstAttribute="bottom" secondItem="fmE-sR-8wY" secondAttribute="bottom" id="4wV-Jh-zRv"/>
-                <constraint firstItem="Ilx-QS-tta" firstAttribute="top" secondItem="paL-gU-1Ho" secondAttribute="bottom" constant="16" id="5cC-Yc-Ni0"/>
-                <constraint firstAttribute="trailing" secondItem="paL-gU-1Ho" secondAttribute="trailing" id="EHd-o0-vVM"/>
-                <constraint firstItem="Ilx-QS-tta" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="lxV-CJ-jsd" secondAttribute="leading" id="Fwh-1d-Rag"/>
-                <constraint firstItem="paL-gU-1Ho" firstAttribute="top" secondItem="lxV-CJ-jsd" secondAttribute="top" id="PPz-gy-x3e"/>
-                <constraint firstItem="Ilx-QS-tta" firstAttribute="centerX" secondItem="lxV-CJ-jsd" secondAttribute="centerX" id="T6O-tF-peQ"/>
-                <constraint firstItem="paL-gU-1Ho" firstAttribute="leading" secondItem="lxV-CJ-jsd" secondAttribute="leading" id="Yoj-nv-ABB"/>
-                <constraint firstItem="fmE-sR-8wY" firstAttribute="centerX" secondItem="lxV-CJ-jsd" secondAttribute="centerX" id="jvc-C3-Pii"/>
-                <constraint firstItem="fmE-sR-8wY" firstAttribute="top" secondItem="Ilx-QS-tta" secondAttribute="bottom" constant="8" symbolic="YES" id="vIf-df-3Yr"/>
+                <constraint firstItem="MS4-OH-2AJ" firstAttribute="leading" secondItem="lxV-CJ-jsd" secondAttribute="leading" id="QFj-Jq-tkz"/>
+                <constraint firstAttribute="bottom" secondItem="MS4-OH-2AJ" secondAttribute="bottom" id="b7d-uJ-mZu"/>
+                <constraint firstItem="MS4-OH-2AJ" firstAttribute="top" secondItem="lxV-CJ-jsd" secondAttribute="top" id="hAg-va-yZH"/>
+                <constraint firstAttribute="trailing" secondItem="MS4-OH-2AJ" secondAttribute="trailing" id="yDK-p6-qXK"/>
             </constraints>
-            <point key="canvasLocation" x="137" y="472"/>
+            <point key="canvasLocation" x="137" y="492"/>
         </customView>
     </objects>
 </document>

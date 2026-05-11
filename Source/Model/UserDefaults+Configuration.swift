@@ -47,11 +47,12 @@ extension UserDefaults {
     static let keepHistory = "keepHistory"
     static let keepHistoryChoicePending = "keepHistoryChoicePending"
     static let saveClipsAcrossDisabledHistory = "saveClipsAcrossDisabledHistory"
-    static let supressSaveClipsAlert = "supressSaveClipsAlert"
-    static let supressUseHistoryAlert = "supressUseHistoryAlert"
+    static let suppressSaveClipsAlert = "suppressSaveClipsAlert"
+    static let suppressUseHistoryAlert = "suppressUseHistoryAlert"
     static let showInStatusBar = "showInStatusBar"
     static let legacyFocusTechnique = "legacyFocus"
     static let showAdvancedPasteMenuItems = "showAdvancedPasteMenuItems"
+    static let showRepeatBatchDefaultOption = "showRepeatBatchDefaultOption"
     static let sparkleUsesBetaFeed = "sparkleUsesBetaFeed"
     static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
     static let pasteboardLoggingOn = "pasteboardLoggingOn"
@@ -275,7 +276,7 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.keepHistory) }
   }
   // no longer include a `func automaticallyNotifiesObserversOfKeepHistory()`
-  // in this case was preventing correct observations rather than supressing duplicates
+  // in this case was preventing correct observations rather than suppressing duplicates
   
   public var keepHistoryChoicePending: Bool {
     get { bool(forKey: Keys.keepHistoryChoicePending) }
@@ -287,14 +288,14 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.saveClipsAcrossDisabledHistory) }
   }
   
-  public var supressSaveClipsAlert: Bool {
-    get { bool(forKey: Keys.supressSaveClipsAlert) }
-    set { set(newValue, forKey: Keys.supressSaveClipsAlert) }
+  public var suppressSaveClipsAlert: Bool {
+    get { bool(forKey: Keys.suppressSaveClipsAlert) }
+    set { set(newValue, forKey: Keys.suppressSaveClipsAlert) }
   }
   
-  public var supressUseHistoryAlert: Bool {
-    get { bool(forKey: Keys.supressUseHistoryAlert) }
-    set { set(newValue, forKey: Keys.supressUseHistoryAlert) }
+  public var suppressUseHistoryAlert: Bool {
+    get { bool(forKey: Keys.suppressUseHistoryAlert) }
+    set { set(newValue, forKey: Keys.suppressUseHistoryAlert) }
   }
   
   @objc dynamic public var legacyFocusTechnique: Bool {
@@ -306,6 +307,11 @@ extension UserDefaults {
   public var showAdvancedPasteMenuItems: Bool {
     get { bool(forKey: Keys.showAdvancedPasteMenuItems) }
     set { set(newValue, forKey: Keys.showAdvancedPasteMenuItems) }
+  }
+  
+  public var showRepeatBatchDefaultOption: Bool {
+    get { bool(forKey: Keys.showRepeatBatchDefaultOption) }
+    set { set(newValue, forKey: Keys.showRepeatBatchDefaultOption) }
   }
   
   public var sparkleUsesBetaFeed: Bool {
