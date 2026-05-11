@@ -73,6 +73,16 @@ class ReplayLastKeyboardShortcutHandler {
   }
 }
 
+class StackCopyKeyboardShortcutHandler {
+  typealias Handler = () -> Void
+  private var handler: Handler
+  
+  init(_ handler: @escaping Handler) {
+    self.handler = handler
+    KeyboardShortcuts.onKeyDown(for: .stackCopy, action: handler)
+  }
+}
+
 class ReplaySavedKeyboardShortcutHandler: Hashable {
   typealias Handler = (Batch) -> Void
   var name: KeyboardShortcuts.Name

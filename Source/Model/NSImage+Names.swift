@@ -8,6 +8,8 @@
 //  Based on NSImage+Names.swift from the Maccy project
 //  Portions Copyright © 2024 Alexey Rodionov. All rights reserved.
 //
+//  TODO: shouldn't be in the Model directory, move elsewhere
+//
 
 import Cocoa
 
@@ -18,6 +20,7 @@ extension NSImage.Name {
   static let menuIconNonempty = NSImage.Name("menuList")
   static let menuIconNonemptyPlus = NSImage.Name("menuListPlus")
   static let menuIconNonemptyMinus = NSImage.Name("menuListMinus")
+  static let menuStackIcon = NSImage.Name("menuStack")
   
   static let app = NSImage.Name("apptoolbar.png") // loadName("apptoolbar") when get around to adding symbol variant
   static let externalDrive = loadName("externaldrive")

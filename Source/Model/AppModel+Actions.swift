@@ -35,6 +35,18 @@ extension AppModel {
     //if #unavailable(macOS 14) { true } else { false }
   }
   
+  private var canStartQueue: Bool { queue.isOff && stack.isOff }
+  private var canAddToQueue: Bool { stack.isOff }
+  private var canCancelQueue: Bool { queue.isOn }
+  private var shouldQueueNewClip: Bool { queue.isOn && stack.isOff }
+  private var canPasteFromQueue: Bool { queue.notEmpty && stack.isOff }
+  private var canPopFromQueue: Bool { queue.notEmpty && stack.isOff }
+  private var canStartDequeueing: Bool { queue.isOn && stack.isOff }
+  private var canReplayQueue: Bool { queue.isOff && stack.isOff }
+  private var canStartStack: Bool { stack.isOff }
+  private var canPushToStack: Bool { true } // might disallow in some cases in the future, idk
+  private var canPopFromStack: Bool { stack.notEmpty }
+  
   // MARK: - intent helpers
   
   func historyItemCount() -> Int {
@@ -190,6 +202,181 @@ extension AppModel {
   // MARK: - clipboard features
   
   @IBAction
+  func startStackMode(_ sender: AnyObject) {
+    // handler for the menu item
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    startStackMode(interactive: true)
+  }
+  
+  func startStackMode() {
+    // handler for the global keyboard shortcut
+    startStackMode(interactive: false)
+  }
+  
+  @discardableResult
+  func startStackMode(interactive: Bool = false) -> Bool {
+    // handler for the global keyboard shortcut and menu item via functions above,
+    // and for the intent which calls this directly
+    guard !Self.busy else {
+      return false
+    }
+    guard canStartStack else {
+      return false
+    }
+    guard accessibilityCheck(interactive: interactive) else {
+      return false
+    }
+    
+    // push current clipboard state onto the stack, prepare for temp cut/copy
+    stack.push()
+    
+    ensureMenuIconVisible()
+    updateMenuTitle()
+    commenceClipboardMonitoring()
+    
+    return true
+  }
+  
+  @IBAction
+  func stackCopy(_ sender: AnyObject) {
+    // handler for the menu item
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    stackCopy(interactive: true)
+  }
+  
+  func stackCopy() {
+    // handler for the global keyboard shortcut
+    stackCopy(interactive: false)
+  }
+  
+  @discardableResult
+  func stackCopy(interactive: Bool = false) -> Bool {
+    // handler for the global keyboard shortcut and menu item via functions above,
+    // and for the intent which calls this directly
+    guard !Self.busy else {
+      return false
+    }
+    guard canPushToStack else {
+      return false
+    }
+    guard accessibilityCheck(interactive: interactive) else {
+      return false
+    }
+    
+    nop() // TODO: remove once no longer need a breakpoint here
+    
+    // push current clipboard state onto the stack, prepare for temp cut/copy
+    stack.push()
+    
+    ensureMenuIconVisible()
+    updateMenuIcon()
+    updateMenuTitle()
+    
+    Self.busy = true
+    
+    // make the frontmost application perform a copy
+    // let clipboard object detect this normally and invoke incrementQueue
+    clipboard.invokeApplicationCopy() { [weak self] in
+      guard let self = self else { return }
+      
+      // allow copy again if no copy deletected after this duration
+      self.runOnCopyTimeoutTimer(afterTimeout: self.copyTimeoutSeconds) { [weak self] in
+        guard self != nil else { return }
+        
+        Self.busy = false
+      }
+    }
+    
+    return true
+  }
+  
+  @IBAction
+  func stackPaste(_ sender: AnyObject) {
+    // handler for the menu item
+    menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
+    stackPaste(interactive: true)
+  }
+  
+  @discardableResult
+  func stackPaste(interactive: Bool = false, completion: ((Bool) -> Void)? = nil) -> Bool {
+    // handler for the global keyboard shortcut and menu item via function above
+    // (well, the shortcut is doubled up with the queue paste shortcut, calling this when stack in use),
+    // and for the intent which calls this directly
+    guard !Self.busy else {
+      return false
+    }
+    guard canPopFromStack else {
+      return false
+    }
+    guard accessibilityCheck(interactive: interactive) else {
+      return false
+    }
+    
+    Self.busy = true
+    
+    let popStackDelay = extraDelayOnQueuedPaste ? extraPasteDelay : standardPasteDelay
+    
+    // make the frontmost application perform a paste, then advance the queue after our
+    // heuristic delay, keep the app from doing anything else until them
+    invokeApplicationPaste(plusDelay: popStackDelay) { [weak self] in
+      guard let self = self else {
+        completion?(false)
+        return
+      }
+      
+      stack.pop()
+      
+      Self.busy = false
+      
+      updateMenuIcon()
+      updateMenuTitle()
+      if stack.isOff && queue.isOff {
+        letMenuIconAutoHide()
+      }
+      updateClipboardMonitoring()
+      
+      #if APP_STORE
+      if interactive && stack.isOff {
+        AppStoreReview.ask(after: 20)
+      }
+      #endif
+      
+      completion?(true)
+    }
+    
+    return true
+  }
+  
+  @IBAction
+  func popStack(_ sender: AnyObject) {
+    // handler for the menu item
+    popStack()
+  }
+  
+  @discardableResult
+  func popStack() -> Bool {
+    guard !Self.busy else {
+      return false
+    }
+    guard canPopFromStack else {
+      return false
+    }
+    
+    stack.pop()
+    
+    updateMenuIcon()
+    updateMenuTitle()
+    if stack.isOff && queue.isOff {
+      letMenuIconAutoHide()
+    }
+    updateClipboardMonitoring()
+    
+    return true
+  }
+  
+  // stack ↑ queue ↓
+  
+  @IBAction
   func startQueueMode(_ sender: AnyObject) {
     // handler for the menu item
     menu.cancelTrackingWithoutAnimation() // do this before any alerts appear
@@ -231,10 +418,10 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
-    guard accessibilityCheck(interactive: interactive) else {
+    guard canStartQueue else {
       return false
     }
-    guard !queue.isOn else {
+    guard accessibilityCheck(interactive: interactive) else {
       return false
     }
     
@@ -269,7 +456,7 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
-    guard queue.isOn else {
+    guard canCancelQueue else {
       return false
     }
     
@@ -292,10 +479,12 @@ extension AppModel {
   
   @discardableResult
   func toggleQueueMode() -> Bool {
-    if !queue.isOn {
+    if canStartQueue {
       return startQueueMode(interactive: true)
-    } else {
+    } else if canCancelQueue{
       return cancelQueueMode()
+    } else {
+      return false
     }
   }
   
@@ -306,6 +495,10 @@ extension AppModel {
   
   @discardableResult
   func startReplay() -> Bool {
+    guard canStartDequeueing else {
+      return false
+    }
+    
     do {
       try queue.replaying()
       return true
@@ -333,17 +526,22 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
+    guard canStartQueue || canAddToQueue else {
+      return false
+    }
     guard accessibilityCheck(interactive: interactive) else {
       return false
     }
     
-    commenceClipboardMonitoring()
+    nop() // TODO: remove once no longer need a breakpoint here
     
-    if !queue.isOn {
+    if queue.isOff {
       queue.on()
       ensureMenuIconVisible()
       updateMenuIcon()
     }
+    
+    commenceClipboardMonitoring()
     
     Self.busy = true
     
@@ -386,7 +584,7 @@ extension AppModel {
 //    }
     #endif
     
-    if queue.isOn {
+    if shouldQueueNewClip {
       do {
         try queue.add(clip)
       } catch {
@@ -412,8 +610,12 @@ extension AppModel {
   }
   
   func queuedPaste() {
-    // handler for the global keyboard shortcut
-    queuedPaste(interactive: true)
+    // handler for the global keyboard shortcut - shared for both queue & stack paste
+    if stack.isOn {
+      stackPaste(interactive: true)
+    } else {
+      queuedPaste(interactive: true)
+    }
   }
   
   @discardableResult
@@ -423,8 +625,7 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
-    
-    guard !queue.isEmpty else {
+    guard canPasteFromQueue else {
       return false
     }
     guard accessibilityCheck(interactive: interactive) else {
@@ -434,7 +635,7 @@ extension AppModel {
     nop() // TODO: remove once no longer need a breakpoint here
     
     do {
-      if !queue.isOn {
+      if queue.notReplaying {
         try queue.replaying()
       } else {
         try queue.putNextOnClipboard()
@@ -456,25 +657,25 @@ extension AppModel {
       }
       
       do {
-        try self.queue.dequeue()
+        try queue.dequeue()
       } catch {
         Self.busy = false
         completion?(false)
         return
       }
       
+      Self.busy = false
+      
       menu.poppedClipOffQueue()
       updateMenuIcon(.decrement)
       updateMenuTitle()
-      if !queue.isOn {
+      if queue.isOff {
         letMenuIconAutoHide()
       }
       updateClipboardMonitoring()
       
-      Self.busy = false
-      
       #if APP_STORE
-      if interactive && !queue.isOn {
+      if interactive && queue.isOff {
         AppStoreReview.ask(after: 20)
       }
       #endif
@@ -493,6 +694,46 @@ extension AppModel {
       }
     }
   }
+  
+  @IBAction
+  func advanceQueue(_ sender: AnyObject) {
+    advanceQueue()
+  }
+  
+  @discardableResult
+  func advanceQueue() -> Bool {
+    guard !Self.busy else {
+      return false
+    }
+    guard canPopFromQueue else {
+      return false
+    }
+    
+    nop() // TODO: remove once no longer need a breakpoint here
+    
+    do {
+      if queue.notReplaying {
+        try queue.replaying()
+      } else {
+        try queue.putNextOnClipboard()
+      }
+      try self.queue.dequeue()
+    } catch {
+      return false
+    }
+    
+    menu.poppedClipOffQueue()
+    updateMenuIcon(.decrement)
+    updateMenuTitle()
+    if queue.isOff {
+      letMenuIconAutoHide()
+    }
+    updateClipboardMonitoring()
+    
+    return true
+  }
+  
+  // multi-queued paste ↓ 
   
   @IBAction
   func queuedPasteMultiple(_ sender: AnyObject) {
@@ -515,13 +756,12 @@ extension AppModel {
     guard !Self.busy else {
       return
     }
-    
-    guard AppModel.allowPasteMultiple else {
-      showBonusFeaturePromotionAlert()
+    guard canPasteFromQueue else {
       return
     }
     
-    guard !queue.isEmpty else {
+    guard AppModel.allowPasteMultiple else {
+      showBonusFeaturePromotionAlert()
       return
     }
     // this is done in the full queuedPasteMultiple below, but do it here first with interactive true
@@ -549,7 +789,7 @@ extension AppModel {
     guard !Self.busy else {
       return false
     }
-    guard count >= 1 && count <= queue.size else {
+    guard canPasteFromQueue && count >= 1 && count <= queue.size else {
       return false
     }
     if count == 1 {
@@ -561,7 +801,7 @@ extension AppModel {
     }
     
     do {
-      if !queue.isOn {
+      if queue.notReplaying {
         try queue.replaying()
       } else {
         try queue.putNextOnClipboard()
@@ -590,21 +830,21 @@ extension AppModel {
         success = false
       }
       
+      Self.busy = false
+      
       // final update to these and including icon not updated since the start
       menu.poppedClipsOffQueue(count)
       updateMenuIcon()
       updateMenuTitle()
-      if !queue.isOn {
+      if queue.isOff {
         letMenuIconAutoHide()
       }
       updateClipboardMonitoring()
       
-      Self.busy = false
-      
       completion?(success)
       
       #if APP_STORE
-      if !queue.isOn && interactive {
+      if queue.isOff && interactive {
         AppStoreReview.ask(after: 20)
       }
       #endif
@@ -661,49 +901,7 @@ extension AppModel {
     }
   }
   
-  @IBAction
-  func advanceQueue(_ sender: AnyObject) {
-    advanceQueue()
-  }
-  
-  @discardableResult
-  func advanceQueue() -> Bool {
-    guard !Self.busy else {
-      return false
-    }
-    
-    guard !queue.isEmpty else {
-      return false
-    }
-    
-    nop() // TODO: remove once no longer need a breakpoint here
-    
-    do {
-      if !queue.isOn {
-        try queue.replaying()
-      } else {
-        try queue.putNextOnClipboard()
-      }
-    } catch {
-      return false
-    }
-    
-    do {
-      try self.queue.dequeue()
-    } catch {
-      return false
-    }
-    
-    menu.poppedClipOffQueue()
-    updateMenuIcon(.decrement)
-    updateMenuTitle()
-    if !queue.isOn {
-      letMenuIconAutoHide()
-    }
-    updateClipboardMonitoring()
-    
-    return true
-  }
+  // misc queue actions ↓
   
   @IBAction
   func copyClip(_ sender: AnyObject) {
@@ -722,6 +920,52 @@ extension AppModel {
     clipboard.copy(clip)
     return true
   }
+  
+  @IBAction
+  func undoLastCopy(_ sender: AnyObject) {
+    guard !Self.busy else {
+      return
+    }
+    
+    guard AppModel.allowUndoCopy else {
+      showBonusFeaturePromotionAlert()
+      return
+    }
+    
+    // can only reliably do this when queue or history are on
+    // trust that this menu item get disabled otherwise
+    
+    if canPopFromQueue {
+      do {
+        try queue.remove(atIndex: 0) // automatically restores clipboard to prev if appropriate
+      } catch {
+        return
+      }
+      
+      menu.deletedClipFromQueue(0)
+      updateMenuIcon(.decrement)
+      updateMenuTitle()
+    }
+    
+    if history.isListActive, let clip = history.first {
+      history.remove(clip)
+      
+      menu.deletedClipFromHistory(0)
+      
+      if canPopFromStack, let newClip = history.first, newClip == stack.top {
+        stack.pop(ontoClipboard: false)
+      }
+    }
+    
+    // maybe this, pop from stack even though possibly not always correct since user might
+    // have copied several items since pushing to the stack (it's an else to the history case
+    // above because then can more exactly determine if its correct to pop or not):
+    //else if canPopFromStack {
+    //  stack.pop()
+    //}
+  }
+  
+  // replays ↓
   
   @IBAction
   func replayFromHistory(_ sender: AnyObject) {
@@ -746,11 +990,10 @@ extension AppModel {
     guard overridePermission || AppModel.allowReplayFromHistory else {
       return false
     }
-    guard accessibilityCheck(interactive: interactive) else {
+    guard canReplayQueue && history.isListActive && index < history.count else {
       return false
     }
-    
-    guard history.isListActive && !queue.isOn && index < history.count else {
+    guard accessibilityCheck(interactive: interactive) else {
       return false
     }
     
@@ -814,7 +1057,7 @@ extension AppModel {
       return false
     }
     
-    guard !queue.isOn else {
+    guard canReplayQueue else {
       return false
     }
     if let batch = batch {
@@ -846,6 +1089,8 @@ extension AppModel {
     
     return true
   }
+  
+  // saved batches ↓
   
   @IBAction
   func renameSavedBatch(_ sender: AnyObject) {
@@ -919,6 +1164,8 @@ extension AppModel {
     return true
   }
   
+  // deleting clips ↓
+  
   func deleteHistoryClip(atIndex index: Int) {
     // index 0 is most recent clip
     guard !Self.busy else {
@@ -953,7 +1200,7 @@ extension AppModel {
     menu.deletedClipFromQueue(index)
     updateMenuIcon(.decrement)
     updateMenuTitle()
-    if !queue.isOn {
+    if queue.isOff {
       letMenuIconAutoHide()
     }
     updateClipboardMonitoring()
@@ -1054,36 +1301,6 @@ extension AppModel {
     updateMenuTitle()
     letMenuIconAutoHide()
     updateClipboardMonitoring()
-  }
-  
-  @IBAction
-  func undoLastCopy(_ sender: AnyObject) {
-    guard !Self.busy else {
-      return
-    }
-    
-    guard AppModel.allowUndoCopy else {
-      showBonusFeaturePromotionAlert()
-      return
-    }
-    
-    if !queue.isEmpty {
-      do {
-        try queue.remove(atIndex: 0)
-      } catch {
-        return
-      }
-      
-      menu.deletedClipFromQueue(0)
-      updateMenuIcon(.decrement)
-      updateMenuTitle()
-    }
-    
-    if history.isListActive, let clip = history.first {
-      history.remove(clip)
-      
-      menu.deletedClipFromHistory(0)
-    }
   }
   
   // MARK: - opening windows
@@ -1282,11 +1499,21 @@ extension AppModel {
   // MARK: - utility functions
   
   internal func updateMenuIcon(_ direction: MenuBarIcon.QueueChangeDirection = .none) {
-    menuIcon.update(forQueueSize: (queue.isOn ? queue.size : nil), direction) 
+    if stack.isOn {
+      menuIcon.updateWithStackIcon()
+    } else {
+      menuIcon.update(forQueueSize: (queue.isOn ? queue.size : nil), direction)
+    }
   }
   
   internal func updateMenuTitle() {
-    menuIcon.badge = queue.isOn ? String(queue.size) : ""
+    if stack.isOn {
+      menuIcon.badge = stack.size > 1 ? String(stack.size) : ""
+    } else if queue.isOn {
+      menuIcon.badge = String(queue.size)
+    } else {
+      menuIcon.badge = ""
+    }
   }
   
   private func accessibilityCheck(interactive: Bool) -> Bool {
@@ -1327,7 +1554,7 @@ extension AppModel {
   }
   
   private func updateClipboardMonitoring() {
-    if !UserDefaults.standard.keepHistory && !queue.isOn {
+    if !UserDefaults.standard.keepHistory && queue.isOff {
       clipboard.stop()
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
         history.clearHistory()

@@ -74,6 +74,7 @@ class AppModel: NSObject {
   private var startHotKey: StartKeyboardShortcutHandler!
   private var startWithCurrentHotKey: StartWithCurrentKeyboardShortcutHandler!
   private var replayLastHotKey: ReplayLastKeyboardShortcutHandler!
+  private var stackCopyHoyKey: StackCopyKeyboardShortcutHandler!
   private var savedBatchHotKeys: Set<ReplaySavedKeyboardShortcutHandler> = []
   
   #if APP_STORE
@@ -89,6 +90,7 @@ class AppModel: NSObject {
   internal var licensesWindowController = LicensesWindowController()
   
   internal var queue: ClipboardQueue!
+  internal var stack: ClipboardStack!
   internal var copyTimeoutTimer: DispatchSourceTimer?
   internal var hideMenuPollingTimer: DispatchSourceTimer?
   internal var settingsFirstOpen = true
@@ -177,6 +179,7 @@ class AppModel: NSObject {
     }
     
     queue = ClipboardQueue(clipboard: clipboard, history: history)
+    stack = ClipboardStack(clipboard: clipboard, history: history)
     
     menu = AppMenu.load(withHistory: history, queue: queue, owner: self)
     
@@ -196,6 +199,7 @@ class AppModel: NSObject {
     startHotKey = StartKeyboardShortcutHandler(startQueueMode)
     startWithCurrentHotKey = StartWithCurrentKeyboardShortcutHandler(startQueueModeWithCurrentClip)
     replayLastHotKey = ReplayLastKeyboardShortcutHandler(replayLastBatch)
+    stackCopyHoyKey = StackCopyKeyboardShortcutHandler(stackCopy)
     restoreSavedBatchHotKeys()
     
     initializeObservers()

@@ -27,6 +27,9 @@ class ClipboardQueue {
   var size = 0
   var notEmpty: Bool { isOn && size > 0 }
   var isEmpty: Bool { !isOn || size == 0 }
+  var isOff: Bool { !isOn } // remove this replace with notOn?
+  var notOn: Bool { !isOn }
+  var notReplaying: Bool { !isReplaying }
   
   enum QueueError: Error {
     case logicError
@@ -40,8 +43,6 @@ class ClipboardQueue {
   //better if these were protocols that can be easily mocked
   private let clipboard: Clipboard
   private let history: History
-  
-  //private var internalSize = 0
   
   init(clipboard c: Clipboard, history h: History) {
     clipboard = c
@@ -121,8 +122,8 @@ class ClipboardQueue {
       throw QueueError.sizeOutOfSync
     }
     
-    // In replaying mode where always want next item to be pasted on the clipboard, presuming the item
-    // passed in has come from the clipboard, replace it again with the next item to be pasted.
+    // Is in replaying mode where always want next item to be pasted on the clipboard. Presuming the
+    // item passed in has come from the clipboard, replace it again with the next item to be pasted.
     // But if size of the queue is only 1, then we've already got the one we want for either mode.
     if isReplaying && size > 1 {
       try clipboard.copy(getNext())
@@ -150,11 +151,11 @@ class ClipboardQueue {
       }
       
     } else if isReplaying {
-      // In replaying mode where always leave the next item to be pasted on the clipboard.
+      // Is in replaying mode where always leave the next item to be pasted on the clipboard.
       try clipboard.copy(getNext())
       
     } else if !isReplaying {
-      // In normal mode where always leave the latest item that's been copied on the clipboard
+      // Is in normal mode where always leave the latest item that's been copied on the clipboard
       // (1.0 betas stayed like this even when pasting from the queue, still support that in
       // this abstraction, but the app always goes into replaying mode on the first paste)
       try clipboard.copy(getNewest())
@@ -190,14 +191,14 @@ class ClipboardQueue {
       }
       
     } else if isReplaying && index == priorSize - 1 {
-      // In replaying mode where always leave the next item to be pasted on the clipboard,
-      // but that next one is the one that's just been removed, not put on the clipboard the
+      // Is in replaying mode where always leave the next item to be pasted on the clipboard,
+      // but that next one is the one that's just been removed, so put on the clipboard the
       // new next one in its place.
       try clipboard.copy(getNext())
       
     } else if !isReplaying && index == 0 && clipsAreNew {
-      // In normal mode where always leave the latest item that's been copied on the clipboard,
-      // but the latest item has been removed, use the new latest one in its place
+      // Is in normal mode where always leave the latest item that's been copied on the clipboard,
+      // but the latest item has been removed, so use the new latest one in its place
       try clipboard.copy(getNewest())
     }
   }
@@ -290,17 +291,17 @@ class ClipboardQueue {
       }
       
     } else if isReplaying {
-      // In replaying mode where always leave the next item to be pasted on the clipboard.
+      // Is in replaying mode where always leave the next item to be pasted on the clipboard.
       try clipboard.copy(getNext())
       
     } else if !isReplaying && clipsAreNew {
-      // In normal mode where always leave the latest item that's been copied on the clipboard
+      // Is in normal mode where always leave the latest item that's been copied on the clipboard
       // (1.0 betas stayed like this even when pasting from the queue, still support that in
       // this abstraction, but the app always goes into replaying mode on the first paste)
       try clipboard.copy(getNewest())
       
     } else if !isReplaying && !clipsAreNew {
-      // In normal mode where always leave the latest item that's been copied on the clipboard
+      // Is in normal mode where always leave the latest item that's been copied on the clipboard
       // (1.0 betas stayed like this even when pasting from the queue, still support that in
       // this abstraction, but the app always goes into replaying mode on the first paste)
       // Here however the queue came from replaying a batch then only if history is on can we

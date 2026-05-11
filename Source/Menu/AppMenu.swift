@@ -762,15 +762,6 @@ class AppMenu: NSMenu, NSMenuDelegate {
       queuedCopyItem?.setShortcut(for: .queuedCopy)
       queuedPasteItem?.setShortcut(for: .queuedPaste)
       replayLastBatchItem?.setShortcut(for: .queueReplay)
-      
-      // instead of a start hotkey, might instead want a start/stop toggle hotkey, something like:
-      //if !queue.isOn {
-      //  queueStartItem?.setShortcut(for: .queueStartStop)
-      //  queueStopItem?.setShortcut(for: nil)
-      //} else {
-      //  queueStartItem?.setShortcut(for: nil)
-      //  queueStopItem?.setShortcut(for: .queueStartStop)
-      //}
     }
   }
   

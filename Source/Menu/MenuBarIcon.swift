@@ -52,12 +52,11 @@ class MenuBarIcon {
 //    }
 //  }
   
-  var image: NSImage? {
-    set {
-      statusItem.button?.image = newValue
-    }
-    get {
-      statusItem.button?.image
+  var attributedBadge: NSAttributedString = NSAttributedString() {
+    didSet {
+      if attributedBadge.length == 0 {
+        statusItem.button?.attributedTitle = attributedBadge // attributedBadge.trimmingCharacters(in: .whitespaces).appending(" ")
+      }
     }
   }
   
@@ -74,7 +73,9 @@ class MenuBarIcon {
   }
   
   init() {
-    setImage(named: .menuIcon)
+    if let defaultIcon = NSImage(named: .menuIcon) {
+      statusItem.button?.image = defaultIcon
+    }
     
     statusItem.button?.imagePosition = .imageRight
     statusItem.button?.sendAction(on: .leftMouseDown)
@@ -86,13 +87,6 @@ class MenuBarIcon {
   deinit {
     // put cached menubar position back into userdefaults across relaunches 
     restoreMenuPosition()
-  }
-  
-  func setImage(named name: NSImage.Name) {
-    guard let iconImage = NSImage(named: name) else {
-      return
-    }
-    self.image = iconImage
   }
   
   func performClick() {
@@ -152,6 +146,12 @@ class MenuBarIcon {
       statusItem.behavior = enable ? [] : .terminationOnRemoval
       visibilityObserver?.invalidate()
       visibilityObserver = nil
+    }
+  }
+  
+  func updateWithStackIcon() {
+    if let stackIcon = NSImage(named: .menuStackIcon) {
+      statusItem.button?.image = stackIcon
     }
   }
   

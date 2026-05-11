@@ -23,4 +23,6 @@ extension KeyboardShortcuts.Name {
   static let queueStartWithCurrent = Self("queueStartWithCurrent", default: nil)
   
   static let queueReplay = Self("queueReplay", default: nil)
+  
+  static let stackCopy = Self("stackCopy", default: nil)
 }
