@@ -218,9 +218,9 @@ extension AppModel {
     // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
     
-    // when using history, use replayFromHistory technique instead of the code below
+    // when starting from current clip and using history, use replayFromHistory technique instead of the code below
     // normally only permitted when `allowReplayFromHistory`, but an exception is made for this feature
-    if history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
+    if addCurrentClip && history.isListActive && history.count > 0, let clip = history.clipAtIndex(0) {
       if clipboard.currentMatchesClip(clip) {
         return replayFromHistory(atIndex: 0, overridePermission: true, interactive: interactive)
       }
