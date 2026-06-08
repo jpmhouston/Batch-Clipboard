@@ -24,20 +24,16 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var clearSystemClipboardCheckbox: NSButton!
   @IBOutlet weak var clearDataVsBatchesLabel: NSTextField!
   @IBOutlet weak var advancedPasteCheckbox: NSButton!
+  @IBOutlet weak var repeatBatchCheckbox: NSButton!
+  @IBOutlet weak var repeatBatchSection: NSStackView!
   @IBOutlet weak var menuHidingCheckbox: NSButton!
-  @IBOutlet weak var menuHidingLabel: NSTextField!
+  @IBOutlet weak var menuHidingSection: NSStackView!
   @IBOutlet weak var turnOffMonitoringCheckbox: NSButton!
   @IBOutlet weak var avoidTakingFocusCheckbox: NSButton!
   @IBOutlet weak var legacyFocusCheckbox: NSButton!
   @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField!
   @IBOutlet weak var subsequentHistoryOnDescriptionField: NSTextField!
   @IBOutlet weak var pasteboardLoggingCheckbox: NSButton!
-  @IBOutlet var showHistoryOffDescriptionConstraint: NSLayoutConstraint! // these constraint
-  @IBOutlet var hideHistoryOffDescriptionConstraint: NSLayoutConstraint! // outlets must not be weak
-  @IBOutlet var showMenuHidingControlsConstraint: NSLayoutConstraint! // "
-  @IBOutlet var hideMenuHidingControlsConstraint: NSLayoutConstraint!
-  @IBOutlet var showClearVsBatchesDescriptionConstraint: NSLayoutConstraint!
-  @IBOutlet var hideClearVsBatchesDescriptionConstraint: NSLayoutConstraint!
   
   #if MENU_HIDING_IN_ADVANCED_PANEL
   private var showMenuHiding: Bool { AppModel.allowMenuHiding }
@@ -51,9 +47,11 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     
     populateClearOnQuit()
     populateClearSystemClipboard()
-    updateClearDataDescription()
+    updateClearDataDescriptionVisibility()
     populateAdvancedPaste()
-    updateMenuHidingControls()
+    updateRepeatBatchVisibility()
+    populateRepeatBatch()
+    updateMenuHidingVisibility()
     populateMenuHiding()
     startObservingMenuHiding()
     populateTurnOffMonitoring()
@@ -71,11 +69,9 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     guard showMenuHiding else {
       return
     }
-    menuHidingObserver = UserDefaults.standard.observe(\.menuHiddenWhenInactive, options: .new) { [weak self] _, change in
-      guard let self = self, let newHideValue = change.newValue else { return }
-      if newHideValue != (menuHidingCheckbox.state == .on) {
-        menuHidingCheckbox.state = newHideValue ? .on : .off
-      }
+    menuHidingObserver = UserDefaults.standard.observe(\.menuHiddenWhenInactive, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
+      self.populateMenuHiding()
     }
   }
   
@@ -94,20 +90,20 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     clearSystemClipboardCheckbox.state = UserDefaults.standard.clearSystemClipboard ? .on : .off
   }
   
-  private func updateClearDataDescription() {
-    if AppModel.allowSavedBatches {
-      showClearVsBatchesDescriptionConstraint.isActive = true
-      hideClearVsBatchesDescriptionConstraint.isActive = false
-      clearDataVsBatchesLabel.isHidden = false
-    } else {
-      showClearVsBatchesDescriptionConstraint.isActive = false
-      hideClearVsBatchesDescriptionConstraint.isActive = true
-      clearDataVsBatchesLabel.isHidden = true
-    }
+  private func updateClearDataDescriptionVisibility() {
+    clearDataVsBatchesLabel.isHidden = !AppModel.allowSavedBatches
   }
   
   private func populateAdvancedPaste() {
     advancedPasteCheckbox.state = UserDefaults.standard.showAdvancedPasteMenuItems ? .on : .off
+  }
+  
+  private func populateRepeatBatch() {
+    repeatBatchCheckbox.state = UserDefaults.standard.showRepeatBatchDefaultOption ? .on : .off
+  }
+  
+  private func updateRepeatBatchVisibility() {
+    repeatBatchCheckbox.isHidden = !AppModel.allowSavedBatches 
   }
   
   private func populateMenuHiding() {
@@ -115,22 +111,9 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     menuHidingCheckbox.state = hideMenu ? .on : .off
   }
   
-  private func updateMenuHidingControls() {
+  private func updateMenuHidingVisibility() {
     // show the menu hiding checbox & field when feature allowed
-    if showMenuHiding {
-      showMenuHidingControlsConstraint.isActive = true
-      hideMenuHidingControlsConstraint.isActive = false
-      menuHidingCheckbox.isHidden = false
-      menuHidingLabel.isHidden = false
-    } else {
-      showMenuHidingControlsConstraint.isActive = false
-      hideMenuHidingControlsConstraint.isActive = true
-      // this constraint priority is initially too low to make editing in xcode nicer, fix 
-      hideMenuHidingControlsConstraint.priority =
-        max(showMenuHidingControlsConstraint.priority, hideMenuHidingControlsConstraint.priority)
-      menuHidingCheckbox.isHidden = true
-      menuHidingLabel.isHidden = true
-    }
+    menuHidingSection.isHidden = !showMenuHiding
   }
   
   private func populateTurnOffMonitoring() {
@@ -140,20 +123,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   private func updateMonitoringDescription() {
     // there's an extra description label regarding history and continuous clipboard
     // monitoring being off, hide it when using history, show it otherwise
-    if UserDefaults.standard.keepHistory {
-      showHistoryOffDescriptionConstraint.isActive = false
-      hideHistoryOffDescriptionConstraint.isActive = true
-      // this constraint priority is initially too low to make editing in xcode nicer, fix 
-      hideHistoryOffDescriptionConstraint.priority =
-        max(showHistoryOffDescriptionConstraint.priority, hideHistoryOffDescriptionConstraint.priority)
-      initialHistoryOffDescriptionField.isHidden = true
-      view.layer?.setNeedsLayout()
-    } else {
-      showHistoryOffDescriptionConstraint.isActive = true
-      hideHistoryOffDescriptionConstraint.isActive = false
-      initialHistoryOffDescriptionField.isHidden = false
-      view.layer?.setNeedsLayout()
-    }
+    initialHistoryOffDescriptionField.isHidden = UserDefaults.standard.keepHistory
   }
   
   private func populateAvoidTakingFocus() {
@@ -180,6 +150,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   
   @IBAction func advancedPasteChanged(_ sender: NSButton) {
     UserDefaults.standard.showAdvancedPasteMenuItems = (sender.state == .on)
+  }
+  
+  @IBAction func repeatBatchChanged(_ sender: NSButton) {
+    UserDefaults.standard.showRepeatBatchDefaultOption = (sender.state == .on)
   }
   
   @IBAction func menuHidingChanged(_ sender: NSButton) {
