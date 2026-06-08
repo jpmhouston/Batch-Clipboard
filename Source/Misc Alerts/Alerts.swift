@@ -208,52 +208,42 @@ class Alerts: NSObject, NSTextFieldDelegate {
   // MARK: -
   
   func withBonusFeaturePromotionAlert(_ closure: @escaping (Bool) -> Void) {
-    let alert = bonusFeaturePromotionAlert
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        closure(true)
-      } else {
-        closure(false)
-      }
+    if runModalOnMain(bonusFeaturePromotionAlert) == NSApplication.ModalResponse.alertFirstButtonReturn {
+      closure(true)
+    } else {
+      closure(false)
     }
   }
   
   func withDisableHistoryConfirmationAlert(_ closure: @escaping (Bool, Bool, Bool) -> Void) {
     let alert = clearWhenDisablingHistoryAlert
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        closure(true, false, alert.suppressionButton?.state == .on)
-      case NSApplication.ModalResponse.alertSecondButtonReturn:
-        closure(true, true, alert.suppressionButton?.state == .on)
-      default:
-        closure(false, false, false)
-      }
+    switch runModalOnMain(alert) {
+    case NSApplication.ModalResponse.alertFirstButtonReturn:
+      closure(true, false, alert.suppressionButton?.state == .on)
+    case NSApplication.ModalResponse.alertSecondButtonReturn:
+      closure(true, true, alert.suppressionButton?.state == .on)
+    default:
+      closure(false, false, false)
     }
   }
   
   func withClearAlert(_ closure: @escaping (Bool, Bool) -> Void) {
     let alert = clearAlert
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        closure(true, alert.suppressionButton?.state == .on)
-      } else {
-        closure(false, false)
-      }
+    if runModalOnMain(alert) == NSApplication.ModalResponse.alertFirstButtonReturn {
+      closure(true, alert.suppressionButton?.state == .on)
+    } else {
+      closure(false, false)
     }
   }
   
   func withPermissionAlert(_ closure: @escaping (PermissionResponse) -> Void) {
-    let alert = permissionNeededAlert
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertSecondButtonReturn:
-        closure(.openSettings)
-      case NSApplication.ModalResponse.alertThirdButtonReturn:
-        closure(.openIntro)
-      default:
-        closure(.cancel)
-      }
+    switch runModalOnMain(permissionNeededAlert) {
+    case NSApplication.ModalResponse.alertSecondButtonReturn:
+      closure(.openSettings)
+    case NSApplication.ModalResponse.alertThirdButtonReturn:
+      closure(.openIntro)
+    default:
+      closure(.cancel)
     }
   }
   
@@ -276,41 +266,37 @@ class Alerts: NSObject, NSTextFieldDelegate {
     }
     alert.window.initialFirstResponder = pasteMultipleField
     
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        alert.window.orderOut(nil) // i think others above should call this too
-        
-        let number: Int =
-        if let s = self.pasteMultipleField?.stringValue, let entry = Int(s) {
-          entry
-        } else { 
-          maxValue
-        } 
-        let separator: SeparatorChoice =
-        if let i = self.pasteWithSeparatorPopup?.indexOfSelectedItem, let indexMatch = SeparatorChoice(withMenuIndex: i) {
-          indexMatch
-        } else if let t = self.pasteWithSeparatorPopup?.titleOfSelectedItem, let titleMatch = SeparatorChoice(withMenuTitle: t) {
-          titleMatch
-        } else {
-          .none
-        }
-        closure(number, separator)
-        
-      default:
-        closure(nil, .none)
+    switch runModalOnMain(alert) {
+    case NSApplication.ModalResponse.alertFirstButtonReturn:
+      alert.window.orderOut(nil) // i think others above should call this too
+      
+      let number: Int =
+      if let s = self.pasteMultipleField?.stringValue, let entry = Int(s) {
+        entry
+      } else { 
+        maxValue
+      } 
+      let separator: SeparatorChoice =
+      if let i = self.pasteWithSeparatorPopup?.indexOfSelectedItem, let indexMatch = SeparatorChoice(withMenuIndex: i) {
+        indexMatch
+      } else if let t = self.pasteWithSeparatorPopup?.titleOfSelectedItem, let titleMatch = SeparatorChoice(withMenuTitle: t) {
+        titleMatch
+      } else {
+        .none
       }
+      closure(number, separator)
+      
+    default:
+      closure(nil, .none)
     }
   }
   
   func withDeleteBatchAlert(withTitle title: String, _ closure: @escaping (Bool, Bool) -> Void) {
     let alert = deleteBatchConfirmationAlert(withTitle: title)
-    DispatchQueue.main.async {
-      if alert.runModal() == NSApplication.ModalResponse.alertFirstButtonReturn {
-        closure(true, alert.suppressionButton?.state == .on)
-      } else {
-        closure(false, false)
-      }
+    if runModalOnMain(alert) == NSApplication.ModalResponse.alertFirstButtonReturn {
+      closure(true, alert.suppressionButton?.state == .on)
+    } else {
+      closure(false, false)
     }
   }
   
@@ -339,31 +325,29 @@ class Alerts: NSObject, NSTextFieldDelegate {
     saveBatchAccessoryView?.layoutSubtreeIfNeeded()
     alert.accessoryView = saveBatchAccessoryView
     
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        if let name = self.batchNameField?.stringValue, !name.isEmpty {
-          if self.hotKeyShortcut == nil {
-            self.clearHotKey()
-          }
-          let repeated = self.repeatReplayCheckbox?.state == .on
-          closure(name, self.hotKeyShortcut, repeated)
-        } else {
-          // shouldn't be possible to press button when no name, behave like cancel 
+    switch runModalOnMain(alert) {
+    case NSApplication.ModalResponse.alertFirstButtonReturn:
+      if let name = self.batchNameField?.stringValue, !name.isEmpty {
+        if self.hotKeyShortcut == nil {
           self.clearHotKey()
-          closure(nil, nil, false)
         }
-      default:
+        let repeated = self.repeatReplayCheckbox?.state == .on
+        closure(name, self.hotKeyShortcut, repeated)
+      } else {
+        // shouldn't be possible to press button when no name, behave like cancel 
         self.clearHotKey()
-        closure(nil, nil, false) // nil,nil to indicate cancel
+        closure(nil, nil, false)
       }
-      
-      self.hotKeyField?.removeFromSuperview()
-      self.hotKeyField = nil
-      self.hotKeyDefinition = nil
-      self.hotKeyShortcut = nil
-      self.batchConfirmButton = nil
+    default:
+      self.clearHotKey()
+      closure(nil, nil, false) // nil,nil to indicate cancel
     }
+    
+    self.hotKeyField?.removeFromSuperview()
+    self.hotKeyField = nil
+    self.hotKeyDefinition = nil
+    self.hotKeyShortcut = nil
+    self.batchConfirmButton = nil
   }
   
   func withEditBatchAlert(withCurrentName name: String, excludingNames exclude: Set<String>, repeating: Bool?,
@@ -412,33 +396,31 @@ class Alerts: NSObject, NSTextFieldDelegate {
     saveBatchAccessoryView?.layoutSubtreeIfNeeded()
     alert.accessoryView = saveBatchAccessoryView
     
-    DispatchQueue.main.async {
-      switch alert.runModal() {
-      case NSApplication.ModalResponse.alertFirstButtonReturn:
-        if self.hotKeyShortcut == nil {
-          self.clearHotKey()
-        }
-        let newRepeating = self.repeatReplayCheckbox?.state == .on
-        if let newName = self.batchNameField?.stringValue, !newName.isEmpty {
-          closure(newName, self.hotKeyShortcut, newRepeating, false)
-        } else {
-          closure(nil, self.hotKeyShortcut, newRepeating, false)
-        }
-      case NSApplication.ModalResponse.alertThirdButtonReturn, NSApplication.ModalResponse.stop:
-        // either normal delete button for 10.15, or delete button in the accessory view for >=11
+    switch runModalOnMain(alert) {
+    case NSApplication.ModalResponse.alertFirstButtonReturn:
+      if self.hotKeyShortcut == nil {
         self.clearHotKey()
-        closure(nil, nil, false, true)
-      default:
-        self.restoreHotKey()
-        closure(nil, nil, false, false) // nil,nil (and last param false) to indicate cancel
       }
-      
-      self.hotKeyField?.removeFromSuperview()
-      self.hotKeyField = nil
-      self.hotKeyDefinition = nil
-      self.hotKeyShortcut = nil
-      self.batchConfirmButton = nil
+      let newRepeating = self.repeatReplayCheckbox?.state == .on
+      if let newName = self.batchNameField?.stringValue, !newName.isEmpty {
+        closure(newName, self.hotKeyShortcut, newRepeating, false)
+      } else {
+        closure(nil, self.hotKeyShortcut, newRepeating, false)
+      }
+    case NSApplication.ModalResponse.alertThirdButtonReturn, NSApplication.ModalResponse.stop:
+      // either normal delete button for 10.15, or delete button in the accessory view for >=11
+      self.clearHotKey()
+      closure(nil, nil, false, true)
+    default:
+      self.restoreHotKey()
+      closure(nil, nil, false, false) // nil,nil (and last param false) to indicate cancel
     }
+    
+    self.hotKeyField?.removeFromSuperview()
+    self.hotKeyField = nil
+    self.hotKeyDefinition = nil
+    self.hotKeyShortcut = nil
+    self.batchConfirmButton = nil
   }
   
   private func createHotKey(forName name: String) {
@@ -569,6 +551,25 @@ class Alerts: NSObject, NSTextFieldDelegate {
   
   @IBAction func batchDeleteButtonPressed(_ sender: AnyObject) {
     NSApplication.shared.stopModal()
+  }
+  
+  // MARK: -
+  
+  // AI suggestion to fix runtime QoS warnings due to `DispatchQueue.main.async { switch alert.runModal() { ... } }`
+  // to be used like `switch runModalOnMain(alert) { ... }`
+  //
+  // Ensures NSAlert.runModal() is executed synchronously on the main thread to avoid QoS inversions
+  @inline(__always)
+  private func runModalOnMain(_ alert: NSAlert) -> NSApplication.ModalResponse {
+    if Thread.isMainThread {
+      return alert.runModal()
+    } else {
+      var response: NSApplication.ModalResponse = .abort
+      DispatchQueue.main.sync {
+        response = alert.runModal()
+      }
+      return response
+    }
   }
   
 }
