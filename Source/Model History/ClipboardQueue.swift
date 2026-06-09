@@ -140,7 +140,7 @@ class ClipboardQueue {
     size -= 1
     
     if isEmpty && repeatWhenEmptied {
-      size = clips.count
+      size = batchClips.count
       try clipboard.copy(getNext())
       
     } else if isEmpty {
