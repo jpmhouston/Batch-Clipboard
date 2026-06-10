@@ -149,6 +149,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   @IBOutlet var filledIconLabel: NSTextField?
   @IBOutlet var manuallyEnterQueueModeLabel: NSTextField?
   @IBOutlet var manuallyStartReplayingLabel: NSTextField?
+  @IBOutlet var batchItemsInMenuLabel: NSTextField?
   @IBOutlet var inAppPurchageTitle: NSTextField?
   @IBOutlet var inAppPurchageLabel: NSView?
   @IBOutlet var appStorePromoTitle: NSTextField?
@@ -170,9 +171,9 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   @IBOutlet var openMaccyLinkButton: NSButton?
   @IBOutlet var copyMaccyLinkButton: NSButton?
   
-  private var labelsToStyle: [NSTextField] { [
-    specialCopyPasteBehaviorLabel, filledIconLabel, manuallyEnterQueueModeLabel, manuallyStartReplayingLabel
-  ].compactMap({$0}) }
+  private var labelsToStyle: [NSTextField?] { [
+    specialCopyPasteBehaviorLabel, filledIconLabel, manuallyEnterQueueModeLabel, manuallyStartReplayingLabel, batchItemsInMenuLabel
+  ] }
   
   private var preAuthorizationPageFirsTime = true
   private var skipSetAuthorizationPage = false
@@ -341,7 +342,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   // MARK: -
   
   private func styleLabels() {
-    for label in labelsToStyle {
+    for case let label? in labelsToStyle {
       let styled = NSMutableAttributedString(attributedString: label.attributedStringValue)
       styled.applySimpleStyles(basedOnFont: label.font ?? NSFont.labelFont(ofSize: NSFont.labelFontSize))
       label.attributedStringValue = styled

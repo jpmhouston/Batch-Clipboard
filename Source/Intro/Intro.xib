@@ -381,7 +381,7 @@ DQ
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <stackView distribution="fill" orientation="horizontal" alignment="centerY" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wRU-32-pOq">
+                                <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="250" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wRU-32-pOq">
                                     <rect key="frame" x="0.0" y="0.0" width="142" height="28"/>
                                     <subviews>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UAU-vW-BHg">
@@ -595,7 +595,7 @@ DQ
                                     <rect key="frame" x="16" y="56" width="545" height="14"/>
                                     <textFieldCell key="cell" alignment="center" title="If you just use the ^⌘C and ^⌘V shortcuts and don't know what this means, pick “New Simpler Menu”" id="wFx-Dt-X1x">
                                         <font key="font" metaFont="smallSystem"/>
-                                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="textColor" red="0.29093465210000002" green="0.55276471380000003" blue="0.9688355327" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
@@ -603,7 +603,7 @@ DQ
                                     <rect key="frame" x="27" y="0.0" width="522" height="48"/>
                                     <textFieldCell key="cell" alignment="center" id="XVv-mZ-hG5">
                                         <font key="font" metaFont="system"/>
-                                        <string key="title">Note: no matter which choice, menu items displaying the current batch are now displayed in a more natural, top-down order. These were reversed in version 1.0 to match the order of the clipboard history menu items.</string>
+                                        <string key="title">Note: no matter which choice, menu items displaying the current batch are now displayed in a more natural, top-down order. These were bottom-up in version 1.0 to match the order of the clipboard history menu items.</string>
                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
@@ -800,10 +800,10 @@ DQ
                     <rect key="frame" x="3020" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OXy-QF-9kR">
-                            <rect key="frame" x="24" y="64" width="550" height="236"/>
+                            <rect key="frame" x="24" y="48" width="550" height="252"/>
                             <subviews>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ysO-Hd-YBl">
-                                    <rect key="frame" x="-2" y="216" width="192" height="20"/>
+                                    <rect key="frame" x="-2" y="232" width="192" height="20"/>
                                     <textFieldCell key="cell" title="About the menu bar icon" id="vdW-8n-96U">
                                         <font key="font" metaFont="system" size="17"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -811,12 +811,12 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="veb-Qn-gI4">
-                                    <rect key="frame" x="0.0" y="172" width="550" height="32"/>
+                                    <rect key="frame" x="0.0" y="188" width="550" height="32"/>
                                     <subviews>
                                         <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="nXv-aL-ixw">
-                                            <rect key="frame" x="-2" y="8" width="519" height="17"/>
+                                            <rect key="frame" x="-2" y="7" width="519" height="19"/>
                                             <textFieldCell key="cell" title="Batch Clipboard lives in the menu bar and the icon looks outlined like this: " id="QSh-Vk-jUJ">
-                                                <font key="font" metaFont="system" size="14"/>
+                                                <font key="font" metaFont="system" size="15"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -839,27 +839,27 @@ DQ
                                     </customSpacing>
                                 </stackView>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Sed-8H-0RI">
-                                    <rect key="frame" x="-2" y="109" width="554" height="51"/>
+                                    <rect key="frame" x="-2" y="119" width="554" height="57"/>
                                     <textFieldCell key="cell" id="Yqj-hi-edI">
-                                        <font key="font" metaFont="system" size="14"/>
+                                        <font key="font" metaFont="system" size="15"/>
                                         <string key="title">When using ^⌘C (collecting) and ^⌘V (replaying) the clipboard is in Batch Clipboard's special _batch mode_ where items you copy get stored, then when you paste them one-at-a-time they replay the same order.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B5Q-l2-QAI">
-                                    <rect key="frame" x="0.0" y="63" width="550" height="34"/>
+                                    <rect key="frame" x="0.0" y="69" width="550" height="38"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="kPk-oe-jvZ">
-                                            <rect key="frame" x="-2" y="0.0" width="450" height="34"/>
+                                            <rect key="frame" x="-2" y="0.0" width="450" height="38"/>
                                             <textFieldCell key="cell" title="When in _batch mode_, the menu bar icon appears filled in and with a counter beside it:" id="1VJ-eQ-OVc">
-                                                <font key="font" metaFont="system" size="14"/>
+                                                <font key="font" metaFont="system" size="15"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3i7-nq-G35">
-                                            <rect key="frame" x="450" y="1" width="100" height="32"/>
+                                            <rect key="frame" x="450" y="3" width="100" height="32"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="32" id="KmR-at-W1y"/>
                                             </constraints>
@@ -876,9 +876,9 @@ DQ
                                     </customSpacing>
                                 </stackView>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vIb-cf-3Yn">
-                                    <rect key="frame" x="-2" y="0.0" width="554" height="51"/>
+                                    <rect key="frame" x="-2" y="0.0" width="554" height="57"/>
                                     <textFieldCell key="cell" id="xnL-y0-X6s">
-                                        <font key="font" metaFont="system" size="14"/>
+                                        <font key="font" metaFont="system" size="15"/>
                                         <string key="title">Collecting into the batch with ^⌘C increases the count in the menu bar, replaying them by pasting with ^⌘V decreses the count. When the last item is pasted the icon returns to an outline and the clipboard returns to normal.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -916,7 +916,7 @@ DQ
                     <rect key="frame" x="3624" y="0.0" width="604" height="324"/>
                     <subviews>
                         <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uBa-yQ-aIe">
-                            <rect key="frame" x="24" y="24" width="550" height="276"/>
+                            <rect key="frame" x="24" y="24" width="556" height="276"/>
                             <subviews>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Pmd-4j-Qlf">
                                     <rect key="frame" x="-2" y="256" width="57" height="20"/>
@@ -927,54 +927,45 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ofc-pm-ZHJ">
-                                    <rect key="frame" x="-2" y="196" width="554" height="51"/>
+                                    <rect key="frame" x="-2" y="184" width="560" height="57"/>
                                     <textFieldCell key="cell" id="Jnh-iX-NZD">
-                                        <font key="font" metaFont="system" size="14"/>
-                                        <string key="title">You can enter _batch mode_ and start collecting manually using Start Batch in the menu, or by control-clicking on the menu icon. Then insteaf of ^⌘C, any Copy or Cut command in your application will add clips into the batch.</string>
+                                        <font key="font" metaFont="system" size="15"/>
+                                        <string key="title">You can enter _batch mode_ manually using **Start Batch** in the menu, or by control-clicking on the menu icon. Then instead of ^⌘C, any Copy or Cut command in your application will add clips into the batch.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="c5b-Da-Iyj">
-                                    <rect key="frame" x="-2" y="136" width="554" height="51"/>
+                                    <rect key="frame" x="-2" y="112" width="560" height="57"/>
                                     <textFieldCell key="cell" id="ejz-po-1sn">
-                                        <font key="font" metaFont="system" size="14"/>
-                                        <string key="title">You can start replaying from _batch mode_ manually too using Start Replaying Items in the menu. You can then use your application's Paste command instead of ^⌘V, but to advance to the next clip you must use the Advance to Next menu item.</string>
+                                        <font key="font" metaFont="system" size="15"/>
+                                        <string key="title">After copying, you can manually begin pasting with the **Start Replaying Items** menu item. You can then use your app's Paste command instead of ^⌘V, but to advance to the next clip you must use the **Skip to Next** menu item.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TQG-Ao-b8j">
-                                    <rect key="frame" x="-2" y="76" width="554" height="51"/>
+                                    <rect key="frame" x="-2" y="39" width="560" height="57"/>
                                     <textFieldCell key="cell" id="GUY-i5-7Qv">
-                                        <font key="font" metaFont="system" size="14"/>
-                                        <string key="title">The clipboard items that have been collected and not yet pasted are shown in the Batch Clipboard menu, most recent at the top, the next one to paste at the end. You can delete an item you copied accidentally with ⌘-Delete.</string>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Agw-Cz-wc3">
-                                    <rect key="frame" x="-2" y="33" width="554" height="34"/>
-                                    <textFieldCell key="cell" id="h9x-EW-Yfr">
-                                        <font key="font" metaFont="system" size="14"/>
-                                        <string key="title">You can turn on history in the settings. Then holding ⌥ (option key) when clicking the menu shows all recently copied items. Clicking one lets you paste it again.</string>
+                                        <font key="font" metaFont="system" size="15"/>
+                                        <string key="title">When in _batch mode_ clipboard items that have been collected and not yet pasted are shown in the Batch Clipboard menu, the next one to paste at the top. You can delete an item you copied accidentally with ⌘-Delete.</string>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="m2v-U7-QYJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="535" height="24"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="527" height="24"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" translatesAutoresizingMaskIntoConstraints="NO" id="ZDM-lj-aVO">
-                                            <rect key="frame" x="-2" y="4" width="412" height="17"/>
-                                            <textFieldCell key="cell" title="Also, the keyboard shortcuts ^⌘C and ^⌘V can be customized" id="vFs-Ep-8cZ">
-                                                <font key="font" metaFont="system" size="14"/>
+                                            <rect key="frame" x="-2" y="3" width="404" height="19"/>
+                                            <textFieldCell key="cell" title="The keyboard shortcuts ^⌘C and ^⌘V can be customized" id="vFs-Ep-8cZ">
+                                                <font key="font" metaFont="system" size="15"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="aMX-1w-PVi">
-                                            <rect key="frame" x="424" y="0.0" width="111" height="24"/>
+                                            <rect key="frame" x="416" y="0.0" width="111" height="24"/>
                                             <buttonCell key="cell" type="push" title="Open Settings" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="nI9-JH-hPE">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
@@ -1000,10 +991,8 @@ DQ
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
-                                <integer value="1000"/>
                             </visibilityPriorities>
                             <customSpacing>
-                                <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
@@ -1013,10 +1002,11 @@ DQ
                         </stackView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="uBa-yQ-aIe" secondAttribute="bottom" constant="24" id="5bO-qg-5EO"/>
+                        <constraint firstAttribute="bottom" secondItem="uBa-yQ-aIe" secondAttribute="bottom" priority="700" constant="24" id="5bO-qg-5EO"/>
                         <constraint firstItem="uBa-yQ-aIe" firstAttribute="top" secondItem="F4S-xT-lRf" secondAttribute="top" constant="24" id="GK8-WR-jKb"/>
+                        <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="uBa-yQ-aIe" secondAttribute="bottom" constant="10" id="J1v-Ve-bDa"/>
                         <constraint firstItem="uBa-yQ-aIe" firstAttribute="leading" secondItem="F4S-xT-lRf" secondAttribute="leading" constant="24" id="OZy-o0-U3W"/>
-                        <constraint firstAttribute="trailing" secondItem="uBa-yQ-aIe" secondAttribute="trailing" constant="30" id="iJM-xq-9fi"/>
+                        <constraint firstAttribute="trailing" secondItem="uBa-yQ-aIe" secondAttribute="trailing" constant="24" id="iJM-xq-9fi"/>
                     </constraints>
                 </customView>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Emk-a5-EaI" userLabel="eight">
@@ -1314,7 +1304,7 @@ DQ
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="efI-DS-y9J">
                                             <rect key="frame" x="-2" y="0.0" width="405" height="34"/>
-                                            <textFieldCell key="cell" title="Batch Clipboard is a derivative of Maccy. Check out that original app if interested in a full-featured clipboard manager." id="wHd-ST-cAs">
+                                            <textFieldCell key="cell" title="Batch Clipboard began as a derivative of Maccy. Check out that app if interested in a full-featured clipboard manager." id="wHd-ST-cAs">
                                                 <font key="font" metaFont="system" size="14"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1429,6 +1419,7 @@ DQ
                 <outlet property="appStorePromoTitle" destination="5i0-OJ-wh8" id="ECQ-dY-ePn"/>
                 <outlet property="authorizationDeniedEmoji" destination="4k3-Do-TDL" id="m2H-5T-AZy"/>
                 <outlet property="authorizationVerifiedEmoji" destination="vGq-Jf-faS" id="dee-ww-Uph"/>
+                <outlet property="batchItemsInMenuLabel" destination="TQG-Ao-b8j" id="J1O-SC-EZc"/>
                 <outlet property="copyDocsLinkButton" destination="gNg-tp-eyG" id="T7l-gR-7sj"/>
                 <outlet property="copyDonationLinkButton" destination="AGe-vu-v96" id="eyU-dV-ixW"/>
                 <outlet property="copyGitHubLinkButton" destination="s0H-ax-VVd" id="87c-2j-cPP"/>
