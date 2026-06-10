@@ -118,6 +118,8 @@ class IntroWindowController: PagedWindowController {
 }
 
 class IntroViewController: NSViewController, PagedWindowControllerDelegate, ClickableTextFieldDelegate {
+  @IBOutlet var scrollViewWidth: NSLayoutConstraint?
+  @IBOutlet var scrollViewHeight: NSLayoutConstraint?
   @IBOutlet var staticLogoImage: NSImageView?
   #if INTRO_ANIMATED_LOGO
   @IBOutlet var animatedLogoImage: SDAnimatedImageView?
@@ -195,6 +197,7 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   private var highlightChangeObserver: NSKeyValueObservation?
   
   override func viewDidLoad() {
+    resizeWindow()
     styleLabels()
     setupLogo()
     setupClickableLabels()
@@ -340,6 +343,22 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   }
   
   // MARK: -
+  
+  private func resizeWindow() {
+    let introResizePerLanguage = UserDefaults.standard.introResizeFactors // default is ["en": 1.0]
+    var resizeFactor = 1.25
+    if let languageCode = NSLocale.current.languageCode, languageCode.count >= 2, case let languagePrefix = String(languageCode.prefix(2)),
+       let resizeFactorForThisLanguage = introResizePerLanguage[languagePrefix] {
+      if resizeFactorForThisLanguage <= 1.0 {   
+        return
+      }
+      resizeFactor = resizeFactorForThisLanguage
+    }
+    guard let heightConstraint = scrollViewHeight else {
+      return
+    }
+    heightConstraint.constant = floor(heightConstraint.constant * resizeFactor)
+  }
   
   private func styleLabels() {
     for case let label? in labelsToStyle {

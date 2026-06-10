@@ -56,6 +56,7 @@ extension UserDefaults {
     static let sparkleUsesBetaFeed = "sparkleUsesBetaFeed"
     static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
     static let pasteboardLoggingOn = "pasteboardLoggingOn"
+    static let introResizeFactors = "introResizeFactors"
     
     // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
     // a statusitem on the menubar. Make accessor for the sake of saving & restoring this position.
@@ -82,6 +83,7 @@ extension UserDefaults {
     static let showSpecialSymbols = true
     static let historySize = 100
     static let highlightMatch = "bold"
+    static let introResizeFactors = [ "en": 1.0 ]
   }
   
   public var avoidTakingFocus: Bool {
@@ -344,5 +346,10 @@ extension UserDefaults {
   public var pasteboardLoggingOn: Bool {
     get { bool(forKey: Keys.pasteboardLoggingOn) }
     set { set(newValue, forKey: Keys.pasteboardLoggingOn) }
+  }
+  
+  public var introResizeFactors: [String: Double] {
+    get { dictionary(forKey: Keys.introResizeFactors) as? [String: Double] ?? Values.introResizeFactors }
+    set { set(newValue, forKey: Keys.introResizeFactors) }
   }
 }

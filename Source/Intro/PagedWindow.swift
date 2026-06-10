@@ -65,6 +65,9 @@ public class PagedWindowController: NSWindowController, NSWindowDelegate {
     //  priorSubview.removeFromSuperview()
     //}
     
+    view.frame = CGRect(x: 0, y: 0, width: view.bounds.size.width, height: scrollView.bounds.size.height)
+    view.needsLayout = true
+    
     contentSubview = view
     scrollView.contentView.addSubview(view)
     scrollView.contentView.bounds.origin = NSPoint.zero
