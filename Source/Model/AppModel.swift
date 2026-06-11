@@ -792,12 +792,14 @@ class AppModel: NSObject {
       guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
       updateSavingHistory(newValue)
     }
-    keepHistoryObserver2 = introWindowController.observe(\.viewController.keepHistoryChange, options: .new) { [weak self] _, change in
-      // old value of the flag is ephemeral, only care if its different than `keepHistory`
-      guard let self = self else { return }
-      //print("switch observer, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), keepHistory = \(UserDefaults.standard.keepHistory)")
-      guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
-      updateSavingHistory(newValue)
+    if let historyPageController = introWindowController.historyPageController {
+      keepHistoryObserver2 = historyPageController.observe(\.keepHistoryChange, options: .new) { [weak self] _, change in
+        // old value of the flag is ephemeral, only care if its different than `keepHistory`
+        guard let self = self else { return }
+        //print("switch observer, new = \(change.newValue == nil ? "nil" : String(describing: change.newValue!)), keepHistory = \(UserDefaults.standard.keepHistory)")
+        guard let newValue = change.newValue, newValue != UserDefaults.standard.keepHistory else { return }
+        updateSavingHistory(newValue)
+      }
     }
     menuHidingObserver = UserDefaults.standard.observe(\.menuHiddenWhenInactive, options: .new) { [weak self] _, change in
       // turning setting on (hide) first starts polling to wait until all of the app's

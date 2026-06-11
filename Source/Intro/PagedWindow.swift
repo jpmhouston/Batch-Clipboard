@@ -60,16 +60,32 @@ public class PagedWindowController: NSWindowController, NSWindowDelegate {
       existingSubview.removeFromSuperview()
     }
     
-    // perhaps should remove exsting views within scrollView.contentView, like this?
-    //for priorSubview in scrollView.contentView.subviews {
-    //  priorSubview.removeFromSuperview()
-    //}
-    
     view.frame = CGRect(x: 0, y: 0, width: view.bounds.size.width, height: scrollView.bounds.size.height)
     view.needsLayout = true
     
     contentSubview = view
     scrollView.contentView.addSubview(view)
+    scrollView.contentView.bounds.origin = NSPoint.zero
+  }
+  
+  func useViews(_ pageViews: [NSView], withHeightScaling heightScale: Double) {
+    if let existingSubview = contentSubview {
+      existingSubview.removeFromSuperview()
+    }
+    
+    let pageSize = NSSize(width: scrollView.bounds.size.width, height: scrollView.bounds.size.height * heightScale)
+    let pageContainer = NSView(frame: NSRect(x: 0, y: 0, width: CGFloat(pageViews.count) * pageSize.width, height: pageSize.height))
+    pageContainer.autoresizingMask = .none
+    
+    for (index, pageView) in pageViews.enumerated() {
+      pageView.frame = CGRect(x: CGFloat(index) * pageSize.width, y: 0, width: pageSize.width, height: pageSize.height)
+      pageContainer.addSubview(pageView)
+      pageView.heightAnchor.constraint(equalToConstant: pageSize.height).isActive = true
+      pageView.needsLayout = true
+    }
+    
+    contentSubview = pageContainer
+    scrollView.contentView.addSubview(pageContainer)
     scrollView.contentView.bounds.origin = NSPoint.zero
   }
   
