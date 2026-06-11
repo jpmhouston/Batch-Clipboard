@@ -1015,44 +1015,57 @@ DQ
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Emk-a5-EaI" userLabel="eight">
                     <rect key="frame" x="4228" y="0.0" width="604" height="324"/>
                     <subviews>
-                        <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUk-ID-IIs">
+                        <stackView distribution="equalSpacing" orientation="vertical" alignment="leading" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalCompressionResistancePriority="600" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oUk-ID-IIs">
                             <rect key="frame" x="24" y="24" width="550" height="276"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UGh-0A-tPy">
-                                    <rect key="frame" x="-2" y="256" width="436" height="20"/>
-                                    <textFieldCell key="cell" title="A few more features are available by in-app purchace" id="9nO-9v-zui">
-                                        <font key="font" metaFont="systemBold" size="17"/>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P2t-k7-gU7">
-                                    <rect key="frame" x="0.0" y="195" width="550" height="51"/>
+                                <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EHz-jO-IlS" userLabel="App Store Bonus Section">
+                                    <rect key="frame" x="0.0" y="195" width="550" height="81"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="vvo-Gm-qL1">
-                                            <rect key="frame" x="-2" y="0.0" width="428" height="51"/>
-                                            <textFieldCell key="cell" id="M8m-l6-A7W">
-                                                <font key="font" metaFont="system" size="14"/>
-                                                <string key="title">Exclusive to the Mac App Store version! A one-time purchase supports development of this app and unlocks a few bonus features. See more about them in the Settings window.</string>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="UGh-0A-tPy">
+                                            <rect key="frame" x="-2" y="61" width="436" height="20"/>
+                                            <textFieldCell key="cell" title="A few more features are available by in-app purchace" id="9nO-9v-zui">
+                                                <font key="font" metaFont="systemBold" size="17"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TB7-Sf-mKr">
-                                            <rect key="frame" x="440" y="14" width="110" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Open Settings" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ebq-Qr-hgW">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openInAppPurchaceSettings:" target="o5X-kK-gzk" id="iyQ-cu-hov"/>
-                                            </connections>
-                                        </button>
+                                        <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P2t-k7-gU7">
+                                            <rect key="frame" x="0.0" y="0.0" width="550" height="51"/>
+                                            <subviews>
+                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="vvo-Gm-qL1">
+                                                    <rect key="frame" x="-2" y="0.0" width="428" height="51"/>
+                                                    <textFieldCell key="cell" id="M8m-l6-A7W">
+                                                        <font key="font" metaFont="system" size="14"/>
+                                                        <string key="title">Exclusive to the Mac App Store version! A one-time purchase supports development of this app and unlocks a few bonus features. See more about them in the Settings window.</string>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TB7-Sf-mKr">
+                                                    <rect key="frame" x="440" y="14" width="110" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Open Settings" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ebq-Qr-hgW">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openInAppPurchaceSettings:" target="o5X-kK-gzk" id="iyQ-cu-hov"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="vvo-Gm-qL1" secondAttribute="bottom" placeholder="YES" id="eD1-GV-hGC"/>
+                                                <constraint firstItem="vvo-Gm-qL1" firstAttribute="top" secondItem="P2t-k7-gU7" secondAttribute="top" placeholder="YES" id="joK-Jw-0vt"/>
+                                            </constraints>
+                                            <visibilityPriorities>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                            </visibilityPriorities>
+                                            <customSpacing>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                            </customSpacing>
+                                        </stackView>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="vvo-Gm-qL1" secondAttribute="bottom" id="eD1-GV-hGC"/>
-                                        <constraint firstItem="vvo-Gm-qL1" firstAttribute="top" secondItem="P2t-k7-gU7" secondAttribute="top" id="joK-Jw-0vt"/>
-                                    </constraints>
                                     <visibilityPriorities>
                                         <integer value="1000"/>
                                         <integer value="1000"/>
@@ -1062,41 +1075,54 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5i0-OJ-wh8">
-                                    <rect key="frame" x="-2" y="256" width="479" height="20"/>
-                                    <textFieldCell key="cell" title="A few more features are available in the Mac App Store version" id="l42-8A-rIE">
-                                        <font key="font" metaFont="system" size="17"/>
-                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <stackView hidden="YES" distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dOo-x3-0gT">
-                                    <rect key="frame" x="0.0" y="252" width="1196" height="24"/>
+                                <stackView hidden="YES" distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ruA-Ez-bDr" userLabel="Non-App Store Bonus Section">
+                                    <rect key="frame" x="0.0" y="222" width="1196" height="54"/>
                                     <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="CQJ-yb-PGa">
-                                            <rect key="frame" x="-2" y="0.0" width="1063" height="24"/>
-                                            <textFieldCell key="cell" id="Ff1-yi-L9o">
-                                                <font key="font" metaFont="system" size="14"/>
-                                                <string key="title">The download on the Mac App Store is free and has the same features as this direct-download. It also offers a one-time purchase that unlocks a few bonus features.</string>
+                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5i0-OJ-wh8">
+                                            <rect key="frame" x="-2" y="34" width="510" height="20"/>
+                                            <textFieldCell key="cell" title="A few more features are available in the Mac App Store version" id="l42-8A-rIE">
+                                                <font key="font" metaFont="systemBold" size="17"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" verticalCompressionResistancePriority="801" translatesAutoresizingMaskIntoConstraints="NO" id="91r-ur-G2C">
-                                            <rect key="frame" x="1075" y="0.0" width="121" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Open App Store" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Vv9-OX-f76">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openAppInMacAppStore:" target="o5X-kK-gzk" id="Wvp-mV-buT"/>
-                                            </connections>
-                                        </button>
+                                        <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dOo-x3-0gT">
+                                            <rect key="frame" x="0.0" y="0.0" width="1196" height="24"/>
+                                            <subviews>
+                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="CQJ-yb-PGa">
+                                                    <rect key="frame" x="-2" y="0.0" width="1063" height="24"/>
+                                                    <textFieldCell key="cell" id="Ff1-yi-L9o">
+                                                        <font key="font" metaFont="system" size="14"/>
+                                                        <string key="title">The download on the Mac App Store is free and has the same features as this direct-download. It also offers a one-time purchase that unlocks a few bonus features.</string>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <button verticalHuggingPriority="750" verticalCompressionResistancePriority="801" translatesAutoresizingMaskIntoConstraints="NO" id="91r-ur-G2C">
+                                                    <rect key="frame" x="1075" y="0.0" width="121" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Open App Store" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Vv9-OX-f76">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openAppInMacAppStore:" target="o5X-kK-gzk" id="Wvp-mV-buT"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="CQJ-yb-PGa" secondAttribute="bottom" placeholder="YES" id="IoA-zw-KKD"/>
+                                                <constraint firstItem="CQJ-yb-PGa" firstAttribute="top" secondItem="dOo-x3-0gT" secondAttribute="top" placeholder="YES" id="phs-M0-NXf"/>
+                                            </constraints>
+                                            <visibilityPriorities>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                            </visibilityPriorities>
+                                            <customSpacing>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                            </customSpacing>
+                                        </stackView>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="CQJ-yb-PGa" secondAttribute="bottom" id="IoA-zw-KKD"/>
-                                        <constraint firstItem="CQJ-yb-PGa" firstAttribute="top" secondItem="dOo-x3-0gT" secondAttribute="top" id="phs-M0-NXf"/>
-                                    </constraints>
                                     <visibilityPriorities>
                                         <integer value="1000"/>
                                         <integer value="1000"/>
@@ -1106,233 +1132,242 @@ DQ
                                         <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="fPf-Q6-YbK" userLabel="That's all.. title container">
-                                    <rect key="frame" x="0.0" y="156" width="388" height="29"/>
+                                <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ixc-HW-QSJ" userLabel="More Info Section">
+                                    <rect key="frame" x="0.0" y="125" width="550" height="54"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="As5-Hw-9DD">
-                                            <rect key="frame" x="-2" y="0.0" width="392" height="25"/>
+                                            <rect key="frame" x="-2" y="34" width="392" height="20"/>
                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="left" title="That's all. Where to go for still more information" id="e9P-Jx-zaW">
                                                 <font key="font" metaFont="systemBold" size="17"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2j-Zt-Dp4" userLabel="More Info Buttons">
+                                            <rect key="frame" x="30" y="0.0" width="520" height="24"/>
+                                            <subviews>
+                                                <button horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpD-ga-KD6">
+                                                    <rect key="frame" x="0.0" y="0.0" width="186" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Open Documentation Page" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8wM-h8-wAH">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openDocumentationWebpage:" target="o5X-kK-gzk" id="QRP-rq-RIv"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gNg-tp-eyG">
+                                                    <rect key="frame" x="0.0" y="0.0" width="186" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Copy Documentation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cXv-Ew-T0w">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="copyDocumentationWebpage:" target="o5X-kK-gzk" id="lGr-Cy-yqt"/>
+                                                    </connections>
+                                                </button>
+                                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jez-C6-oFa">
+                                                    <rect key="frame" x="198" y="0.0" width="144" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Send Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6JB-sZ-Xzj">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="sendSupportEmail:" target="o5X-kK-gzk" id="qba-hq-sRv"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Hau-Kb-5xn">
+                                                    <rect key="frame" x="0.0" y="0.0" width="144" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Copy Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="u9j-ZV-2VC">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="copySupportEmail:" target="o5X-kK-gzk" id="AZe-mB-5br"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K04-rZ-O0s">
+                                                    <rect key="frame" x="0.0" y="0.0" width="142" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Make a Donation" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AO6-qj-kST">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openDonationWebpage:" target="o5X-kK-gzk" id="tiA-cW-V6h"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AGe-vu-v96">
+                                                    <rect key="frame" x="0.0" y="0.0" width="142" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Copy Donation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jDp-0X-CPr">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="copyDonationWebpage:" target="o5X-kK-gzk" id="OxY-R5-YAJ"/>
+                                                    </connections>
+                                                </button>
+                                                <button horizontalHuggingPriority="650" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="py4-bW-9Lx">
+                                                    <rect key="frame" x="354" y="0.0" width="166" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="See Also the About Box" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MA2-m3-4Pm">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openAboutBox:" target="o5X-kK-gzk" id="aS9-m5-OQR"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="xpD-ga-KD6" firstAttribute="width" secondItem="gNg-tp-eyG" secondAttribute="width" id="Y4C-gX-ngj"/>
+                                                <constraint firstItem="K04-rZ-O0s" firstAttribute="width" secondItem="AGe-vu-v96" secondAttribute="width" id="n4q-aW-zRS"/>
+                                                <constraint firstItem="Jez-C6-oFa" firstAttribute="width" secondItem="Hau-Kb-5xn" secondAttribute="width" id="zhK-Mo-V4t"/>
+                                            </constraints>
+                                            <visibilityPriorities>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                            </visibilityPriorities>
+                                            <customSpacing>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                            </customSpacing>
+                                        </stackView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="As5-Hw-9DD" firstAttribute="leading" secondItem="fPf-Q6-YbK" secondAttribute="leading" id="AM2-mD-J4J"/>
-                                        <constraint firstAttribute="trailing" secondItem="As5-Hw-9DD" secondAttribute="trailing" id="PZo-Ng-xpD"/>
-                                        <constraint firstAttribute="height" secondItem="As5-Hw-9DD" secondAttribute="height" constant="4" id="hzk-wh-Bh3"/>
-                                        <constraint firstAttribute="bottom" secondItem="As5-Hw-9DD" secondAttribute="bottom" id="koI-ad-BNM"/>
+                                        <constraint firstAttribute="trailing" secondItem="G2j-Zt-Dp4" secondAttribute="trailing" id="4E3-0m-pf2"/>
+                                        <constraint firstItem="G2j-Zt-Dp4" firstAttribute="leading" secondItem="ixc-HW-QSJ" secondAttribute="leading" priority="200" id="FmD-0Q-Q1J"/>
                                     </constraints>
-                                </customView>
-                                <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="12" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2j-Zt-Dp4">
-                                    <rect key="frame" x="0.0" y="122" width="444" height="24"/>
-                                    <subviews>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xpD-ga-KD6">
-                                            <rect key="frame" x="0.0" y="0.0" width="151" height="24"/>
-                                            <buttonCell key="cell" type="push" title="More Documentation" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8wM-h8-wAH">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openDocumentationWebpage:" target="o5X-kK-gzk" id="QRP-rq-RIv"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gNg-tp-eyG">
-                                            <rect key="frame" x="0.0" y="0.0" width="180" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Copy Documentation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cXv-Ew-T0w">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="copyDocumentationWebpage:" target="o5X-kK-gzk" id="lGr-Cy-yqt"/>
-                                            </connections>
-                                        </button>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Jez-C6-oFa">
-                                            <rect key="frame" x="163" y="0.0" width="144" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Send Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6JB-sZ-Xzj">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="sendSupportEmail:" target="o5X-kK-gzk" id="qba-hq-sRv"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Hau-Kb-5xn">
-                                            <rect key="frame" x="0.0" y="0.0" width="144" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Copy Support Email" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="u9j-ZV-2VC">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="copySupportEmail:" target="o5X-kK-gzk" id="AZe-mB-5br"/>
-                                            </connections>
-                                        </button>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="K04-rZ-O0s">
-                                            <rect key="frame" x="319" y="0.0" width="125" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Make a Donation" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="AO6-qj-kST">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openDonationWebpage:" target="o5X-kK-gzk" id="tiA-cW-V6h"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="AGe-vu-v96">
-                                            <rect key="frame" x="0.0" y="0.0" width="142" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Copy Donation Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="jDp-0X-CPr">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="copyDonationWebpage:" target="o5X-kK-gzk" id="OxY-R5-YAJ"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xiZ-Qf-6K9">
-                                            <rect key="frame" x="0.0" y="0.0" width="108" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Privacy Policy" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="RSV-zx-Ocu">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openPrivacyPolicyWebpage:" target="o5X-kK-gzk" id="n24-Od-GVB"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GsH-9g-ozW">
-                                            <rect key="frame" x="0.0" y="0.0" width="122" height="24"/>
-                                            <buttonCell key="cell" type="push" title="App Store EULA" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="KiV-53-hoh">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openAppStoreEULAWebpage:" target="o5X-kK-gzk" id="P5P-Rg-RoP"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
                                     <visibilityPriorities>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
                                         <integer value="1000"/>
                                         <integer value="1000"/>
                                     </visibilityPriorities>
                                     <customSpacing>
                                         <real value="3.4028234663852886e+38"/>
                                         <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
                                     </customSpacing>
                                 </stackView>
-                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="wgz-NP-bdb" userLabel="Open source.. title container">
-                                    <rect key="frame" x="0.0" y="88" width="544" height="24"/>
+                                <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8MJ-Fd-4Sb" userLabel="Open Source Section">
+                                    <rect key="frame" x="0.0" y="0.0" width="550" height="108"/>
                                     <subviews>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JiV-Jm-peE">
-                                            <rect key="frame" x="-2" y="0.0" width="548" height="20"/>
+                                            <rect key="frame" x="-2" y="88" width="440" height="20"/>
                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" title="Batch Clipboard is open source with proven foundations" id="dfQ-sj-HNd">
                                                 <font key="font" metaFont="systemMedium" size="17"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstAttribute="height" secondItem="JiV-Jm-peE" secondAttribute="height" constant="4" id="75K-d4-K95"/>
-                                        <constraint firstItem="JiV-Jm-peE" firstAttribute="leading" secondItem="wgz-NP-bdb" secondAttribute="leading" id="jzE-sh-4es"/>
-                                        <constraint firstAttribute="bottom" secondItem="JiV-Jm-peE" secondAttribute="bottom" id="l3M-Zb-2Fs"/>
-                                        <constraint firstAttribute="trailing" secondItem="JiV-Jm-peE" secondAttribute="trailing" id="vLT-s5-lY4"/>
-                                    </constraints>
-                                </customView>
-                                <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TSk-Ob-jbR">
-                                    <rect key="frame" x="0.0" y="44" width="550" height="34"/>
-                                    <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="bJz-fV-YLk">
-                                            <rect key="frame" x="-2" y="0.0" width="402" height="34"/>
-                                            <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, the non-App Store version can be download from here." id="ncU-gg-tO7">
-                                                <font key="font" metaFont="system" size="14"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="id9-2O-9Q5">
-                                            <rect key="frame" x="-2" y="17" width="742" height="17"/>
-                                            <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, it's safe handling of your data can be checked and validated." id="ON8-N1-vLv">
-                                                <font key="font" metaFont="system" size="14"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kdS-e2-KIB">
-                                            <rect key="frame" x="414" y="5" width="136" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Open GitHub Page" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mXO-h5-5BP">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openGitHubWebpage:" target="o5X-kK-gzk" id="o7a-I0-rq0"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="s0H-ax-VVd">
-                                            <rect key="frame" x="0.0" y="10" width="130" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Copy GitHub Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wBs-50-vQg">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="copyGitHubWebpage:" target="o5X-kK-gzk" id="hhd-FF-Xbg"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <visibilityPriorities>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                        <integer value="1000"/>
-                                    </visibilityPriorities>
-                                    <customSpacing>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                        <real value="3.4028234663852886e+38"/>
-                                    </customSpacing>
-                                </stackView>
-                                <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2F-sc-bmg">
-                                    <rect key="frame" x="0.0" y="0.0" width="550" height="34"/>
-                                    <subviews>
-                                        <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="efI-DS-y9J">
-                                            <rect key="frame" x="-2" y="0.0" width="405" height="34"/>
-                                            <textFieldCell key="cell" title="Batch Clipboard began as a derivative of Maccy. Check out that app if interested in a full-featured clipboard manager." id="wHd-ST-cAs">
-                                                <font key="font" metaFont="system" size="14"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fff-0G-hUh">
-                                            <rect key="frame" x="417" y="5" width="133" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Maccy Homepage" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ANa-5E-kf7">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="openMaccyWebpage:" target="o5X-kK-gzk" id="x5q-QV-mLt"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DoP-zS-gJW">
-                                            <rect key="frame" x="0.0" y="10" width="128" height="24"/>
-                                            <buttonCell key="cell" type="push" title="Copy Maccy Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TM7-2H-Cbz">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="copyMaccyWebpage:" target="o5X-kK-gzk" id="LCW-zF-atB"/>
-                                            </connections>
-                                        </button>
+                                        <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TSk-Ob-jbR" userLabel="GitHub Blurb &amp; Button">
+                                            <rect key="frame" x="0.0" y="44" width="550" height="34"/>
+                                            <subviews>
+                                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="bJz-fV-YLk">
+                                                    <rect key="frame" x="-2" y="0.0" width="402" height="34"/>
+                                                    <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, the non-App Store version can be download from here." id="ncU-gg-tO7">
+                                                        <font key="font" metaFont="system" size="14"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="id9-2O-9Q5">
+                                                    <rect key="frame" x="-2" y="17" width="742" height="17"/>
+                                                    <textFieldCell key="cell" title="It's source code is available on GitHub for inspection, it's safe handling of your data can be checked and validated." id="ON8-N1-vLv">
+                                                        <font key="font" metaFont="system" size="14"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kdS-e2-KIB">
+                                                    <rect key="frame" x="414" y="5" width="136" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Open GitHub Page" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mXO-h5-5BP">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openGitHubWebpage:" target="o5X-kK-gzk" id="o7a-I0-rq0"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="s0H-ax-VVd">
+                                                    <rect key="frame" x="0.0" y="10" width="137" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Copy GitHub Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wBs-50-vQg">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="copyGitHubWebpage:" target="o5X-kK-gzk" id="hhd-FF-Xbg"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="kdS-e2-KIB" firstAttribute="width" secondItem="s0H-ax-VVd" secondAttribute="width" id="p9T-dg-a2s"/>
+                                            </constraints>
+                                            <visibilityPriorities>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                            </visibilityPriorities>
+                                            <customSpacing>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                            </customSpacing>
+                                        </stackView>
+                                        <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G2F-sc-bmg" userLabel="Maccy Blurb &amp; Button">
+                                            <rect key="frame" x="0.0" y="0.0" width="550" height="34"/>
+                                            <subviews>
+                                                <textField focusRingType="none" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="700" verticalCompressionResistancePriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="efI-DS-y9J">
+                                                    <rect key="frame" x="-2" y="0.0" width="405" height="34"/>
+                                                    <textFieldCell key="cell" title="Batch Clipboard began as a derivative of Maccy. Check out that app if interested in a full-featured clipboard manager." id="wHd-ST-cAs">
+                                                        <font key="font" metaFont="system" size="14"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Fff-0G-hUh">
+                                                    <rect key="frame" x="417" y="5" width="133" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Maccy Homepage" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ANa-5E-kf7">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="openMaccyWebpage:" target="o5X-kK-gzk" id="x5q-QV-mLt"/>
+                                                    </connections>
+                                                </button>
+                                                <button hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DoP-zS-gJW">
+                                                    <rect key="frame" x="0.0" y="10" width="134" height="24"/>
+                                                    <buttonCell key="cell" type="push" title="Copy Maccy Link" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TM7-2H-Cbz">
+                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                        <font key="font" metaFont="system"/>
+                                                    </buttonCell>
+                                                    <connections>
+                                                        <action selector="copyMaccyWebpage:" target="o5X-kK-gzk" id="LCW-zF-atB"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Fff-0G-hUh" firstAttribute="width" secondItem="DoP-zS-gJW" secondAttribute="width" id="Gdr-cG-m53"/>
+                                            </constraints>
+                                            <visibilityPriorities>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                                <integer value="1000"/>
+                                            </visibilityPriorities>
+                                            <customSpacing>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                                <real value="3.4028234663852886e+38"/>
+                                            </customSpacing>
+                                        </stackView>
                                     </subviews>
                                     <visibilityPriorities>
                                         <integer value="1000"/>
@@ -1346,23 +1381,17 @@ DQ
                                     </customSpacing>
                                 </stackView>
                             </subviews>
+                            <constraints>
+                                <constraint firstItem="ixc-HW-QSJ" firstAttribute="leading" secondItem="oUk-ID-IIs" secondAttribute="leading" id="A9b-f1-AJg"/>
+                                <constraint firstAttribute="trailing" secondItem="ixc-HW-QSJ" secondAttribute="trailing" id="S33-kU-kvA"/>
+                            </constraints>
                             <visibilityPriorities>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
-                                <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                                 <integer value="1000"/>
                             </visibilityPriorities>
                             <customSpacing>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
-                                <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
                                 <real value="3.4028234663852886e+38"/>
@@ -1418,8 +1447,7 @@ DQ
             <connections>
                 <outlet property="aboutGitHubLabel" destination="bJz-fV-YLk" id="5w4-Ha-0Gd"/>
                 <outlet property="appStoreAboutGitHubLabel" destination="id9-2O-9Q5" id="DCr-Fx-IU2"/>
-                <outlet property="appStorePromoLabel" destination="dOo-x3-0gT" id="lyz-aE-wSq"/>
-                <outlet property="appStorePromoTitle" destination="5i0-OJ-wh8" id="ECQ-dY-ePn"/>
+                <outlet property="appStorePromoSection" destination="ruA-Ez-bDr" id="jpp-eI-bwi"/>
                 <outlet property="authorizationDeniedEmoji" destination="4k3-Do-TDL" id="m2H-5T-AZy"/>
                 <outlet property="authorizationVerifiedEmoji" destination="vGq-Jf-faS" id="dee-ww-Uph"/>
                 <outlet property="batchItemsInMenuLabel" destination="TQG-Ao-b8j" id="J1O-SC-EZc"/>
@@ -1442,8 +1470,7 @@ DQ
                 <outlet property="historyOnDescriptionLabel" destination="yfI-Cy-XwZ" id="eiR-Wg-fwB"/>
                 <outlet property="historyOnLabel" destination="PBy-Zz-j9y" id="TYG-j9-MF3"/>
                 <outlet property="historySwitch" destination="1Xt-RA-0eM" id="Sta-6M-ued"/>
-                <outlet property="inAppPurchageLabel" destination="P2t-k7-gU7" id="a6G-Nu-gN5"/>
-                <outlet property="inAppPurchageTitle" destination="UGh-0A-tPy" id="TLr-MX-UKf"/>
+                <outlet property="inAppPurchageSection" destination="EHz-jO-IlS" id="syg-Tn-8iO"/>
                 <outlet property="logoRestartButton" destination="VW6-3z-458" id="SHF-Tc-OkX"/>
                 <outlet property="logoStopButton" destination="cZS-Ny-vCa" id="lZS-OV-sql"/>
                 <outlet property="manuallyEnterQueueModeLabel" destination="ofc-pm-ZHJ" id="OeC-tl-8I8"/>
@@ -1451,12 +1478,10 @@ DQ
                 <outlet property="needsAuthorizationEmoji" destination="gJb-ZW-iAj" id="xNI-2L-jsS"/>
                 <outlet property="needsAuthorizationLabel" destination="EvF-0r-9Z1" id="Ffe-yk-KRE"/>
                 <outlet property="nextAuthorizationDirectionsLabel" destination="rEx-zK-yMR" id="yK3-0r-SVQ"/>
-                <outlet property="openAppStoreEULALinkButton" destination="GsH-9g-ozW" id="7CG-vE-c5K"/>
                 <outlet property="openDocsLinkButton" destination="xpD-ga-KD6" id="uo7-xc-kBB"/>
                 <outlet property="openDonationLinkButton" destination="K04-rZ-O0s" id="tZ5-ra-2Zu"/>
                 <outlet property="openGitHubLinkButton" destination="kdS-e2-KIB" id="fMj-FS-eI5"/>
                 <outlet property="openMaccyLinkButton" destination="Fff-0G-hUh" id="t0C-46-bRx"/>
-                <outlet property="openPrivacyPolicyLinkButton" destination="xiZ-Qf-6K9" id="pSQ-14-QH5"/>
                 <outlet property="openSecurityPanelButton" destination="2VO-Pm-i8d" id="R4l-fD-bqu"/>
                 <outlet property="openSecurityPanelSpinner" destination="w2D-dO-d7T" id="U9Z-8M-Muf"/>
                 <outlet property="scrollViewHeight" destination="efC-gO-HOI" id="cn2-W1-U9T"/>

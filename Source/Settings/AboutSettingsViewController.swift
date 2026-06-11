@@ -30,6 +30,11 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   @IBOutlet weak var copyDonationLinkButton: NSButton!
   @IBOutlet weak var sendSupportEmailButton: NSButton!
   @IBOutlet weak var copySupportEmailButton: NSButton!
+  @IBOutlet weak var appStoreLinksView: NSView!
+  @IBOutlet weak var openPrivacyPolicyButton: NSButton!
+  @IBOutlet weak var copyPrivacyPolicyButton: NSButton!
+  @IBOutlet weak var openAppStoreEULAButton: NSButton!
+  @IBOutlet weak var copyAppStoreEULAButton: NSButton!
   
   private var optionKeyEventMonitor: Any?
   
@@ -38,10 +43,12 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
     showVersionText(forAppStore: true)
     showAppStoreSupportText(true, hasPurchased: AppModel.hasBoughtExtras)
     showBuyMeACoffeeView(false)
+    showAppStoreLinksView(true)
     #else
     showVersionText(forAppStore: false)
     showAppStoreSupportText(false)
     showBuyMeACoffeeView(true)
+    showAppStoreLinksView(false)
     #endif
   }
   
@@ -86,6 +93,10 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
     buyMeACoffeeView.isHidden = !show
   }
   
+  private func showAppStoreLinksView(_ show: Bool) {
+    appStoreLinksView.isHidden = !show
+  }
+  
   private func showAltButtons(_ showCopy: Bool) {
     if showCopy {
       openRepoLinkButton.isHidden = true
@@ -96,6 +107,10 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
       copyDonationLinkButton.isHidden = false
       sendSupportEmailButton.isHidden = true
       copySupportEmailButton.isHidden = false
+      openPrivacyPolicyButton.isHidden = true
+      copyPrivacyPolicyButton.isHidden = false
+      openAppStoreEULAButton.isHidden = true
+      copyAppStoreEULAButton.isHidden = false
     } else {
       openRepoLinkButton.isHidden = false
       copyRepoLinkButton.isHidden = true
@@ -105,6 +120,10 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
       copyDonationLinkButton.isHidden = true
       sendSupportEmailButton.isHidden = false
       copySupportEmailButton.isHidden = true
+      openPrivacyPolicyButton.isHidden = false
+      copyPrivacyPolicyButton.isHidden = true
+      openAppStoreEULAButton.isHidden = false
+      copyAppStoreEULAButton.isHidden = true
     }
   }
   
@@ -148,6 +167,22 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   
   @IBAction func copySupportEmail(_ sender: AnyObject) {
     Clipboard.shared.copy(AppModel.supportEmailAddress, excludeFromHistory: false)
+  }
+  
+  @IBAction func openPrivacyPolicyLink(_ sender: AnyObject) {
+    openURL(string: AppModel.privacyPolicyURL)
+  }
+  
+  @IBAction func copePrivacyPolicyLink(_ sender: AnyObject) {
+    Clipboard.shared.copy(AppModel.privacyPolicyURL, excludeFromHistory: false)
+  }
+  
+  @IBAction func openAppStoreEULALink(_ sender: AnyObject) {
+    openURL(string: AppModel.appStoreUserAgreementURL)
+  }
+  
+  @IBAction func copyAppStoreEULALink(_ sender: AnyObject) {
+    Clipboard.shared.copy(AppModel.appStoreUserAgreementURL, excludeFromHistory: false)
   }
   
   // MARK: -

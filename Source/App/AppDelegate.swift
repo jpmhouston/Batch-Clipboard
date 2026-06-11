@@ -54,6 +54,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     if url.absoluteString == AppModel.showIntroInAppURL {
       model.showIntro(self)
     }
+    if url.absoluteString == AppModel.showAboutInAppURL {
+      model.showAbout(self)
+    }
     if url.absoluteString == AppModel.showLicensesInAppURL {
       model.showLicenses()
     }

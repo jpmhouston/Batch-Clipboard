@@ -152,18 +152,16 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   @IBOutlet var manuallyEnterQueueModeLabel: NSTextField?
   @IBOutlet var manuallyStartReplayingLabel: NSTextField?
   @IBOutlet var batchItemsInMenuLabel: NSTextField?
-  @IBOutlet var inAppPurchageTitle: NSTextField?
-  @IBOutlet var inAppPurchageLabel: NSView?
-  @IBOutlet var appStorePromoTitle: NSTextField?
-  @IBOutlet var appStorePromoLabel: NSView?
+  @IBOutlet var inAppPurchageSection: NSView?
+  @IBOutlet var appStorePromoSection: NSView?
   @IBOutlet var openDocsLinkButton: NSButton?
   @IBOutlet var copyDocsLinkButton: NSButton?
   @IBOutlet var sendSupportEmailButton: NSButton?
   @IBOutlet var copySupportEmailButton: NSButton?
   @IBOutlet var openDonationLinkButton: NSButton?
   @IBOutlet var copyDonationLinkButton: NSButton?
-  @IBOutlet var openPrivacyPolicyLinkButton: NSButton?
-  @IBOutlet var openAppStoreEULALinkButton: NSButton?
+  //@IBOutlet var openPrivacyPolicyLinkButton: NSButton?
+  //@IBOutlet var openAppStoreEULALinkButton: NSButton?
   //@IBOutlet var sendL10nEmailButton: NSButton?
   //@IBOutlet var copyL10nEmailButton: NSButton?
   @IBOutlet var aboutGitHubLabel: NSTextField?
@@ -276,23 +274,19 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
     
     case .links:
       #if APP_STORE
-      inAppPurchageTitle?.isHidden = false
-      inAppPurchageLabel?.isHidden = false
-      appStorePromoTitle?.isHidden = true
-      appStorePromoLabel?.isHidden = true
+      inAppPurchageSection?.isHidden = false
+      appStorePromoSection?.isHidden = true
       openDonationLinkButton?.isHidden = true
       copyDonationLinkButton?.isHidden = true
-      openPrivacyPolicyLinkButton?.isHidden = false
-      openAppStoreEULALinkButton?.isHidden = false
+      //openPrivacyPolicyLinkButton?.isHidden = false
+      //openAppStoreEULALinkButton?.isHidden = false
       aboutGitHubLabel?.isHidden = true
       appStoreAboutGitHubLabel?.isHidden = false
       #else
-      inAppPurchageTitle?.isHidden = true
-      inAppPurchageLabel?.isHidden = true
-      appStorePromoTitle?.isHidden = false
-      appStorePromoLabel?.isHidden = false
-      openPrivacyPolicyLinkButton?.isHidden = true
-      openAppStoreEULALinkButton?.isHidden = true
+      inAppPurchageSection?.isHidden = true
+      appStorePromoSection?.isHidden = false
+      //openPrivacyPolicyLinkButton?.isHidden = true
+      //openAppStoreEULALinkButton?.isHidden = true
       aboutGitHubLabel?.isHidden = false
       appStoreAboutGitHubLabel?.isHidden = true
       #endif
@@ -725,6 +719,10 @@ class IntroViewController: NSViewController, PagedWindowControllerDelegate, Clic
   
   @IBAction func openAppInMacAppStore(_ sender: AnyObject) {
     openURL(string: AppModel.macAppStoreURL)
+  }
+  
+  @IBAction func openAboutBox(_ sender: AnyObject) {
+    openURL(string: AppModel.showAboutInAppURL)
   }
   
   @IBAction func openDocumentationWebpage(_ sender: AnyObject) {
