@@ -176,4 +176,10 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     UserDefaults.standard.pasteboardLoggingOn = (sender.state == .on)
   }
   
+  @IBAction func resetAlertSuppresionPressed(_ sender: NSButton) {
+    UserDefaults.standard.suppressClearAlert = false
+    UserDefaults.standard.suppressDeleteBatchAlert = false
+    UserDefaults.standard.suppressSaveClipsAlert = false
+    UserDefaults.standard.suppressUseHistoryAlert = false
+  }
 }
