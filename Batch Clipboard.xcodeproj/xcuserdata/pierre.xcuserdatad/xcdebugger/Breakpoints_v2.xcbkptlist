@@ -1388,7 +1388,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1239"
             endingLineNumber = "1239"
-            landmarkName = "deleteBatch(atIndex:)"
+            landmarkName = "deleteBatch(atIndex:interactive:)"
             landmarkType = "7">
             <Actions>
                <BreakpointActionProxy

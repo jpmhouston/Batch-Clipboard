@@ -1161,7 +1161,7 @@ extension AppModel {
     showSaveBatchAlert(showingCount: batch.count, prohobitedNames: prohibitedNewBatchNames()) { [weak self] name, shortcut, repeating in
       guard let self = self else { return }
       
-      let newBatch = Batch.create(withName: name, shortcut: shortcut, clips: history.lastBatchClips)
+      let newBatch = Batch.create(withName: name, shortcut: shortcut, clips: history.lastBatchClips, repeating: repeating)
       
       registerHotKeyHandler(forBatch: newBatch)
       menu.addedBatch(newBatch)
