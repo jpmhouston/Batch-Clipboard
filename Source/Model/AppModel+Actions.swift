@@ -1122,7 +1122,7 @@ extension AppModel {
       if delete {
         if let index = history.batches.firstIndex(of: batch) {
           // with confirmation alert:
-          deleteBatch(atIndex: index)
+          deleteBatch(atIndex: index, interactive: true)
           // or without confirmation alert:
           //unregisterHotKeyDefinition(forBatch: batch)
           //history.removeSavedBatch(atIndex: index)
@@ -1228,7 +1228,7 @@ extension AppModel {
     updateClipboardMonitoring()
   }
   
-  func deleteBatch(atIndex index: Int) {
+  func deleteBatch(atIndex index: Int, interactive: Bool = false) {
     guard !Self.busy else {
       return
     }
@@ -1238,12 +1238,21 @@ extension AppModel {
     
     let batch = history.batches[index]
     
-    showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in
-      guard let self = self else { return }
-      
+    if !interactive || UserDefaults.standard.suppressDeleteBatchAlert {
       unregisterHotKeyDefinition(forBatch: batch)
       history.removeSavedBatch(atIndex: index)
       menu.deletedBatch(index)
+      
+    } else {
+      menu.cancelTrackingWithoutAnimation() // special case.. menu might be open when this called, close it before opening alert
+      
+      showDeleteBatchAlert(withTitle: history.batches[index].title ?? "") { [weak self] in
+        guard let self = self else { return }
+        
+        unregisterHotKeyDefinition(forBatch: batch)
+        history.removeSavedBatch(atIndex: index)
+        menu.deletedBatch(index)
+      }
     }
   }
   
@@ -1269,6 +1278,13 @@ extension AppModel {
   
   @IBAction
   func deleteHighlightedItem(_ sender: AnyObject) {
+    // specifically don't call cancelTrackingWithoutAnimation() here so the menu stays open
+    // do however dismiss the preview if its showing
+    menu.dismissPreviewPopover()
+    guard !Self.busy else {
+      return
+    }
+    
     if let batchItem = menu.highlightedBatchMenuItem(), let batch = batchItem.batch {
       if let index = history.batches.firstIndex(of: batch) { // do nothing if cannot find the batch
         if let highlightedSubitem = batchItem.submenu?.highlightedItem { // only delete the batch itself if no submenu selection
@@ -1276,7 +1292,8 @@ extension AppModel {
             deleteBatchClip(atIndex: subindex, forBatchAtIndex: index)
           }
         } else {
-          deleteBatch(atIndex: index)
+          // note, deleteBatch can itself call cancelTracking.. to close the menu if it opens a confirmation alert
+          deleteBatch(atIndex: index, interactive: true)
         }
       }
     } else if let clip = menu.highlightedClipMenuItem()?.clip {
@@ -1299,7 +1316,7 @@ extension AppModel {
       return
     }
     
-    if !interactive {
+    if !interactive || UserDefaults.standard.suppressClearAlert {
       deleteClips(clipboardIncluded: clipboardIncluded)
     } else {
       showClearHistoryAlert() { [weak self] in
@@ -1432,24 +1449,19 @@ extension AppModel {
   }
   
   private func showClearHistoryAlert(_ completion: @escaping () -> Void) {
-    if UserDefaults.standard.suppressClearAlert {
-      completion()
-      
-    } else {
-      takeFocus()
-      
-      alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
-        guard let self = self else { return }
-        if confirm {
-          completion()
-          
-          if dontAskAgain {
-            UserDefaults.standard.suppressClearAlert = true
-          }
-        }
+    takeFocus()
+    
+    alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
+      guard let self = self else { return }
+      if confirm {
+        completion()
         
-        returnFocus()
+        if dontAskAgain {
+          UserDefaults.standard.suppressClearAlert = true
+        }
       }
+      
+      returnFocus()
     }
   }
   
@@ -1501,24 +1513,19 @@ extension AppModel {
   }
   
   private func showDeleteBatchAlert(withTitle title: String, _ completion: @escaping () -> Void) {
-    if UserDefaults.standard.suppressDeleteBatchAlert {
-      completion()
-      
-    } else {
-      takeFocus()
-      
-      alerts.withDeleteBatchAlert(withTitle: title) { [weak self] confirm, dontAskAgain in
-        guard let self = self else { return }
-        if confirm {
-          completion()
-          
-          if dontAskAgain {
-            UserDefaults.standard.suppressDeleteBatchAlert = true
-          }
-        }
+    takeFocus()
+    
+    alerts.withDeleteBatchAlert(withTitle: title) { [weak self] confirm, dontAskAgain in
+      guard let self = self else { return }
+      if confirm {
+        completion()
         
-        returnFocus()
+        if dontAskAgain {
+          UserDefaults.standard.suppressDeleteBatchAlert = true
+        }
       }
+      
+      returnFocus()
     }
   }
   

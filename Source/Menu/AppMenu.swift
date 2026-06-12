@@ -367,7 +367,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-    previewController.cancelPopover()
+    previewController.dismissPopover()
     
     #if DELETE_MENUITEM_DETECTS_ITS_SHORTCUT
     // forget the outstanding deferred disable of the delete item
@@ -419,6 +419,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     if isVisible {
       updateAvailableItem?.isHidden = !showsUpdateAvailable
     }
+  }
+  
+  func dismissPreviewPopover() {
+    previewController.dismissPopover()
   }
   
   // MARK: - build dynamic clip menu items

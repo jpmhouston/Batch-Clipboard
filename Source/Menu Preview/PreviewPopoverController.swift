@@ -25,7 +25,7 @@ class PreviewPopoverController {
   }
   
   func menuDidClose() {
-    cancelPopover()
+    dismissPopover()
   }
   
   func showPopover(for menuItem: ClipMenuItem, withQueueOn queueOn: Bool, anchors: (NSView, NSView)? = nil) {
@@ -114,7 +114,7 @@ class PreviewPopoverController {
     )
   }
   
-  func cancelPopover() {
+  func dismissPopover() {
     previewThrottle.cancel()
     previewPopover?.close()
     previewPopover = nil
