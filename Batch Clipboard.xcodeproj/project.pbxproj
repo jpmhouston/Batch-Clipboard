@@ -648,7 +648,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.3b3;
+				MARKETING_VERSION = 2.3b4;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -683,7 +683,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.3b3;
+				MARKETING_VERSION = 2.3b4;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -717,7 +717,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.3b3;
+				MARKETING_VERSION = 2.3b4;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -752,7 +752,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.3b3;
+				MARKETING_VERSION = 2.3b4;
 				PRODUCT_BUNDLE_IDENTIFIER = lol.bananameter.batchclip;
 				PRODUCT_NAME = "Batch Clipboard (MAS)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
