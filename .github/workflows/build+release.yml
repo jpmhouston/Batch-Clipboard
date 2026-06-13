@@ -51,7 +51,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # required for 'git show-ref --tags' to work
           ref: "${{ env.branch }}"
@@ -315,7 +315,7 @@ jobs:
       
       - name: Save Build Log as Artifact
         if: ${{ steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Build log
           path: |
@@ -335,7 +335,7 @@ jobs:
           echo "filename=$zipfilename" >> $GITHUB_OUTPUT
       
       - name: Save Zipped Symbol File as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "Symbol file"
           path: ${{ steps.symbols.outputs.filename }}
@@ -534,7 +534,7 @@ jobs:
           echo "file=${{ env.builddir }}/$currentNotesFilename" >> $GITHUB_OUTPUT
       
       - name: Save Build as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "${{ steps.version.outputs.archivename }} (non-app store)"
           path: |
@@ -595,7 +595,7 @@ jobs:
           xcrun stapler staple "${{ steps.dmg.outputs.file }}"
       
       - name: Save Disk Image as Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "${{ steps.version.outputs.archivename }} (non-app store) Disk Image"
           path: ${{ steps.dmg.outputs.file }}
@@ -625,9 +625,9 @@ jobs:
       
       - name: Setup Sparkle
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.tag }}
-        uses: jozefizso/setup-sparkle@v1
+        uses: jozefizso/setup-sparkle@v2
         with:
-          version: 2.6.0
+          version: 2.9.3
       
       - name: Generate Sparkle Appcast File
         id: sparkle
@@ -698,7 +698,7 @@ jobs:
       
       - name: Save Appcast File as Artifact
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.updateAppcast == 'true' && steps.version.outputs.tag && steps.sparkle.outputs.appcastGenerated }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: appcast.xml
           path: appcast.xml
@@ -713,7 +713,7 @@ jobs:
       
       - name: Draft Tagged Release
         if: ${{ success() && steps.inputs.outputs.githubRelease == 'true' && steps.version.outputs.tag }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ steps.version.outputs.releasename }}
           tag_name: ${{ steps.version.outputs.tag }}
