@@ -189,7 +189,7 @@
                         </items>
                     </menu>
                     <connections>
-                        <action selector="replaySavedBatch:" target="-2" id="OcU-Gv-kEg"/>
+                        <action selector="replaySavedBatchUsingRootMenu:" target="-2" id="85b-yP-La6"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="5yx-82-0Qq"/>

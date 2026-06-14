@@ -1030,6 +1030,20 @@ extension AppModel {
   }
   
   @IBAction
+  func replaySavedBatchUsingRootMenu(_ sender: AnyObject) {
+    menu.cancelTrackingWithoutAnimation()
+    guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {
+      return
+    }
+    
+    var repeating = batch.repeating
+    if NSEvent.modifierFlags.contains(.option) {
+      repeating = !repeating
+    }
+    replayBatch(batch, looped: repeating, interactive: true)
+  }
+  
+  @IBAction
   func replaySavedBatch(_ sender: AnyObject) {
     menu.cancelTrackingWithoutAnimation()
     guard let item = sender as? BatchMenuItem ?? BatchMenuItem.parentBatchMenuItem(for: sender), let batch = item.batch else {

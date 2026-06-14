@@ -1236,8 +1236,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1074"
-            endingLineNumber = "1074"
+            startingLineNumber = "1088"
+            endingLineNumber = "1088"
             landmarkName = "replayBatch(_:looped:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1261,8 +1261,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1078"
-            endingLineNumber = "1078"
+            startingLineNumber = "1092"
+            endingLineNumber = "1092"
             landmarkName = "replayBatch(_:looped:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1286,8 +1286,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1159"
-            endingLineNumber = "1159"
+            startingLineNumber = "1173"
+            endingLineNumber = "1173"
             landmarkName = "saveBatch(_:)"
             landmarkType = "7">
             <Actions>
@@ -1311,8 +1311,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1181"
-            endingLineNumber = "1181"
+            startingLineNumber = "1195"
+            endingLineNumber = "1195"
             landmarkName = "saveBatch(withName:)"
             landmarkType = "7">
             <Actions>
@@ -1336,8 +1336,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1200"
-            endingLineNumber = "1200"
+            startingLineNumber = "1214"
+            endingLineNumber = "1214"
             landmarkName = "deleteHistoryClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1361,8 +1361,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1215"
-            endingLineNumber = "1215"
+            startingLineNumber = "1229"
+            endingLineNumber = "1229"
             landmarkName = "deleteQueueClip(atIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1386,8 +1386,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1239"
-            endingLineNumber = "1239"
+            startingLineNumber = "1253"
+            endingLineNumber = "1253"
             landmarkName = "deleteBatch(atIndex:interactive:)"
             landmarkType = "7">
             <Actions>
@@ -1411,8 +1411,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1266"
-            endingLineNumber = "1266"
+            startingLineNumber = "1280"
+            endingLineNumber = "1280"
             landmarkName = "deleteBatchClip(atIndex:forBatchAtIndex:)"
             landmarkType = "7">
             <Actions>
@@ -1436,8 +1436,8 @@
             filePath = "Source/Model/AppModel+Actions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1330"
-            endingLineNumber = "1330"
+            startingLineNumber = "1344"
+            endingLineNumber = "1344"
             landmarkName = "deleteClips(clipboardIncluded:)"
             landmarkType = "7">
             <Actions>
