@@ -35,14 +35,15 @@ extension AppModel {
     //if #unavailable(macOS 14) { true } else { false }
   }
   
-  private var canStartQueue: Bool { queue.isOff && stack.isOff }
+  internal var inOffState: Bool { queue.isOff && stack.isOff }
+  private var canStartQueue: Bool { inOffState }
+  private var canReplayQueue: Bool { inOffState }
   private var canAddToQueue: Bool { stack.isOff }
   private var canCancelQueue: Bool { queue.isOn }
   private var shouldQueueNewClip: Bool { queue.isOn && stack.isOff }
   private var canPasteFromQueue: Bool { queue.notEmpty && stack.isOff }
   private var canPopFromQueue: Bool { queue.notEmpty && stack.isOff }
   private var canStartDequeueing: Bool { queue.isOn && stack.isOff }
-  private var canReplayQueue: Bool { queue.isOff && stack.isOff }
   private var canStartStack: Bool { stack.isOff }
   private var canPushToStack: Bool { true } // might disallow in some cases in the future, idk
   private var canPopFromStack: Bool { stack.notEmpty }
@@ -330,13 +331,13 @@ extension AppModel {
       
       updateMenuIcon()
       updateMenuTitle()
-      if stack.isOff && queue.isOff {
+      if inOffState {
         letMenuIconAutoHide()
       }
       updateClipboardMonitoring()
       
       #if APP_STORE
-      if interactive && stack.isOff {
+      if interactive && inOffState {
         AppStoreReview.ask(after: 20)
       }
       #endif
@@ -366,7 +367,7 @@ extension AppModel {
     
     updateMenuIcon()
     updateMenuTitle()
-    if stack.isOff && queue.isOff {
+    if inOffState {
       letMenuIconAutoHide()
     }
     updateClipboardMonitoring()
@@ -404,6 +405,12 @@ extension AppModel {
   func startQueueMode(withCurrentClip addCurrentClip: Bool = false, interactive: Bool = false) -> Bool {
     // handler for the global keyboard shortcut and menu item via functions above,
     // and for the intent which calls this directly
+    guard !Self.busy else {
+      return false
+    }
+    guard canStartQueue else {
+      return false
+    }
     
     // when starting from current clip and using history, use replayFromHistory technique instead of the code below
     // normally only permitted when `allowReplayFromHistory`, but an exception is made for this feature
@@ -415,12 +422,6 @@ extension AppModel {
              clip.types.map({ $0.rawValue }).joined(separator: ","))
     }
     
-    guard !Self.busy else {
-      return false
-    }
-    guard canStartQueue else {
-      return false
-    }
     guard accessibilityCheck(interactive: interactive) else {
       return false
     }
@@ -669,13 +670,13 @@ extension AppModel {
       menu.poppedClipOffQueue()
       updateMenuIcon(.decrement)
       updateMenuTitle()
-      if queue.isOff {
+      if inOffState {
         letMenuIconAutoHide()
       }
       updateClipboardMonitoring()
       
       #if APP_STORE
-      if interactive && queue.isOff {
+      if interactive && inOffState {
         AppStoreReview.ask(after: 20)
       }
       #endif
@@ -725,7 +726,7 @@ extension AppModel {
     menu.poppedClipOffQueue()
     updateMenuIcon(.decrement)
     updateMenuTitle()
-    if queue.isOff {
+    if inOffState {
       letMenuIconAutoHide()
     }
     updateClipboardMonitoring()
@@ -836,7 +837,7 @@ extension AppModel {
       menu.poppedClipsOffQueue(count)
       updateMenuIcon()
       updateMenuTitle()
-      if queue.isOff {
+      if inOffState {
         letMenuIconAutoHide()
       }
       updateClipboardMonitoring()
@@ -844,7 +845,7 @@ extension AppModel {
       completion?(success)
       
       #if APP_STORE
-      if queue.isOff && interactive {
+      if interactive && inOffState {
         AppStoreReview.ask(after: 20)
       }
       #endif
@@ -1236,7 +1237,7 @@ extension AppModel {
     menu.deletedClipFromQueue(index)
     updateMenuIcon(.decrement)
     updateMenuTitle()
-    if queue.isOff {
+    if inOffState {
       letMenuIconAutoHide()
     }
     updateClipboardMonitoring()
@@ -1365,17 +1366,6 @@ extension AppModel {
   }
   
   @IBAction
-  func showIntro(_ sender: AnyObject) {
-    takeFocus()
-    introWindowController.openIntro(with: self)
-  }
-  
-  func showLicenses() {
-    takeFocus()
-    licensesWindowController.openLicenses()
-  }
-  
-  @IBAction
   func showSettings(_ sender: AnyObject) {
     showSettings()
   }
@@ -1389,16 +1379,32 @@ extension AppModel {
       settingsWindowController.show(pane: pane)
     }
     settingsWindowController.window?.orderFrontRegardless()
+    settingsWindowWasOpened()
+  }
+  
+  @IBAction
+  func showIntro(_ sender: AnyObject) {
+    takeFocus()
+    introWindowController.openIntro(with: self)
+    introWindowWasOpened()
   }
   
   func showIntroAtPermissionPage() {    
     takeFocus()
     introWindowController.openIntro(atPage: .checkAuth, with: self)
+    introWindowWasOpened()
   }
   
   func showIntroAtHistoryUpdatePage() {
     takeFocus()
     introWindowController.openIntro(atPage: .historyChoice, with: self)
+    introWindowWasOpened()
+  }
+  
+  func showLicenses() {
+    takeFocus()
+    licensesWindowController.openLicenses()
+    licensesWindowWasOpened()
   }
   
   func openSecurityPanel() {
@@ -1601,7 +1607,7 @@ extension AppModel {
   }
   
   private func updateClipboardMonitoring() {
-    if !UserDefaults.standard.keepHistory && queue.isOff {
+    if !UserDefaults.standard.keepHistory && inOffState {
       clipboard.stop()
       if !UserDefaults.standard.saveClipsAcrossDisabledHistory {
         history.clearHistory()

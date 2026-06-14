@@ -57,6 +57,8 @@ extension UserDefaults {
     static let menuHiddenWhenInactive = "menuHiddenWhenInactive"
     static let pasteboardLoggingOn = "pasteboardLoggingOn"
     static let introResizeFactors = "introResizeFactors"
+    static let relaunchingStartsBatch = "relaunchingStartsBatch"
+    static let showsInDock = "showsInDock"
     
     // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
     // a statusitem on the menubar. Make accessor for the sake of saving & restoring this position.
@@ -352,4 +354,15 @@ extension UserDefaults {
     get { dictionary(forKey: Keys.introResizeFactors) as? [String: Double] ?? Values.introResizeFactors }
     set { set(newValue, forKey: Keys.introResizeFactors) }
   }
+  
+  public var relaunchingStartsBatch: Bool {
+    get { bool(forKey: Keys.relaunchingStartsBatch) }
+    set { set(newValue, forKey: Keys.relaunchingStartsBatch) }
+  }
+  
+  @objc public var showsInDock: Bool {
+    get { bool(forKey: Keys.showsInDock) }
+    set { set(newValue, forKey: Keys.showsInDock) }
+  }
+  @objc dynamic public class func automaticallyNotifiesObserversOfShowsInDock() -> Bool { false }
 }

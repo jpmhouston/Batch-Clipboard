@@ -17,6 +17,7 @@ extension Settings.PaneIdentifier {
   static let appearance = Self("appearance")
   static let general = Self("general")
   static let ignore = Self("ignore")
+  static let keyboard = Self("keyboard")
   static let storage = Self("storage")
   static let purchase = Self("purchase")
 }

@@ -3,14 +3,14 @@
 ## version 2.3b4 (2026-06-12)
 
 - Fixed Start Batch with Clipboard when still using the clipboard history feature.
-- New Repeating setting for saved batches, made visible if new checkbox turned on in the Advanced Settings tab. After pasting last begin pasting from the first again, until batch cancelled.
-- Holding option key when saved batch menu showing changes "Reply" menu item to "Replay Repeating".
-- Menu item to edit saved batches changed from Rename to Edit.
-- Polished saved batched deletion: dismiss menu when cmd-delete used, improved text, layout, behavior of the edit alert.
 - About menu item now opens an About Settings tab, containing some buttons to open links that have moved from the Intro window.
 - Revised layout and some text & behavior of the Intro window, allow height expansion to make more room for future localization.
 - Added button to the Advanced Settings tab to reset previously supressed alerts ("Don't ask again" checkboxes).
 - Fixes some warnings that were being logged to the system console.
+- For IAP-unlocked saved batch feature in the App Store version: a new Repeating setting for saved batches, made visible if new checkbox turned on in the Advanced Settings tab. After pasting last begin pasting from the first again, until batch cancelled.
+- Holding option key when saved batch menu showing changes "Reply" menu item to "Replay Repeating".
+- Menu item to edit saved batches changed from Rename to Edit.
+- Polished saved batched deletion: dismiss menu when cmd-delete used, improved text, layout, behavior of the edit alert.
 
 ## version 2.3b3 (2026-05-01)
 

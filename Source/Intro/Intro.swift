@@ -83,7 +83,7 @@ class IntroWindowController: PagedWindowController {
     }
     
     pagesController?.startPage = if let page = page {
-      pagesController?.pageIndex(for:  page.pageType)
+      pagesController?.pageIndex(for: page)
     } else {
       nil 
     }
@@ -224,8 +224,12 @@ class IntroPagesController: PagedWindowControllerDelegate {
     pageControllers.map(\.view)
   }
   
-  // note: for some reason `pageIndex(for: IntroWindowController.Page.demo.pageType)` et al
-  // don't work for some reason to do with the `pageType` return type `(some IntroPageController).Type`
+  // note: it seems `pageIndex(for: IntroWindowController.Page.demo.pageType)` et al don't work
+  // for some reason to do with the `pageType` return type `(some IntroPageController).Type`
+  // so need overload as well
+  func pageIndex(for pageKey: IntroWindowController.Page) -> Int {
+    pageControllers.firstIndex { type(of: $0) == pageKey.pageType } ?? 0
+  }
   
   func pageIndex<T: IntroPageController>(for _: T.Type) -> Int {
     pageControllers.firstIndex { $0 is T } ?? 0

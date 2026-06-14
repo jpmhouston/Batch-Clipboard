@@ -10,7 +10,6 @@
 //
 
 import AppKit
-import KeyboardShortcuts
 import Settings
 #if SPARKLE_UPDATES
 import Sparkle
@@ -26,12 +25,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   override var nibName: NSNib.Name? { "GeneralSettingsViewController" }
   
-  private let copyHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedCopy)
-  private let pasteHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queuedPaste)
-  private let startHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStart)
-  private let startWithCurrentHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStartWithCurrent)
-  private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
-  
   #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
   #endif
@@ -39,23 +32,24 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
   
-  @IBOutlet weak var copyHotkeyContainerView: NSView!
-  @IBOutlet weak var pasteHotkeyContainerView: NSView!
-  @IBOutlet weak var startHotkeyContainerView: NSView!
-  @IBOutlet weak var startWithCurrentHotkeyContainerView: NSView!
-  @IBOutlet weak var replayHotkeyContainerView: NSView!
   @IBOutlet weak var launchAtLoginCheckbox: NSButton!
-  @IBOutlet weak var launchAtLoginRow: NSGridRow!
+  @IBOutlet weak var openLoginItemsPanelSection: NSView!
   @IBOutlet weak var openLoginItemsPanelButton: NSButton!
-  @IBOutlet weak var openLoginItemsPanelRow: NSGridRow!
+  @IBOutlet weak var checkForUpdatesSection: NSView!
   @IBOutlet weak var automaticUpdatesCheckbox: NSButton!
   @IBOutlet weak var betaFeedUpdatesCheckbox: NSButton!
+  @IBOutlet weak var checkForUpdatesSeparator: NSView!
   @IBOutlet weak var menuHidingCheckbox: NSButton!
+  @IBOutlet weak var menuHiddenBlurbNormal: NSTextField!
+  @IBOutlet weak var menuHiddenBlurbLaunchStartsQueue: NSTextField!
+  @IBOutlet weak var menuHiddenBlurbDockShowing: NSTextField!
+  @IBOutlet weak var menuHiddenBlurbDockStartsQueue: NSTextField!
+  @IBOutlet weak var showInDockCheckbox: NSButton!
+  @IBOutlet weak var relaunchingStartsBatchCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasCheckbox: NSButton!
   @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
-  @IBOutlet weak var checkForUpdatesItemsRow: NSGridRow!
-  @IBOutlet weak var promoteExtrasItemsRow: NSGridRow!
-  @IBOutlet weak var promoteExtrasSeparatorRow: NSGridRow!
+  @IBOutlet weak var promoteExtrasSeparator: NSView!
+  @IBOutlet weak var promoteExtrasItemsSection: NSView!
   
   #if SPARKLE_UPDATES
   init(updater: SPUUpdater) {
@@ -75,25 +69,19 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    func addSubviewWithManualLayout(_ par: NSView, _ sub: NSView) {
-      par.translatesAutoresizingMaskIntoConstraints = false
-      sub.translatesAutoresizingMaskIntoConstraints = false
-      par.addSubview(sub)
-      par.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[s]|", metrics: nil, views: ["s": sub]))
-      par.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[s]|", metrics: nil, views: ["s": sub]))
+    if #available(macOS 13.0, *) {
+      showLaunchAtLoginOptions(true)
+    } else {
+      showLaunchAtLoginOptions(false) // show instead the open login items button 
     }
-    // using the above func instead of addSubview fixed layout issues with the KeyboardShortcuts.RecorderCocoa views
-    addSubviewWithManualLayout(copyHotkeyContainerView, copyHotkeyRecorder)
-    addSubviewWithManualLayout(pasteHotkeyContainerView, pasteHotkeyRecorder)
-    addSubviewWithManualLayout(startHotkeyContainerView, startHotkeyRecorder)
-    addSubviewWithManualLayout(startWithCurrentHotkeyContainerView, startWithCurrentHotkeyRecorder)
-    addSubviewWithManualLayout(replayHotkeyContainerView, replayHotkeyRecorder)
     
     #if SPARKLE_UPDATES
     showSparkleUpdateOptions(true)
     #else
     showSparkleUpdateOptions(false)
     #endif
+    
+    showMenuHidingLabels()
     
     #if APP_STORE
     if #available(macOS 14, *) { // badged menu items first available in macOS 14
@@ -104,12 +92,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     #else
     showPromoteExtrasOptions(false)
     #endif
-    
-    if #available(macOS 13.0, *) {
-      showLaunchAtLoginOptions(true)
-    } else {
-      showLaunchAtLoginOptions(false) // show instead the open login items button 
-    }
   }
   
   override func viewWillAppear() {
@@ -118,6 +100,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     populateSparkleAutomaticUpdates()
     populateSparkleBetaFeed()
     populateMenuHiding()
+    populateDockOptions()
     populatePromoteExtrasOptions()
   }
   
@@ -158,6 +141,13 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   private func populateMenuHiding() {
     let hideMenu = UserDefaults.standard.menuHiddenWhenInactive
     menuHidingCheckbox.state = hideMenu ? .off : .on
+  }
+  
+  private func populateDockOptions() {
+    let showsInDock = UserDefaults.standard.showsInDock
+    let relaunchingStartsBatch = UserDefaults.standard.relaunchingStartsBatch
+    showInDockCheckbox.state = showsInDock ? .on : .off
+    relaunchingStartsBatchCheckbox.state = relaunchingStartsBatch ? .on : .off
   }
   
   private func populatePromoteExtrasOptions() {
@@ -224,6 +214,17 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   @IBAction func menuHidingChanged(_ sender: NSButton) {
     UserDefaults.standard.menuHiddenWhenInactive = (sender.state == .off)
+    showMenuHidingLabels()
+  }
+  
+  @IBAction func showInDockChanged(_ sender: NSButton) {
+    UserDefaults.standard.showsInDock = (sender.state == .on)
+    showMenuHidingLabels()
+  }
+  
+  @IBAction func relaunchingStartsBatchChanged(_ sender: NSButton) {
+    UserDefaults.standard.relaunchingStartsBatch = (sender.state == .on)
+    showMenuHidingLabels()
   }
   
   @IBAction func promoteExtrasChanged(_ sender: NSButton) {
@@ -261,19 +262,38 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   private func showSparkleUpdateOptions(_ show: Bool) {
-    checkForUpdatesItemsRow.isHidden = !show
+    checkForUpdatesSection.isHidden = !show
+    //checkForUpdatesSeparator.isHidden = !show
   }
   
   private func showLaunchAtLoginOptions(_ show: Bool) {
-    launchAtLoginRow.isHidden = !show
-    openLoginItemsPanelRow.isHidden = show
+    launchAtLoginCheckbox.isHidden = !show
+    openLoginItemsPanelSection.isHidden = show
+  }
+  
+  private func showMenuHidingLabels() {
+    menuHiddenBlurbNormal.isHidden = true
+    menuHiddenBlurbLaunchStartsQueue.isHidden = true
+    menuHiddenBlurbDockShowing.isHidden = true
+    menuHiddenBlurbDockStartsQueue.isHidden = true
+    if UserDefaults.standard.menuHiddenWhenInactive {
+      let showsInDock = UserDefaults.standard.showsInDock
+      let relaunchingStartsBatch = UserDefaults.standard.relaunchingStartsBatch
+      switch (showsInDock, relaunchingStartsBatch) {
+      case (false, false): menuHiddenBlurbNormal.isHidden = false
+      case (false, true): menuHiddenBlurbLaunchStartsQueue.isHidden = false
+      case (true, false): menuHiddenBlurbDockShowing.isHidden = false
+      case (true, true): menuHiddenBlurbDockStartsQueue.isHidden = false
+      }
+    }
   }
   
   private func showPromoteExtrasOptions(_ show: Bool) {
-    promoteExtrasItemsRow.isHidden = !show
-    #if MENU_HIDING_IN_ADVANCED_PANEL
-    promoteExtrasSeparatorRow.isHidden = !show
-    #endif
+    promoteExtrasSeparator.isHidden = !show
+    promoteExtrasItemsSection.isHidden = !show
   }
-  
+}
+
+extension NSView {
+  var isVisible: Bool { !isHidden }
 }

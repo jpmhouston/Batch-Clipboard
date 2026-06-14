@@ -62,6 +62,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   }
   
   override func viewWillDisappear() {
+    super.viewWillDisappear()
     stopObservingMenuHiding()
   }
   

@@ -27,6 +27,7 @@ extension NSImage.Name {
   static let gear = loadName("gearshape")
   static let doubleGear = loadName("gearshape.2")
   static let gift = loadName("gift")
+  static let keyboard = loadName("keyboard")
   static let negationSign = loadName("nosign")
   static let paintPalette = loadName("paintpalette")
 

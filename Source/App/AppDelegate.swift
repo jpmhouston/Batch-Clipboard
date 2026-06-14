@@ -46,6 +46,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     return false // best to return false instead of true to tell NSApp to do nothing
   }
   
+  func applicationWillBecomeActive(_ notification: Notification) {
+    model.wasActvated()
+  }
+  
   func application(_ application: NSApplication, open urls: [URL]) {
     // get the first of the url's, ignore the rest
     guard let url = urls.first else {

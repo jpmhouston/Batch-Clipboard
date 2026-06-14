@@ -366,6 +366,10 @@ class AppMenu: NSMenu, NSMenuDelegate {
     previewController.menuDidClose()
   }
   
+  var isOpen: Bool {
+    isVisible
+  }
+  
   func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
     previewController.dismissPopover()
     

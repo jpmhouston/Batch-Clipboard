@@ -20,7 +20,7 @@ class MoreIntroPageViewController: IntroPageController {
   // MARK: -
   
   @IBAction func openGeneralSettings(_ sender: AnyObject) {
-    app.showSettings(selectingPane: .general)
+    app.showSettings(selectingPane: .keyboard)
   }
   
 }

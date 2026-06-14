@@ -88,14 +88,18 @@ class AppModel: NSObject {
                                                             userDriverDelegate: self.sparkleDelegate)
   #endif
   internal var introWindowController = IntroWindowController()
+  internal var introWindowOpen = false
   internal var licensesWindowController = LicensesWindowController()
+  internal var licensesWindowOpen = false
   
   internal var queue: ClipboardQueue!
   internal var stack: ClipboardStack!
   internal var copyTimeoutTimer: DispatchSourceTimer?
   internal var hideMenuPollingTimer: DispatchSourceTimer?
-  internal var settingsFirstOpen = true
+  internal var hideMenuOnNextIteration = false
   
+  internal var settingsWindowOpen = false
+  internal var settingsFirstOpen = true
   internal lazy var storageSettingsPaneViewController = StorageSettingsViewController()
   #if APP_STORE
   internal lazy var generalSettingsPaneViewController = GeneralSettingsViewController()
@@ -103,6 +107,7 @@ class AppModel: NSObject {
     panes: [
       AboutSettingsViewController(),
       generalSettingsPaneViewController,
+      KeyboardSettingsViewController(),
       AppearanceSettingsViewController(),
       storageSettingsPaneViewController,
       PurchaseSettingsViewController(purchases: purchases),
@@ -115,6 +120,7 @@ class AppModel: NSObject {
     panes: [
       AboutSettingsViewController(),
       GeneralSettingsViewController(updater: updaterController.updater),
+      KeyboardSettingsViewController(),
       AppearanceSettingsViewController(),
       storageSettingsPaneViewController,
       IgnoreSettingsViewController(),
@@ -134,6 +140,10 @@ class AppModel: NSObject {
   private var keepHistoryObserver: NSKeyValueObservation?
   private var keepHistoryObserver2: NSKeyValueObservation?
   private var menuHidingObserver: NSKeyValueObservation?
+  private var showsInDockObserver: NSKeyValueObservation?
+  private var settingsClosedObserver: NSObjectProtocol?
+  private var introClosedObserver: NSObjectProtocol?
+  private var licensesClosedObserver: NSObjectProtocol?
   
   enum PasteSeparator: Int, CaseIterable {
     // the popup menu in Alerts.nib must be kept in symc with these enum cases 
@@ -172,6 +182,8 @@ class AppModel: NSObject {
     ])
     
     migrateUserDefaults()
+    
+    applyShowInDockSetting() // not sure if its important that this is called early
     
     // history, queue, menu, statusicon
     if UserDefaults.standard.keepHistory {
@@ -244,7 +256,7 @@ class AppModel: NSObject {
       letMenuIconAutoHide()
     }
     
-    // this instantiates the settings window, but it's not not initially visible
+    // this instantiates the settings window, but it's not initially visible
     settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
   }
   
@@ -260,6 +272,9 @@ class AppModel: NSObject {
     keepHistoryObserver?.invalidate()
     keepHistoryObserver2?.invalidate()
     menuHidingObserver?.invalidate()
+    removeNotificationObserver(&settingsClosedObserver)
+    removeNotificationObserver(&introClosedObserver)
+    removeNotificationObserver(&licensesClosedObserver)
     
     menuIcon.cancelBlinkTimer()
     #if APP_STORE
@@ -273,15 +288,43 @@ class AppModel: NSObject {
     }
   }
   
-  func wasReopened() {
-    // When the app icon is dbl-clicked open settings and ensure the idon is showing.
-    // If the user has chosen to hide the menu bar icon when not in batch mode then
-    // start pollng ro auto-hide it again when all windows close
-    showSettings(selectingPane: .general)
-    menuIcon.isVisible = true
-    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive {
-      startPollingToRehideMenuIcon()
+  func wasActvated() {
+    // when app switched to the foreground enure the menu is made visible then switch back to the
+    // previously frontmost app
+    // (if icon indeed dbl-clicked then wasReopened below will be called **either beofre or after**)
+    ensureMenuIconVisible(pollingForWindowsToClose: true)
+    
+    // sometimes when wasReopened below opened settings window the app would still end up hidden
+    // some kind of race between takeFocus activating app and returnFocus hiding it :/
+    // best fix found: defer hiding so other code that might open a window has a chance to run first
+    // (if menu or a window has opened prevents returnFocus from hiding the app)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+      self?.returnFocus() 
     }
+  }
+  
+  func wasReopened() {
+    // when app icon dbl-clicked or clicked in dock, optionally open settings if shift pressed or
+    // start queue if that option is set (wasActvated may have already been called to reveal the
+    // potentially hidden menu icon, or may even be called afterward .. must behave well in any case and any order)
+    ensureMenuIconVisible(pollingForWindowsToClose: true) // in case wasActvated not called, maybe not needed 
+    
+    let modifierFlags = NSEvent.modifierFlags
+    let modifierPressed = modifierFlags.contains(.shift) || modifierFlags.contains(.option)
+    if UserDefaults.standard.relaunchingStartsBatch && !modifierPressed {
+      // although if that setting is on, start queue mode instead
+      startQueueMode() // assume this short-circuits nicely if queue already started
+      stopPollingToRehideMenuIcon()
+    } else if modifierPressed {
+      showSettings(selectingPane: .general)
+    } else {
+      returnFocus()
+    }
+  }
+  
+  internal func applyShowInDockSetting() {
+    //showsInDock = UserDefaults.standard.showsInDock
+    NSApp.setActivationPolicy(UserDefaults.standard.showsInDock ? .regular : .accessory)
   }
   
   internal func takeFocus() {
@@ -299,8 +342,7 @@ class AppModel: NSObject {
       Self.returnFocusToPreviousApp = true
     } else {
       if !UserDefaults.standard.avoidTakingFocus {
-        let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.className != NSApp.statusBarWindow?.className }
-        if AppModel.returnFocusToPreviousApp && visibleWindows.count == 0 {
+        if AppModel.returnFocusToPreviousApp && !anyAppWindowsOpen() {
           NSApp.hide(self)
         }
       }
@@ -321,8 +363,60 @@ class AppModel: NSObject {
   }
   
   internal func letMenuIconAutoHide() {
-    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && !queue.isOn {
+    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState {
       startPollingToRehideMenuIcon()
+    }
+  }
+  
+  private func anyAppWindowsOpen() -> Bool {
+    // Was using inherited Maccy code to tell if any windows, including the menu, are open,
+    // specifically omitting a hidden window for the status item (with an undocumented class NSStatusItemWindow)
+    // however isVisible also returns false when the app is hidden, not helpful.
+    //  return NSApp.windows.filter { $0.isVisible && $0.className != NSApp.statusBarWindow?.className }
+    // Trying to engineer each window to get removed from the NSApp.windows when they're closed didn't work.
+    // Now track our windows being opened & closed manually (alerts we don't need to worry about, each are modal)
+    menu.isOpen || settingsWindowOpen || introWindowOpen || licensesWindowOpen
+    // menu @menu.isOpen@, settings @settingsWindowOpen@, intro @introWindowOpen@, licenses @licensesWindowOpen@
+  }
+  
+  internal func settingsWindowWasOpened() {
+    if settingsWindowController.isWindowLoaded, let window = settingsWindowController.window {
+      settingsWindowOpen = true
+      addSettingsWindowCloseObserver(window)
+    }
+    // No `else` because we know the settings window is instantiated early (to set moveToActiveSpace on the
+    // window that otherwise is completely defined in the Settings package). Maybe add an `else { assert() }`?
+  }
+  
+  internal func introWindowWasOpened() {
+    if introWindowController.isWindowLoaded, let window = introWindowController.window {
+      introWindowOpen = true
+      addIntroWindowCloseObserver(window)
+    } else {
+      nop() // good place for breakppint: introWindowWasOpened called but window nil, delaying
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        guard let self = self else { return }
+        introWindowOpen = true
+        if introWindowController.isWindowLoaded, let window = introWindowController.window {
+          addIntroWindowCloseObserver(window)
+        }
+      }
+    }
+  }
+  
+  internal func licensesWindowWasOpened() {
+    if licensesWindowController.isWindowLoaded, let window = licensesWindowController.window {
+      introWindowOpen = true
+      addLicensesWindowCloseObserver(window)
+    } else {
+      nop() // good place for breakppint: licensesWindowWasOpened called but window nil, delaying
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        guard let self = self else { return }
+        licensesWindowOpen = true
+        if licensesWindowController.isWindowLoaded, let window = licensesWindowController.window {
+          addLicensesWindowCloseObserver(window)
+        }
+      }
     }
   }
   
@@ -688,30 +782,27 @@ class AppModel: NSObject {
     }
   }
   
-  private func anyAppWindowsOpen() -> Bool {
-    // Omitting any windows with canBecomeKey false because that identifies a hidden window for the
-    // status item with undocumented class NSStatusItemWindow or something. Identifying it by its type 
-    // would be bad because that type is undocumented. but noticed that its this window has 
-    // canBecomeKey false though, so using that. Doesn't seem like any valid window would have this false.
-    NSApplication.shared.windows.filter { $0.canBecomeKey }.contains { $0.isVisible }
-  }
-  
   private func startPollingToRehideMenuIcon() {
     guard hideMenuPollingTimer == nil else { 
       return // rather than restarting time if called a second time, if already running then leave it
     }
-    hideMenuPollingTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 2, interval: 2) { [weak self] in
+    // this polling timer should be running while one of our windows or the menu are open
+    // if queue started then the timer ends, polling must be restarted once it finishes
+    hideMenuOnNextIteration = false // this flag used to ensure 1 full N-second polling loop occurs after exit condition met
+    hideMenuPollingTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 4, interval: 4) { [weak self] in
       guard let self = self else { return false }
-      if !UserDefaults.standard.menuHiddenWhenInactive || !menuIcon.isVisible {
+      if !UserDefaults.standard.menuHiddenWhenInactive || !menuIcon.isVisible || !inOffState { // ie. is timer now moot
         hideMenuPollingTimer = nil
         return false
       }
-      if !anyAppWindowsOpen() && !queue.isOn {
+      let shouldHideMenu = !anyAppWindowsOpen()
+      if shouldHideMenu && hideMenuOnNextIteration {
         menuIcon.isVisible = false
         hideMenuPollingTimer = nil
         return false
       }
-      return true
+      hideMenuOnNextIteration = shouldHideMenu
+      return true // continue repeating
     }
   }
   
@@ -812,9 +903,54 @@ class AppModel: NSObject {
         stopPollingToRehideMenuIcon()
       }
     }
+    showsInDockObserver = UserDefaults.standard.observe(\.showsInDock, options: .new) { [weak self] _, _ in
+      guard let self = self else { return }
+      applyShowInDockSetting()
+    }
   }
   // swiftlint:enable cyclomatic_complexity
   
+  private func addSettingsWindowCloseObserver(_ window: NSWindow) {
+    // observers are opaque, no way to inspect them to ensure they observe the same window and not
+    // a re-instantiated window, however currently assume that these windows are never disposed & recreated
+    //removeNotificationObserver(&settingsClosedObserver)
+    if settingsClosedObserver == nil {
+      let nc = NotificationCenter.default
+      settingsClosedObserver = nc.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
+        self?.settingsWindowOpen = false
+      }
+    }
+  }
+  
+  private func addIntroWindowCloseObserver(_ window: NSWindow) {
+    // observers are opaque, no way to inspect them to ensure they observe the same window and not
+    // a re-instantiated window, however currently assume that these windows are never disposed & recreated
+    //removeNotificationObserver(&introClosedObserver) 
+    if introClosedObserver == nil {
+      let nc = NotificationCenter.default
+      introClosedObserver = nc.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
+        self?.introWindowOpen = false
+      }
+    }
+  }
+  
+  private func addLicensesWindowCloseObserver(_ window: NSWindow) {
+    // observers are opaque, no way to inspect them to ensure they observe the same window and not
+    // a re-instantiated window, however currently assume that these windows are never disposed & recreated
+    //removeNotificationObserver(&licensesClosedObserver)
+    if licensesClosedObserver == nil {
+      let nc = NotificationCenter.default
+      licensesClosedObserver = nc.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
+        self?.licensesWindowOpen = false
+      }
+    }
+  }
+  
+  private func removeNotificationObserver(_ observer: inout NSObjectProtocol?) {
+    guard let obs = observer else { return }
+    NotificationCenter.default.removeObserver(obs)
+    observer = nil
+  }
 }
 
 func nop() { }

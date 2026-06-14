@@ -39,6 +39,8 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   private var optionKeyEventMonitor: Any?
   
   override func viewDidLoad() {
+    super.viewDidLoad()
+    
     #if APP_STORE
     showVersionText(forAppStore: true)
     showAppStoreSupportText(true, hasPurchased: AppModel.hasBoughtExtras)

@@ -83,6 +83,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   }
   
   override func viewWillDisappear() {
+    super.viewWillDisappear()
     state = .idle
     cancelTimeoutTimer()
     

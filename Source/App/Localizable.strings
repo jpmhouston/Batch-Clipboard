@@ -11,8 +11,9 @@
 "preferences_about" = "About";
 "preferences_advanced" = "Advanced";
 "preferences_appearance" = "Appearance";
-"preferences_ignore" = "Ignore";
 "preferences_general" = "General";
+"preferences_ignore" = "Ignore";
+"preferences_keyboard" = "Keys";
 "preferences_pins" = "Pins";
 "preferences_storage" = "Storage";
 "copy_modifiers_config" = "• Select with %@ pressed to copy item.";
