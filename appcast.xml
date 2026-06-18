@@ -6,6 +6,31 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3b5</title>
+            <pubDate>Thu, 18 Jun 2026 03:57:40 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2126</sparkle:version>
+            <sparkle:shortVersionString>2.3b5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>New option in General Settings tab to show the app in the Dock and
+app switcher. If menu icon hidden in the menu bar, made switching to the
+app reveal it, and if shift or option held then also show the Settings
+window.</li>
+<li>Associated new option to start batch mode when the app clicked in
+the Dock or relaunched in the Finder.</li>
+<li>Moved keyboard shortcut fields to a new tab in Settings to make room
+in the General tab.</li>
+<li>Minor correction to capitalization in the menu.</li>
+<li>For IAP-unlocked saved batch feature in the App Store version, made
+option-click a root menu item of a saved batch also replay the batch
+repeated, not just option-clicking the replay item in its submenu.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3b5/Batch.Clipboard.2.3b5.zip" length="7292145" type="application/octet-stream" sparkle:edSignature="0+KAud9Xl3+RWnfEpJ0JMfucikXig80++U58x5ALczf51UkifVsuj172NQoZWfnysCOgSSHgcb8dT5im9FjUBA=="/>
+        </item>
+        <item>
             <title>2.3b2</title>
             <pubDate>Sun, 26 Apr 2026 19:09:07 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
