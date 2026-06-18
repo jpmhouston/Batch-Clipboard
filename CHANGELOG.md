@@ -1,5 +1,13 @@
 # Batch Clipboard Changelog
 
+## version 2.3b5 (2026-06-17)
+
+- New option in General Settings tab to show the app in the Dock and app switcher. If menu icon hidden in the menu bar, made switching to the app reveal it, and if shift or option held then also show the Settings window.
+- Associated new option to start batch mode when the app clicked in the Dock or relaunched in the Finder.
+- Moved keyboard shortcut fields to a new tab in Settings to make room in the General tab.
+- Minor correction to capitalization in the menu.
+- For IAP-unlocked saved batch feature in the App Store version, made option-click a root menu item of a saved batch also replay the batch repeated, not just option-clicking the replay item in its submenu.
+
 ## version 2.3b4 (2026-06-12)
 
 - Fixed Start Batch with Clipboard when still using the clipboard history feature.
