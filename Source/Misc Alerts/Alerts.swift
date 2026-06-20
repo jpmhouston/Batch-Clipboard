@@ -124,9 +124,21 @@ class Alerts: NSObject, NSTextFieldDelegate {
   }
   
   private var clearAlert: NSAlert {
+    clearAlert(withSavedBatchCount: 0)
+  }
+  
+  private func clearAlert(withSavedBatchCount count: Int) -> NSAlert {
     let alert = NSAlert()
     alert.messageText = NSLocalizedString("clear_alert_message", comment: "")
-    alert.informativeText = NSLocalizedString("clear_alert_comment", comment: "")
+    if count <= 0 {
+      alert.informativeText = NSLocalizedString("clear_alert_comment", comment: "")
+    } else if count == 1 {
+      alert.informativeText = NSLocalizedString("clear_alert_comment_2s", comment: "")
+    } else {
+      // TODO: localize counted batches correctly
+      alert.informativeText = NSLocalizedString("clear_alert_comment_2", comment: "")
+        .replacingOccurrences(of: "{number}", with: String(count))
+    }
     alert.addButton(withTitle: NSLocalizedString("clear_alert_confirm", comment: ""))
     alert.addButton(withTitle: NSLocalizedString("clear_alert_cancel", comment: ""))
     alert.showsSuppressionButton = true
@@ -227,8 +239,8 @@ class Alerts: NSObject, NSTextFieldDelegate {
     }
   }
   
-  func withClearAlert(_ closure: @escaping (Bool, Bool) -> Void) {
-    let alert = clearAlert
+  func withClearAlert(savedBatchCount: Int = 0, _ closure: @escaping (Bool, Bool) -> Void) {
+    let alert = clearAlert(withSavedBatchCount: savedBatchCount)
     if runModalOnMain(alert) == NSApplication.ModalResponse.alertFirstButtonReturn {
       closure(true, alert.suppressionButton?.state == .on)
     } else {
@@ -562,6 +574,8 @@ class Alerts: NSObject, NSTextFieldDelegate {
   @inline(__always)
   private func runModalOnMain(_ alert: NSAlert) -> NSApplication.ModalResponse {
     if Thread.isMainThread {
+      // if just brought the app frontmost with NSApp.activate(), opening this alert seems to
+      // interrupt this process and it gets opened in the background, hopefully this fixes this
       return alert.runModal()
     } else {
       var response: NSApplication.ModalResponse = .abort

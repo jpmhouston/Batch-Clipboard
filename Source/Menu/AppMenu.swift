@@ -878,7 +878,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     // Delete & clear item visibility
     deleteItem?.isVisible = haveQueueItems || haveHistoryItems || haveBatchItems
-    clearItem?.isVisible = haveQueueItems || history.isLastBatchEmpty || (useHistory && haveHistoryItems)
+    clearItem?.isVisible = haveQueueItems || !history.isLastBatchEmpty || (useHistory && haveHistoryItems)
     
     // after deleting all queue items, deleteItem is explicitly hidden, noteItem left visible,
     // yet the menu draws with note blurb missing and "Delete Clipboard Item" showing. an OS bug?

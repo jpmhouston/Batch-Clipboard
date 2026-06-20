@@ -95,8 +95,7 @@ class AppModel: NSObject {
   internal var queue: ClipboardQueue!
   internal var stack: ClipboardStack!
   internal var copyTimeoutTimer: DispatchSourceTimer?
-  internal var hideMenuPollingTimer: DispatchSourceTimer?
-  internal var hideMenuOnNextIteration = false
+  internal var appStateTimer: DispatchSourceTimer?
   
   internal var settingsWindowOpen = false
   internal var settingsFirstOpen = true
@@ -243,18 +242,24 @@ class AppModel: NSObject {
     }
     
     if !UserDefaults.standard.completedIntro {
+      ensureMenuIconVisible()
       showIntro(self)
-      ensureMenuIconVisible(pollingForWindowsToClose: true)
     } else if !hasAccessibilityPermissionBeenGranted() {
+      #if DEBUG && BYPASS_AUTH_PAGE
+      openSecurityPanel() // debug code doesn't open window we just have to then close
+      #else
+      ensureMenuIconVisible()
       showIntroAtPermissionPage()
-      ensureMenuIconVisible(pollingForWindowsToClose: true)
+      #endif
     } else if UserDefaults.standard.keepHistoryChoicePending {
       // expect user migrating from 1.0 won't fall into cases above, get here & really see this page   
+      ensureMenuIconVisible()
       showIntroAtHistoryUpdatePage()
-      ensureMenuIconVisible(pollingForWindowsToClose: true)
-    } else {
-      letMenuIconAutoHide()
     }
+    
+    // hide app returning focus to the user's application once no window or alerts are showing
+    // and hide the menu bar after a delay if the user has that feature on
+    startPollingToReturnFocus() 
     
     // this instantiates the settings window, but it's not initially visible
     settingsWindowController.window?.collectionBehavior.formUnion(.moveToActiveSpace)
@@ -272,9 +277,13 @@ class AppModel: NSObject {
     keepHistoryObserver?.invalidate()
     keepHistoryObserver2?.invalidate()
     menuHidingObserver?.invalidate()
+    
     removeNotificationObserver(&settingsClosedObserver)
     removeNotificationObserver(&introClosedObserver)
     removeNotificationObserver(&licensesClosedObserver)
+    
+    appStateTimer?.cancel()
+    appStateTimer = nil
     
     menuIcon.cancelBlinkTimer()
     #if APP_STORE
@@ -292,7 +301,8 @@ class AppModel: NSObject {
     // when app switched to the foreground enure the menu is made visible then switch back to the
     // previously frontmost app
     // (if icon indeed dbl-clicked then wasReopened below will be called **either beofre or after**)
-    ensureMenuIconVisible(pollingForWindowsToClose: true)
+    ensureMenuIconVisible()
+    startPollingToReturnFocus()
     
     // sometimes when wasReopened below opened settings window the app would still end up hidden
     // some kind of race between takeFocus activating app and returnFocus hiding it :/
@@ -307,14 +317,14 @@ class AppModel: NSObject {
     // when app icon dbl-clicked or clicked in dock, optionally open settings if shift pressed or
     // start queue if that option is set (wasActvated may have already been called to reveal the
     // potentially hidden menu icon, or may even be called afterward .. must behave well in any case and any order)
-    ensureMenuIconVisible(pollingForWindowsToClose: true) // in case wasActvated not called, maybe not needed 
+    ensureMenuIconVisible() // in case wasActvated not called, maybe not needed 
+    startPollingToReturnFocus()
     
     let modifierFlags = NSEvent.modifierFlags
     let modifierPressed = modifierFlags.contains(.shift) || modifierFlags.contains(.option)
     if UserDefaults.standard.relaunchingStartsBatch && !modifierPressed {
       // although if that setting is on, start queue mode instead
       startQueueMode() // assume this short-circuits nicely if queue already started
-      stopPollingToRehideMenuIcon()
     } else if modifierPressed {
       showSettings(selectingPane: .general)
     } else {
@@ -323,7 +333,6 @@ class AppModel: NSObject {
   }
   
   internal func applyShowInDockSetting() {
-    //showsInDock = UserDefaults.standard.showsInDock
     NSApp.setActivationPolicy(UserDefaults.standard.showsInDock ? .regular : .accessory)
   }
   
@@ -332,7 +341,7 @@ class AppModel: NSObject {
       Self.returnFocusToPreviousApp = false
     } else {
       if !UserDefaults.standard.avoidTakingFocus {
-        NSApp.activate(ignoringOtherApps: true)
+        NSRunningApplication.current.activate(options: [.activateIgnoringOtherApps])
       }
     }
   }
@@ -342,30 +351,23 @@ class AppModel: NSObject {
       Self.returnFocusToPreviousApp = true
     } else {
       if !UserDefaults.standard.avoidTakingFocus {
-        if AppModel.returnFocusToPreviousApp && !anyAppWindowsOpen() {
+        if AppModel.returnFocusToPreviousApp && !NSApp.isHidden && !anyAppWindowsOpen() {
           NSApp.hide(self)
         }
       }
     }
   }
   
-  internal func ensureMenuIconVisible(pollingForWindowsToClose poll: Bool = false) {
+  internal func ensureMenuIconVisible() {
     if !menuIcon.isVisible {
       menuIcon.isVisible = true
-    }
-    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive {
-      if poll {
-        startPollingToRehideMenuIcon()
-      } else {
-        stopPollingToRehideMenuIcon()
-      }
     }
   }
   
   internal func letMenuIconAutoHide() {
-    if Self.allowMenuHiding && UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState {
-      startPollingToRehideMenuIcon()
-    }
+    // go through this to return focus if needed, but when this called its presumed we takeFocus hasn't
+    // been used, but this is the entry point to the timers that both return focus and hide the menu
+    startPollingToReturnFocus()
   }
   
   private func anyAppWindowsOpen() -> Bool {
@@ -375,8 +377,9 @@ class AppModel: NSObject {
     //  return NSApp.windows.filter { $0.isVisible && $0.className != NSApp.statusBarWindow?.className }
     // Trying to engineer each window to get removed from the NSApp.windows when they're closed didn't work.
     // Now track our windows being opened & closed manually (alerts we don't need to worry about, each are modal)
-    menu.isOpen || settingsWindowOpen || introWindowOpen || licensesWindowOpen
-    // menu @menu.isOpen@, settings @settingsWindowOpen@, intro @introWindowOpen@, licenses @licensesWindowOpen@
+    // Edit: needed to add another conf to detect open alerts, hopefully `keyWindow != nil` being true does this.
+    menu.isOpen || settingsWindowOpen || introWindowOpen || licensesWindowOpen || NSApp.keyWindow != nil
+    // keywindow @NSApp.keyWindow@, menu @menu.isOpen@, settings @settingsWindowOpen@, intro @introWindowOpen@, licenses @licensesWindowOpen@
   }
   
   internal func settingsWindowWasOpened() {
@@ -715,7 +718,7 @@ class AppModel: NSObject {
   
   #endif // APP_STORE
   
-  // MARK: - observations
+  // MARK: - timers & observations
   
   // Non-history items in the cleepp menu are defined in a nib file instead of programmatically
   // (the best code is no code), action methods for those items now live in this class,
@@ -727,6 +730,55 @@ class AppModel: NSObject {
     // this is when there are items in history even though the v2.0 keep-history settings
     // are at their defaults that indicate it should be empty
     return history.count > 0 && !UserDefaults.standard.keepHistory && !UserDefaults.standard.saveClipsAcrossDisabledHistory
+  }
+  
+  internal func startPollingToReturnFocus() {
+    // (also to re-hide the menubar menu) this should be called after the app is activated or reopened
+    // or when window opened to balance a takeFocus call
+    // expect polling timer to be running anytime a windows or the menu are open
+    if appStateTimer != nil {
+      appStateTimer?.cancel()
+      appStateTimer = nil
+    }
+    guard !NSApp.isHidden || (UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState) else {
+      return
+    }
+    
+    appStateTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 0.01, interval: 0.25) { [weak self] in
+      guard let self = self else { return false }
+      if anyAppWindowsOpen() {
+        return true // continue polling
+      }
+      if !NSApp.isHidden {
+        returnFocus()
+      }
+      
+      // end polling. optionally start menu hiding timer in its place
+      appStateTimer = nil
+      if UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState {
+        startHideMenuTimer()
+      }
+      return false
+    }
+  }
+  
+  private func startHideMenuTimer() {
+    guard UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState else {
+      return
+    }
+    // use the same timer var to ensure only one of this + the above recurring timers are on at once
+    // if queue noticed to have started when this timer ends, timer must be restarted when queue finishes
+    // (perhaps instead have a dedicated timer for this one, one that ensureMenuIconVisible can cancel?)
+    appStateTimer = DispatchSource.scheduledTimerForRunningOnMainQueue(afterDelay: 8) { [weak self] in
+      guard let self = self else { return }
+      appStateTimer = nil
+      
+      // i think if this timer fires as other code opens a window, then anyAppWindowsOpen should be true
+      // in which case we want to let this timer end wihtout hiding the menu
+      if UserDefaults.standard.menuHiddenWhenInactive && menuIcon.isVisible && inOffState && !anyAppWindowsOpen() {
+        menuIcon.isVisible = false
+      }
+    }
   }
   
   private func updateMenuIconEnabledness() {
@@ -782,35 +834,6 @@ class AppModel: NSObject {
     }
   }
   
-  private func startPollingToRehideMenuIcon() {
-    guard hideMenuPollingTimer == nil else { 
-      return // rather than restarting time if called a second time, if already running then leave it
-    }
-    // this polling timer should be running while one of our windows or the menu are open
-    // if queue started then the timer ends, polling must be restarted once it finishes
-    hideMenuOnNextIteration = false // this flag used to ensure 1 full N-second polling loop occurs after exit condition met
-    hideMenuPollingTimer = DispatchSource.scheduledTimerForRunningOnMainQueueRepeated(afterDelay: 4, interval: 4) { [weak self] in
-      guard let self = self else { return false }
-      if !UserDefaults.standard.menuHiddenWhenInactive || !menuIcon.isVisible || !inOffState { // ie. is timer now moot
-        hideMenuPollingTimer = nil
-        return false
-      }
-      let shouldHideMenu = !anyAppWindowsOpen()
-      if shouldHideMenu && hideMenuOnNextIteration {
-        menuIcon.isVisible = false
-        hideMenuPollingTimer = nil
-        return false
-      }
-      hideMenuOnNextIteration = shouldHideMenu
-      return true // continue repeating
-    }
-  }
-  
-  private func stopPollingToRehideMenuIcon() {
-    hideMenuPollingTimer?.cancel()
-    hideMenuPollingTimer = nil
-  }
-  
   private func menuIconWasRemoved() {
     // if hiding the icon is an allowed feature, then when the user drags-removes the
     // menu icon, act like turning the "hide" setting on. if not allowed act like quit
@@ -820,8 +843,6 @@ class AppModel: NSObject {
     } else if UserDefaults.standard.menuHiddenWhenInactive == false {
       UserDefaults.standard.menuHiddenWhenInactive = true
     }
-    
-    stopPollingToRehideMenuIcon() // if this timer was on, it's no longer needed
   }
   
   // swiftlint:disable cyclomatic_complexity
@@ -896,11 +917,8 @@ class AppModel: NSObject {
       // turning setting on (hide) first starts polling to wait until all of the app's
       // windows are closed, but turning setting off makes menu visislbe immediately
       guard let self = self, let newValue = change.newValue, Self.allowMenuHiding else { return }
-      if newValue == true && menuIcon.isVisible {
-        startPollingToRehideMenuIcon()
-      } else if newValue == false && !menuIcon.isVisible {
+      if newValue == false && !menuIcon.isVisible {
         menuIcon.isVisible = true
-        stopPollingToRehideMenuIcon()
       }
     }
     showsInDockObserver = UserDefaults.standard.observe(\.showsInDock, options: .new) { [weak self] _, _ in

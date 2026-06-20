@@ -430,6 +430,10 @@ extension AppModel {
     ensureMenuIconVisible()
     menuIcon.update(forQueueSize: 0)
     
+    // TODO: investigate why clipboard.isEmpty can return true when clipboard seemingly not empty
+    // according to the finder, saw `pasteboardItem.types` returned empty
+    // maybe omit `&& !clipboard.isEmpty` below, which i think is buggy and not used anywhere else anyway
+    
     if addCurrentClip && !clipboard.isEmpty, let clip = clipboard.newClipFromCurrent() {
       do {
         try queue.add(clip)
@@ -1334,7 +1338,8 @@ extension AppModel {
     if !interactive || UserDefaults.standard.suppressClearAlert {
       deleteClips(clipboardIncluded: clipboardIncluded)
     } else {
-      showClearHistoryAlert() { [weak self] in
+      let count = AppModel.allowSavedBatches ? history.batches.count : 0
+      showClearHistoryAlert(withSavedBatchCount: count) { [weak self] in
         self?.deleteClips(clipboardIncluded: clipboardIncluded)
       }
     }
@@ -1380,31 +1385,40 @@ extension AppModel {
     }
     settingsWindowController.window?.orderFrontRegardless()
     settingsWindowWasOpened()
+    startPollingToReturnFocus()
   }
   
   @IBAction
   func showIntro(_ sender: AnyObject) {
     takeFocus()
+    ensureMenuIconVisible()
     introWindowController.openIntro(with: self)
     introWindowWasOpened()
+    startPollingToReturnFocus()
   }
   
   func showIntroAtPermissionPage() {    
     takeFocus()
+    ensureMenuIconVisible()
     introWindowController.openIntro(atPage: .checkAuth, with: self)
     introWindowWasOpened()
+    startPollingToReturnFocus()
   }
   
   func showIntroAtHistoryUpdatePage() {
     takeFocus()
+    ensureMenuIconVisible()
     introWindowController.openIntro(atPage: .historyChoice, with: self)
     introWindowWasOpened()
+    startPollingToReturnFocus()
   }
   
   func showLicenses() {
     takeFocus()
+    ensureMenuIconVisible()
     licensesWindowController.openLicenses()
     licensesWindowWasOpened()
+    startPollingToReturnFocus()
   }
   
   func openSecurityPanel() {
@@ -1468,10 +1482,10 @@ extension AppModel {
     } 
   }
   
-  private func showClearHistoryAlert(_ completion: @escaping () -> Void) {
+  private func showClearHistoryAlert(withSavedBatchCount count: Int, _ completion: @escaping () -> Void) {
     takeFocus()
     
-    alerts.withClearAlert() { [weak self] confirm, dontAskAgain in
+    alerts.withClearAlert(savedBatchCount: count) { [weak self] confirm, dontAskAgain in
       guard let self = self else { return }
       if confirm {
         completion()
@@ -1584,7 +1598,6 @@ extension AppModel {
         case .openSettings:
           self?.openSecurityPanel()
         case .openIntro:
-          self?.ensureMenuIconVisible(pollingForWindowsToClose: true)
           self?.showIntroAtPermissionPage()
         default:
           break

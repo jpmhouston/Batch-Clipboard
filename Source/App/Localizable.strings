@@ -25,6 +25,8 @@
 "accessibility_alert_open" = "Open System Preferences";
 "clear_alert_message" = "Are you sure you want to clear the history?";
 "clear_alert_comment" = "You can't undo this action.";
+"clear_alert_comment_2s" = "This includes all stored clips except for saved batches. Your 1 saved batch will not be deleted. You can't undo this action.";
+"clear_alert_comment_2" = "This includes all stored clips except for saved batches. Your {number} saved batches will not be deleted. You can't undo this action.";
 "clear_alert_cancel" = "Cancel";
 "clear_alert_confirm" = "Clear";
 "key_used_error" = "Key is already used.";
