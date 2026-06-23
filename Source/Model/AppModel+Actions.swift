@@ -430,11 +430,7 @@ extension AppModel {
     ensureMenuIconVisible()
     menuIcon.update(forQueueSize: 0)
     
-    // TODO: investigate why clipboard.isEmpty can return true when clipboard seemingly not empty
-    // according to the finder, saw `pasteboardItem.types` returned empty
-    // maybe omit `&& !clipboard.isEmpty` below, which i think is buggy and not used anywhere else anyway
-    
-    if addCurrentClip && !clipboard.isEmpty, let clip = clipboard.newClipFromCurrent() {
+    if addCurrentClip, let clip = clipboard.newClipFromCurrent() {
       do {
         try queue.add(clip)
         menu.addedClipToQueue(clip)

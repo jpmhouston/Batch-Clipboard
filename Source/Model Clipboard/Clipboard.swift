@@ -325,14 +325,14 @@ class Clipboard: CustomDebugStringConvertible {
     return clip.contentsEqual(currentContents())
   }
   
-  var isEmpty: Bool {
-    for item in pasteboard.pasteboardItems ?? [] {
-      if !filteredItemsTypes(for: item).isEmpty {
-        return true
-      }
-    }
-    return false
-  }
+//  var isEmpty: Bool {
+//    for item in pasteboard.pasteboardItems ?? [] {
+//      if !filteredItemsTypes(for: item).isEmpty {
+//        return true
+//      }
+//    }
+//    return false
+//  }
   
   // MARK: -
   
