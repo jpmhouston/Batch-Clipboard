@@ -32,13 +32,13 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="528" height="695"/>
+            <rect key="frame" x="0.0" y="0.0" width="528" height="709"/>
             <subviews>
                 <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="16" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0K5-5P-D6I">
-                    <rect key="frame" x="20" y="20" width="488" height="655"/>
+                    <rect key="frame" x="20" y="20" width="488" height="669"/>
                     <subviews>
                         <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mOE-Th-WLC">
-                            <rect key="frame" x="0.0" y="639" width="115" height="16"/>
+                            <rect key="frame" x="0.0" y="653" width="115" height="16"/>
                             <buttonCell key="cell" type="check" title="Launch at login" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Cfl-qm-UkM">
                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -48,7 +48,7 @@
                             </connections>
                         </button>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
-                            <rect key="frame" x="0.0" y="551" width="488" height="72"/>
+                            <rect key="frame" x="0.0" y="565" width="488" height="72"/>
                             <subviews>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
                                     <rect key="frame" x="-2" y="30" width="492" height="42"/>
@@ -83,7 +83,7 @@
                             </customSpacing>
                         </stackView>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iDZ-rJ-xSU">
-                            <rect key="frame" x="0.0" y="463" width="218" height="72"/>
+                            <rect key="frame" x="0.0" y="477" width="218" height="72"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Mxc-Pf-Ef9">
                                     <rect key="frame" x="0.0" y="56" width="218" height="16"/>
@@ -140,14 +140,14 @@
                             </customSpacing>
                         </stackView>
                         <box horizontalHuggingPriority="251" verticalHuggingPriority="700" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iu8-fy-LMA">
-                            <rect key="frame" x="0.0" y="444" width="488" height="5"/>
+                            <rect key="frame" x="0.0" y="458" width="488" height="5"/>
                         </box>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uSs-0A-Zux">
-                            <rect key="frame" x="0.0" y="164" width="488" height="266"/>
+                            <rect key="frame" x="0.0" y="164" width="488" height="280"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OBF-sn-fha">
-                                    <rect key="frame" x="0.0" y="250" width="198" height="16"/>
-                                    <buttonCell key="cell" type="check" title="Always show in the menu bar" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NfH-5K-dzl">
+                                    <rect key="frame" x="0.0" y="264" width="246" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Hide Menu Bar Icon When Not in Use" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NfH-5K-dzl">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -156,10 +156,10 @@
                                     </connections>
                                 </button>
                                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gFw-S5-5kX">
-                                    <rect key="frame" x="-2" y="200" width="492" height="42"/>
+                                    <rect key="frame" x="-2" y="200" width="492" height="56"/>
                                     <textFieldCell key="cell" id="aQA-uj-3x2">
                                         <font key="font" metaFont="smallSystem"/>
-                                        <string key="title">Turn this off to hide the menu bar icon when Batch Clipboard is not in use. The menu bar icon and the count beside it will un-hide once you start copying a batch and until it is all pasted. You may wish to turn this off if you only use the keyboard shortcuts.</string>
+                                        <string key="title">Turn this on to make Batch Clipboard menu bar icon hidden when using the clipboard normally. The menu bar icon and the count beside it will appear once you start copying a batch and until it is all pasted. You may wamt this to save menu bar space if you only use the keyboard shortcuts.</string>
                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>

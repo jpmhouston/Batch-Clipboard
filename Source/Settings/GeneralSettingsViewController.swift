@@ -140,7 +140,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   private func populateMenuHiding() {
     let hideMenu = UserDefaults.standard.menuHiddenWhenInactive
-    menuHidingCheckbox.state = hideMenu ? .off : .on
+    menuHidingCheckbox.state = hideMenu ? .on : .off
   }
   
   private func populateDockOptions() {
@@ -213,7 +213,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   }
   
   @IBAction func menuHidingChanged(_ sender: NSButton) {
-    UserDefaults.standard.menuHiddenWhenInactive = (sender.state == .off)
+    UserDefaults.standard.menuHiddenWhenInactive = (sender.state == .on)
     showMenuHidingLabels()
   }
   

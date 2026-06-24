@@ -1790,36 +1790,6 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
-            <Locations>
-               <Location
-                  uuid = "885B17FA-E981-4A35-A1B0-AC93D4B719E3 - 1bdc1459abe67370"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntro(Swift.AnyObject) -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1397"
-                  endingLineNumber = "1397">
-               </Location>
-               <Location
-                  uuid = "885B17FA-E981-4A35-A1B0-AC93D4B719E3 - 1bdc1459abe672f4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntro(Swift.AnyObject) -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1393"
-                  endingLineNumber = "1393">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1845,36 +1815,6 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
-            <Locations>
-               <Location
-                  uuid = "1C022ED0-3F83-49DE-BC32-126AD7E42126 - eac6a6cd5206ffcc"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntroAtPermissionPage() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1405"
-                  endingLineNumber = "1405">
-               </Location>
-               <Location
-                  uuid = "1C022ED0-3F83-49DE-BC32-126AD7E42126 - eac6a6cd5206fc48"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntroAtPermissionPage() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1401"
-                  endingLineNumber = "1401">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1900,36 +1840,6 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
-            <Locations>
-               <Location
-                  uuid = "6595D630-63C2-43A7-9340-433687CB859A - 57f9803bccaee439"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntroAtHistoryUpdatePage() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1413"
-                  endingLineNumber = "1413">
-               </Location>
-               <Location
-                  uuid = "6595D630-63C2-43A7-9340-433687CB859A - 57f9803bccaee5bd"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showIntroAtHistoryUpdatePage() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1409"
-                  endingLineNumber = "1409">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1955,36 +1865,6 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
-            <Locations>
-               <Location
-                  uuid = "0291B815-CA98-425D-A85D-9FB5AF187C41 - 1ac190c66aa222ac"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showLicenses() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1421"
-                  endingLineNumber = "1421">
-               </Location>
-               <Location
-                  uuid = "0291B815-CA98-425D-A85D-9FB5AF187C41 - 1ac190c66aa22d28"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showLicenses() -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1417"
-                  endingLineNumber = "1417">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2010,36 +1890,6 @@
                   </ActionContent>
                </BreakpointActionProxy>
             </Actions>
-            <Locations>
-               <Location
-                  uuid = "87BB6480-AFD4-4F96-A21E-739375DA57C5 - 16ccf18a2fdecc87"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showSettings(selectingPane: Swift.Optional&lt;Settings.Settings.PaneIdentifier&gt;) -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1388"
-                  endingLineNumber = "1388">
-               </Location>
-               <Location
-                  uuid = "87BB6480-AFD4-4F96-A21E-739375DA57C5 - 16ccf18a2fdecb0b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Batch_Clipboard__MAS_.AppModel.showSettings(selectingPane: Swift.Optional&lt;Settings.Settings.PaneIdentifier&gt;) -&gt; ()"
-                  moduleName = "Batch Clipboard (MAS).debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pierre/Code/BML/Clipboard/Batch%20Clipboard/Source/Model/AppModel+Actions.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1384"
-                  endingLineNumber = "1384">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
