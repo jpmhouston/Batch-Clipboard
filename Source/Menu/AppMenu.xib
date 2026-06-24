@@ -72,8 +72,8 @@
                         <action selector="startQueueMode:" target="-2" id="MbC-Ui-kST"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Start Batch with Clipboard" hidden="YES" id="Chm-WI-ac6">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="Start Batch with Clipboard" alternate="YES" id="Chm-WI-ac6">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="startQueueModeWithCurrentClip:" target="-2" id="tzz-Cc-UD4"/>
                     </connections>
@@ -90,6 +90,12 @@
                         <action selector="startReplay:" target="-2" id="meN-9w-5Wi"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Skip to Next" hidden="YES" id="TLY-ku-V0E">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="advanceQueue:" target="-2" id="Bb4-sn-Nnk"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Copy Into Batch" id="ieX-in-c9O">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -100,12 +106,6 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="queuedPaste:" target="-2" id="Dd4-CN-zGU"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Skip to Next" hidden="YES" id="TLY-ku-V0E">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="advanceQueue:" target="-2" id="Bb4-sn-Nnk"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Paste Multiple…" id="4b4-xr-zN6">

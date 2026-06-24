@@ -794,12 +794,12 @@ class AppMenu: NSMenu, NSMenuDelegate {
     queueStartItem?.isEnabled = notBusy && !queueOn // although expect to get hidden if invalid
     queueStartWithCurrentItem?.isEnabled = notBusy && !queueOn
     queueReplayItem?.isEnabled = notBusy && !queueEmpty && !queue.isReplaying
+    queueAdvanceItem?.isEnabled = notBusy && !queueEmpty && queue.isReplaying
     queueStopItem?.isEnabled = notBusy && queueOn
     queuedCopyItem?.isEnabled = notBusy
     queuedPasteItem?.isEnabled = notBusy && !queueEmpty
     queuedPasteMultipleItem?.isEnabled = notBusy && !queueEmpty
     queuedPasteAllItem?.isEnabled = notBusy && !queueEmpty
-    queueAdvanceItem?.isEnabled = notBusy && !queueEmpty
     replayLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // although expect to get hidden if queue on
     saveLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // and expect these two save items to get
     saveCurrentBatchItem?.isEnabled = notBusy && !batchEmpty && queueOn // ...hidden if not allowed
@@ -825,8 +825,8 @@ class AppMenu: NSMenu, NSMenuDelegate {
     // Show start vs replay menu item, and cancel, advance
     queueStartItem?.isVisible = !queueOn
     queueStopItem?.isVisible = queueOn
-    queueReplayItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems
-    queueAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems
+    queueReplayItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && !(queueOn && queue.isReplaying)
+    queueAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && (queueOn && queue.isReplaying)
     
     // optionally make "start with current clip" an alternate
     if !queueOn, let queueStartKey = queueStartItem?.keyEquivalent, let queueStartWCKey = queueStartWithCurrentItem?.keyEquivalent {
