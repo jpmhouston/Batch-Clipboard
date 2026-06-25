@@ -6,6 +6,34 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3b6</title>
+            <pubDate>Thu, 25 Jun 2026 14:43:37 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2134</sparkle:version>
+            <sparkle:shortVersionString>2.3b6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>Added a dock menu for when the application’s dock icon is turned on
+in the Settings (still not the default).</li>
+<li>Fixed alerts sometimes opening behind other applications’
+windows.</li>
+<li>Improved reliability of returning the user’s application and window
+to be frontmost after using Batch Clipboard menu items or Settings
+window.</li>
+<li>Fixed reliabiity of starting a batch using the current clipboard
+item.</li>
+<li>Simplified menu when advanced paste items are shown using the
+checkbox in the Advanced tab of the Settings window. “Skip to Next” and
+“Start Pasting From Batch” are now one context sensitive menu item.</li>
+<li>The menu hiding checkbox in the Settings window is now “Hide menu
+bar icon when app not in use”, inverse of what the checkbox was before
+“Always show menu bar icon”.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3b6/Batch.Clipboard.2.3b6.zip" length="7307768" type="application/octet-stream" sparkle:edSignature="rairdj7IjBUh70OlXj6znDNlDH3cNTNWpm9kiAO1Rus70B2J1335VR9bS6TOCI/0zMymKjwhZXjVpivYzaMzAQ=="/>
+        </item>
+        <item>
             <title>2.3b5</title>
             <pubDate>Thu, 18 Jun 2026 03:57:40 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
