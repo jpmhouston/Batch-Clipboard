@@ -74,6 +74,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     CoreDataManager.shared.saveContext()
   }
   
+  func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+    return model.dockMenu
+  }
+  
   @available(macOS 11.0, *)
   func application(_ application: NSApplication, handlerFor intent: INIntent) -> Any? {
     os_log(.default, "intent %@", String(describing: type(of: intent)))

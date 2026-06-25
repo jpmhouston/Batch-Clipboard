@@ -107,6 +107,14 @@ class AppMenu: NSMenu, NSMenuDelegate {
     guard let firstIndex = firstBatchItemIndex, let postIndex = postBatchesItemIndex else { return 0 }
     return postIndex - firstIndex
   }
+  private var postDockBatchesItem: NSMenuItem? { dockBatchesSeparatorItem }
+  private var firstDockBatchItem: NSMenuItem? { dockMenu?.safeItem(at: firstDockBatchItemIndex) } // result might be postDockBatchesItem
+  private var firstDockBatchItemIndex: Int? { 0 }
+  private var postDockBatchesItemIndex: Int? { dockMenu?.safeIndex(of: postDockBatchesItem) }
+  private var dockBatchItemCount: Int {
+    guard let firstIndex = firstDockBatchItemIndex, let postIndex = postDockBatchesItemIndex else { return 0 }
+    return postIndex - firstIndex
+  }
   
   @IBOutlet weak var aboutItem: NSMenuItem?
   @IBOutlet weak var showIntroItem: NSMenuItem?
@@ -142,6 +150,22 @@ class AppMenu: NSMenu, NSMenuDelegate {
   @IBOutlet weak var undoCopyItem: NSMenuItem?
   @IBOutlet weak var settingsItem: NSMenuItem?
   @IBOutlet weak var quitItem: NSMenuItem?
+  
+  @IBOutlet var dockMenu: NSMenu?
+  @IBOutlet weak var dockStartItem: NSMenuItem?
+  @IBOutlet weak var dockStopItem: NSMenuItem?
+  @IBOutlet weak var dockStartWithCurrentItem: NSMenuItem?
+  @IBOutlet weak var dockReplayItem: NSMenuItem?
+  @IBOutlet weak var dockCopyItem: NSMenuItem?
+  @IBOutlet weak var dockPasteItem: NSMenuItem?
+  @IBOutlet weak var dockAdvanceItem: NSMenuItem?
+  @IBOutlet weak var dockPasteMultipleItem: NSMenuItem?
+  @IBOutlet weak var dockdPasteAllItem: NSMenuItem?
+  @IBOutlet weak var dockReplayLastBatchItem: NSMenuItem?
+  @IBOutlet weak var dockSaveLastBatchItem: NSMenuItem?
+  @IBOutlet weak var dockSaveCurrentBatchItem: NSMenuItem?
+  @IBOutlet weak var dockBatchesSeparatorItem: NSMenuItem?
+  @IBOutlet weak var dockSettingsItem: NSMenuItem?
   
   // MARK: - lifecycle, overrides, delegate methods
   
@@ -227,7 +251,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  @available(macOS 11.0, *)
+  @available(macOS 26.0, *)
   func addTahoeItemIcons() {
     aboutItem?.image = NSImage(systemSymbolName: "info.bubble", accessibilityDescription: nil)
     showIntroItem?.image = NSImage(systemSymbolName: "info.bubble", accessibilityDescription: nil)
@@ -249,6 +273,14 @@ class AppMenu: NSMenu, NSMenuDelegate {
     undoCopyItem?.image = NSImage(systemSymbolName: "arrow.uturn.backward", accessibilityDescription: nil)
     settingsItem?.image = NSImage(systemSymbolName: "gear.circle", accessibilityDescription: nil)
     quitItem?.image = NSImage(systemSymbolName: "xmark.rectangle", accessibilityDescription: nil)
+    
+    dockStopItem?.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: nil)
+    dockCopyItem?.image = NSImage(systemSymbolName: "document.on.document", accessibilityDescription: nil)
+    dockPasteItem?.image = NSImage(systemSymbolName: "document.on.clipboard", accessibilityDescription: nil)
+    dockReplayLastBatchItem?.image = NSImage(systemSymbolName: "arrow.uturn.forward", accessibilityDescription: nil)
+    dockSaveLastBatchItem?.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)
+    dockSaveCurrentBatchItem?.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)
+    dockSettingsItem?.image = NSImage(systemSymbolName: "gear.circle", accessibilityDescription: nil)
   }
   
   func prepareForPopup() {
@@ -324,6 +356,11 @@ class AppMenu: NSMenu, NSMenuDelegate {
     
     prepareToOpen()
     previewController.menuWillOpen()
+  }
+  
+  func getDockMenu() -> NSMenu? {
+    updateDockItemStates()
+    return dockMenu
   }
   
   func prepareToOpen() {
@@ -438,6 +475,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     rebuildQueueItems()
     rebuildHistoryItems()
     rebuildBatchItems()
+    rebuildDockBatchItems()
   }
   
   private func insertTopAnchorItems() {
@@ -535,6 +573,11 @@ class AppMenu: NSMenu, NSMenuDelegate {
     buildBatchItems()
   }
   
+  private func rebuildDockBatchItems() {
+    clearDockBatchItems()
+    buildDockBatchItems()
+  }
+  
   private func buildBatchItems() {
     guard var batchInsertIndex = postBatchesItemIndex else {
       fatalError("can't find the place to insert batch menu items")
@@ -545,6 +588,21 @@ class AppMenu: NSMenu, NSMenuDelegate {
       
       addBatchSubmenuItems(forParentItem: menuItem, fromClips: batch.getClipsArray())
       safeInsertBatchItem(menuItem, at: batchInsertIndex)
+      
+      batchInsertIndex += 1
+    }
+  }
+  
+  private func buildDockBatchItems() {
+    guard var batchInsertIndex = postDockBatchesItemIndex else {
+      fatalError("can't find the place to insert dock menu batch items")
+    }
+    
+    for batch in history.batches {
+      guard let menuItem = buildBatchParentItem(forBatch: batch) else { continue }
+      
+      addMinimalBatchSubmenuItems(forParentItem: menuItem, fromClips: batch.getClipsArray())
+      dockMenu?.safeInsertItem(menuItem, at: batchInsertIndex)
       
       batchInsertIndex += 1
     }
@@ -644,6 +702,27 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
+  private func addMinimalBatchSubmenuItems(forParentItem parentBatchItem: NSMenuItem, fromClips clips: [Clip]) {
+    guard let batchMenuItem = parentBatchItem as? BatchMenuItem, let submenu = batchMenuItem.submenu else {
+      return
+    }
+    guard let protoCopyItem = protoCopyItem else {
+      return
+    }
+    
+    if useNaturalOrder {
+      for clip in clips.reversed() {
+        let menuItem = (protoCopyItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 1, of: 1)
+        submenu.insertItem(menuItem, at: submenu.numberOfItems)
+      }
+    } else {
+      for clip in clips {
+        let menuItem = (protoCopyItem.copy() as! ClipMenuItem).configured(withClip: clip, num: 1, of: 1)
+        submenu.insertItem(menuItem, at: submenu.numberOfItems)
+      }
+    }
+  }
+  
   private func clipItemAnchors(for clipItem: ClipMenuItem) -> (NSView, NSView)? {
     guard usePopoverAnchors else {
       return nil
@@ -683,7 +762,15 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     safeRemoveBatchItems(at: firstBatchIndex ..< postBatchesIndex) // note: these items are roots of submenus
   }
-
+  
+  private func clearDockBatchItems() {
+    guard let firstBatchIndex = firstDockBatchItemIndex, let postBatchesIndex = postDockBatchesItemIndex,
+          firstBatchIndex <= postBatchesIndex else {
+      fatalError("can't locate the dock menu batch items section")
+    }
+    dockMenu?.safeRemoveItems(at: firstBatchIndex ..< postBatchesIndex) // note: these items are roots of submenus
+  }
+  
   func iterateOverClipMenuItems(_ closure: (ClipMenuItem) -> Void) {
     iterateOverQueueClipMenuItems(closure)
     iterateOverHistoryClipMenuItems(closure)
@@ -749,11 +836,24 @@ class AppMenu: NSMenu, NSMenuDelegate {
     for index in firstBatchIndex ..< postBatchesIndex {
       if let menuItem = item(at: index) as? BatchMenuItem {
         let r = closure(menuItem)
-        if r as? Bool == false {
+        if r as? Bool == false || r as Any? == nil {
           return
         }
-        // wanted to also exit if T is any Optional equalling .none
-        // this compiles but doesn't work: `if case .none = r as Optional<Any>`
+      }
+    }
+  }
+  
+  func iterateOverDockBatchParentItems<T>(_ closure: (BatchMenuItem) -> T) {
+    guard let firstBatchIndex = firstDockBatchItemIndex, let postBatchesIndex = postDockBatchesItemIndex,
+          firstBatchIndex <= postBatchesIndex else {
+      fatalError("can't locate the dock menu batch items section")
+    }
+    for index in firstBatchIndex ..< postBatchesIndex {
+      if let menuItem = dockMenu?.item(at: index) as? BatchMenuItem {
+        let r = closure(menuItem)
+        if r as? Bool == false || r as Any? == nil {
+          return
+        }
       }
     }
   }
@@ -780,54 +880,51 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   private func updateMenuItemStates() {
-    updateDisabledStaticItems()
-    updateStaticItemVisibility()
-    updateDynamicItemVisibility()
+    updateStaticItemStates()
+    updateQueueClipItemVisibility()
+    updateHistoryClipItemVisibility()
+    updateBatchItemVisibility()
   }
   
-  private func updateDisabledStaticItems() {
+  private func updateDockItemStates() {
+    updateStaticDockItemStates()
+    updateDockBatchItemVisibility()
+  }
+  
+  private func updateStaticItemStates() {
     let notBusy = !AppModel.busy
-    let queueOn = queue.isOn
-    let queueEmpty = queue.isEmpty
-    let batchEmpty = history.isLastBatchEmpty
-    
-    queueStartItem?.isEnabled = notBusy && !queueOn // although expect to get hidden if invalid
-    queueStartWithCurrentItem?.isEnabled = notBusy && !queueOn
-    queueReplayItem?.isEnabled = notBusy && !queueEmpty && !queue.isReplaying
-    queueAdvanceItem?.isEnabled = notBusy && !queueEmpty && queue.isReplaying
-    queueStopItem?.isEnabled = notBusy && queueOn
-    queuedCopyItem?.isEnabled = notBusy
-    queuedPasteItem?.isEnabled = notBusy && !queueEmpty
-    queuedPasteMultipleItem?.isEnabled = notBusy && !queueEmpty
-    queuedPasteAllItem?.isEnabled = notBusy && !queueEmpty
-    replayLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // although expect to get hidden if queue on
-    saveLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn // and expect these two save items to get
-    saveCurrentBatchItem?.isEnabled = notBusy && !batchEmpty && queueOn // ...hidden if not allowed
-    
-    clearItem?.isEnabled = notBusy
-    undoCopyItem?.isEnabled = notBusy
-    
-    deleteItem?.isEnabled = false // until programmatically enabled later as items are highlighted
-  }
-  
-  private func updateStaticItemVisibility() {
     let promoteExtras = AppModel.allowPurchases && !AppModel.hasBoughtExtras &&
                         UserDefaults.standard.promoteExtras && Self.badgedMenuItemsSupported
     let queueOn = queue.isOn
     let queueEmpty = queue.isEmpty
+    let batchEmpty = history.isLastBatchEmpty
     let haveQueueItems = !queueEmpty
     let haveHistoryItems = showsExpandedMenu // never set when historyItemCount == 0 or keepHistory false
     let haveBatchItems = showsSavedBatches && batchItemCount > 0 
     
-    // Update available item
-    updateAvailableItem?.isHidden = !showsUpdateAvailable
+    // Simple mostly available items
+    aboutItem?.isEnabled = notBusy
+    showIntroItem?.isEnabled = notBusy
+    settingsItem?.isEnabled = notBusy
     
-    // Show start vs replay menu item, and cancel, advance
-    queueStartItem?.isVisible = !queueOn
+    updateAvailableItem?.isVisible = showsUpdateAvailable
+    updateAvailableItem?.isEnabled = notBusy
+    
     queueStopItem?.isVisible = queueOn
+    queueStopItem?.isEnabled = notBusy
+    
+    queuedCopyItem?.isEnabled = notBusy
+    queuedPasteItem?.isEnabled = notBusy && !queueEmpty
+    
     queueReplayItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && !(queueOn && queue.isReplaying)
     queueAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && (queueOn && queue.isReplaying)
+    queueReplayItem?.isEnabled = notBusy && !queueEmpty
+    queueAdvanceItem?.isEnabled = notBusy
     
+    // Start / start with current potentially have key equivalents, affecting whether can be the latter can be an alternate
+    queueStartItem?.isVisible = !queueOn
+    queueStartItem?.isEnabled = notBusy
+    queueStartWithCurrentItem?.isEnabled = notBusy
     // optionally make "start with current clip" an alternate
     if !queueOn, let queueStartKey = queueStartItem?.keyEquivalent, let queueStartWCKey = queueStartWithCurrentItem?.keyEquivalent {
       if queueStartKey.isEmpty && queueStartWCKey.isEmpty { // if no key shortcut for either, make it an alternate using the option key
@@ -843,9 +940,14 @@ class AppMenu: NSMenu, NSMenuDelegate {
       queueStartWithCurrentItem?.isVisibleAlternate = false // only show "start", both should be disabled anyway
     }
     
+    // Replay / save batches
     replayLastBatchItem?.isVisible = AppModel.allowLastBatch || promoteExtras
-    saveLastBatchItem?.isVisible = !queueOn && (AppModel.allowSavedBatches || promoteExtras)
-    saveCurrentBatchItem?.isVisible = queueOn && (AppModel.allowSavedBatches || promoteExtras)
+    saveLastBatchItem?.isVisible = (AppModel.allowSavedBatches || promoteExtras) && !queueOn
+    saveCurrentBatchItem?.isVisible = (AppModel.allowSavedBatches || promoteExtras) && queueOn
+    replayLastBatchItem?.isEnabled = notBusy && !batchEmpty && !queueOn
+    saveLastBatchItem?.isEnabled = notBusy && !batchEmpty
+    saveCurrentBatchItem?.isEnabled = notBusy && !batchEmpty
+    // optionally show promo badges
     if !AppModel.allowLastBatch && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       replayLastBatchItem?.badge = bedge
       swapKeyEquivalent(for: replayLastBatchItem, to: &cacheReplayBatchItemShortcut)
@@ -860,6 +962,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
     // More extra features to hide when not purchased
     queuedPasteMultipleItem?.isVisible = AppModel.allowPasteMultiple || promoteExtras
     queuedPasteAllItem?.isVisibleAlternate = AppModel.allowPasteMultiple || promoteExtras
+    queuedPasteMultipleItem?.isEnabled = notBusy && !queueEmpty
+    queuedPasteAllItem?.isEnabled = notBusy && !queueEmpty
+    // optionally show promo badges
     if !AppModel.allowPasteMultiple && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       queuedPasteMultipleItem?.badge = bedge
       queuedPasteAllItem?.badge = bedge
@@ -869,6 +974,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
     
     undoCopyItem?.isVisible = useHistory && (AppModel.allowUndoCopy || promoteExtras)
+    undoCopyItem?.isEnabled = notBusy
     if !AppModel.allowUndoCopy && promoteExtras, #available(macOS 14, *), let bedge = promoteExtrasBadge as? NSMenuItemBadge {
       undoCopyItem?.badge = bedge
       swapKeyEquivalent(for: undoCopyItem, to: &cacheUndoCopyItemShortcut)
@@ -876,19 +982,59 @@ class AppMenu: NSMenu, NSMenuDelegate {
       swapBackKeyEquivalent(for: undoCopyItem, from: &cacheUndoCopyItemShortcut)
     }
     
-    // Delete & clear item visibility
+    // Delete & clear item
     deleteItem?.isVisible = haveQueueItems || haveHistoryItems || haveBatchItems
     clearItem?.isVisible = haveQueueItems || !history.isLastBatchEmpty || (useHistory && haveHistoryItems)
+    deleteItem?.isEnabled = false // until programmatically enabled later as items are highlighted
+    clearItem?.isEnabled = notBusy
     
     // after deleting all queue items, deleteItem is explicitly hidden, noteItem left visible,
     // yet the menu draws with note blurb missing and "Delete Clipboard Item" showing. an OS bug?
   }
   
-  private func updateDynamicItemVisibility() {
-    // visibility of each of the 3 sections of clip items, plus their titles and trailing separators
-    updateQueueClipItemVisibility()
-    updateHistoryClipItemVisibility()
-    updateBatchItemVisibility()
+  private func updateStaticDockItemStates() {
+    // mirrors updateStaticItemStates somewhat, gets called at a different time so must be separate
+    // it seems dock menu items aren't allowed to be disabled, all the isEnabled = notBusy below might be moot
+    let notBusy = !AppModel.busy
+    let queueOn = queue.isOn
+    let queueEmpty = queue.isEmpty
+    let batchEmpty = history.isLastBatchEmpty
+    
+    dockSettingsItem?.isEnabled = notBusy
+    
+    dockStopItem?.isVisible = queueOn
+    dockStopItem?.isEnabled = notBusy
+    
+    dockPasteItem?.isVisible = !queueEmpty
+    dockCopyItem?.isEnabled = notBusy
+    dockPasteItem?.isEnabled = notBusy
+    
+    dockReplayItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && !queueEmpty && !queue.isReplaying
+    dockAdvanceItem?.isVisible = UserDefaults.standard.showAdvancedPasteMenuItems && !queueEmpty && queue.isReplaying
+    dockReplayItem?.isEnabled = notBusy
+    dockAdvanceItem?.isEnabled = notBusy
+    
+    dockStartItem?.isVisible = !queueOn
+    dockStartItem?.isEnabled = notBusy
+    dockStartWithCurrentItem?.isEnabled = notBusy
+    if !queueOn {
+      dockStartWithCurrentItem?.keyEquivalentModifierMask = .option 
+      dockStartWithCurrentItem?.isVisibleAlternate = true
+    } else {
+      dockStartWithCurrentItem?.isVisibleAlternate = false // only show "start", both should be disabled anyway
+    }
+    
+    queuedPasteMultipleItem?.isVisible = AppModel.allowPasteMultiple && !queueEmpty
+    queuedPasteAllItem?.isVisibleAlternate = AppModel.allowPasteMultiple && !queueEmpty
+    queuedPasteMultipleItem?.isEnabled = notBusy
+    queuedPasteAllItem?.isEnabled = notBusy
+    
+    replayLastBatchItem?.isVisible = AppModel.allowLastBatch && !batchEmpty && !queueOn
+    saveLastBatchItem?.isVisible = AppModel.allowSavedBatches && !batchEmpty && !queueOn
+    saveCurrentBatchItem?.isVisible = AppModel.allowSavedBatches && !batchEmpty && queueOn
+    replayLastBatchItem?.isEnabled = notBusy
+    saveLastBatchItem?.isEnabled = notBusy
+    saveCurrentBatchItem?.isEnabled = notBusy
   }
   
   private func updateQueueClipItemVisibility() {
@@ -1006,11 +1152,25 @@ class AppMenu: NSMenu, NSMenuDelegate {
     postBatchesSeparatorItem?.isVisible = showBatchSection
     
     guard let first = firstBatchItemIndex, let end = postBatchesItemIndex, first <= end else {
-      fatalError("can't locate the batches menu items section")
+      fatalError("can't locate the batch menu items section")
     }
     
     for index in first ..< end {
       safeItem(at: index)?.isHidden = !showBatchSection
+    }
+  }
+  
+  private func updateDockBatchItemVisibility() {
+    let showBatchSection = showsSavedBatches && dockBatchItemCount > 0 && !queue.isOn
+    
+    dockBatchesSeparatorItem?.isVisible = showBatchSection
+    
+    guard let first = firstDockBatchItemIndex, let end = postDockBatchesItemIndex, first <= end else {
+      fatalError("can't locate the batch menu items section")
+    }
+    
+    for index in first ..< end {
+      dockMenu?.safeItem(at: index)?.isHidden = !showBatchSection
     }
   }
   
@@ -1328,7 +1488,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
   }
   
   func addedBatch(_ batch: Batch) {
-    guard let firstMenuIndex = firstBatchItemIndex else {
+    guard let firstMenuIndex = firstBatchItemIndex, let firstDockMenuIndex = firstDockBatchItemIndex else {
       fatalError("can't find the place to insert batch menu items")
     }
     let sortedBatches = history.batches
@@ -1336,18 +1496,29 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return
     }
     
-    guard let menuItem = buildBatchParentItem(forBatch: batch) else {
+    guard let menuItem = buildBatchParentItem(forBatch: batch), let dockMenuItem = buildBatchParentItem(forBatch: batch) else {
       return
     }
     
     addBatchSubmenuItems(forParentItem: menuItem, fromClips: batch.getClipsArray())
     safeInsertBatchItem(menuItem, at: firstMenuIndex + position)
     
+    addMinimalBatchSubmenuItems(forParentItem: dockMenuItem, fromClips: batch.getClipsArray())
+    dockMenu?.safeInsertItem(menuItem, at: firstDockMenuIndex + position)
+    
     sanityCheckBatchMenuItems()
   }
   
   func editedBatch(_ batch: Batch) {
     iterateOverBatchParentItems { item in
+      if item.batch === batch {
+        item.refreshSubmenuItems()
+        item.regenerateTitle()
+        return false // to abort iterating
+      }
+      return true
+    }
+    iterateOverDockBatchParentItems { item in
       if item.batch === batch {
         item.refreshSubmenuItems()
         item.regenerateTitle()
@@ -1783,7 +1954,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func saveMoveItems(at index: Int, count: Int, to destIndex: Int) {
+  private func saveMoveItems(at index: Int, count: Int, to destIndex: Int) {
     // after working to get this right, now i don't think its needed anymore :(
     guard count > 0 && index != destIndex else {
       return
@@ -1824,30 +1995,12 @@ class AppMenu: NSMenu, NSMenuDelegate {
     }
   }
   
-  func saveMoveItems(at range: Range<Int>, to destIndex: Int) {
+  private func saveMoveItems(at range: Range<Int>, to destIndex: Int) {
     guard range.lowerBound < range.upperBound else {
       return
     }
     saveMoveItems(at: range.lowerBound, count: range.upperBound - range.lowerBound, to: destIndex)
   }
-  
-  private func safeIndex(of item: NSMenuItem?) -> Int? {
-    guard let item = item else {
-      return nil
-    }
-    let index = index(of: item)
-    guard index >= 0 else {
-      return nil
-    }
-    return index
-  }
-  
-  private func safeItem(at index: Int?) -> NSMenuItem? {
-    guard let index = index else {
-      return nil
-    }
-    return item(at: index)
-  }  
   
   private func sanityCheckClipMenuItemIndex(_ i: Int, forInserting inserting: Bool = false) {
     guard let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex else {
@@ -2028,6 +2181,49 @@ class AppMenu: NSMenu, NSMenuDelegate {
 // swiftlint:enable type_body_length
 
 // MARK: -
+
+extension NSMenu {
+  func safeInsertItem(_ newItem: NSMenuItem, at index: Int) {
+    guard !items.contains(newItem), index <= items.count else {
+      return
+    }
+    insertItem(newItem, at: index)
+  }
+  
+  func safeRemoveItem(at index: Int) {
+    guard index <= items.count else {
+      return
+    }
+    removeItem(at: index)
+  }
+  
+  func safeRemoveItems(at range: Range<Int>) {
+    guard !range.isEmpty else {
+      return
+    }
+    for index in range.reversed() {
+      removeItem(at: index)
+    }
+  }
+  
+  func safeIndex(of item: NSMenuItem?) -> Int? {
+    guard let item = item else {
+      return nil
+    }
+    let index = index(of: item)
+    guard index >= 0 else {
+      return nil
+    }
+    return index
+  }
+  
+  func safeItem(at index: Int?) -> NSMenuItem? {
+    guard let index = index else {
+      return nil
+    }
+    return item(at: index)
+  }  
+}
 
 // An isVisible property makes logic more clear than with the isHidden property,
 // eliminating many double negatives

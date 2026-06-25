@@ -297,6 +297,10 @@ class AppModel: NSObject {
     }
   }
   
+  var dockMenu: NSMenu? {
+    return menu.getDockMenu()
+  }
+  
   func wasActvated() {
     // when app switched to the foreground enure the menu is made visible then switch back to the
     // previously frontmost app

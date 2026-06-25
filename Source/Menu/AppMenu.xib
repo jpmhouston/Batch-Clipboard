@@ -278,6 +278,21 @@ CA
                 <outlet property="batchesHeadingItem" destination="f2x-Sv-BAT" id="y8o-vZ-G4X"/>
                 <outlet property="clearItem" destination="u3d-qz-ihN" id="aak-jk-gan"/>
                 <outlet property="deleteItem" destination="vGj-r1-rIx" id="wrK-G3-cEq"/>
+                <outlet property="dockAdvanceItem" destination="4hK-Bh-Kjc" id="iEC-QN-Jy4"/>
+                <outlet property="dockBatchesSeparatorItem" destination="qVV-nb-yXf" id="gSk-b4-h5K"/>
+                <outlet property="dockCopyItem" destination="RpX-B5-LI7" id="ktm-BP-bPB"/>
+                <outlet property="dockMenu" destination="STv-co-Biz" id="vDM-FU-gq1"/>
+                <outlet property="dockPasteItem" destination="6uR-s9-J6x" id="UPt-Z1-Ch2"/>
+                <outlet property="dockPasteMultipleItem" destination="YFy-IS-IN4" id="Q24-sy-6os"/>
+                <outlet property="dockReplayItem" destination="FSu-BJ-Nbf" id="I8c-oI-nVq"/>
+                <outlet property="dockReplayLastBatchItem" destination="LL9-n3-64d" id="cVX-dF-JpW"/>
+                <outlet property="dockSaveCurrentBatchItem" destination="Pqp-v9-IKQ" id="Pfx-0v-rZJ"/>
+                <outlet property="dockSaveLastBatchItem" destination="xJC-sM-67T" id="Ivr-Jz-HZA"/>
+                <outlet property="dockSettingsItem" destination="NQ1-Eu-Kbf" id="TSp-t5-ecZ"/>
+                <outlet property="dockStartItem" destination="Hcx-Ow-WTs" id="9a8-y1-fiv"/>
+                <outlet property="dockStartWithCurrentItem" destination="UwH-TC-5bT" id="bkM-Aq-8Me"/>
+                <outlet property="dockStopItem" destination="lUH-sr-2Fc" id="LRq-H4-ax6"/>
+                <outlet property="dockdPasteAllItem" destination="nrT-rB-s3p" id="v4C-Hq-X39"/>
                 <outlet property="filterFieldItem" destination="MMa-qd-9PO" id="Isx-BV-gjX"/>
                 <outlet property="historyHeadingItem" destination="K6h-Sv-HIS" id="b3m-K6-E7t"/>
                 <outlet property="keyDetectorItem" destination="90h-qR-Mlh" id="qED-tN-70Q"/>
@@ -405,5 +420,86 @@ Shortcuts below only work while this menu is open.</string>
             </constraints>
             <point key="canvasLocation" x="0.0" y="660"/>
         </customView>
+        <menu id="STv-co-Biz" userLabel="Dock Menu">
+            <items>
+                <menuItem isSeparatorItem="YES" hidden="YES" id="qVV-nb-yXf" userLabel="Dock Batches Separator Item"/>
+                <menuItem title="Start Batch" id="Hcx-Ow-WTs" userLabel="Dock Start Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="startQueueMode:" target="-2" id="aOg-AV-laq"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Start Batch with Clipboard" alternate="YES" id="UwH-TC-5bT" userLabel="Dock Start With Clipboard">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="startQueueModeWithCurrentClip:" target="-2" id="Ebl-hz-mIq"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Cancel Batch" hidden="YES" id="lUH-sr-2Fc" userLabel="Dock Stop Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="cancelQueueMode:" target="-2" id="Xeu-xE-JBJ"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Start Pasting From Batch" hidden="YES" id="FSu-BJ-Nbf" userLabel="Dock Replsy Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="startReplay:" target="-2" id="biM-7r-cOo"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Skip to Next" hidden="YES" id="4hK-Bh-Kjc" userLabel="Dock Advance Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="advanceQueue:" target="-2" id="3lT-cE-7A5"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Copy Into Batch" id="RpX-B5-LI7" userLabel="Dock Copy Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="queuedCopy:" target="-2" id="R1D-PH-LBx"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Paste &amp; Advance" id="6uR-s9-J6x" userLabel="Dock Paste Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="queuedPaste:" target="-2" id="UBY-99-cnn"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Paste Multiple…" hidden="YES" id="YFy-IS-IN4" userLabel="Dock Paste Multiple Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="queuedPasteMultiple:" target="-2" id="cW7-3r-N8e"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Paste All" hidden="YES" alternate="YES" id="nrT-rB-s3p" userLabel="Dock Paste All Item">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="queuedPasteAll:" target="-2" id="4qB-VH-cA7"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Replay Last Batch" id="LL9-n3-64d" userLabel="Dock Replay Last Batch Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="replayLastBatch:" target="-2" id="5yH-nr-b85"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Save Last Batch…" hidden="YES" id="xJC-sM-67T" userLabel="Dock Save Last Batch Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Save Batch…" hidden="YES" id="Pqp-v9-IKQ" userLabel="Dock Save Current Batch Item">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="saveBatch:" target="-2" id="gdT-Ix-ySA"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="coA-3g-aIa"/>
+                <menuItem title="Settings…" keyEquivalent="," id="NQ1-Eu-Kbf" userLabel="Dock Settings Item">
+                    <connections>
+                        <action selector="showSettings:" target="-2" id="oZh-XL-fj6"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="336" y="62"/>
+        </menu>
     </objects>
 </document>
