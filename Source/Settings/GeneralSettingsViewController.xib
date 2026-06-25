@@ -146,8 +146,8 @@
                             <rect key="frame" x="0.0" y="164" width="488" height="280"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OBF-sn-fha">
-                                    <rect key="frame" x="0.0" y="264" width="246" height="16"/>
-                                    <buttonCell key="cell" type="check" title="Hide Menu Bar Icon When Not in Use" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NfH-5K-dzl">
+                                    <rect key="frame" x="0.0" y="264" width="269" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Hide menu bar iIcon when app not in use" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NfH-5K-dzl">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -274,11 +274,11 @@
                             <rect key="frame" x="0.0" y="54" width="488" height="5"/>
                         </box>
                         <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qym-v6-aJj">
-                            <rect key="frame" x="0.0" y="0.0" width="201" height="40"/>
+                            <rect key="frame" x="0.0" y="0.0" width="193" height="40"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GBC-St-esC">
-                                    <rect key="frame" x="0.0" y="24" width="201" height="16"/>
-                                    <buttonCell key="cell" type="check" title="Show Locked Bonus Features" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="cXb-pE-vZ2">
+                                    <rect key="frame" x="0.0" y="24" width="193" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Show locked bonus features" bezelStyle="regularSquare" imagePosition="left" inset="2" id="cXb-pE-vZ2">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -290,8 +290,8 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="S6J-6l-2IE">
-                                    <rect key="frame" x="20" y="0.0" width="108" height="16"/>
-                                    <buttonCell key="cell" type="check" title="For One Week" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="yyd-IU-Dmf">
+                                    <rect key="frame" x="20" y="0.0" width="103" height="16"/>
+                                    <buttonCell key="cell" type="check" title="For one week" bezelStyle="regularSquare" imagePosition="left" inset="2" id="yyd-IU-Dmf">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
