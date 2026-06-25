@@ -1,5 +1,14 @@
 # Batch Clipboard Changelog
 
+## version 2.3b6 (2026-06-25)
+
+- Added a dock menu for when the application's dock icon is turned on in the Settings (still not the default).
+- Fixed alerts sometimes opening behind other applications' windows.
+- Improved reliability of returning the user's application and window to be frontmost after using Batch Clipboard menu items or Settings window.
+- Fixed reliabiity of starting a batch using the current clipboard item.
+- Simplified menu when advanced paste items are shown using the checkbox in the Advanced tab of the Settings window. "Skip to Next" and "Start Pasting From Batch" are now one context sensitive menu item.
+- The menu hiding checkbox in the Settings window is now "Hide menu bar icon when app not in use", inverse of what the checkbox was before "Always show menu bar icon".
+
 ## version 2.3b5 (2026-06-17)
 
 - New option in General Settings tab to show the app in the Dock and app switcher. If menu icon hidden in the menu bar, made switching to the app reveal it, and if shift or option held then also show the Settings window.
