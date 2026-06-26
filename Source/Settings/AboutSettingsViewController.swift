@@ -17,24 +17,24 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   
   override var nibName: NSNib.Name? { "AboutSettingsViewController" }
   
-  @IBOutlet weak var appstoreVersionText: NSTextField!
-  @IBOutlet weak var nonAppstoreVersionText: NSTextField!
-  @IBOutlet weak var alreadyPurchasedText: NSTextField!
-  @IBOutlet weak var advertisePurchaseText: NSTextField!
-  @IBOutlet weak var buyMeACoffeeView: NSView!
-  @IBOutlet weak var openRepoLinkButton: NSButton!
-  @IBOutlet weak var copyRepoLinkButton: NSButton!
-  @IBOutlet weak var openHomepageLinkButton: NSButton!
-  @IBOutlet weak var copyHomepageLinkButton: NSButton!
-  @IBOutlet weak var openDonationLinkButton: NSButton!
-  @IBOutlet weak var copyDonationLinkButton: NSButton!
-  @IBOutlet weak var sendSupportEmailButton: NSButton!
-  @IBOutlet weak var copySupportEmailButton: NSButton!
-  @IBOutlet weak var appStoreLinksView: NSView!
-  @IBOutlet weak var openPrivacyPolicyButton: NSButton!
-  @IBOutlet weak var copyPrivacyPolicyButton: NSButton!
-  @IBOutlet weak var openAppStoreEULAButton: NSButton!
-  @IBOutlet weak var copyAppStoreEULAButton: NSButton!
+  @IBOutlet weak var appstoreVersionText: NSTextField?
+  @IBOutlet weak var nonAppstoreVersionText: NSTextField?
+  @IBOutlet weak var alreadyPurchasedText: NSTextField?
+  @IBOutlet weak var advertisePurchaseText: NSTextField?
+  @IBOutlet weak var buyMeACoffeeView: NSView?
+  @IBOutlet weak var openRepoLinkButton: NSButton?
+  @IBOutlet weak var copyRepoLinkButton: NSButton?
+  @IBOutlet weak var openHomepageLinkButton: NSButton?
+  @IBOutlet weak var copyHomepageLinkButton: NSButton?
+  @IBOutlet weak var openDonationLinkButton: NSButton?
+  @IBOutlet weak var copyDonationLinkButton: NSButton?
+  @IBOutlet weak var sendSupportEmailButton: NSButton?
+  @IBOutlet weak var copySupportEmailButton: NSButton?
+  @IBOutlet weak var appStoreLinksView: NSView?
+  @IBOutlet weak var openPrivacyPolicyButton: NSButton?
+  @IBOutlet weak var copyPrivacyPolicyButton: NSButton?
+  @IBOutlet weak var openAppStoreEULAButton: NSButton?
+  @IBOutlet weak var copyAppStoreEULAButton: NSButton?
   
   private var optionKeyEventMonitor: Any?
   
@@ -70,8 +70,8 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   private func showVersionText(forAppStore showAppStoreVariant: Bool) {
-    appstoreVersionText.isHidden = !showAppStoreVariant
-    nonAppstoreVersionText.isHidden = showAppStoreVariant
+    appstoreVersionText?.isHidden = !showAppStoreVariant
+    nonAppstoreVersionText?.isHidden = showAppStoreVariant
     
     guard let versionField = showAppStoreVariant ? appstoreVersionText : nonAppstoreVersionText else {
       return
@@ -87,45 +87,45 @@ class AboutSettingsViewController: NSViewController, SettingsPane {
   }
   
   private func showAppStoreSupportText(_ show: Bool, hasPurchased: Bool = false) {
-    alreadyPurchasedText.isHidden = !(show && hasPurchased)
-    advertisePurchaseText.isHidden = !(show && !hasPurchased)
+    alreadyPurchasedText?.isHidden = !(show && hasPurchased)
+    advertisePurchaseText?.isHidden = !(show && !hasPurchased)
   }
   
   private func showBuyMeACoffeeView(_ show: Bool) {
-    buyMeACoffeeView.isHidden = !show
+    buyMeACoffeeView?.isHidden = !show
   }
   
   private func showAppStoreLinksView(_ show: Bool) {
-    appStoreLinksView.isHidden = !show
+    appStoreLinksView?.isHidden = !show
   }
   
   private func showAltButtons(_ showCopy: Bool) {
     if showCopy {
-      openRepoLinkButton.isHidden = true
-      copyRepoLinkButton.isHidden = false
-      openHomepageLinkButton.isHidden = true
-      copyHomepageLinkButton.isHidden = false
-      openDonationLinkButton.isHidden = true
-      copyDonationLinkButton.isHidden = false
-      sendSupportEmailButton.isHidden = true
-      copySupportEmailButton.isHidden = false
-      openPrivacyPolicyButton.isHidden = true
-      copyPrivacyPolicyButton.isHidden = false
-      openAppStoreEULAButton.isHidden = true
-      copyAppStoreEULAButton.isHidden = false
+      openRepoLinkButton?.isHidden = true
+      copyRepoLinkButton?.isHidden = false
+      openHomepageLinkButton?.isHidden = true
+      copyHomepageLinkButton?.isHidden = false
+      openDonationLinkButton?.isHidden = true
+      copyDonationLinkButton?.isHidden = false
+      sendSupportEmailButton?.isHidden = true
+      copySupportEmailButton?.isHidden = false
+      openPrivacyPolicyButton?.isHidden = true
+      copyPrivacyPolicyButton?.isHidden = false
+      openAppStoreEULAButton?.isHidden = true
+      copyAppStoreEULAButton?.isHidden = false
     } else {
-      openRepoLinkButton.isHidden = false
-      copyRepoLinkButton.isHidden = true
-      openHomepageLinkButton.isHidden = false
-      copyHomepageLinkButton.isHidden = true
-      openDonationLinkButton.isHidden = false
-      copyDonationLinkButton.isHidden = true
-      sendSupportEmailButton.isHidden = false
-      copySupportEmailButton.isHidden = true
-      openPrivacyPolicyButton.isHidden = false
-      copyPrivacyPolicyButton.isHidden = true
-      openAppStoreEULAButton.isHidden = false
-      copyAppStoreEULAButton.isHidden = true
+      openRepoLinkButton?.isHidden = false
+      copyRepoLinkButton?.isHidden = true
+      openHomepageLinkButton?.isHidden = false
+      copyHomepageLinkButton?.isHidden = true
+      openDonationLinkButton?.isHidden = false
+      copyDonationLinkButton?.isHidden = true
+      sendSupportEmailButton?.isHidden = false
+      copySupportEmailButton?.isHidden = true
+      openPrivacyPolicyButton?.isHidden = false
+      copyPrivacyPolicyButton?.isHidden = true
+      openAppStoreEULAButton?.isHidden = false
+      copyAppStoreEULAButton?.isHidden = true
     }
   }
   

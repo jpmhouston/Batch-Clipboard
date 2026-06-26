@@ -12,7 +12,7 @@
 import AppKit
 
 class IgnoreRegexViewController: NSViewController, NSTableViewDataSource {
-  @IBOutlet weak var ignoredItemsTable: NSTableView!
+  @IBOutlet weak var ignoredItemsTable: NSTableView?
 
   private let exampleIgnoredRegex = "^[a-zA-Z0-9]{50}$"
 
@@ -40,10 +40,10 @@ class IgnoreRegexViewController: NSViewController, NSTableViewDataSource {
     }
 
     ignoredRegexp[row] = object
-    ignoredItemsTable.reloadData()
+    ignoredItemsTable?.reloadData()
     if let newIndex = ignoredRegexp.firstIndex(of: object) {
-      ignoredItemsTable.deselectRow(row)
-      ignoredItemsTable.selectRowIndexes(IndexSet(integer: newIndex), byExtendingSelection: false)
+      ignoredItemsTable?.deselectRow(row)
+      ignoredItemsTable?.selectRowIndexes(IndexSet(integer: newIndex), byExtendingSelection: false)
     }
   }
 
@@ -52,11 +52,10 @@ class IgnoreRegexViewController: NSViewController, NSTableViewDataSource {
     case 0:
       addIgnoredRegex()
     case 1:
-      guard ignoredItemsTable.selectedRow != -1 else {
+      guard let row = ignoredItemsTable?.selectedRow, row != -1 else {
         return
       }
-
-      removeIgnoredRegex(ignoredItemsTable.selectedRow)
+      removeIgnoredRegex(row)
     default:
       return
     }
@@ -64,12 +63,12 @@ class IgnoreRegexViewController: NSViewController, NSTableViewDataSource {
 
   private func addIgnoredRegex() {
     ignoredRegexp.append(exampleIgnoredRegex)
-    ignoredItemsTable.reloadData()
-    ignoredItemsTable.editColumn(0, row: ignoredRegexp.firstIndex(of: exampleIgnoredRegex)!, with: nil, select: true)
+    ignoredItemsTable?.reloadData()
+    ignoredItemsTable?.editColumn(0, row: ignoredRegexp.firstIndex(of: exampleIgnoredRegex)!, with: nil, select: true)
   }
 
   private func removeIgnoredRegex(_ row: Int) {
     ignoredRegexp.remove(at: row)
-    ignoredItemsTable.reloadData()
+    ignoredItemsTable?.reloadData()
   }
 }

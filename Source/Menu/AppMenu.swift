@@ -734,7 +734,9 @@ class AppMenu: NSMenu, NSMenuDelegate {
       return nil // not likely
     }
     guard let leadingAchor = leadingAchorItem.view, let trailingAchor = trailingAchorItem.view else {
-      fatalError("can't find anchors for for clip item \(clipIndex), \(leadingAchorIndex),\(trailingAchorIndex) don't both have views")
+      // TODO: reproduce this failing on macOS 12 according to crash reports
+      sanityCheckError("can't find anchors for for clip item \(clipIndex), \(leadingAchorIndex),\(trailingAchorIndex) don't both have views")
+      return nil
     }
     return (leadingAchor, trailingAchor)
   }
@@ -2004,43 +2006,55 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func sanityCheckClipMenuItemIndex(_ i: Int, forInserting inserting: Bool = false) {
     guard let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex else {
-      fatalError("cannot locate queue section")
+      sanityCheckError("cannot locate queue section")
+      return
     }
     guard let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex else {
-      fatalError("cannot locate history section")
+      sanityCheckError("cannot locate history section")
+      return
     }
     guard let item = item(at: i) else { // never called to add to very end of the menu, so no need to add `inserting==false`
-      fatalError("menu index \(i) to be changed is out of bounds with respect to the entire menu")
+      sanityCheckError("menu index \(i) to be changed is out of bounds with respect to the entire menu")
+      return
     }
     guard inserting || item is ClipMenuItem else {
-      fatalError("menu index \(i) is not a ClipMenuItem")
+      sanityCheckError("menu index \(i) is not a ClipMenuItem")
+      return
     }
     if i < firstQueueIndex {
-      fatalError("menu index \(i) to be changed preceeds the queue section")
+      sanityCheckError("menu index \(i) to be changed preceeds the queue section")
+      return
     }
     if i > (inserting ? postQueueIndex : postQueueIndex - 1) && i < firstHistoryIndex {
-      fatalError("menu index \(i) to be changed is inbetween queue and history sections")
+      sanityCheckError("menu index \(i) to be changed is inbetween queue and history sections")
+      return
     }
     if i > (inserting ? postHistoryIndex : postHistoryIndex - 1) {
-      fatalError("menu index \(i) to be changed follows the history section")
+      sanityCheckError("menu index \(i) to be changed follows the history section")
+      return
     }
   }
   
   private func sanityCheckBatchMenuItemIndex(_ i: Int, forInserting inserting: Bool = false) {
     guard let firstBatchIndex = firstBatchItemIndex, let postBatchIndex = postBatchesItemIndex else {
-      fatalError("cannot locate batch section")
+      sanityCheckError("cannot locate batch section")
+      return
     }
     guard let item = item(at: i) else { // never called to add to very end of the menu, so no need to add `inserting==false`
-      fatalError("menu index \(i) to be changed is out of bounds with respect to the entire menu")
+      sanityCheckError("menu index \(i) to be changed is out of bounds with respect to the entire menu")
+      return
     }
     guard inserting || item is BatchMenuItem else {
-      fatalError("menu index \(i) is not a BatchMenuItem")
+      sanityCheckError("menu index \(i) is not a BatchMenuItem")
+      return
     }
     if i < firstBatchIndex {
-      fatalError("menu index \(i) to be changed preceeds the batch section")
+      sanityCheckError("menu index \(i) to be changed preceeds the batch section")
+      return
     }
     if i > (inserting ? postBatchIndex : postBatchIndex - 1) {
-      fatalError("menu index \(i) to be changed follows the batch section")
+      sanityCheckError("menu index \(i) to be changed follows the batch section")
+      return
     }
   }
   
@@ -2048,10 +2062,12 @@ class AppMenu: NSMenu, NSMenuDelegate {
   
   private func sanityCheckClipMenuItems() {
     guard let firstQueueIndex = firstQueueItemIndex, let postQueueIndex = postQueueItemIndex else {
-      fatalError("cannot locate queue section")
+      sanityCheckError("cannot locate queue section")
+      return
     }
     guard let firstHistoryIndex = firstHistoryItemIndex, let postHistoryIndex = postHistoryItemIndex else {
-      fatalError("cannot locate history section")
+      sanityCheckError("cannot locate history section")
+      return
     }
     for index in firstQueueIndex ..< postQueueIndex {
       sanityCheckClipMenuItem(at: index, forSectionStartingAt: firstQueueIndex)
@@ -2066,40 +2082,47 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let suggestedCommand = "p items[\(from)...\(index)].\(suggestedCommandMap)"
     guard let item = item(at: index) as? ClipMenuItem else {
       if let maybeAnchorItem = item(at: index), maybeAnchorItem.view != nil { return }
-      fatalError("menu item at \(index) is not a ClipMenuItem, try: \(suggestedCommand)")
+      sanityCheckError("menu item at \(index) is not a ClipMenuItem, try: \(suggestedCommand)")
+      return
     }
     guard let clip = item.clip else {
-      fatalError("menu item at \(index) has a nil clip property")
+      sanityCheckError("menu item at \(index) has a nil clip property")
+      return
     }
     //guard !clip.isFault else {
     //  os_log(.debug, "menu item at %d has clip with isFault set, not sure its a problem? %@", index, item.title)
     //  return
     //}
     guard let clipTitle = clip.title else {
-      fatalError("menu item at \(index) has clip with a nil title")
+      sanityCheckError("menu item at \(index) has clip with a nil title")
+      return
     }
     #if VALIDATE_MENUITEM_TITLES
     // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
     // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
-      fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
+      sanityCheckError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
+      return
     }
     #endif
   }
   
   private func sanityCheckBatchMenuItems() {
     guard let firstBatchIndex = firstBatchItemIndex, let postBatchIndex = postBatchesItemIndex else {
-      fatalError("cannot locate batch section")
+      sanityCheckError("cannot locate batch section")
+      return
     }
     for index in firstBatchIndex ..< postBatchIndex {
       sanityCheckBatchParentMenuItem(at: index, forSectionStartingAt: firstBatchIndex)
       
       guard let parentBatchItem = item(at: index) as? BatchMenuItem else { continue }
       guard let submenu = parentBatchItem.submenu else {
-        fatalError("batch menu item at \(index) has no submenu")
+        sanityCheckError("batch menu item at \(index) has no submenu")
+        return
       }
       guard let firstClipIndex = parentBatchItem.firstClipItemIndex, let postClipIndex = parentBatchItem.postClipItemIndex else {
-        fatalError("for batch menu item at \(index) cannot locate its submenu clip menu items")
+        sanityCheckError("for batch menu item at \(index) cannot locate its submenu clip menu items")
+        return
       }
       for subindex in firstClipIndex ..< postClipIndex {
         sanityCheckBatchClipMenuItem(at: subindex, ofSubmenu: submenu, withParentIndex: index)
@@ -2111,48 +2134,65 @@ class AppMenu: NSMenu, NSMenuDelegate {
     let suggestedCommandMap = #"map{$0.title + ($0 is BatchMenuItem ?"  VS  "+(($0 as! BatchMenuItem).title) : "")}"#
     let suggestedCommand = "p items[\(from)...\(index)].\(suggestedCommandMap)"
     guard let item = item(at: index) as? BatchMenuItem else {
-      fatalError("menu item at \(index) is not a BatchMenuItem, try: \(suggestedCommand)")
+      sanityCheckError("menu item at \(index) is not a BatchMenuItem, try: \(suggestedCommand)")
+      return
     }
     guard let batch = item.batch else {
-      fatalError("menu item at \(index) has a nil batch property")
+      sanityCheckError("menu item at \(index) has a nil batch property")
+      return
     }
     guard !batch.isFault else {
       os_log(.debug, "menu item at %d has clip with isFault set, not sure its a problem? %@", index, item.title)
       return
     }
     guard let batchTitle = batch.title else {
-      fatalError("menu item at \(index) has batch with a nil title")
+      sanityCheckError("menu item at \(index) has batch with a nil title")
+      return
     }
     #if VALIDATE_MENUITEM_TITLES
     // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
     // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard batchTitle == item.title || (batchTitle == "" && item.title == " ") else {
-      fatalError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
+      sanityCheckError("menu item at \(index) has the wrong title, try: \(suggestedCommand)")
+      return
     }
     #endif
   }
   
   func sanityCheckBatchClipMenuItem(at index: Int, ofSubmenu submenu: NSMenu, withParentIndex parentIndex: Int) {
+    // TODO: reproduce failures here seen on macOS 12 & 15, hopefully testflight builds of v2.3 will catch again to desym & isolte which line   
     guard let item = submenu.item(at: index) as? ClipMenuItem else {
       if let maybeAnchorItem = item(at: index), maybeAnchorItem.view != nil { return }
-      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) is not a ClipMenuItem")
+      sanityCheckError("for batch menu item at \(parentIndex) submenu item at \(index) is not a ClipMenuItem")
+      return
     }
     guard let clip = item.clip else {
-      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has a nil clip property")
+      sanityCheckError("for batch menu item at \(parentIndex) submenu item at \(index) has a nil clip property")
+      return
     }
     //guard !clip.isFault else {
     //  os_log(.debug, "for batch menu item at %d submenu item at %d has clip with isFault set, not sure its a problem? %@", parentIndex, index, item.title)
     //  return
     //}
     guard let clipTitle = clip.title else {
-      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has clip with a nil title")
+      sanityCheckError("for batch menu item at \(parentIndex) submenu item at \(index) has clip with a nil title")
+      return
     }
     #if VALIDATE_MENUITEM_TITLES
     // skip b/c title doesn't identically round trip, ie. `menuitem.title = foo; menuitem.title == foo` can fail
     // and not just "" -> " " but also "<nbsp>" -> " ", very likely some odd unicode characters also
     guard clipTitle == item.title || (clipTitle == "" && item.title == " ") else {
-      fatalError("for batch menu item at \(parentIndex) submenu item at \(index) has the wrong title")
+      sanityCheckError("for batch menu item at \(parentIndex) submenu item at \(index) has the wrong title")
+      return
     }
+    #endif
+  }
+  
+  private func sanityCheckError(_ str: String) {
+    #if DEBUG
+    fatalError(str)
+    #else
+    os_log(.error, str)
     #endif
   }
   

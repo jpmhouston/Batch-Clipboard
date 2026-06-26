@@ -30,21 +30,23 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   private var state: State = .idle
   private var showBonusFeaturesPurchased: Bool { purchaseManager.hasBoughtExtras }
   
-  private var labelsToStyle: [NSTextField] { [featureLabel1, featureLabel2, featureLabel3, featureLabel4, documentationLabel] }
+  private var labelsToStyle: [NSTextField] {
+    [featureLabel1, featureLabel2, featureLabel3, featureLabel4, documentationLabel].compactMap { $0 }
+  }
   private var errorMessageColor: NSColor?
   
-  @IBOutlet weak var pleasePurchaseLabel: NSTextField!
-  @IBOutlet weak var havePurchasedLabel: NSTextField!
-  @IBOutlet weak var featureLabel1: NSTextField!
-  @IBOutlet weak var featureLabel2: NSTextField!
-  @IBOutlet weak var featureLabel3: NSTextField!
-  @IBOutlet weak var featureLabel4: NSTextField!
-  @IBOutlet weak var documentationLabel: NSTextField!
-  @IBOutlet weak var purchaseButton: NSButton!
-  @IBOutlet weak var altPurchaseButton: NSButton!
-  @IBOutlet weak var restoreButton: NSButton!
-  @IBOutlet weak var progressIndicator: NSProgressIndicator!
-  @IBOutlet weak var messageLabel: NSTextField!
+  @IBOutlet weak var pleasePurchaseLabel: NSTextField?
+  @IBOutlet weak var havePurchasedLabel: NSTextField?
+  @IBOutlet weak var featureLabel1: NSTextField?
+  @IBOutlet weak var featureLabel2: NSTextField?
+  @IBOutlet weak var featureLabel3: NSTextField?
+  @IBOutlet weak var featureLabel4: NSTextField?
+  @IBOutlet weak var documentationLabel: NSTextField?
+  @IBOutlet weak var purchaseButton: NSButton?
+  @IBOutlet weak var altPurchaseButton: NSButton?
+  @IBOutlet weak var restoreButton: NSButton?
+  @IBOutlet weak var progressIndicator: NSProgressIndicator?
+  @IBOutlet weak var messageLabel: NSTextField?
   
   // MARK: -
   
@@ -96,7 +98,7 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   func purchasesUpdated(_ update: AppStorePurchases.ObservationUpdate) {
-    self.progressIndicator.stopAnimation(self)
+    progressIndicator?.stopAnimation(self)
     
     // TODO: localize all these
     
@@ -251,12 +253,12 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   }
   
   private func startWaitingForCompletion(withTimeout timeout: Double, message: String, asError: Bool = false) {
-    progressIndicator.startAnimation(self)
+    progressIndicator?.startAnimation(self)
 
     startTimeoutTimer(withDuration: timeout) { [weak self] in
       guard let self = self else { return }
       
-      progressIndicator.stopAnimation(self)
+      progressIndicator?.stopAnimation(self)
       state = .idle
       updatePurchaseButtons()
       if asError {
@@ -283,40 +285,40 @@ class PurchaseSettingsViewController: NSViewController, SettingsPane {
   }
   
   private func updateTitleLabel() {
-    pleasePurchaseLabel.isHidden = showBonusFeaturesPurchased
-    havePurchasedLabel.isHidden = !showBonusFeaturesPurchased
+    pleasePurchaseLabel?.isHidden = showBonusFeaturesPurchased
+    havePurchasedLabel?.isHidden = !showBonusFeaturesPurchased
   }
   
   private func disablePurchaseButtons() {
-    purchaseButton.isEnabled = false
-    altPurchaseButton.isEnabled = false
-    restoreButton.isEnabled = false
+    purchaseButton?.isEnabled = false
+    altPurchaseButton?.isEnabled = false
+    restoreButton?.isEnabled = false
   }
   
   private func updatePurchaseButtons() {
-    purchaseButton.isEnabled = true
-    altPurchaseButton.isEnabled = true
-    purchaseButton.isHidden = showBonusFeaturesPurchased
-    altPurchaseButton.isHidden = !showBonusFeaturesPurchased
-    restoreButton.isEnabled = true
+    purchaseButton?.isEnabled = true
+    altPurchaseButton?.isEnabled = true
+    purchaseButton?.isHidden = showBonusFeaturesPurchased
+    altPurchaseButton?.isHidden = !showBonusFeaturesPurchased
+    restoreButton?.isEnabled = true
   }
   
   private func clearMessage() {
-    messageLabel.stringValue = ""
+    messageLabel?.stringValue = ""
   }
   
   private func displayMessage(_ message: String) {
-    messageLabel.stringValue = message
-    messageLabel.textColor = nil
+    messageLabel?.stringValue = message
+    messageLabel?.textColor = nil
   }
   
   private func displayError(_ message: String) {
-    messageLabel.stringValue = message
-    messageLabel.textColor = errorMessageColor
+    messageLabel?.stringValue = message
+    messageLabel?.textColor = errorMessageColor
   }
   
   private func styleLabels() {
-    errorMessageColor = messageLabel.textColor
+    errorMessageColor = messageLabel?.textColor
     
     // assume any link styles needing a default URL want a link to the bonus features section of the website
     for label in labelsToStyle {

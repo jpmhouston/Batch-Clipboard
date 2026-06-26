@@ -28,7 +28,7 @@ class HistoryList: NSManagedObject {
     }
   }
   
-  static func create(withClips clips: any Collection<Clip> = []) -> HistoryList {
+  static func create<C: Collection>(withClips clips: C = []) -> HistoryList where C.Element == Clip {
     let list = HistoryList(context: CoreDataManager.shared.context)
     
     if !clips.isEmpty {
@@ -83,17 +83,19 @@ class HistoryList: NSManagedObject {
     CoreDataManager.shared.saveContext()
   }
   
-  func addExistingClips(_ sourceClips: any Collection<Clip>) {
+  func addExistingClips<C: Collection>(_ sourceClips: C) where C.Element == Clip {
+    // TODO: reproduce crash here, seen Feb 2026 on macOS 12 crash report, in swift_dynamicCast so likely
+    // something to do with its previous declaraction `addExistingClips(_ sourceClips: any Collection<Clip>)`
+    addExistingClips(Array(sourceClips))
+  }
+  
+  func addExistingClips(_ sourceClips: [Clip]) {
     if sourceClips.isEmpty {
       return
     }
     // copy in same order but into index 0 not at the end
     let indexes = NSIndexSet(indexesIn: NSRange(location: 0, length: sourceClips.count))
-    if let sourceClipsArray = sourceClips as? [Clip] { // yes lamer than polymorphism but also d.r.y.
-      insertIntoClips(sourceClipsArray, at: indexes)
-    } else {
-      insertIntoClips(Array(sourceClips), at: indexes)
-    }
+    insertIntoClips(sourceClips, at: indexes)
     CoreDataManager.shared.saveContext()
   }
   

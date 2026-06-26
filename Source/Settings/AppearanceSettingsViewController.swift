@@ -19,17 +19,17 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   
   override var nibName: NSNib.Name? { "AppearanceSettingsViewController" }
   
-  @IBOutlet weak var imageHeightField: NSTextField!
-  @IBOutlet weak var imageHeightStepper: NSStepper!
-  @IBOutlet weak var titleLengthField: NSTextField!
-  @IBOutlet weak var titleLengthStepper: NSStepper!
-  @IBOutlet weak var previewDelayField: NSTextField!
-  @IBOutlet weak var previewDelayStepper: NSStepper!
-  @IBOutlet weak var showSpecialSymbolsButton: NSButton!
-  @IBOutlet weak var filterFieldVisibleCheckbox: NSButton!
-  @IBOutlet weak var filterModeButton: NSPopUpButton!
-  @IBOutlet weak var filterFieldVisibleRow: NSGridRow!
-  @IBOutlet weak var filterModeRow: NSGridRow!
+  @IBOutlet weak var imageHeightField: NSTextField?
+  @IBOutlet weak var imageHeightStepper: NSStepper?
+  @IBOutlet weak var titleLengthField: NSTextField?
+  @IBOutlet weak var titleLengthStepper: NSStepper?
+  @IBOutlet weak var previewDelayField: NSTextField?
+  @IBOutlet weak var previewDelayStepper: NSStepper?
+  @IBOutlet weak var showSpecialSymbolsButton: NSButton?
+  @IBOutlet weak var filterFieldVisibleCheckbox: NSButton?
+  @IBOutlet weak var filterModeButton: NSPopUpButton?
+  @IBOutlet weak var filterFieldVisibleRow: NSGridRow?
+  @IBOutlet weak var filterModeRow: NSGridRow?
   
   private let imageHeightMin = 1
   private let imageHeightMax = 200
@@ -71,32 +71,32 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   
   @IBAction func imageHeightFieldChanged(_ sender: NSTextField) {
     UserDefaults.standard.imageMaxHeight = sender.integerValue
-    imageHeightStepper.integerValue = sender.integerValue
+    imageHeightStepper?.integerValue = sender.integerValue
   }
   
   @IBAction func imageHeightStepperChanged(_ sender: NSStepper) {
     UserDefaults.standard.imageMaxHeight = sender.integerValue
-    imageHeightField.integerValue = sender.integerValue
+    imageHeightField?.integerValue = sender.integerValue
   }
   
   @IBAction func titleLengthFieldChanged(_ sender: NSTextField) {
     UserDefaults.standard.maxTitleLength = sender.integerValue
-    titleLengthStepper.integerValue = sender.integerValue
+    titleLengthStepper?.integerValue = sender.integerValue
   }
   
   @IBAction func titleLengthStepperChanged(_ sender: NSStepper) {
     UserDefaults.standard.maxTitleLength = sender.integerValue
-    titleLengthField.integerValue = sender.integerValue
+    titleLengthField?.integerValue = sender.integerValue
   }
   
   @IBAction func previewDelayFieldChanged(_ sender: NSTextField) {
     UserDefaults.standard.previewDelay = Int(sender.doubleValue * 1000) 
-    previewDelayStepper.doubleValue = sender.doubleValue
+    previewDelayStepper?.doubleValue = sender.doubleValue
   }
   
   @IBAction func previewDelayStepperChanged(_ sender: NSStepper) {
     UserDefaults.standard.previewDelay = Int(sender.doubleValue * 1000)
-    previewDelayField.doubleValue = sender.doubleValue
+    previewDelayField?.doubleValue = sender.doubleValue
   }
   
   @IBAction func specialSymbolsVisibilityChanged(_ sender: NSButton) {
@@ -126,8 +126,8 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
   // MARK: -
   
   private func populateImageHeight() {
-    imageHeightField.integerValue =  UserDefaults.standard.imageMaxHeight
-    imageHeightStepper.integerValue =  UserDefaults.standard.imageMaxHeight
+    imageHeightField?.integerValue =  UserDefaults.standard.imageMaxHeight
+    imageHeightStepper?.integerValue =  UserDefaults.standard.imageMaxHeight
   }
   
   private func setImageHeightRange() {
@@ -135,10 +135,10 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     imageHeightFormatter.minimum = imageHeightMin as NSNumber
     imageHeightFormatter.maximum = imageHeightMax as NSNumber
     imageHeightFormatter.maximumFractionDigits = 0
-    imageHeightField.formatter = imageHeightFormatter
+    imageHeightField?.formatter = imageHeightFormatter
     
-    imageHeightStepper.minValue = Double(imageHeightMin)
-    imageHeightStepper.maxValue = Double(imageHeightMax)
+    imageHeightStepper?.minValue = Double(imageHeightMin)
+    imageHeightStepper?.maxValue = Double(imageHeightMax)
   }
   
   private func setTitleLengthRange() {
@@ -146,14 +146,14 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     titleLengthFormatter.minimum = titleLengthMin as NSNumber
     titleLengthFormatter.maximum = titleLengthMax as NSNumber
     titleLengthFormatter.maximumFractionDigits = 0
-    titleLengthField.formatter = titleLengthFormatter
-    titleLengthStepper.minValue = Double(titleLengthMin)
-    titleLengthStepper.maxValue = Double(titleLengthMax)
+    titleLengthField?.formatter = titleLengthFormatter
+    titleLengthStepper?.minValue = Double(titleLengthMin)
+    titleLengthStepper?.maxValue = Double(titleLengthMax)
   }
   
   private func populateTitleLength() {
-    titleLengthField.integerValue = UserDefaults.standard.maxTitleLength
-    titleLengthStepper.integerValue = UserDefaults.standard.maxTitleLength
+    titleLengthField?.integerValue = UserDefaults.standard.maxTitleLength
+    titleLengthStepper?.integerValue = UserDefaults.standard.maxTitleLength
   }
   
   private func setPreviewDelayRange() {
@@ -163,42 +163,42 @@ class AppearanceSettingsViewController: NSViewController, SettingsPane, NSTextFi
     previewDelayFormatter.minimum = minSeconds as NSNumber
     previewDelayFormatter.maximum = maxSeconds as NSNumber
     previewDelayFormatter.maximumFractionDigits = 2
-    previewDelayField.formatter = previewDelayFormatter
-    previewDelayStepper.minValue = minSeconds
-    previewDelayStepper.maxValue = maxSeconds
-    previewDelayStepper.increment = 0.05
+    previewDelayField?.formatter = previewDelayFormatter
+    previewDelayStepper?.minValue = minSeconds
+    previewDelayStepper?.maxValue = maxSeconds
+    previewDelayStepper?.increment = 0.05
   }
   
   private func populatePreviewDelay() {
     let delaySeconds = Double(UserDefaults.standard.previewDelay) / 1000.0
-    previewDelayField.doubleValue = delaySeconds
-    previewDelayStepper.doubleValue = delaySeconds
+    previewDelayField?.doubleValue = delaySeconds
+    previewDelayStepper?.doubleValue = delaySeconds
   }
   
   private func populateShowSpecialSymbols() {
-    showSpecialSymbolsButton.state = UserDefaults.standard.showSpecialSymbols ? .on : .off
+    showSpecialSymbolsButton?.state = UserDefaults.standard.showSpecialSymbols ? .on : .off
   }
   
   private func populateFilterFieldVisibility() {
-    filterFieldVisibleCheckbox.state = UserDefaults.standard.showHistoryFilter ? .on : .off
+    filterFieldVisibleCheckbox?.state = UserDefaults.standard.showHistoryFilter ? .on : .off
   }
   
   private func updateFilterModeEnabled() {
-    filterModeButton.isEnabled = UserDefaults.standard.showHistoryFilter
+    filterModeButton?.isEnabled = UserDefaults.standard.showHistoryFilter
   } 
   
   private func populateFilterMode() {
     switch Searcher.Mode(rawValue: UserDefaults.standard.searchMode) {
     case .exact:
-      filterModeButton.selectItem(withTag: 0)
+      filterModeButton?.selectItem(withTag: 0)
     case .fuzzy:
-      filterModeButton.selectItem(withTag: 1)
+      filterModeButton?.selectItem(withTag: 1)
     case .regexp:
-      filterModeButton.selectItem(withTag: 2)
+      filterModeButton?.selectItem(withTag: 2)
     case .mixed:
-      filterModeButton.selectItem(withTag: 3)
+      filterModeButton?.selectItem(withTag: 3)
     default:
-      filterModeButton.selectItem(withTag: 0) // when no setting use .exact 
+      filterModeButton?.selectItem(withTag: 0) // when no setting use .exact 
     }
   }
   

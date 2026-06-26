@@ -20,20 +20,19 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   
   override var nibName: NSNib.Name? { "AdvancedSettingsViewController" }
   
-  @IBOutlet weak var clearOnQuitCheckbox: NSButton!
-  @IBOutlet weak var clearSystemClipboardCheckbox: NSButton!
-  @IBOutlet weak var clearDataVsBatchesLabel: NSTextField!
-  @IBOutlet weak var advancedPasteCheckbox: NSButton!
-  @IBOutlet weak var repeatBatchCheckbox: NSButton!
-  @IBOutlet weak var repeatBatchSection: NSStackView!
-  @IBOutlet weak var menuHidingCheckbox: NSButton!
-  @IBOutlet weak var menuHidingSection: NSStackView!
-  @IBOutlet weak var turnOffMonitoringCheckbox: NSButton!
-  @IBOutlet weak var avoidTakingFocusCheckbox: NSButton!
-  @IBOutlet weak var legacyFocusCheckbox: NSButton!
-  @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField!
-  @IBOutlet weak var subsequentHistoryOnDescriptionField: NSTextField!
-  @IBOutlet weak var pasteboardLoggingCheckbox: NSButton!
+  @IBOutlet weak var clearOnQuitCheckbox: NSButton?
+  @IBOutlet weak var clearSystemClipboardCheckbox: NSButton?
+  @IBOutlet weak var clearDataVsBatchesLabel: NSTextField?
+  @IBOutlet weak var advancedPasteCheckbox: NSButton?
+  @IBOutlet weak var repeatBatchCheckbox: NSButton?
+  @IBOutlet weak var repeatBatchSection: NSStackView?
+  @IBOutlet weak var menuHidingCheckbox: NSButton?
+  @IBOutlet weak var menuHidingSection: NSStackView?
+  @IBOutlet weak var turnOffMonitoringCheckbox: NSButton?
+  @IBOutlet weak var avoidTakingFocusCheckbox: NSButton?
+  @IBOutlet weak var legacyFocusCheckbox: NSButton?
+  @IBOutlet weak var initialHistoryOffDescriptionField: NSTextField?
+  @IBOutlet weak var pasteboardLoggingCheckbox: NSButton?
   
   #if MENU_HIDING_IN_ADVANCED_PANEL
   private var showMenuHiding: Bool { AppModel.allowMenuHiding }
@@ -84,59 +83,59 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   private func populateClearOnQuit() {
-    clearOnQuitCheckbox.state = UserDefaults.standard.clearOnQuit ? .on : .off
+    clearOnQuitCheckbox?.state = UserDefaults.standard.clearOnQuit ? .on : .off
   }
   
   private func populateClearSystemClipboard() {
-    clearSystemClipboardCheckbox.state = UserDefaults.standard.clearSystemClipboard ? .on : .off
+    clearSystemClipboardCheckbox?.state = UserDefaults.standard.clearSystemClipboard ? .on : .off
   }
   
   private func updateClearDataDescriptionVisibility() {
-    clearDataVsBatchesLabel.isHidden = !AppModel.allowSavedBatches
+    clearDataVsBatchesLabel?.isHidden = !AppModel.allowSavedBatches
   }
   
   private func populateAdvancedPaste() {
-    advancedPasteCheckbox.state = UserDefaults.standard.showAdvancedPasteMenuItems ? .on : .off
+    advancedPasteCheckbox?.state = UserDefaults.standard.showAdvancedPasteMenuItems ? .on : .off
   }
   
   private func populateRepeatBatch() {
-    repeatBatchCheckbox.state = UserDefaults.standard.showRepeatBatchDefaultOption ? .on : .off
+    repeatBatchCheckbox?.state = UserDefaults.standard.showRepeatBatchDefaultOption ? .on : .off
   }
   
   private func updateRepeatBatchVisibility() {
-    repeatBatchSection.isHidden = !AppModel.allowSavedBatches 
+    repeatBatchSection?.isHidden = !AppModel.allowSavedBatches 
   }
   
   private func populateMenuHiding() {
     let hideMenu = UserDefaults.standard.menuHiddenWhenInactive
-    menuHidingCheckbox.state = hideMenu ? .on : .off
+    menuHidingCheckbox?.state = hideMenu ? .on : .off
   }
   
   private func updateMenuHidingVisibility() {
     // show the menu hiding checbox & field when feature allowed
-    menuHidingSection.isHidden = !showMenuHiding
+    menuHidingSection?.isHidden = !showMenuHiding
   }
   
   private func populateTurnOffMonitoring() {
-    turnOffMonitoringCheckbox.state = UserDefaults.standard.ignoreEvents ? .on : .off
+    turnOffMonitoringCheckbox?.state = UserDefaults.standard.ignoreEvents ? .on : .off
   }
   
   private func updateMonitoringDescription() {
     // there's an extra description label regarding history and continuous clipboard
     // monitoring being off, hide it when using history, show it otherwise
-    initialHistoryOffDescriptionField.isHidden = UserDefaults.standard.keepHistory
+    initialHistoryOffDescriptionField?.isHidden = UserDefaults.standard.keepHistory
   }
   
   private func populateAvoidTakingFocus() {
-    avoidTakingFocusCheckbox.state = UserDefaults.standard.avoidTakingFocus ? .on : .off
+    avoidTakingFocusCheckbox?.state = UserDefaults.standard.avoidTakingFocus ? .on : .off
   }
   
   private func populateLegacyFocus() {
-    legacyFocusCheckbox.state = UserDefaults.standard.legacyFocusTechnique ? .on : .off
+    legacyFocusCheckbox?.state = UserDefaults.standard.legacyFocusTechnique ? .on : .off
   }
   
   private func populateLogging() {
-    pasteboardLoggingCheckbox.state = UserDefaults.standard.pasteboardLoggingOn ? .on : .off
+    pasteboardLoggingCheckbox?.state = UserDefaults.standard.pasteboardLoggingOn ? .on : .off
   }
   
   // MARK: -

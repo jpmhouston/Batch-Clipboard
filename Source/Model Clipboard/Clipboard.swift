@@ -600,7 +600,7 @@ class Clipboard: CustomDebugStringConvertible {
     default: nil
     }
   }
-  func strForContents(_ contents: any Collection<ClipContent>) -> String? {
+  func strForContents<C: Collection>(_ contents: C) -> String? where C.Element == ClipContent {
     if let textContent = contents.first(where: { $0.type == NSPasteboard.PasteboardType.string.rawValue }),
        let d = textContent.value { String(data: d, encoding: .utf8) }
     else { nil }
@@ -612,7 +612,7 @@ class Clipboard: CustomDebugStringConvertible {
     accumulatedDescriptions.append("'\(str)'")
     accumulatedTextBuffer.append(str)
   }
-  func accumulateContents(_ contents: any Collection<ClipContent>) {
+  func accumulateContents<C: Collection>(_ contents: C) where C.Element == ClipContent {
     accumulatedDescriptions.append(Clip.debugContentsDescription(contents, ofLength: 0))
     if let str = strForContents(contents) {
       accumulatedTextBuffer.append(str)

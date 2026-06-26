@@ -12,7 +12,7 @@
 import AppKit
 
 class IgnoreApplicationsViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
-  @IBOutlet weak var ignoredItemsTable: NSTableView!
+  @IBOutlet weak var ignoredItemsTable: NSTableView?
 
   private let appCellIdentifier = NSUserInterfaceItemIdentifier(rawValue: "appCell")
 
@@ -59,11 +59,10 @@ class IgnoreApplicationsViewController: NSViewController, NSTableViewDataSource,
     case 0:
       addIgnoredApp()
     case 1:
-      guard ignoredItemsTable.selectedRow != -1 else {
+      guard let row = ignoredItemsTable?.selectedRow, row != -1 else {
         return
       }
-
-      removeIgnoredApp(ignoredItemsTable.selectedRow)
+      removeIgnoredApp(row)
     default:
       return
     }
@@ -81,13 +80,13 @@ class IgnoreApplicationsViewController: NSViewController, NSTableViewDataSource,
          let bundleIdentifier = bundle.bundleIdentifier,
          !ignoredApps.contains(bundleIdentifier) {
         ignoredApps.append(bundleIdentifier)
-        ignoredItemsTable.reloadData()
+        ignoredItemsTable?.reloadData()
       }
     }
   }
 
   private func removeIgnoredApp(_ row: Int) {
     ignoredApps.remove(at: row)
-    ignoredItemsTable.reloadData()
+    ignoredItemsTable?.reloadData()
   }
 }

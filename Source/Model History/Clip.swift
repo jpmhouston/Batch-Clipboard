@@ -117,7 +117,7 @@ class Clip: NSManagedObject {
     return lhs.getContents().count == rhs.getContents().count && lhs.contentsEqual(rhs)
   }
   
-  static func create(withContents contents: any Collection<ClipContent>, application: String? = nil) -> Clip {
+  static func create<C: Collection>(withContents contents: C, application: String? = nil) -> Clip where C.Element == ClipContent {
     let clip = Clip(context: CoreDataManager.shared.context)
     
     clip.application = application
@@ -174,7 +174,7 @@ class Clip: NSManagedObject {
     return contentsEqual(otherClip.getContentsArray())
   }
   
-  func contentsEqual(_ otherContents: [ClipContent]) -> Bool {
+  func contentsEqual<C: Collection>(_ otherContents: C) -> Bool where C.Element == ClipContent {
     return otherContents.filter { otherContent in
       otherContent.type.isExcluded(from: [
         NSPasteboard.PasteboardType.modified.rawValue,
@@ -187,7 +187,7 @@ class Clip: NSManagedObject {
     }
   }
   
-  func addContents(_ contents: any Collection<ClipContent>) {
+  func addContents<C: Collection>(_ contents: C) where C.Element == ClipContent {
     contents.forEach(addToContents(_:))
   }
   
@@ -331,18 +331,12 @@ class Clip: NSManagedObject {
     Self.debugContentsDescription(getContentsArray(), ofLength: length)
   }
   
-  static func debugContentsDescription(_ contents: any Collection<ClipContent>, ofLength length: Int? = nil) -> String {
+  static func debugContentsDescription<C: Collection>(_ contents: C, ofLength length: Int? = nil) -> String where C.Element == ClipContent {
     let pairs = contents.compactMap {
       if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t), v) } else { nil }
     }
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
   }
-//  static func debugContentsDescription(_ contents: [ClipContent], ofLength length: Int? = nil) -> String {
-//    let pairs = contents.compactMap {
-//      if let t=$0.type, let v=$0.value { (NSPasteboard.PasteboardType(t),v) } else { nil }
-//    }
-//    return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)
-//  }
   
   static func debugContentsDescription(for pairs: [(NSPasteboard.PasteboardType, Data)], ofLength length: Int? = nil) -> String {
     return debugContentsDescription(forKeys: pairs.map(\.0), values: pairs.map(\.1), ofLength: length)

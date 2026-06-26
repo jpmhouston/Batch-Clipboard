@@ -32,24 +32,24 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   )
   
-  @IBOutlet weak var launchAtLoginCheckbox: NSButton!
-  @IBOutlet weak var openLoginItemsPanelSection: NSView!
-  @IBOutlet weak var openLoginItemsPanelButton: NSButton!
-  @IBOutlet weak var checkForUpdatesSection: NSView!
-  @IBOutlet weak var automaticUpdatesCheckbox: NSButton!
-  @IBOutlet weak var betaFeedUpdatesCheckbox: NSButton!
-  @IBOutlet weak var checkForUpdatesSeparator: NSView!
-  @IBOutlet weak var menuHidingCheckbox: NSButton!
-  @IBOutlet weak var menuHiddenBlurbNormal: NSTextField!
-  @IBOutlet weak var menuHiddenBlurbLaunchStartsQueue: NSTextField!
-  @IBOutlet weak var menuHiddenBlurbDockShowing: NSTextField!
-  @IBOutlet weak var menuHiddenBlurbDockStartsQueue: NSTextField!
-  @IBOutlet weak var showInDockCheckbox: NSButton!
-  @IBOutlet weak var relaunchingStartsBatchCheckbox: NSButton!
-  @IBOutlet weak var promoteExtrasCheckbox: NSButton!
-  @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton!
-  @IBOutlet weak var promoteExtrasSeparator: NSView!
-  @IBOutlet weak var promoteExtrasItemsSection: NSView!
+  @IBOutlet weak var launchAtLoginCheckbox: NSButton?
+  @IBOutlet weak var openLoginItemsPanelSection: NSView?
+  @IBOutlet weak var openLoginItemsPanelButton: NSButton?
+  @IBOutlet weak var checkForUpdatesSection: NSView?
+  @IBOutlet weak var automaticUpdatesCheckbox: NSButton?
+  @IBOutlet weak var betaFeedUpdatesCheckbox: NSButton?
+  @IBOutlet weak var checkForUpdatesSeparator: NSView?
+  @IBOutlet weak var menuHidingCheckbox: NSButton?
+  @IBOutlet weak var menuHiddenBlurbNormal: NSTextField?
+  @IBOutlet weak var menuHiddenBlurbLaunchStartsQueue: NSTextField?
+  @IBOutlet weak var menuHiddenBlurbDockShowing: NSTextField?
+  @IBOutlet weak var menuHiddenBlurbDockStartsQueue: NSTextField?
+  @IBOutlet weak var showInDockCheckbox: NSButton?
+  @IBOutlet weak var relaunchingStartsBatchCheckbox: NSButton?
+  @IBOutlet weak var promoteExtrasCheckbox: NSButton?
+  @IBOutlet weak var promoteExtrasExpiresCheckbox: NSButton?
+  @IBOutlet weak var promoteExtrasSeparator: NSView?
+  @IBOutlet weak var promoteExtrasItemsSection: NSView?
   
   #if SPARKLE_UPDATES
   init(updater: SPUUpdater) {
@@ -114,48 +114,48 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
     guard #available(macOS 13.0, *) else {
       return
     }
-    launchAtLoginCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
+    launchAtLoginCheckbox?.state = SMAppService.mainApp.status == .enabled ? .on : .off
   }
   
   private func populateSparkleAutomaticUpdates() {
     #if SPARKLE_UPDATES
     let automatic = sparkleUpdater.automaticallyChecksForUpdates
-    automaticUpdatesCheckbox.state = automatic ? .on : .off
+    automaticUpdatesCheckbox?.state = automatic ? .on : .off
     enableSparkleBetaFeed(automatic)
     #endif
   }
   
   private func enableSparkleBetaFeed(_ enable: Bool = true) {
     #if SPARKLE_UPDATES
-    betaFeedUpdatesCheckbox.isEnabled = enable
+    betaFeedUpdatesCheckbox?.isEnabled = enable
     #endif
   }
   
   private func populateSparkleBetaFeed() {
     #if SPARKLE_UPDATES
     let useBetaFeed = UserDefaults.standard.sparkleUsesBetaFeed
-    betaFeedUpdatesCheckbox.state = useBetaFeed ? .on : .off
+    betaFeedUpdatesCheckbox?.state = useBetaFeed ? .on : .off
     #endif
   }
   
   private func populateMenuHiding() {
     let hideMenu = UserDefaults.standard.menuHiddenWhenInactive
-    menuHidingCheckbox.state = hideMenu ? .on : .off
+    menuHidingCheckbox?.state = hideMenu ? .on : .off
   }
   
   private func populateDockOptions() {
     let showsInDock = UserDefaults.standard.showsInDock
     let relaunchingStartsBatch = UserDefaults.standard.relaunchingStartsBatch
-    showInDockCheckbox.state = showsInDock ? .on : .off
-    relaunchingStartsBatchCheckbox.state = relaunchingStartsBatch ? .on : .off
+    showInDockCheckbox?.state = showsInDock ? .on : .off
+    relaunchingStartsBatchCheckbox?.state = relaunchingStartsBatch ? .on : .off
   }
   
   private func populatePromoteExtrasOptions() {
     #if APP_STORE
-    promoteExtrasCheckbox.state = UserDefaults.standard.promoteExtras ? .on : .off
-    promoteExtrasExpiresCheckbox.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
-    promoteExtrasCheckbox.isEnabled = !AppModel.hasBoughtExtras
-    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+    promoteExtrasCheckbox?.state = UserDefaults.standard.promoteExtras ? .on : .off
+    promoteExtrasExpiresCheckbox?.state = UserDefaults.standard.promoteExtrasExpires ? .on : .off
+    promoteExtrasCheckbox?.isEnabled = !AppModel.hasBoughtExtras
+    promoteExtrasExpiresCheckbox?.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
     #endif
   }
   
@@ -248,7 +248,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   
   #if APP_STORE
   private func updatePromoteExtrasExpirationOption() {
-    promoteExtrasExpiresCheckbox.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
+    promoteExtrasExpiresCheckbox?.isEnabled = !AppModel.hasBoughtExtras && UserDefaults.standard.promoteExtras
   }
 
   private func updatePromoteExtrasExpirationTimer() {
@@ -262,38 +262,34 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   // MARK: -
   
   private func showSparkleUpdateOptions(_ show: Bool) {
-    checkForUpdatesSection.isHidden = !show
-    //checkForUpdatesSeparator.isHidden = !show
+    checkForUpdatesSection?.isHidden = !show
+    //checkForUpdatesSeparator?.isHidden = !show
   }
   
   private func showLaunchAtLoginOptions(_ show: Bool) {
-    launchAtLoginCheckbox.isHidden = !show
-    openLoginItemsPanelSection.isHidden = show
+    launchAtLoginCheckbox?.isHidden = !show
+    openLoginItemsPanelSection?.isHidden = show
   }
   
   private func showMenuHidingLabels() {
-    menuHiddenBlurbNormal.isHidden = true
-    menuHiddenBlurbLaunchStartsQueue.isHidden = true
-    menuHiddenBlurbDockShowing.isHidden = true
-    menuHiddenBlurbDockStartsQueue.isHidden = true
+    menuHiddenBlurbNormal?.isHidden = true
+    menuHiddenBlurbLaunchStartsQueue?.isHidden = true
+    menuHiddenBlurbDockShowing?.isHidden = true
+    menuHiddenBlurbDockStartsQueue?.isHidden = true
     if UserDefaults.standard.menuHiddenWhenInactive {
       let showsInDock = UserDefaults.standard.showsInDock
       let relaunchingStartsBatch = UserDefaults.standard.relaunchingStartsBatch
       switch (showsInDock, relaunchingStartsBatch) {
-      case (false, false): menuHiddenBlurbNormal.isHidden = false
-      case (false, true): menuHiddenBlurbLaunchStartsQueue.isHidden = false
-      case (true, false): menuHiddenBlurbDockShowing.isHidden = false
-      case (true, true): menuHiddenBlurbDockStartsQueue.isHidden = false
+      case (false, false): menuHiddenBlurbNormal?.isHidden = false
+      case (false, true): menuHiddenBlurbLaunchStartsQueue?.isHidden = false
+      case (true, false): menuHiddenBlurbDockShowing?.isHidden = false
+      case (true, true): menuHiddenBlurbDockStartsQueue?.isHidden = false
       }
     }
   }
   
   private func showPromoteExtrasOptions(_ show: Bool) {
-    promoteExtrasSeparator.isHidden = !show
-    promoteExtrasItemsSection.isHidden = !show
+    promoteExtrasSeparator?.isHidden = !show
+    promoteExtrasItemsSection?.isHidden = !show
   }
-}
-
-extension NSView {
-  var isVisible: Bool { !isHidden }
 }

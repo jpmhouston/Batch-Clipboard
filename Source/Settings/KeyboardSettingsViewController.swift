@@ -26,16 +26,17 @@ class KeyboardSettingsViewController: NSViewController, SettingsPane {
   private let startWithCurrentHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueStartWithCurrent)
   private let replayHotkeyRecorder = KeyboardShortcuts.RecorderCocoa(for: .queueReplay)
   
-  @IBOutlet weak var copyHotkeyContainerView: NSView!
-  @IBOutlet weak var pasteHotkeyContainerView: NSView!
-  @IBOutlet weak var startHotkeyContainerView: NSView!
-  @IBOutlet weak var startWithCurrentHotkeyContainerView: NSView!
-  @IBOutlet weak var replayHotkeyContainerView: NSView!
+  @IBOutlet weak var copyHotkeyContainerView: NSView?
+  @IBOutlet weak var pasteHotkeyContainerView: NSView?
+  @IBOutlet weak var startHotkeyContainerView: NSView?
+  @IBOutlet weak var startWithCurrentHotkeyContainerView: NSView?
+  @IBOutlet weak var replayHotkeyContainerView: NSView?
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    func addSubviewWithManualLayout(_ par: NSView, _ sub: NSView) {
+    func addSubviewWithManualLayout(_ par: NSView?, _ sub: NSView?) {
+      guard let par = par, let sub = sub else { return }
       par.translatesAutoresizingMaskIntoConstraints = false
       sub.translatesAutoresizingMaskIntoConstraints = false
       par.addSubview(sub)

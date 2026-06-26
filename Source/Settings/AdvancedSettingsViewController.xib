@@ -20,7 +20,6 @@
                 <outlet property="pasteboardLoggingCheckbox" destination="L62-zW-rHz" id="B2h-ow-cc4"/>
                 <outlet property="repeatBatchCheckbox" destination="K5b-eQ-vAg" id="BHR-Ri-3Jd"/>
                 <outlet property="repeatBatchSection" destination="REJ-Xb-Dyu" id="B9X-EY-wzu"/>
-                <outlet property="subsequentHistoryOnDescriptionField" destination="ahJ-Lm-rjm" id="vSr-7E-gK2"/>
                 <outlet property="turnOffMonitoringCheckbox" destination="RTY-w8-2Wt" id="xy5-W3-yjD"/>
                 <outlet property="view" destination="vfL-pB-YIa" id="gmn-hk-Nsm"/>
             </connections>
@@ -56,7 +55,7 @@
                                         <action selector="clearSystemClipboardChanged:" target="-2" id="1Lb-Tj-REC"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T3s-O5-vAv">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="T3s-O5-vAv">
                                     <rect key="frame" x="-2" y="0.0" width="552" height="28"/>
                                     <textFieldCell key="cell" id="KBR-9J-tGr">
                                         <font key="font" metaFont="smallSystem"/>
@@ -93,7 +92,7 @@
                                         <action selector="advancedPasteChanged:" target="-2" id="u1a-UW-y3J"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YWG-jx-Abt">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YWG-jx-Abt">
                                     <rect key="frame" x="-2" y="0.0" width="552" height="42"/>
                                     <textFieldCell key="cell" id="FZ5-RX-jF6">
                                         <font key="font" metaFont="smallSystem"/>
@@ -125,7 +124,7 @@
                                         <action selector="repeatBatchChanged:" target="-2" id="Aev-Mh-Zwh"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dZN-VX-teu">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dZN-VX-teu">
                                     <rect key="frame" x="-2" y="0.0" width="552" height="28"/>
                                     <textFieldCell key="cell" id="YwO-0B-4rJ">
                                         <font key="font" metaFont="smallSystem"/>
@@ -157,7 +156,7 @@
                                         <action selector="menuHidingChanged:" target="-2" id="Ofa-T0-3NO"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="NSL-k6-qIy">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="NSL-k6-qIy">
                                     <rect key="frame" x="-2" y="0.0" width="552" height="56"/>
                                     <textFieldCell key="cell" id="WtK-yP-Fza">
                                         <font key="font" metaFont="smallSystem"/>
@@ -179,7 +178,7 @@
                         <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" verticalHuggingPriority="750" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sS5-g7-Bjx">
                             <rect key="frame" x="0.0" y="427" width="404" height="24"/>
                             <subviews>
-                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YSo-cr-ea5">
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YSo-cr-ea5">
                                     <rect key="frame" x="-2" y="4" width="341" height="16"/>
                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Reset supressed confirmation alerts (“Don't ask again”)" id="qGw-As-yfO">
                                         <font key="font" usesAppearanceFont="YES"/>
@@ -226,7 +225,7 @@
                                         <action selector="turnOffMonitoringChanged:" target="-2" id="Kk2-0S-Xoz"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="PGC-0Y-l3G">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="PGC-0Y-l3G">
                                     <rect key="frame" x="-2" y="181" width="552" height="42"/>
                                     <textFieldCell key="cell" id="VHi-Vw-nEB">
                                         <font key="font" metaFont="systemSemibold" size="11"/>
@@ -235,7 +234,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="ahJ-Lm-rjm">
                                     <rect key="frame" x="-2" y="159" width="343" height="14"/>
                                     <textFieldCell key="cell" title="You may wish to disable monitoring while copying sensitive data." id="Ejh-zi-AFs">
                                         <font key="font" metaFont="smallSystem"/>
@@ -243,7 +242,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="pW7-e8-4Mf">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="pW7-e8-4Mf">
                                     <rect key="frame" x="-2" y="137" width="518" height="14"/>
                                     <textFieldCell key="cell" title="You can also disable by clicking the menu icon with ^⌥ pressed, and the same again to re-enable." id="54J-ir-wdI">
                                         <font key="font" metaFont="smallSystem"/>
@@ -251,7 +250,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="tCt-i9-YKv">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="tCt-i9-YKv">
                                     <rect key="frame" x="-2" y="115" width="258" height="14"/>
                                     <textFieldCell key="cell" title="To disable and then re-enable programmatically:" id="fjJ-ch-q05">
                                         <font key="font" metaFont="smallSystem"/>
@@ -259,7 +258,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Fpb-AC-gT0">
                                     <rect key="frame" x="-2" y="74" width="360" height="33"/>
                                     <textFieldCell key="cell" selectable="YES" id="LFh-6b-GFi">
                                         <font key="font" size="10" name="Menlo-Regular"/>
@@ -270,7 +269,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="b73-sw-gL3">
                                     <rect key="frame" x="-2" y="52" width="472" height="14"/>
                                     <textFieldCell key="cell" title="Or you can momentarily disable for just the next copy, click the menu with ^⌥⇧ pressed." id="lwS-2p-WwS">
                                         <font key="font" metaFont="smallSystem"/>
@@ -278,7 +277,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Z0r-EQ-N1g">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Z0r-EQ-N1g">
                                     <rect key="frame" x="-2" y="30" width="337" height="14"/>
                                     <textFieldCell key="cell" title="To momentarily disable for just the next copy programmatically:" id="9FD-O1-EeI">
                                         <font key="font" metaFont="smallSystem"/>
@@ -286,7 +285,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Sb1-dZ-Kuf">
                                     <rect key="frame" x="-2" y="0.0" width="396" height="22"/>
                                     <textFieldCell key="cell" selectable="YES" id="yeX-On-Ble">
                                         <font key="font" size="10" name="Menlo-Regular"/>
@@ -337,7 +336,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                                         <action selector="avoidTakingFocusChanged:" target="-2" id="5Pw-LA-h4U"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="t0P-wy-4AO">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="t0P-wy-4AO">
                                     <rect key="frame" x="-2" y="0.0" width="552" height="28"/>
                                     <textFieldCell key="cell" title="Turn this on only if you have issues with how the Batch Clipboard menu opens when using some of your applications." id="kOc-YD-pYC">
                                         <font key="font" metaFont="smallSystem"/>
@@ -368,7 +367,7 @@ defaults write lol.bananameter.batchclip ignoreEvents false</string>
                                         <action selector="legacyFocusChanged:" target="-2" id="SRd-qG-dcX"/>
                                     </connections>
                                 </button>
-                                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="dRG-hi-pNI">
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="dRG-hi-pNI">
                                     <rect key="frame" x="-2" y="0.0" width="299" height="14"/>
                                     <textFieldCell key="cell" title="Changing this requires quit and re-launch to take effect." id="D2Y-Vy-xP7">
                                         <font key="font" metaFont="smallSystem"/>

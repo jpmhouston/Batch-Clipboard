@@ -21,27 +21,27 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
   
   @objc dynamic var keepHistoryChange = UserDefaults.standard.keepHistory
   
-  @IBOutlet weak var storeFilesButton: NSButton!
-  @IBOutlet weak var storeImagesButton: NSButton!
-  @IBOutlet weak var storeTextButton: NSButton!
-  @IBOutlet weak var keepHistorySwitch: NSSwitch!
-  @IBOutlet weak var keepHistoryOnDescription: NSTextField!
-  @IBOutlet weak var keepHistoryOffDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsField: NSTextField!
-  @IBOutlet weak var numberOfItemsStepper: NSStepper!
-  @IBOutlet weak var numberOfItemsDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsExtendedDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsEmptyDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsDisabledDescription: NSTextField!
-  @IBOutlet weak var numberOfItemsFieldRow: NSGridRow!
-  @IBOutlet weak var numberOfItemsDescriptionRow: NSGridRow!
-  @IBOutlet weak var historySizeField: NSTextField!
-  @IBOutlet weak var historySizeStepper: NSStepper!
-  @IBOutlet weak var historySizeDescription: NSTextField!
-  @IBOutlet weak var historySizeOnlyDescription: NSTextField!
-  @IBOutlet weak var historySizeDisabledDescription: NSTextField!
-  @IBOutlet weak var historySizeFieldRow: NSGridRow!
-  @IBOutlet weak var historySizeDescriptionRow: NSGridRow!
+  @IBOutlet weak var storeFilesButton: NSButton?
+  @IBOutlet weak var storeImagesButton: NSButton?
+  @IBOutlet weak var storeTextButton: NSButton?
+  @IBOutlet weak var keepHistorySwitch: NSSwitch?
+  @IBOutlet weak var keepHistoryOnDescription: NSTextField?
+  @IBOutlet weak var keepHistoryOffDescription: NSTextField?
+  @IBOutlet weak var numberOfItemsField: NSTextField?
+  @IBOutlet weak var numberOfItemsStepper: NSStepper?
+  @IBOutlet weak var numberOfItemsDescription: NSTextField?
+  @IBOutlet weak var numberOfItemsExtendedDescription: NSTextField?
+  @IBOutlet weak var numberOfItemsEmptyDescription: NSTextField?
+  @IBOutlet weak var numberOfItemsDisabledDescription: NSTextField?
+  @IBOutlet weak var numberOfItemsFieldRow: NSGridRow?
+  @IBOutlet weak var numberOfItemsDescriptionRow: NSGridRow?
+  @IBOutlet weak var historySizeField: NSTextField?
+  @IBOutlet weak var historySizeStepper: NSStepper?
+  @IBOutlet weak var historySizeDescription: NSTextField?
+  @IBOutlet weak var historySizeOnlyDescription: NSTextField?
+  @IBOutlet weak var historySizeDisabledDescription: NSTextField?
+  @IBOutlet weak var historySizeFieldRow: NSGridRow?
+  @IBOutlet weak var historySizeDescriptionRow: NSGridRow?
   
   private var historySavingObserver: NSKeyValueObservation?
   
@@ -160,7 +160,7 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
       UserDefaults.standard.maxMenuItems = 0
     } else {
       UserDefaults.standard.maxMenuItems = sender.integerValue
-      numberOfItemsStepper.integerValue = sender.integerValue
+      numberOfItemsStepper?.integerValue = sender.integerValue
     }
     updateVisibleNumberOfItemsDescription()
     updateVisibleHistorySizeDescription()
@@ -168,19 +168,19 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
   
   @IBAction func numberOfItemsStepperChanged(_ sender: NSStepper) {
     UserDefaults.standard.maxMenuItems = sender.integerValue
-    numberOfItemsField.integerValue = sender.integerValue
+    numberOfItemsField?.integerValue = sender.integerValue
     updateVisibleNumberOfItemsDescription()
     updateVisibleHistorySizeDescription()
   }
   
   @IBAction func historySizeFieldChanged(_ sender: NSTextField) {
     UserDefaults.standard.historySize = sender.integerValue
-    historySizeStepper.integerValue = sender.integerValue
+    historySizeStepper?.integerValue = sender.integerValue
   }
   
   @IBAction func historySizeStepperChanged(_ sender: NSStepper) {
     UserDefaults.standard.historySize = sender.integerValue
-    historySizeField.integerValue = sender.integerValue
+    historySizeField?.integerValue = sender.integerValue
   }
   
   // MARK: -
@@ -195,18 +195,18 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
   
   private func populateStoredTypes() {
     let types = UserDefaults.standard.enabledPasteboardTypes
-    storeFilesButton.state = types.contains(.fileURL) ? .on : .off
-    storeImagesButton.state = types.isSuperset(of: [.tiff, .png]) ? .on : .off
-    storeTextButton.state = types.contains(.string) ? .on : .off
+    storeFilesButton?.state = types.contains(.fileURL) ? .on : .off
+    storeImagesButton?.state = types.isSuperset(of: [.tiff, .png]) ? .on : .off
+    storeTextButton?.state = types.contains(.string) ? .on : .off
   }
   
   private func populateClipboardHistoryToggle() {
-    keepHistorySwitch.state = UserDefaults.standard.keepHistory ? .on : .off
+    keepHistorySwitch?.state = UserDefaults.standard.keepHistory ? .on : .off
   }
   
   private func updateVisibleClipboardHistoryDescription() {
-    keepHistoryOnDescription.isHidden = !UserDefaults.standard.keepHistory
-    keepHistoryOffDescription.isHidden = UserDefaults.standard.keepHistory
+    keepHistoryOnDescription?.isHidden = !UserDefaults.standard.keepHistory
+    keepHistoryOffDescription?.isHidden = UserDefaults.standard.keepHistory
   }
   
   private func setNumberOfItemsRange() {
@@ -214,14 +214,14 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     numberOfItemsFormatter.minimum = numberOfItemsMin as NSNumber
     numberOfItemsFormatter.maximum = numberOfItemsMax as NSNumber
     numberOfItemsFormatter.maximumFractionDigits = 0
-    numberOfItemsField.formatter = numberOfItemsFormatter
+    numberOfItemsField?.formatter = numberOfItemsFormatter
     
-    numberOfItemsStepper.minValue = Double(numberOfItemsMin)
-    numberOfItemsStepper.maxValue = Double(numberOfItemsMax)
+    numberOfItemsStepper?.minValue = Double(numberOfItemsMin)
+    numberOfItemsStepper?.maxValue = Double(numberOfItemsMax)
   }
   
   func updateNumberOfItemsEmptyAllowed() {
-    guard let formatter = numberOfItemsField.formatter as? EmptyPermittingNumberFormatter else {
+    guard let formatter = numberOfItemsField?.formatter as? EmptyPermittingNumberFormatter else {
       return
     }  
     formatter.emptyPermitted = AppModel.allowDictinctStorageSize
@@ -231,15 +231,15 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     var value = UserDefaults.standard.maxMenuItems
     // only when allowing separate storage setting do we expect value can be 0
     if AppModel.allowDictinctStorageSize && value == 0 {
-      numberOfItemsField.stringValue = ""
-      numberOfItemsStepper.integerValue = numberOfItemsMin
+      numberOfItemsField?.stringValue = ""
+      numberOfItemsStepper?.integerValue = numberOfItemsMin
     } else {
       value = min(max(value, numberOfItemsMin), numberOfItemsMax)
-      numberOfItemsField.integerValue = value
-      numberOfItemsStepper.integerValue = value
+      numberOfItemsField?.integerValue = value
+      numberOfItemsStepper?.integerValue = value
     }
-    numberOfItemsField.isEnabled = UserDefaults.standard.keepHistory
-    numberOfItemsStepper.isEnabled = UserDefaults.standard.keepHistory
+    numberOfItemsField?.isEnabled = UserDefaults.standard.keepHistory
+    numberOfItemsStepper?.isEnabled = UserDefaults.standard.keepHistory
   }
   
   private func updateVisibleNumberOfItemsDescription() {
@@ -247,15 +247,15 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
       let fullHistoryAllowed = AppModel.allowFullyExpandedHistory
       let useStorageSize = AppModel.allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0
       
-      numberOfItemsDescription.isHidden = useStorageSize || fullHistoryAllowed
-      numberOfItemsExtendedDescription.isHidden = useStorageSize || !fullHistoryAllowed
-      numberOfItemsEmptyDescription.isHidden = !useStorageSize
-      numberOfItemsDisabledDescription.isHidden = true
+      numberOfItemsDescription?.isHidden = useStorageSize || fullHistoryAllowed
+      numberOfItemsExtendedDescription?.isHidden = useStorageSize || !fullHistoryAllowed
+      numberOfItemsEmptyDescription?.isHidden = !useStorageSize
+      numberOfItemsDisabledDescription?.isHidden = true
     } else {
-      numberOfItemsDescription.isHidden = true
-      numberOfItemsExtendedDescription.isHidden = true
-      numberOfItemsEmptyDescription.isHidden = true
-      numberOfItemsDisabledDescription.isHidden = false
+      numberOfItemsDescription?.isHidden = true
+      numberOfItemsExtendedDescription?.isHidden = true
+      numberOfItemsEmptyDescription?.isHidden = true
+      numberOfItemsDisabledDescription?.isHidden = false
     }
   }
   
@@ -265,40 +265,45 @@ class StorageSettingsViewController: NSViewController, SettingsPane {
     historySizeFormatter.minimum = effectiveMin as NSNumber
     historySizeFormatter.maximum = historySizeMax as NSNumber
     historySizeFormatter.maximumFractionDigits = 0
-    historySizeField.formatter = historySizeFormatter
+    historySizeField?.formatter = historySizeFormatter
     
-    historySizeStepper.minValue = Double(effectiveMin)
-    historySizeStepper.maxValue = Double(historySizeMax)
+    historySizeStepper?.minValue = Double(effectiveMin)
+    historySizeStepper?.maxValue = Double(historySizeMax)
   }
   
   private func populateHistorySize() {
     let effectiveSize = max(UserDefaults.standard.historySize, UserDefaults.standard.maxMenuItems)
-    historySizeField.integerValue = effectiveSize
-    historySizeStepper.integerValue = effectiveSize
+    historySizeField?.integerValue = effectiveSize
+    historySizeStepper?.integerValue = effectiveSize
     
-    historySizeField.isEnabled = UserDefaults.standard.keepHistory
-    historySizeStepper.isEnabled = UserDefaults.standard.keepHistory
+    historySizeField?.isEnabled = UserDefaults.standard.keepHistory
+    historySizeStepper?.isEnabled = UserDefaults.standard.keepHistory
   }
   
   private func updateVisibleHistorySizeDescription() {
     if UserDefaults.standard.keepHistory {
       let useStorageMax = AppModel.allowDictinctStorageSize && UserDefaults.standard.maxMenuItems == 0
       
-      historySizeDescription.isHidden = !useStorageMax
-      historySizeOnlyDescription.isHidden = useStorageMax
-      historySizeDisabledDescription.isHidden = true
+      historySizeDescription?.isHidden = !useStorageMax
+      historySizeOnlyDescription?.isHidden = useStorageMax
+      historySizeDisabledDescription?.isHidden = true
     } else {
-      historySizeDescription.isHidden = true
-      historySizeOnlyDescription.isHidden = true
-      historySizeDisabledDescription.isHidden = false
+      historySizeDescription?.isHidden = true
+      historySizeOnlyDescription?.isHidden = true
+      historySizeDisabledDescription?.isHidden = false
     }
   }
   
   // MARK: -
   
+  private func showNumberOfItemsOptions(_ show: Bool) {
+    numberOfItemsFieldRow?.isHidden = !show
+    numberOfItemsDescriptionRow?.isHidden = !show
+  }
+  
   private func showHistorySizeOptions(_ show: Bool) {
-    historySizeFieldRow.isHidden = !show
-    historySizeDescriptionRow.isHidden = !show
+    historySizeFieldRow?.isHidden = !show
+    historySizeDescriptionRow?.isHidden = !show
   }
   
 }

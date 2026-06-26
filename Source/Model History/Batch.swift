@@ -82,7 +82,7 @@ class Batch: NSManagedObject {
     return lhs.index == rhs.index && lhs.title == rhs.title
   }
   
-  static func createUnnamed(withClips clips: any Collection<Clip> = []) -> Batch {
+  static func createUnnamed<C: Collection>(withClips clips: C = []) -> Batch where C.Element == Clip {
     let batch = Batch(context: CoreDataManager.shared.context)
     
     batch.addExistingClips(clips)
@@ -91,13 +91,13 @@ class Batch: NSManagedObject {
     return batch
   }
   
-  static func create(withName name: String?, index: String? = nil, shortcut: KeyboardShortcuts.Shortcut?,
-                     clips: any Collection<Clip> = [], repeating: Bool = false) -> Batch {
+  static func create<C: Collection>(withName name: String?, index: String? = nil, shortcut: KeyboardShortcuts.Shortcut?,
+                                    clips: C = [], repeating: Bool = false) -> Batch where C.Element == Clip {
     return create(withName: name, index: index, shortcutData: shortcutData(forKeyShortcut: shortcut), clips: clips, repeating: repeating)
   }
   
-  static func create(withName name: String?, index: String? = nil, shortcutData: Data? = nil,
-                     clips: any Collection<Clip> = [], repeating: Bool = false) -> Batch {
+  static func create<C: Collection>(withName name: String?, index: String? = nil, shortcutData: Data? = nil,
+                                    clips: C = [], repeating: Bool = false) -> Batch where C.Element == Clip {
     let batch = Batch(context: CoreDataManager.shared.context)
     
     batch.fullname = name
@@ -207,17 +207,17 @@ class Batch: NSManagedObject {
     CoreDataManager.shared.saveContext()
   }
   
-  func addExistingClips(_ sourceClips: any Collection<Clip>) {
+  func addExistingClips<C: Collection>(_ sourceClips: C) where C.Element == Clip {
+    addExistingClips(Array(sourceClips))
+  }
+  
+  func addExistingClips(_ sourceClips: [Clip]) {
     if sourceClips.isEmpty {
       return
     }
     // copy in same order but into index 0 not at the end
     let indexes = NSIndexSet(indexesIn: NSRange(location: 0, length: sourceClips.count))
-    if let sourceClipsArray = sourceClips as? [Clip] { // yes lamer than polymorphism but also d.r.y.
-      insertIntoClips(sourceClipsArray, at: indexes)
-    } else {
-      insertIntoClips(Array(sourceClips), at: indexes)
-    }
+    insertIntoClips(sourceClips, at: indexes)
     CoreDataManager.shared.saveContext()
   }
   
