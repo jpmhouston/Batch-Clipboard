@@ -104,7 +104,7 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
   }
   
   private func updateRepeatBatchVisibility() {
-    repeatBatchCheckbox.isHidden = !AppModel.allowSavedBatches 
+    repeatBatchSection.isHidden = !AppModel.allowSavedBatches 
   }
   
   private func populateMenuHiding() {
