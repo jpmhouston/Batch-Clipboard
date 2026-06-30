@@ -51,10 +51,10 @@
 "erase_history_alert_cancel" = "Cancel";
 "erase_history_alert_confirm" = "Turn Off & Clear";
 "erase_history_alert_deny" = "Turn Off & Keep";
-"promote_extrasalert_message" = "Support the app's continuing development to unlock this feature?";
-"promote_extrasalert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
-"promote_extrasalert_show_settings" = "Open Settings";
-"promote_extrasalert_cancel" = "Cancel";
+"promote_extras_alert_message" = "Support the app's continuing development to unlock this feature?";
+"promote_extras_alert_comment" = "The button below takes you to the Support Us page of the Settings window where you can make an in-app purchase to support the makers of this app, and for doing so this and other extra features will be unlocked.";
+"promote_extras_alert_show_settings" = "Open Settings";
+"promote_extras_alert_cancel" = "Cancel";
 "resetdata_alert_message" = "Reset data before launch?";
 "resetdata_alert_comment" = "If the app is failing to open, you may choose to erase the saved clipboard item database before continuing.";
 "resetdata_alert_deleteandlaunch" = "Reset Data and Launch";
@@ -76,3 +76,11 @@
 "rename_batch_alert_confirm" = "Update";
 "rename_batch_alert_delete" = "Delete";
 "rename_batch_alert_cancel" = "Cancel";
+"loginitem_alert_message" = "Launch Batch Clipboard at login?";
+"loginitem_alert_comment" = "If you are happy with Batch Clipboard, you may choose for it to be launched automatically when your system restarts. If you cancel now, you may set this in the Batch Clipboard Settings window at any time, or manually add as a Login Item in System Settings.";
+"loginitem_alert_set" = "Launch At Login";
+"loginitem_alert_cancel" = "Cancel";
+"open_loginitems_alert_message" = "Launch Batch Clipboard at login?";
+"open_loginitems_alert_comment" = "If you are happy with Batch Clipboard, you may use the button below to open your System Preferences and add it to the set of your Mac's Login Items. If you cancel now, you may also find this button in the Batch Clipboard Settings window.";
+"open_loginitems_alert_open" = "Open Login Items Panel";
+"open_loginitems_alert_cancel" = "Cancel";

@@ -50,18 +50,18 @@
                         <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6u-W6-DOj">
                             <rect key="frame" x="0.0" y="565" width="488" height="72"/>
                             <subviews>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="GaN-gj-k5w">
                                     <rect key="frame" x="-2" y="30" width="492" height="42"/>
                                     <textFieldCell key="cell" id="u7U-Li-5Kf">
                                         <font key="font" metaFont="smallSystem"/>
-                                        <string key="title">The ability to automatically add this app as a Login Items is only avaialable in macOS 13 and later. Use button below to open the Settings panel for adding or removing Batch Clipboard manually.</string>
+                                        <string key="title">The ability to automatically add this app as a Login Items is only avaialable in macOS 13 and later. Use button below to open the System Preferences panel for adding or removing Batch Clipboard manually.</string>
                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="fWD-v1-Rli">
                                     <rect key="frame" x="0.0" y="0.0" width="158" height="24"/>
-                                    <buttonCell key="cell" type="roundRect" title="Open Login Items panel" bezelStyle="roundedRect" alignment="center" borderStyle="border" inset="2" id="CGo-tu-azT">
+                                    <buttonCell key="cell" type="roundRect" title="Open Login Items Panel" bezelStyle="roundedRect" alignment="center" borderStyle="border" inset="2" id="CGo-tu-azT">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                     </buttonCell>
@@ -155,7 +155,7 @@
                                         <action selector="menuHidingChanged:" target="-2" id="bqP-MS-1xg"/>
                                     </connections>
                                 </button>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gFw-S5-5kX">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gFw-S5-5kX">
                                     <rect key="frame" x="-2" y="200" width="492" height="56"/>
                                     <textFieldCell key="cell" id="aQA-uj-3x2">
                                         <font key="font" metaFont="smallSystem"/>
@@ -164,7 +164,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dQl-WK-zJK">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dQl-WK-zJK">
                                     <rect key="frame" x="-2" y="164" width="492" height="28"/>
                                     <textFieldCell key="cell" id="fu6-RM-eQ3">
                                         <font key="font" metaFont="smallSystem"/>
@@ -173,7 +173,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="THe-n0-6bm">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="THe-n0-6bm">
                                     <rect key="frame" x="-2" y="114" width="492" height="42"/>
                                     <textFieldCell key="cell" id="9vL-nf-0GM">
                                         <font key="font" metaFont="smallSystem"/>
@@ -182,7 +182,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TSn-uq-Peu">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TSn-uq-Peu">
                                     <rect key="frame" x="-2" y="64" width="492" height="42"/>
                                     <textFieldCell key="cell" id="oRG-kY-EWO">
                                         <font key="font" metaFont="smallSystem"/>
@@ -191,7 +191,7 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ScW-oO-69R">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ScW-oO-69R">
                                     <rect key="frame" x="-2" y="0.0" width="492" height="56"/>
                                     <textFieldCell key="cell" id="yDb-Vk-Ia6">
                                         <font key="font" metaFont="smallSystem"/>
@@ -247,7 +247,7 @@
                                         <action selector="relaunchingStartsBatchChanged:" target="-2" id="MGh-wn-dmp"/>
                                     </connections>
                                 </button>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yYq-qc-5jW">
+                                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yYq-qc-5jW">
                                     <rect key="frame" x="-2" y="0.0" width="492" height="28"/>
                                     <textFieldCell key="cell" title="Turn both these checkboxes on to allow entering batch mode by clicking the Batch Clipboard icon in the Dock. " id="xnB-z2-nwX">
                                         <font key="font" metaFont="smallSystem"/>

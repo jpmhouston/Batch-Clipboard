@@ -23,6 +23,7 @@ extension AppModel {
   static var localizeVolunteerEmailAddress = "batchclipboard.l10nhelp@bananameter.lol"
   static var localizeVolunteerEmailURL = "mailto:" + AppModel.localizeVolunteerEmailAddress
   static var openSettingsPanelURL = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+  static var openSettingsLoginItemsURL = "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
   static var showIntroInAppURL = "batchclipapp:intro"
   static var showAboutInAppURL = "batchclipapp:about"
   static var showLicensesInAppURL = "batchclipapp:licenses"

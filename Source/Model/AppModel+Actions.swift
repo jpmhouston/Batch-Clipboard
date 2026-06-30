@@ -10,6 +10,9 @@
 import AppKit
 import KeyboardShortcuts
 import Settings
+#if canImport(ServiceManagement)
+import ServiceManagement
+#endif
 import os.log
 
 // TODO: make methods throw or at least return error instead of bool
@@ -336,11 +339,9 @@ extension AppModel {
       }
       updateClipboardMonitoring()
       
-      #if APP_STORE
       if interactive && inOffState {
-        AppStoreReview.ask(after: 20)
+        concludedSession()
       }
-      #endif
       
       completion?(true)
     }
@@ -675,11 +676,9 @@ extension AppModel {
       }
       updateClipboardMonitoring()
       
-      #if APP_STORE
       if interactive && inOffState {
-        AppStoreReview.ask(after: 20)
+        concludedSession()
       }
-      #endif
       
       completion?(true)
     }
@@ -844,11 +843,9 @@ extension AppModel {
       
       completion?(success)
       
-      #if APP_STORE
       if interactive && inOffState {
-        AppStoreReview.ask(after: 20)
+        concludedSession()
       }
-      #endif
     }
     
     return true
@@ -1559,7 +1556,70 @@ extension AppModel {
     }
   }
   
+  private func shouSetLoginItemAlert(_ completion: @escaping () -> Void) {
+    takeFocus()
+    
+    alerts.withSetLoginItemAlert() { [weak self] confirm in
+      guard let self = self else { return }
+      if confirm {
+        completion()
+      }
+      
+      returnFocus()
+    }
+  }
+  
+  private func shouOpenLoginItemsAlert(_ completion: @escaping () -> Void) {
+    takeFocus()
+    
+    alerts.withOpenLoginItemsAlert() { [weak self] confirm in
+      guard let self = self else { return }
+      if confirm {
+        completion()
+      }
+      
+      returnFocus()
+    }
+  }
+  
   // MARK: - utility functions
+  
+  private func concludedSession() {
+    var askToBecomeLoginItem = false
+    if case let count = UserDefaults.standard.loginItemAskDelayCount, count > 0 {
+      if #available(macOS 13.0, *), SMAppService.mainApp.status == .enabled {
+        UserDefaults.standard.loginItemAskDelayCount = 0
+      } else {
+        let decrementedCount = count - 1
+        UserDefaults.standard.loginItemAskDelayCount = decrementedCount
+        if decrementedCount == 0 {
+          askToBecomeLoginItem = true
+        }
+      }
+    }
+    
+    if askToBecomeLoginItem {
+      if #available(macOS 13.0, *) {
+        shouSetLoginItemAlert() {
+          do {
+            try SMAppService.mainApp.register()
+          } catch {
+            os_log(.error, "Failed to set Batch Clipboard as a login item")
+          }
+        }
+      } else {
+        shouOpenLoginItemsAlert() {
+          if let url = URL(string: AppModel.openSettingsLoginItemsURL) {
+            NSWorkspace.shared.open(url)
+          }
+        }
+      }
+    } else {
+      #if APP_STORE
+      AppStoreReview.ask(after: 20)
+      #endif
+    }
+  }
   
   internal func updateMenuIcon(_ direction: MenuBarIcon.QueueChangeDirection = .none) {
     if stack.isOn {

@@ -106,10 +106,10 @@ class Alerts: NSObject, NSTextFieldDelegate {
   private var bonusFeaturePromotionAlert: NSAlert {
     let alert = NSAlert()
     alert.alertStyle = .informational
-    alert.messageText = NSLocalizedString("promote_extrasalert_message", comment: "")
-    alert.informativeText = NSLocalizedString("promote_extrasalert_comment", comment: "")
-    alert.addButton(withTitle: NSLocalizedString("promote_extrasalert_show_settings", comment: ""))
-    alert.addButton(withTitle: NSLocalizedString("promote_extrasalert_cancel", comment: ""))
+    alert.messageText = NSLocalizedString("promote_extras_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("promote_extras_alert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("promote_extras_alert_show_settings", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("promote_extras_alert_cancel", comment: ""))
     return alert
   }
   
@@ -173,6 +173,26 @@ class Alerts: NSObject, NSTextFieldDelegate {
     alert.informativeText = NSLocalizedString("accessibility_alert_comment", comment: "")
       .replacingOccurrences(of: "{settings}", with: locationName)
       .replacingOccurrences(of: "{pane}", with: paneName)
+    return alert
+  }
+  
+  private var setLoginItemAlert: NSAlert {
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = NSLocalizedString("loginitem_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("loginitem_alert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("loginitem_alert_set", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("loginitem_alert_cancel", comment: ""))
+    return alert
+  }
+  
+  private var openLoginItemsAlert: NSAlert {
+    let alert = NSAlert()
+    alert.alertStyle = .informational
+    alert.messageText = NSLocalizedString("open_loginitems_alert_message", comment: "")
+    alert.informativeText = NSLocalizedString("open_loginitems_alert_comment", comment: "")
+    alert.addButton(withTitle: NSLocalizedString("open_loginitems_alert_open", comment: ""))
+    alert.addButton(withTitle: NSLocalizedString("open_loginitems_alert_cancel", comment: ""))
     return alert
   }
   
@@ -309,6 +329,22 @@ class Alerts: NSObject, NSTextFieldDelegate {
       closure(true, alert.suppressionButton?.state == .on)
     } else {
       closure(false, false)
+    }
+  }
+  
+  func withSetLoginItemAlert(_ closure: @escaping (Bool) -> Void) {
+    if runModalOnMain(setLoginItemAlert) == NSApplication.ModalResponse.alertFirstButtonReturn {
+      closure(true)
+    } else {
+      closure(false)
+    }
+  }
+  
+  func withOpenLoginItemsAlert(_ closure: @escaping (Bool) -> Void) {
+    if runModalOnMain(openLoginItemsAlert) == NSApplication.ModalResponse.alertFirstButtonReturn {
+      closure(true)
+    } else {
+      closure(false)
     }
   }
   

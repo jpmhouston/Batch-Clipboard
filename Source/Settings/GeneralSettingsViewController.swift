@@ -28,9 +28,6 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   #if SPARKLE_UPDATES
   private var sparkleUpdater: SPUUpdater
   #endif
-  private lazy var loginItemsURL = URL(
-    string: "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
-  )
   
   @IBOutlet weak var launchAtLoginCheckbox: NSButton?
   @IBOutlet weak var openLoginItemsPanelSection: NSView?
@@ -206,7 +203,7 @@ class GeneralSettingsViewController: NSViewController, SettingsPane {
   }
   
   @IBAction func openLoginItemsPanel(_ sender: NSButton) {
-    guard let url = loginItemsURL else {
+    guard let url = URL(string: AppModel.openSettingsLoginItemsURL) else {
       return
     }
     NSWorkspace.shared.open(url)

@@ -59,15 +59,11 @@ extension UserDefaults {
     static let introResizeFactors = "introResizeFactors"
     static let relaunchingStartsBatch = "relaunchingStartsBatch"
     static let showsInDock = "showsInDock"
+    static let loginItemAskDelay = "loginItemAskDelay"
     
     // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
     // a statusitem on the menubar. Make accessor for the sake of saving & restoring this position.
     static let systemMenubarPosition = "NSStatusItem Preferred Position Item-0"
-    
-    // maccy had a few like this, perhaps something to continue doing?
-//    static var showInStatusBar: String {
-//      ProcessInfo.processInfo.arguments.contains("ui-testing") ? "showInStatusBarUITests" : "showInStatusBar"
-//    }
   }
   
   public struct Values {
@@ -365,4 +361,9 @@ extension UserDefaults {
     set { set(newValue, forKey: Keys.showsInDock) }
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfShowsInDock() -> Bool { false }
+  
+  @objc public var loginItemAskDelayCount: Int {
+    get { integer(forKey: Keys.loginItemAskDelay) }
+    set { set(newValue, forKey: Keys.loginItemAskDelay) }
+  }
 }
