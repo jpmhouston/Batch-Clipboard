@@ -434,6 +434,10 @@ class AppModel: NSObject {
     if Self.firstLaunch {
       // set something in userdefaults to know on next launch it's not the first
       userDefaults.completedIntro = false
+      UserDefaults.standard.loginItemChoicePending = true // not defaulted to true so upgrading users not shown choice
+      
+      // omit this to make the intro page have no default selection, include this to make reminding the user the default
+      UserDefaults.standard.loginItemAskDelayCount = LoginItemIntroPageViewController.reminderCountdown
     }
     
     // reversed the sense of the history filter flag so for frash install unset now means hidden

@@ -18,6 +18,7 @@ class IntroWindowController: PagedWindowController {
   @IBOutlet var checkAuthPageController: CheckAuthIntroPageViewController!
   @IBOutlet var setAuthPageController: SetAuthIntroPageViewController!
   @IBOutlet var historyChoicePageController: HistoryChoiceIntroPageViewController!
+  @IBOutlet var loginItemPageController: LoginItemIntroPageViewController!
   @IBOutlet var demoPageController: DemoIntroPageViewController!
   @IBOutlet var menuPageController: MenuIntroPageViewController!
   @IBOutlet var morePageController: MoreIntroPageViewController!
@@ -29,19 +30,21 @@ class IntroWindowController: PagedWindowController {
   // if pageControllerOutlets/Instances are in the desired order its just coincidence
   lazy var pageControllerOutlets: [IntroPageController?] = [ welcomePageController,
                                                              checkAuthPageController, setAuthPageController,
-                                                             historyChoicePageController, demoPageController,
+                                                             historyChoicePageController, loginItemPageController,
+                                                             demoPageController,
                                                              menuPageController, morePageController,
                                                              linksPageController ]
   lazy var pageControllerInstances: [IntroPageController] = pageControllerOutlets.compactMap({ $0 })
   
   enum Page: Int, CaseIterable {
-    case welcome = 0, checkAuth, setAuth, historyChoice, demo, aboutMenu, aboutMore, links
+    case welcome = 0, checkAuth, setAuth, historyChoice, loginItemChoice, demo, aboutMenu, aboutMore, links
     var pageType: (some IntroPageController).Type {
       switch self {
       case .welcome: WelcomeIntroPageViewController.self
       case .checkAuth: CheckAuthIntroPageViewController.self
       case .setAuth: SetAuthIntroPageViewController.self
       case .historyChoice: HistoryChoiceIntroPageViewController.self
+      case .loginItemChoice: LoginItemIntroPageViewController.self
       case .demo: DemoIntroPageViewController.self
       case .aboutMenu: MenuIntroPageViewController.self
       case .aboutMore: MoreIntroPageViewController.self

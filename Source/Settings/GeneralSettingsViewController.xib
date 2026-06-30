@@ -54,7 +54,7 @@
                                     <rect key="frame" x="-2" y="30" width="492" height="42"/>
                                     <textFieldCell key="cell" id="u7U-Li-5Kf">
                                         <font key="font" metaFont="smallSystem"/>
-                                        <string key="title">The ability to automatically add this app as a Login Items is only avaialable in macOS 13 and later. Use button below to open the System Preferences panel for adding or removing Batch Clipboard manually.</string>
+                                        <string key="title">The ability to automatically add this app as a Login Item is only avaialable in macOS 13 and later. Use button below to open the System Preferences panel for adding or removing Batch Clipboard manually.</string>
                                         <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>

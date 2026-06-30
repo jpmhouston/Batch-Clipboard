@@ -59,6 +59,7 @@ extension UserDefaults {
     static let introResizeFactors = "introResizeFactors"
     static let relaunchingStartsBatch = "relaunchingStartsBatch"
     static let showsInDock = "showsInDock"
+    static let loginItemChoicePending = "loginItemChoicePending"
     static let loginItemAskDelay = "loginItemAskDelay"
     
     // Since possibly macOS 11, maybe earlier, this gets set by the OS when the user rearranges
@@ -362,7 +363,12 @@ extension UserDefaults {
   }
   @objc dynamic public class func automaticallyNotifiesObserversOfShowsInDock() -> Bool { false }
   
-  @objc public var loginItemAskDelayCount: Int {
+  public var loginItemChoicePending: Bool {
+    get { bool(forKey: Keys.loginItemChoicePending) }
+    set { set(newValue, forKey: Keys.loginItemChoicePending) }
+  }
+  
+  public var loginItemAskDelayCount: Int {
     get { integer(forKey: Keys.loginItemAskDelay) }
     set { set(newValue, forKey: Keys.loginItemAskDelay) }
   }

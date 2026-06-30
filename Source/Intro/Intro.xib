@@ -14,6 +14,7 @@
                 <outlet property="doneButton" destination="gFf-JM-Tzj" id="2C3-sW-3Ts"/>
                 <outlet property="historyChoicePageController" destination="KaS-U3-sWX" id="WlX-fO-p3s"/>
                 <outlet property="linksPageController" destination="4ev-48-urU" id="93N-RD-kZx"/>
+                <outlet property="loginItemPageController" destination="CRg-vB-JAn" id="oiM-gG-Fc8"/>
                 <outlet property="menuPageController" destination="zVL-VG-l02" id="3X1-PO-P4Z"/>
                 <outlet property="morePageController" destination="zQU-KM-YUD" id="ReX-Xm-2fV"/>
                 <outlet property="nextButton" destination="Nn0-3a-LL4" id="cPI-so-Zpx"/>
@@ -150,6 +151,207 @@ DQ
                 <outlet property="view" destination="Az7-oz-ewi" id="8Jg-Wv-52s"/>
             </connections>
         </viewController>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="N9O-Wi-FdG" userLabel="Launch At Login View">
+            <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
+            <subviews>
+                <stackView distribution="fill" orientation="vertical" alignment="centerX" spacing="20" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bsg-Al-s7U">
+                    <rect key="frame" x="14" y="24" width="576" height="276"/>
+                    <subviews>
+                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="UGt-w2-f7R">
+                            <rect key="frame" x="73" y="256" width="431" height="20"/>
+                            <textFieldCell key="cell" lineBreakMode="clipping" title="Launch Batch Clipboard automatically every restart?" id="OeL-pn-CXz">
+                                <font key="font" metaFont="systemBold" size="17"/>
+                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <segmentedControl verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="oSk-lU-AwU">
+                            <rect key="frame" x="38" y="208" width="500" height="28"/>
+                            <segmentedCell key="cell" controlSize="large" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="XHo-pL-2J2">
+                                <font key="font" metaFont="system"/>
+                                <segments>
+                                    <segment label="Yes, Launch Automatically"/>
+                                    <segment label="Ask Me Later" tag="1"/>
+                                    <segment label="No, I'll Set This Myself If I Want"/>
+                                </segments>
+                            </segmentedCell>
+                            <connections>
+                                <action selector="selectionChanged:" target="CRg-vB-JAn" id="zPy-H0-R7c"/>
+                            </connections>
+                        </segmentedControl>
+                        <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qjH-XR-heX">
+                            <rect key="frame" x="22" y="140" width="532" height="48"/>
+                            <textFieldCell key="cell" id="eM0-8f-BvF">
+                                <font key="font" metaFont="system"/>
+                                <string key="title">The ability to automatically add this app as a Login Item is only avaialable in macOS 13 and later. The Yes button will open the System Preferences panel for adding Batch Clipboard manually to the set of Login Items.</string>
+                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                            </textFieldCell>
+                        </textField>
+                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="754-7G-DBS">
+                            <rect key="frame" x="22" y="0.0" width="532" height="120"/>
+                            <subviews>
+                                <box borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="WfT-2r-G24">
+                                    <rect key="frame" x="0.0" y="0.0" width="532" height="120"/>
+                                    <view key="contentView" id="7IU-4i-r4r">
+                                        <rect key="frame" x="0.0" y="0.0" width="532" height="120"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <stackView distribution="equalSpacing" orientation="vertical" alignment="centerX" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ahy-jn-JHU" userLabel="Chosen Option Labels">
+                                                <rect key="frame" x="20" y="20" width="492" height="80"/>
+                                                <subviews>
+                                                    <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="VSz-uM-cd8">
+                                                        <rect key="frame" x="-2" y="64" width="725" height="16"/>
+                                                        <textFieldCell key="cell" title="The Settings window opened from the Batch Clipboard menu has options to turn this off again if you change your mind." id="YIY-pd-odf">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="D60-6G-P2L">
+                                                        <rect key="frame" x="-2" y="32" width="789" height="48"/>
+                                                        <textFieldCell key="cell" id="zkE-Bj-q2i">
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="title">Use the + button and choose Batch Clipboard to add it to in the set of Login Items.
+
+The Settings window opened from the Batch Clipboard menu has a button to take you to this panel again if you change your mind.</string>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="1ar-pf-RBJ">
+                                                        <rect key="frame" x="-2" y="32" width="749" height="48"/>
+                                                        <textFieldCell key="cell" id="k2l-Hq-MjN">
+                                                            <font key="font" metaFont="system"/>
+                                                            <string key="title">If you continue trying out Batch Clipboard a while, you'll be offered this choice again.
+
+Or before then, the Settings window opened from the Batch Clipboard menu has options to configure this any time you like.</string>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="rBG-EE-iVk">
+                                                        <rect key="frame" x="-2" y="64" width="657" height="16"/>
+                                                        <textFieldCell key="cell" title="The Settings window opened from the Batch Clipboard menu has options to configure this any time you like." id="QxH-2R-OHL">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <stackView distribution="fill" orientation="horizontal" alignment="firstBaseline" spacing="6" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZJS-yS-Kzb" userLabel="Fallback Section">
+                                                        <rect key="frame" x="0.0" y="14" width="492" height="52"/>
+                                                        <subviews>
+                                                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="dFG-D2-Nvz">
+                                                                <rect key="frame" x="-2" y="0.0" width="323" height="48"/>
+                                                                <textFieldCell key="cell" title="Something unexpected occurred. Use this button to open the System Settings panel for manually configuring your Login Items." id="53Q-Om-mYr">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                            <textField hidden="YES" focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="2nz-eh-jNT">
+                                                                <rect key="frame" x="-2" y="36" width="794" height="16"/>
+                                                                <textFieldCell key="cell" title="Something unexpected occurred. Use this button to open the System Preferences panel for manually configuring your Login Items." id="sdg-aj-PSn">
+                                                                    <font key="font" metaFont="system"/>
+                                                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                </textFieldCell>
+                                                            </textField>
+                                                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7f6-WC-VEh">
+                                                                <rect key="frame" x="325" y="28" width="167" height="24"/>
+                                                                <buttonCell key="cell" type="push" title="Open Login Items Panel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Fmf-Vv-Be7">
+                                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                    <font key="font" metaFont="system"/>
+                                                                </buttonCell>
+                                                                <connections>
+                                                                    <action selector="openLoginItemsPanel:" target="CRg-vB-JAn" id="Fmq-D3-wkd"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <visibilityPriorities>
+                                                            <integer value="1000"/>
+                                                            <integer value="1000"/>
+                                                            <integer value="1000"/>
+                                                        </visibilityPriorities>
+                                                        <customSpacing>
+                                                            <real value="3.4028234663852886e+38"/>
+                                                            <real value="3.4028234663852886e+38"/>
+                                                            <real value="3.4028234663852886e+38"/>
+                                                        </customSpacing>
+                                                    </stackView>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="ZJS-yS-Kzb" firstAttribute="leading" secondItem="ahy-jn-JHU" secondAttribute="leading" id="QIb-7w-SYe"/>
+                                                    <constraint firstAttribute="trailing" secondItem="ZJS-yS-Kzb" secondAttribute="trailing" id="Sde-Qk-4JS"/>
+                                                </constraints>
+                                                <visibilityPriorities>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                    <integer value="1000"/>
+                                                </visibilityPriorities>
+                                                <customSpacing>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                    <real value="3.4028234663852886e+38"/>
+                                                </customSpacing>
+                                            </stackView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstItem="ahy-jn-JHU" firstAttribute="leading" secondItem="7IU-4i-r4r" secondAttribute="leading" constant="20" symbolic="YES" id="6VN-Ro-MPy"/>
+                                            <constraint firstItem="ahy-jn-JHU" firstAttribute="top" secondItem="7IU-4i-r4r" secondAttribute="top" constant="20" symbolic="YES" id="944-vC-wmJ"/>
+                                            <constraint firstAttribute="trailing" secondItem="ahy-jn-JHU" secondAttribute="trailing" constant="20" symbolic="YES" id="Jae-Gx-gAh"/>
+                                            <constraint firstAttribute="bottom" secondItem="ahy-jn-JHU" secondAttribute="bottom" constant="20" symbolic="YES" id="PJc-Jy-Cnh"/>
+                                        </constraints>
+                                    </view>
+                                </box>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="height" priority="700" constant="120" id="3MU-vt-D6O"/>
+                                <constraint firstAttribute="trailing" secondItem="WfT-2r-G24" secondAttribute="trailing" id="4ip-oP-0TF"/>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="120" id="Pth-zz-hph"/>
+                                <constraint firstItem="WfT-2r-G24" firstAttribute="top" secondItem="754-7G-DBS" secondAttribute="top" id="dBL-0l-xT5"/>
+                                <constraint firstItem="WfT-2r-G24" firstAttribute="leading" secondItem="754-7G-DBS" secondAttribute="leading" id="sOs-Mr-0XB"/>
+                                <constraint firstAttribute="bottom" secondItem="WfT-2r-G24" secondAttribute="bottom" id="t3o-ov-Nwf"/>
+                            </constraints>
+                        </customView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="qjH-XR-heX" secondAttribute="trailing" constant="24" id="5Wh-yz-5Gi"/>
+                        <constraint firstItem="754-7G-DBS" firstAttribute="leading" secondItem="bsg-Al-s7U" secondAttribute="leading" constant="22" id="5eA-eJ-22U"/>
+                        <constraint firstAttribute="trailing" secondItem="754-7G-DBS" secondAttribute="trailing" constant="22" id="BoS-Ye-hDH"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="700" constant="284" id="KEs-eB-X4m"/>
+                        <constraint firstItem="qjH-XR-heX" firstAttribute="leading" secondItem="bsg-Al-s7U" secondAttribute="leading" constant="24" id="q0I-0T-9CT"/>
+                    </constraints>
+                    <visibilityPriorities>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                        <integer value="1000"/>
+                    </visibilityPriorities>
+                    <customSpacing>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                        <real value="3.4028234663852886e+38"/>
+                    </customSpacing>
+                </stackView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="bsg-Al-s7U" secondAttribute="trailing" constant="14" id="AMN-y0-l4C"/>
+                <constraint firstAttribute="width" constant="604" id="Dw6-TG-7Gm"/>
+                <constraint firstItem="bsg-Al-s7U" firstAttribute="centerX" secondItem="N9O-Wi-FdG" secondAttribute="centerX" id="Erj-WC-fbQ"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="bsg-Al-s7U" secondAttribute="bottom" constant="20" id="Gjf-nh-vJt"/>
+                <constraint firstItem="bsg-Al-s7U" firstAttribute="top" relation="greaterThanOrEqual" secondItem="N9O-Wi-FdG" secondAttribute="top" constant="10" id="Y03-ZE-n45"/>
+                <constraint firstItem="bsg-Al-s7U" firstAttribute="centerY" secondItem="N9O-Wi-FdG" secondAttribute="centerY" id="gxJ-Y1-RCC"/>
+                <constraint firstAttribute="height" constant="324" id="hJT-0L-T4d"/>
+                <constraint firstItem="bsg-Al-s7U" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="N9O-Wi-FdG" secondAttribute="leading" constant="14" id="jaT-9c-qXP"/>
+            </constraints>
+            <point key="canvasLocation" x="169" y="1462"/>
+        </customView>
         <viewController id="KaS-U3-sWX" customClass="HistoryChoiceIntroPageViewController" customModule="Batch_Clipboard" customModuleProvider="target">
             <connections>
                 <outlet property="historyChoiceNeededLabel" destination="PtI-nX-JM8" id="RyW-Z1-kJY"/>
@@ -158,6 +360,21 @@ DQ
                 <outlet property="historyOnButton" destination="s4G-AI-yiZ" id="ima-Cr-nrE"/>
                 <outlet property="historyOnDescriptionLabel" destination="LaJ-cN-djd" id="tDb-T7-CvM"/>
                 <outlet property="view" destination="i7e-j1-mqg" id="zK3-DY-y6W"/>
+            </connections>
+        </viewController>
+        <viewController id="CRg-vB-JAn" customClass="LoginItemIntroPageViewController" customModule="Batch_Clipboard" customModuleProvider="target">
+            <connections>
+                <outlet property="choiceDescriptionSection" destination="WfT-2r-G24" id="hdj-oB-94t"/>
+                <outlet property="fallbackSection" destination="ZJS-yS-Kzb" id="LO2-6W-5W6"/>
+                <outlet property="launchAtLoginChosenLabel" destination="VSz-uM-cd8" id="GSR-Ie-ILg"/>
+                <outlet property="manuallyConfigureChosenLabel" destination="D60-6G-P2L" id="mZk-KJ-gFa"/>
+                <outlet property="needsManualConfigurationLabel" destination="qjH-XR-heX" id="pGZ-fF-lUn"/>
+                <outlet property="notConfiguredChosenLabel" destination="rBG-EE-iVk" id="scL-1o-Dkw"/>
+                <outlet property="optionSelector" destination="oSk-lU-AwU" id="9pU-NZ-8IA"/>
+                <outlet property="remindChosenLabel" destination="1ar-pf-RBJ" id="sYf-CG-S3S"/>
+                <outlet property="systemPreferencesFallbackLabel" destination="2nz-eh-jNT" id="069-Y9-fNR"/>
+                <outlet property="systemSettingsFallbackLabel" destination="dFG-D2-Nvz" id="FP2-dO-b2i"/>
+                <outlet property="view" destination="N9O-Wi-FdG" id="pFH-Wn-vla"/>
             </connections>
         </viewController>
         <viewController id="eF2-7d-SdV" customClass="DemoIntroPageViewController" customModule="Batch_Clipboard" customModuleProvider="target">
@@ -259,7 +476,7 @@ DQ
                     </textFieldCell>
                 </textField>
                 <button translatesAutoresizingMaskIntoConstraints="NO" id="lhD-09-nnP" userLabel="Stop">
-                    <rect key="frame" x="376" y="204" width="16" height="18"/>
+                    <rect key="frame" x="376" y="204" width="16" height="16"/>
                     <buttonCell key="cell" type="bevel" bezelStyle="rounded" imagePosition="only" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="U4f-Hq-4s7">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -884,7 +1101,7 @@ DQ
                 <constraint firstItem="clp-h7-UbB" firstAttribute="centerY" secondItem="PZg-A7-1MB" secondAttribute="centerY" constant="70" id="nQt-Ai-EGM"/>
                 <constraint firstItem="ZJX-n1-fHB" firstAttribute="centerY" secondItem="fgs-qC-vm2" secondAttribute="centerY" priority="700" constant="-20" id="oif-Tv-5DF"/>
             </constraints>
-            <point key="canvasLocation" x="169" y="1461"/>
+            <point key="canvasLocation" x="169" y="1828"/>
         </customView>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="C0X-40-jAW" userLabel="Menu Page">
             <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
@@ -1003,7 +1220,7 @@ DQ
                 <constraint firstAttribute="trailing" secondItem="rhi-yl-sD0" secondAttribute="trailing" constant="30" id="mZB-vB-fzY"/>
                 <constraint firstAttribute="bottom" secondItem="rhi-yl-sD0" secondAttribute="bottom" constant="24" id="vro-cv-nza"/>
             </constraints>
-            <point key="canvasLocation" x="169" y="1825"/>
+            <point key="canvasLocation" x="169" y="2191"/>
         </customView>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="wyv-IK-HxQ" userLabel="More Page">
             <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
@@ -1103,7 +1320,7 @@ DQ
                 <constraint firstAttribute="width" constant="604" id="cGU-EL-DFd"/>
                 <constraint firstAttribute="trailing" secondItem="UTr-86-5lC" secondAttribute="trailing" constant="24" id="rVM-ck-RMv"/>
             </constraints>
-            <point key="canvasLocation" x="169" y="2188"/>
+            <point key="canvasLocation" x="169" y="2555"/>
         </customView>
         <customView translatesAutoresizingMaskIntoConstraints="NO" id="fo6-ug-1db" userLabel="Links Page">
             <rect key="frame" x="0.0" y="0.0" width="604" height="324"/>
@@ -1500,7 +1717,7 @@ DQ
                 <constraint firstAttribute="height" constant="324" placeholder="YES" id="vG5-fq-A1g"/>
                 <constraint firstItem="NsQ-iH-g7P" firstAttribute="leading" secondItem="fo6-ug-1db" secondAttribute="leading" constant="24" id="zxk-Ce-1F8"/>
             </constraints>
-            <point key="canvasLocation" x="169" y="2552"/>
+            <point key="canvasLocation" x="169" y="2919"/>
         </customView>
     </objects>
     <resources>
