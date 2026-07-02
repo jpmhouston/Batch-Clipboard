@@ -1,5 +1,11 @@
 # Batch Clipboard Changelog
 
+## version 2.3b7 (2026-07-02)
+
+- In Advanced tab of the Settings window, fixed text specific to App Store version bonus feature mistakenly visible  in non-App Store versions.
+- Improved crash safety in all Settings window tabs.
+- New Intro window page asking user to choose to add Batch Clipboard as a login item. Includes an option to defer decision and show a reminder alert after copying & pasting a batch a few times.
+
 ## version 2.3b6 (2026-06-25)
 
 - Added a dock menu for when the application's dock icon is turned on in the Settings (still not the default).
