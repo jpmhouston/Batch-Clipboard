@@ -2192,7 +2192,7 @@ class AppMenu: NSMenu, NSMenuDelegate {
     #if DEBUG
     fatalError(str)
     #else
-    os_log(.error, str)
+    os_log(.error, "%@", str)
     #endif
   }
   
