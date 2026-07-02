@@ -6,6 +6,26 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3b7</title>
+            <pubDate>Thu, 02 Jul 2026 19:57:51 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:channel>beta</sparkle:channel>
+            <sparkle:version>2141</sparkle:version>
+            <sparkle:shortVersionString>2.3b7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<ul>
+<li>In Advanced tab of the Settings window, fixed text specific to App
+Store version bonus feature mistakenly visible in non-App Store
+versions.</li>
+<li>Improved crash safety in all Settings window tabs.</li>
+<li>New Intro window page asking user to choose to add Batch Clipboard
+as a login item. Includes an option to defer decision and show a
+reminder alert after copying &amp; pasting a batch a few times.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3b7/Batch.Clipboard.2.3b7.zip" length="7330016" type="application/octet-stream" sparkle:edSignature="B0HACA0+KVkf8Zv+jATQXOiQfBw1nQZrPzobo5jWEH9Bb3IDb7Sj9NT0A1iBFTOOwl1qmfJPFQ5gXe+FXz4MBg=="/>
+        </item>
+        <item>
             <title>2.3b6</title>
             <pubDate>Thu, 25 Jun 2026 14:43:37 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
