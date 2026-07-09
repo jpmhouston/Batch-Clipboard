@@ -59,7 +59,11 @@
 "resetdata_alert_comment" = "If the app is failing to open, you may choose to erase the saved clipboard item database before continuing.";
 "resetdata_alert_deleteandlaunch" = "Reset Data and Launch";
 "resetdata_alert_launch" = "Launch Without Reset";
-"resetdata_alert_terimnate" = "Quit";
+"resetdata_alert_terminate" = "Quit";
+"runoffdmg_alert_message" = "Launched from Disk Image";
+"runoffdmg_alert_comment" = "It appears Batch Clipboard has been launched from a disk image, such as a downloaded .dmg file. It works best, however, when installed on your Mac's file system, commonly in your Applications folder.";
+"runoffdmg_alert_launch" = "Launch Anyway";
+"runoffdmg_alert_terminate" = "Quit";
 "delete_batch_message" = "Delete this saved batch?";
 "delete_batch_comment" = "This will remove the saved batch named “{title}” from the menu, it cannot be undone.";
 "delete_batch_alt_comment" = "This will remove the selected batch from the menu, it cannot be undone.";

@@ -181,5 +181,6 @@ class AdvancedSettingsViewController: NSViewController, SettingsPane {
     UserDefaults.standard.suppressDeleteBatchAlert = false
     UserDefaults.standard.suppressSaveClipsAlert = false
     UserDefaults.standard.suppressUseHistoryAlert = false
+    UserDefaults.standard.suppressLaunchFromDMGAlert = false
   }
 }

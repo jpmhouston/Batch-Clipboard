@@ -49,6 +49,7 @@ extension UserDefaults {
     static let saveClipsAcrossDisabledHistory = "saveClipsAcrossDisabledHistory"
     static let suppressSaveClipsAlert = "suppressSaveClipsAlert"
     static let suppressUseHistoryAlert = "suppressUseHistoryAlert"
+    static let suppressLaunchFromDMGAlert = "suppressLaunchFromDMGAlert"
     static let showInStatusBar = "showInStatusBar"
     static let legacyFocusTechnique = "legacyFocus"
     static let showAdvancedPasteMenuItems = "showAdvancedPasteMenuItems"
@@ -297,6 +298,11 @@ extension UserDefaults {
   public var suppressUseHistoryAlert: Bool {
     get { bool(forKey: Keys.suppressUseHistoryAlert) }
     set { set(newValue, forKey: Keys.suppressUseHistoryAlert) }
+  }
+  
+  public var suppressLaunchFromDMGAlert: Bool {
+    get { bool(forKey: Keys.suppressLaunchFromDMGAlert) }
+    set { set(newValue, forKey: Keys.suppressLaunchFromDMGAlert) }
   }
   
   @objc dynamic public var legacyFocusTechnique: Bool {
