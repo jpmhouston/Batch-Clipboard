@@ -146,8 +146,8 @@
                             <rect key="frame" x="0.0" y="164" width="488" height="280"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="OBF-sn-fha">
-                                    <rect key="frame" x="0.0" y="264" width="269" height="16"/>
-                                    <buttonCell key="cell" type="check" title="Hide menu bar iIcon when app not in use" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NfH-5K-dzl">
+                                    <rect key="frame" x="0.0" y="264" width="265" height="16"/>
+                                    <buttonCell key="cell" type="check" title="Hide menu bar icon when app not in use" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NfH-5K-dzl">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
@@ -222,8 +222,8 @@
                             <rect key="frame" x="0.0" y="73" width="488" height="75"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ci9-IX-tdy">
-                                    <rect key="frame" x="0.0" y="60" width="212" height="15"/>
-                                    <buttonCell key="cell" type="check" title="Show application icon the Dock" bezelStyle="regularSquare" imagePosition="left" inset="2" id="zDW-xM-QuC">
+                                    <rect key="frame" x="0.0" y="60" width="227" height="15"/>
+                                    <buttonCell key="cell" type="check" title="Show application icon in the Dock" bezelStyle="regularSquare" imagePosition="left" inset="2" id="zDW-xM-QuC">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                         <font key="font" metaFont="system"/>
                                     </buttonCell>
