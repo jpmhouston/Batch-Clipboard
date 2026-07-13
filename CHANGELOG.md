@@ -1,5 +1,10 @@
 # Batch Clipboard Changelog
 
+## version 2.3b8 (2026-07-13, unreleased)
+
+- New warning alert if the non-App Store build is launched from its disk image instead of copied to the Applications folder (wasn't able to move the app there automatically, like a few other apps do, because of sandbox restrictions).
+- Fixed typos in the General Settings tab.
+
 ## version 2.3b7 (2026-07-02)
 
 - In Advanced tab of the Settings window, fixed text specific to App Store version bonus feature mistakenly visible  in non-App Store versions.
