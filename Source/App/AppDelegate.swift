@@ -223,9 +223,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // was an adventure all unto itself, but match ing deviceNumber probably would have worked.
     //for disk in DADiskCopyDisks(session) as? [DADisk] ?? [] { ... }
     
-    // Get the mount path for the file’s volume, use Disk Arbitration session to find its detailed information.
-    guard let volumeURL = try? pathURL.resourceValues(forKeys: [.volumeURLKey]).volume,
-          let session = DASessionCreate(kCFAllocatorDefault),
+    //
+    // Hmm, on Tahoe, downloaded apps whether run from storage or from dmg both seem to be launched from
+    // file:///private/var/folders/hq/_RANDOMNOISE_/T/AppTranslocation/_UUID_/d/Batch%20Clipboard.app
+    // so this detection cannot work. It seems a different technique is needed starting from some OS vers
+    // and until this always return false
+    //
+    return false
+    
+    #if false
+    // Get the mount path for the file’s volume
+    guard let volumeURL = try? pathURL.resourceValues(forKeys: [.volumeURLKey]).volume else {
+      return false
+    }
+    
+    // Use Disk Arbitration session to find its detailed information
+    guard let session = DASessionCreate(kCFAllocatorDefault),
           let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volumeURL as CFURL),
           let description = DADiskCopyDescription(disk) as NSDictionary? else {
       os_log(.default, "launch volume check failed to access disk description")
@@ -239,6 +252,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     os_log(.default, "volume desc fields DeviceProtocol %@, DeviceModel %@, MediaPath %@", description[kDADiskDescriptionDeviceProtocolKey as String] as? String ?? "?", description[kDADiskDescriptionDeviceModelKey as String] as? String ?? "?", description[kDADiskDescriptionMediaPathKey as String] as? String ?? "?")
     return description[kDADiskDescriptionDeviceProtocolKey as String] as? String == "Virtual Interface" ||
            description[kDADiskDescriptionDeviceModelKey as String] as? String == "Disk Image"
+    #endif
   }
   #endif
   
