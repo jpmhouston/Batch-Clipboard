@@ -1,8 +1,32 @@
 # Batch Clipboard Changelog
 
+## version 2.3 (2026-07-14 🌎⚽️)
+
+A number of changes since version 2.2, including these new features:
+
+- Hold option key with the menu open to show Start Batch with Clipboard, use if you cut/copy something then realize you in fact want a batch of several clips, it starts a batch with the first item being what's already on the clipboard.
+- New option useful when the menu bar icon is hidden: show the app in the Dock and app switcher, and made switching to the app reveal the menu bar icon. Added contextual menu to the Dock icon.
+- Changes in the General Settings tab: made more explicit the option for hiding the menu bar icon, added the option to turn on the Dock icon, another to start batch mode when the Dock item clicked, moved keyboard shortcut fields to its own new tab.
+- Change in the Advanced Settings tab: one to reset previously supressed alerts (ones containing "Don't ask again" checkboxes), another to enable some debug logging.
+- Simplified menu when advanced paste items are enabled using the checkbox in the Advanced tab of the Settings window. "Skip to Next" and "Start Pasting From Batch" are now one context sensitive menu item.
+- About Batch Clipboard now opens a new first About panel in the Settings window, with more room to describe what the app does and use real buttons for linking to further resources instead of underlined text.
+- Improved layout of the Intro window in preparation for localization, and updated some of the content to fixing typos and improve clarity.
+- New Intro window page asking user to choose to add Batch Clipboard as a login item. Includes an option to defer decision and show a reminder alert after copying & pasting a batch a few times.
+- For IAP-unlocked saved batch feature in the App Store version: a new Repeating setting for saved batches, made visible if new checkbox turned on in the Advanced Settings tab. After pasting last begin pasting from the first again, until batch cancelled.
+- Also for saved batch feature: holding option key when saved batch menu showing changes "Reply" menu item to "Replay Repeating". Menu item to open dialog for editing or deleting saved batches changed from "Rename" to "Edit", and fixes to behavior of that dialog.
+
+Also some fixes:
+
+- Fixed alerts sometimes opening behind other applications' windows, and improved reliability of returning the user's application and window to be frontmost after using Batch Clipboard menu items or Settings window.
+- Log exceptions in release builds instead of crashing. Further diagnosis of the few apparent edge cases that were tripping exceptions will be done in debug builds, perhaps future betas that use an analytics framework.
+- Removed internal hidden menu bar definition that was intended to assist localization, but added complexity and seems to have been contributing to menu lag on some systems.
+- Fixed some bugs when clipboard history is enabled.
+- Fixed some warnings that were being logged to the system console.
+- Removed dependency on the package SDWebImage, not used since early betas of version 1.
+
 ## version 2.3b8 (2026-07-13, unreleased)
 
-- New warning alert if the non-App Store build is launched from its disk image instead of copied to the Applications folder (wasn't able to move the app there automatically, like a few other apps do, because of sandbox restrictions).
+- New warning alert if the non-App Store build is launched from its disk image instead of copied to the Applications folder (wasn't able to move the app there automatically, like a few other apps do, because of sandbox restrictions). \[subsequently removed because current gatekeeping mechanics makes detecting launch from disk image harder\]
 - Fixed typos in the General Settings tab.
 
 ## version 2.3b7 (2026-07-02)
