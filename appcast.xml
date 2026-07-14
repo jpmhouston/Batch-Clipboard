@@ -6,6 +6,74 @@
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
+            <title>2.3</title>
+            <pubDate>Tue, 14 Jul 2026 22:35:51 +0000</pubDate>
+            <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
+            <sparkle:version>2148</sparkle:version>
+            <sparkle:shortVersionString>2.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>10.15</sparkle:minimumSystemVersion>
+            <description><![CDATA[<p>A number of changes since version 2.2, including these new
+features:</p>
+<ul>
+<li>Hold option key with the menu open to show Start Batch with
+Clipboard, use if you cut/copy something then realize you in fact want a
+batch of several clips, it starts a batch with the first item being
+what’s already on the clipboard.</li>
+<li>New option useful when the menu bar icon is hidden: show the app in
+the Dock and app switcher, and made switching to the app reveal the menu
+bar icon. Added contextual menu to the Dock icon.</li>
+<li>Changes in the General Settings tab: made more explicit the option
+for hiding the menu bar icon, added the option to turn on the Dock icon,
+another to start batch mode when the Dock item clicked, moved keyboard
+shortcut fields to its own new tab.</li>
+<li>Change in the Advanced Settings tab: one to reset previously
+supressed alerts (ones containing “Don’t ask again” checkboxes), another
+to enable some debug logging.</li>
+<li>Simplified menu when advanced paste items are enabled using the
+checkbox in the Advanced tab of the Settings window. “Skip to Next” and
+“Start Pasting From Batch” are now one context sensitive menu item.</li>
+<li>About Batch Clipboard now opens a new first About panel in the
+Settings window, with more room to describe what the app does and use
+real buttons for linking to further resources instead of underlined
+text.</li>
+<li>Improved layout of the Intro window in preparation for localization,
+and updated some of the content to fixing typos and improve
+clarity.</li>
+<li>New Intro window page asking user to choose to add Batch Clipboard
+as a login item. Includes an option to defer decision and show a
+reminder alert after copying &amp; pasting a batch a few times.</li>
+<li>For IAP-unlocked saved batch feature in the App Store version: a new
+Repeating setting for saved batches, made visible if new checkbox turned
+on in the Advanced Settings tab. After pasting last begin pasting from
+the first again, until batch cancelled.</li>
+<li>Also for saved batch feature: holding option key when saved batch
+menu showing changes “Reply” menu item to “Replay Repeating”. Menu item
+to open dialog for editing or deleting saved batches changed from
+“Rename” to “Edit”, and fixes to behavior of that dialog.</li>
+</ul>
+<p>Also some fixes:</p>
+<ul>
+<li>Fixed alerts sometimes opening behind other applications’ windows,
+and improved reliability of returning the user’s application and window
+to be frontmost after using Batch Clipboard menu items or Settings
+window.</li>
+<li>Log exceptions in release builds instead of crashing. Further
+diagnosis of the few apparent edge cases that were tripping exceptions
+will be done in debug builds, perhaps future betas that use an analytics
+framework.</li>
+<li>Removed internal hidden menu bar definition that was intended to
+assist localization, but added complexity and seems to have been
+contributing to menu lag on some systems.</li>
+<li>Fixed some bugs when clipboard history is enabled.</li>
+<li>Fixed some warnings that were being logged to the system
+console.</li>
+<li>Removed dependency on the package SDWebImage, not used since early
+betas of version 1.</li>
+</ul>
+]]></description>
+            <enclosure url="https://github.com/jpmhouston/Batch-Clipboard/releases/download/v2.3/Batch.Clipboard.2.3.zip" length="7331330" type="application/octet-stream" sparkle:edSignature="MBumpq9TNkwIIFPW/iF03tEYUHzPBxbh7/UqO2ai7AMJfJ2oVDwdk2WPUnR1Keyu141RROBxyurDU65JIfu0Bg=="/>
+        </item>
+        <item>
             <title>2.3b7</title>
             <pubDate>Thu, 02 Jul 2026 19:57:51 +0000</pubDate>
             <link>https://github.com/jpmhouston/Batch-Clipboard/releases</link>
