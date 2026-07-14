@@ -228,12 +228,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
           let session = DASessionCreate(kCFAllocatorDefault),
           let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volumeURL as CFURL),
           let description = DADiskCopyDescription(disk) as NSDictionary? else {
+      os_log(.default, "launch volume check failed to access disk description")
       return false
     }
     
     // Check for keys in teh DADisk that indicate a .dmg file
     // (no thanks to LLM which suggested value of `DAMediaPath` key would be path to the .dmg, but instead
     // to https://github.com/balena-io/etcher/issues/2661 which did the work of comparing DADisk description dicts)
+    os_log(.default, "launch from path %@, volume %@", pathURL.description, volumeURL.description)
+    os_log(.default, "volume desc fields DeviceProtocol %@, DeviceModel %@, MediaPath %@", description[kDADiskDescriptionDeviceProtocolKey as String] as? String ?? "?", description[kDADiskDescriptionDeviceModelKey as String] as? String ?? "?", description[kDADiskDescriptionMediaPathKey as String] as? String ?? "?")
     return description[kDADiskDescriptionDeviceProtocolKey as String] as? String == "Virtual Interface" ||
            description[kDADiskDescriptionDeviceModelKey as String] as? String == "Disk Image"
   }
